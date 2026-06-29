@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
@@ -49,11 +51,12 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   final _originalCtrl = TextEditingController();
   final _badgeCtrl    = TextEditingController();
 
-  String _transport = 'plane';
-  int    _acc       = 4;
-  int    _days      = 10;
-  String _meals     = 'Breakfast';
-  bool   _saving    = false;
+  String     _transport = 'plane';
+  int        _acc       = 4;
+  int        _days      = 10;
+  String     _meals     = 'Breakfast';
+  bool       _saving    = false;
+  Uint8List? _imageBytes;
 
   // ── itinerary ─────────────────────────────────────────────────────────────
   final List<_ItineraryEntry> _itinerary = [];
@@ -83,6 +86,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       _acc               = o.acc;
       _days              = o.days;
       _meals             = o.meals;
+      _imageBytes        = context.read<AppProvider>().getOfferImage(o.id);
 
       // load existing itinerary
       for (final it in o.buildItinerary()) {
@@ -146,6 +150,13 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     setState(() {});
   }
 
+  Future<void> _pickImage() async {
+    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (xfile == null) return;
+    final bytes = await xfile.readAsBytes();
+    setState(() => _imageBytes = bytes);
+  }
+
   void _save() {
     final title = _titleCtrl.text.trim();
     final price = double.tryParse(_priceCtrl.text.trim()) ?? 0;
@@ -196,6 +207,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     );
 
     final provider = context.read<AppProvider>();
+    if (_imageBytes != null) {
+      provider.setOfferImage(id, _imageBytes!);
+    } else if (_isEdit) {
+      provider.removeOfferImage(id);
+    }
     _isEdit ? provider.updateOffer(offer) : provider.addOffer(offer);
 
     if (!mounted) return;
@@ -251,6 +267,15 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Cover image ──────────────────────────────────────────────
+            _CoverImagePicker(
+              imageBytes: _imageBytes,
+              gradColors: _gradColors(),
+              onPick: _pickImage,
+              onRemove: () => setState(() => _imageBytes = null),
+            ),
+            const SizedBox(height: 28),
+
             // ── Basic details ────────────────────────────────────────────
             _SectionHeader('Package details'),
             _Field(label: 'Title *', controller: _titleCtrl, hint: 'e.g. Premium Makkah & Madinah'),
@@ -547,6 +572,104 @@ class _InlineField extends StatelessWidget {
         isDense: true,
         contentPadding: EdgeInsets.zero,
         border: InputBorder.none,
+      ),
+    );
+  }
+}
+
+// ── Cover image picker ────────────────────────────────────────────────────────
+
+class _CoverImagePicker extends StatelessWidget {
+  final Uint8List? imageBytes;
+  final List<Color> gradColors;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+
+  const _CoverImagePicker({
+    required this.imageBytes,
+    required this.gradColors,
+    required this.onPick,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPick,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: SizedBox(
+          height: 180,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // background: real image or gradient placeholder
+              if (imageBytes != null)
+                Image.memory(imageBytes!, fit: BoxFit.cover)
+              else
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: gradColors,
+                    ),
+                  ),
+                ),
+
+              // dark overlay
+              Container(color: Colors.black.withOpacity(imageBytes != null ? 0.28 : 0.18)),
+
+              // pick prompt
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        imageBytes != null
+                            ? Icons.edit_rounded
+                            : Icons.add_photo_alternate_rounded,
+                        color: AppColors.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      imageBytes != null ? 'Change image' : 'Add cover image',
+                      style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+
+              // remove button
+              if (imageBytes != null)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: onRemove,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close_rounded, size: 16, color: Colors.black87),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

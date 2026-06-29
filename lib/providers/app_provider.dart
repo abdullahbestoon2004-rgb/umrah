@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
@@ -94,6 +95,12 @@ class AppProvider extends ChangeNotifier {
           o.hotel.toLowerCase().contains(lower);
     }).toList();
   }
+
+  // ── offer images ─────────────────────────────────────────────────────────
+  final Map<String, Uint8List> _offerImages = {};
+  Uint8List? getOfferImage(String id) => _offerImages[id];
+  void setOfferImage(String id, Uint8List bytes) { _offerImages[id] = bytes; notifyListeners(); }
+  void removeOfferImage(String id) { _offerImages.remove(id); notifyListeners(); }
 
   // ── offers (sample + agency-added) ───────────────────────────────────────
   List<Offer> get allOffers => [...sampleOffers, ...agencyOffers];

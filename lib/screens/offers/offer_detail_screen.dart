@@ -85,16 +85,21 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageBytes = provider.getOfferImage(offer.id);
+
     return SizedBox(
       height: 280,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          GradientCard(
-            colors: offer.gradColors,
-            height: 280,
-            borderRadius: BorderRadius.zero,
-          ),
+          if (imageBytes != null)
+            Image.memory(imageBytes, fit: BoxFit.cover)
+          else
+            GradientCard(
+              colors: offer.gradColors,
+              height: 280,
+              borderRadius: BorderRadius.zero,
+            ),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

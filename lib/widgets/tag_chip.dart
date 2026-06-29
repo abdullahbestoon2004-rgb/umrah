@@ -20,7 +20,7 @@ class TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? const Color(0xFFF6F2E9) : const Color(0xFF3C4A43);
+    final color = active ? const Color(0xFFF6F2E9) : AppColors.ink;
     return GestureDetector(
       onTap: onTap,
       child: Container(

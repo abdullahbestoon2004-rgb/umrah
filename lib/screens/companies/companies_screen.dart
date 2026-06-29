@@ -5,7 +5,6 @@ import '../../theme/app_theme.dart';
 import '../../data/sample_data.dart';
 import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
-import '../../widgets/company_avatar.dart';
 import 'company_detail_screen.dart';
 
 class CompaniesScreen extends StatelessWidget {
@@ -60,64 +59,146 @@ class _CompanyListCard extends StatelessWidget {
     final offers = context.watch<AppProvider>().getCompanyOffers(company.id);
     final offerCount = offers.length;
     final fromPrice = offers.isEmpty ? 0.0 : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
+
+    final gradDark = Color.alphaBlend(Colors.black.withOpacity(0.35), company.tint);
+
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CompanyDetailScreen(company: company))),
       child: Container(
-        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF0F3729).withOpacity(0.06), blurRadius: 26, offset: const Offset(0, 10)),
+            BoxShadow(color: const Color(0xFF0F3729).withOpacity(0.07), blurRadius: 30, offset: const Offset(0, 14)),
           ],
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CompanyAvatar(mono: company.mono, tint: company.tint),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // ── gradient header ──────────────────────────────────────────
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+              child: SizedBox(
+                height: 140,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // gradient background from tint colour
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [company.tint, gradDark],
+                        ),
+                      ),
+                    ),
+                    // bottom scrim for text legibility
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Colors.black.withOpacity(0.52)],
+                          stops: const [0.4, 1.0],
+                        ),
+                      ),
+                    ),
+                    // verified badge — top left
+                    if (company.isVerified)
+                      Positioned(
+                        left: 14,
+                        top: 12,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold,
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.verified_rounded, size: 10, color: Color(0xFF1C2317)),
+                              const SizedBox(width: 4),
+                              Text(
+                                'VERIFIED',
+                                style: AppTheme.sans(9, weight: FontWeight.w800, color: const Color(0xFF1C2317))
+                                    .copyWith(letterSpacing: 0.5),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    // mono logo — top right
+                    Positioned(
+                      top: 12,
+                      right: 14,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.92),
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        child: Center(
+                          child: Text(
+                            company.mono,
+                            style: AppTheme.sans(20, weight: FontWeight.w800, color: company.tint),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // company name + location — bottom left
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      bottom: 11,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            company.name,
+                            style: AppTheme.serif(21, color: Colors.white),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 1),
+                          Text(
+                            '${company.location} · est. ${company.since}',
+                            style: AppTheme.sans(10.5, weight: FontWeight.w600, color: Colors.white.withOpacity(0.78)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // ── detail row ───────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 13, 15, 15),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(company.name, style: AppTheme.sans(16, weight: FontWeight.w700)),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(Icons.verified_rounded, color: AppColors.primary, size: 16),
-                    ],
-                  ),
-                  const SizedBox(height: 3),
+                  Icon(Icons.star_rounded, color: AppColors.gold, size: 14),
+                  const SizedBox(width: 4),
+                  Text('${company.rating}', style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.ink)),
+                  const SizedBox(width: 6),
+                  Text('·', style: AppTheme.sans(13, color: AppColors.mutedLight)),
+                  const SizedBox(width: 6),
                   Text(
-                    '${company.location} · since ${company.since}',
-                    style: AppTheme.sans(12, color: const Color(0xFF7D8A82)),
+                    '$offerCount package${offerCount != 1 ? "s" : ""}',
+                    style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.inkLight),
                   ),
-                  const SizedBox(height: 7),
-                  Row(
-                    children: [
-                      Icon(Icons.star_rounded, color: AppColors.gold, size: 13),
-                      const SizedBox(width: 4),
-                      Text('${company.rating}', style: AppTheme.sans(12, weight: FontWeight.w600, color: const Color(0xFF5E6B63))),
-                      const SizedBox(width: 8),
-                      Text('|', style: AppTheme.sans(12, color: const Color(0xFFCDD3CB))),
-                      const SizedBox(width: 8),
-                      Text('$offerCount offers', style: AppTheme.sans(12, weight: FontWeight.w600, color: const Color(0xFF5E6B63))),
-                      const SizedBox(width: 8),
-                      Text('|', style: AppTheme.sans(12, color: const Color(0xFFCDD3CB))),
-                      const SizedBox(width: 8),
-                      Text(
-                        fromPrice > 0 ? 'from \$${fromPrice.round()}' : '',
-                        style: AppTheme.sans(12, weight: FontWeight.w600, color: AppColors.primary),
-                      ),
-                    ],
-                  ),
+                  const Spacer(),
+                  if (fromPrice > 0) ...[
+                    Text('from ', style: AppTheme.sans(11, color: AppColors.muted)),
+                    Text('\$${fromPrice.round()}', style: AppTheme.serif(22, color: AppColors.primary)),
+                  ],
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: const Color(0xFFB9C1B8), size: 22),
           ],
         ),
       ),

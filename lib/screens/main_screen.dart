@@ -9,8 +9,16 @@ import 'offers/offers_screen.dart';
 import 'bookings/bookings_screen.dart';
 import 'profile/profile_screen.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  late final PageController _pageController;
+  bool _isProgrammaticScroll = false;
 
   static const _screens = [
     HomeScreen(),
@@ -21,13 +29,69 @@ class MainScreen extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: context.read<AppProvider>().currentTab);
+    context.read<AppProvider>().addListener(_onProviderTabChanged);
+  }
+
+  @override
+  void dispose() {
+    context.read<AppProvider>().removeListener(_onProviderTabChanged);
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onProviderTabChanged() {
+    final tab = context.read<AppProvider>().currentTab;
+    if (_pageController.hasClients && _pageController.page?.round() != tab) {
+      _isProgrammaticScroll = true;
+      _pageController
+          .animateToPage(
+            tab,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
+          )
+          .then((_) => _isProgrammaticScroll = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tab = context.watch<AppProvider>().currentTab;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(index: tab, children: _screens),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          if (!_isProgrammaticScroll) {
+            context.read<AppProvider>().setTab(index);
+          }
+        },
+        children: _screens.map((s) => _KeepAlivePage(child: s)).toList(),
+      ),
       bottomNavigationBar: _BottomNav(currentIndex: tab),
     );
+  }
+}
+
+class _KeepAlivePage extends StatefulWidget {
+  final Widget child;
+  const _KeepAlivePage({required this.child});
+
+  @override
+  State<_KeepAlivePage> createState() => _KeepAlivePageState();
+}
+
+class _KeepAlivePageState extends State<_KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }
 

@@ -101,10 +101,10 @@ class _QuickChips extends StatelessWidget {
     final f = provider.filters;
 
     return SizedBox(
-      height: 52,
+      height: 62,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(22, 16, 22, 4),
+        padding: const EdgeInsets.fromLTRB(22, 10, 22, 10),
         children: [
           TagChip(label: 'All', active: f.transport == 'all' && f.acc == 'all', onTap: () => provider.resetFilters()),
           const SizedBox(width: 9),
@@ -182,16 +182,16 @@ class _SortBtn extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFFEEF4F0) : Colors.transparent,
+          color: active ? const Color(0xFFEEF4F0) : AppColors.chipBg,
           borderRadius: BorderRadius.circular(9),
           border: Border.all(
-            color: active ? AppColors.primary.withOpacity(0.3) : Colors.transparent,
+            color: active ? AppColors.primary.withOpacity(0.3) : AppColors.primary.withOpacity(0.12),
             width: 1.5,
           ),
         ),
         child: Text(
           label,
-          style: AppTheme.sans(12, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.muted),
+          style: AppTheme.sans(12, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.ink),
         ),
       ),
     );
@@ -245,6 +245,8 @@ class OfferCard extends StatelessWidget {
     final saved = provider.isSaved(offer.id);
     final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId);
 
+    final imageBytes = provider.getOfferImage(offer.id);
+
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
@@ -267,11 +269,14 @@ class OfferCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    GradientCard(
-                      colors: offer.gradColors,
-                      height: 140,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
-                    ),
+                    if (imageBytes != null)
+                      Image.memory(imageBytes, fit: BoxFit.cover)
+                    else
+                      GradientCard(
+                        colors: offer.gradColors,
+                        height: 140,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+                      ),
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
