@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'agency_dashboard_screen.dart';
 
 class AgencyLoginScreen extends StatefulWidget {
@@ -34,12 +35,14 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
     if (ok) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AgencyDashboardScreen()));
     } else {
-      setState(() { _error = 'Invalid email or password. Try: admin@alsafwah.com / pass123'; _loading = false; });
+      final t = AppLocalizations.of(context);
+      setState(() { _error = t.agencyLoginInvalidCredentials; _loading = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -64,12 +67,12 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                 child: const Icon(Icons.business_rounded, color: Colors.white, size: 30),
               ),
               const SizedBox(height: 20),
-              Text('Agency Portal', style: AppTheme.serif(32)),
+              Text(t.agencyLoginTitle, style: AppTheme.serif(32)),
               const SizedBox(height: 6),
-              Text('Sign in to manage your packages and profile.', style: AppTheme.sans(14, color: AppColors.muted)),
+              Text(t.agencyLoginSubtitle, style: AppTheme.sans(14, color: AppColors.muted)),
               const SizedBox(height: 36),
 
-              _Label('Email address'),
+              _Label(t.agencyLoginEmail),
               const SizedBox(height: 8),
               _Field(
                 controller: _emailCtrl,
@@ -79,7 +82,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
               ),
               const SizedBox(height: 18),
 
-              _Label('Password'),
+              _Label(t.agencyLoginPassword),
               const SizedBox(height: 8),
               _Field(
                 controller: _passCtrl,
@@ -127,7 +130,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                   alignment: Alignment.center,
                   child: _loading
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                      : Text('Sign In', style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+                      : Text(t.agencyLoginSignIn, style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
                 ),
               ),
 
@@ -138,12 +141,12 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Demo credentials', style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.primary)),
+                    Text(t.agencyLoginDemoCredentials, style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.primary)),
                     const SizedBox(height: 6),
-                    Text('Email: admin@alsafwah.com', style: AppTheme.sans(12, color: AppColors.inkLight)),
-                    Text('Password: pass123', style: AppTheme.sans(12, color: AppColors.inkLight)),
+                    Text(t.agencyLoginDemoEmail, style: AppTheme.sans(12, color: AppColors.inkLight)),
+                    Text(t.agencyLoginDemoPassword, style: AppTheme.sans(12, color: AppColors.inkLight)),
                     const SizedBox(height: 4),
-                    Text('(Use admin@noorharamain.com etc. for other agencies)', style: AppTheme.sans(11, color: AppColors.muted)),
+                    Text(t.agencyLoginDemoHint, style: AppTheme.sans(11, color: AppColors.muted)),
                   ],
                 ),
               ),

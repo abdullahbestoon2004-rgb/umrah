@@ -1,9 +1,38 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
 import 'screens/main_screen.dart';
+import 'l10n/generated/app_localizations.dart';
+
+// Flutter's built-in Material/Cupertino localizations don't ship Kurdish
+// translations. Without a fallback, widgets that read MaterialLocalizations
+// (e.g. AppBar back-button tooltips) throw for the 'ku' locale. Route 'ku'
+// to the Arabic translations instead (same RTL direction, closest available).
+class _KuMaterialLocalizationsDelegate extends LocalizationsDelegate<MaterialLocalizations> {
+  const _KuMaterialLocalizationsDelegate();
+  @override
+  bool isSupported(Locale locale) => locale.languageCode == 'ku';
+  @override
+  Future<MaterialLocalizations> load(Locale locale) =>
+      GlobalMaterialLocalizations.delegate.load(const Locale('ar'));
+  @override
+  bool shouldReload(_KuMaterialLocalizationsDelegate old) => false;
+}
+
+class _KuCupertinoLocalizationsDelegate extends LocalizationsDelegate<CupertinoLocalizations> {
+  const _KuCupertinoLocalizationsDelegate();
+  @override
+  bool isSupported(Locale locale) => locale.languageCode == 'ku';
+  @override
+  Future<CupertinoLocalizations> load(Locale locale) =>
+      GlobalCupertinoLocalizations.delegate.load(const Locale('ar'));
+  @override
+  bool shouldReload(_KuCupertinoLocalizationsDelegate old) => false;
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +50,30 @@ class UmrahApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AppProvider(),
-      child: MaterialApp(
-        title: 'Umrah',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.theme,
-        home: const MainScreen(),
+      child: Consumer<AppProvider>(
+        builder: (context, provider, _) {
+          final isRtl = provider.locale.languageCode != 'en';
+          return MaterialApp(
+            title: 'Umrah',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.theme,
+            locale: provider.locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              ...AppLocalizations.localizationsDelegates,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              _KuMaterialLocalizationsDelegate(),
+              _KuCupertinoLocalizationsDelegate(),
+            ],
+            builder: (context, child) => Directionality(
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+              child: child!,
+            ),
+            home: const MainScreen(),
+          );
+        },
       ),
     );
   }

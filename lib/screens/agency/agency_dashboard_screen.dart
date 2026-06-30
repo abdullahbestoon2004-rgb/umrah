@@ -6,6 +6,7 @@ import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/tag_chip.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'add_edit_offer_screen.dart';
 import 'edit_agency_profile_screen.dart';
 
@@ -14,6 +15,7 @@ class AgencyDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final company = provider.agencyCompany;
     if (company == null) return const SizedBox.shrink();
@@ -30,7 +32,7 @@ class AgencyDashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(22, 20, 22, 12),
               child: Row(
                 children: [
-                  Text('Your Packages (${offers.length})', style: AppTheme.serif(20)),
+                  Text(t.agencyDashboardYourPackages(offers.length), style: AppTheme.serif(20)),
                   const Spacer(),
                   if (company.isVerified)
                     GestureDetector(
@@ -43,7 +45,7 @@ class AgencyDashboardScreen extends StatelessWidget {
                           children: [
                             const Icon(Icons.add_rounded, color: Colors.white, size: 18),
                             const SizedBox(width: 6),
-                            Text('Add Package', style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white)),
+                            Text(t.agencyDashboardAddPackage, style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white)),
                           ],
                         ),
                       ),
@@ -72,9 +74,9 @@ class AgencyDashboardScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Verification Pending', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.gold)),
+                            Text(t.agencyDashboardVerificationPending, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.gold)),
                             const SizedBox(height: 3),
-                            Text('Your account is under review. Once verified you can publish packages and edit your profile.',
+                            Text(t.agencyDashboardVerificationPendingBody,
                                 style: AppTheme.sans(12, color: const Color(0xFF8A7040))),
                           ],
                         ),
@@ -110,6 +112,7 @@ class _DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -147,7 +150,7 @@ class _DashboardHeader extends StatelessWidget {
                           children: [
                             const Icon(Icons.edit_outlined, color: Colors.white, size: 16),
                             const SizedBox(width: 6),
-                            Text('Edit Profile', style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white)),
+                            Text(t.agencyDashboardEditProfile, style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white)),
                           ],
                         ),
                       ),
@@ -191,7 +194,7 @@ class _DashboardHeader extends StatelessWidget {
                         ]),
                         const SizedBox(height: 3),
                         Text(
-                          company.isVerified ? 'Verified Agency' : 'Pending Verification',
+                          company.isVerified ? t.agencyDashboardVerifiedAgency : t.agencyDashboardPendingVerification,
                           style: AppTheme.sans(12, color: Colors.white.withOpacity(0.75)),
                         ),
                       ],
@@ -217,6 +220,7 @@ class _PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -256,7 +260,7 @@ class _PackageCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Wrap(spacing: 6, runSpacing: 4, children: [
-                    InfoChip(label: '${offer.days} days'),
+                    InfoChip(label: t.agencyDashboardDaysCount(offer.days)),
                     InfoChip(label: offer.transportLabel),
                     InfoChip(label: '${offer.acc}★'),
                     InfoChip(label: offer.priceFmt),
@@ -292,18 +296,19 @@ class _PackageCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
+    final t = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Delete package?', style: AppTheme.serif(20)),
-        content: Text('This will permanently remove "${offer.title}".', style: AppTheme.sans(13, color: AppColors.inkLight)),
+        title: Text(t.agencyDashboardDeletePackageTitle, style: AppTheme.serif(20)),
+        content: Text(t.agencyDashboardDeletePackageBody(offer.title), style: AppTheme.sans(13, color: AppColors.inkLight)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel', style: AppTheme.sans(13, color: AppColors.muted))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted))),
           TextButton(
             onPressed: () { provider.deleteOffer(offer.id); Navigator.pop(context); },
-            child: Text('Delete', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+            child: Text(t.agencyDashboardDelete, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
           ),
         ],
       ),
@@ -315,6 +320,7 @@ class _EmptyPackages extends StatelessWidget {
   const _EmptyPackages();
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -325,9 +331,9 @@ class _EmptyPackages extends StatelessWidget {
             child: const Icon(Icons.add_business_rounded, color: AppColors.primary, size: 34),
           ),
           const SizedBox(height: 16),
-          Text('No packages yet', style: AppTheme.serif(22)),
+          Text(t.agencyDashboardNoPackagesYet, style: AppTheme.serif(22)),
           const SizedBox(height: 5),
-          Text('Tap "Add Package" to publish your first Umrah offer.', style: AppTheme.sans(13, color: AppColors.muted), textAlign: TextAlign.center),
+          Text(t.agencyDashboardNoPackagesHint, style: AppTheme.sans(13, color: AppColors.muted), textAlign: TextAlign.center),
         ],
       ),
     );

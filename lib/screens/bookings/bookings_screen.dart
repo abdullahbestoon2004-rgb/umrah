@@ -4,12 +4,14 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../models/booking_model.dart';
 import '../../providers/app_provider.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class BookingsScreen extends StatelessWidget {
   const BookingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final bookings = context.watch<AppProvider>().bookings;
 
     return Scaffold(
@@ -23,9 +25,9 @@ class BookingsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('My Bookings', style: AppTheme.serif(30)),
+                    Text(t.bookingsTitle, style: AppTheme.serif(30)),
                     const SizedBox(height: 3),
-                    Text('${bookings.length} trip${bookings.length == 1 ? '' : 's'}',
+                    Text(t.bookingsTripCount(bookings.length),
                         style: AppTheme.sans(13, color: const Color(0xFF7D8A82))),
                     const SizedBox(height: 16),
                   ],
@@ -57,6 +59,7 @@ class _BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -116,7 +119,7 @@ class _BookingCard extends StatelessWidget {
                         children: [
                           Text(booking.date, style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
                           const Text(' · ', style: TextStyle(color: Color(0xFF5E6B63))),
-                          Text('${booking.travelers} pax', style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
+                          Text(t.bookingsPaxCount(booking.travelers), style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
                         ],
                       ),
                     ],
@@ -135,7 +138,7 @@ class _BookingCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'REF ${booking.ref}',
+                  t.bookingsRefLabel(booking.ref),
                   style: AppTheme.sans(11, color: AppColors.muted).copyWith(letterSpacing: 0.5, fontFamily: 'monospace'),
                 ),
                 const Spacer(),
@@ -152,6 +155,7 @@ class _BookingCard extends StatelessWidget {
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -166,14 +170,14 @@ class _EmptyState extends StatelessWidget {
             child: const Icon(Icons.calendar_month_rounded, color: AppColors.primary, size: 32),
           ),
           const SizedBox(height: 16),
-          Text('No bookings yet', style: AppTheme.serif(22)),
+          Text(t.bookingsEmptyTitle, style: AppTheme.serif(22)),
           const SizedBox(height: 5),
-          Text('Your confirmed trips will appear here.', style: AppTheme.sans(13, color: AppColors.muted)),
+          Text(t.bookingsEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
             decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-            child: Text('Browse offers', style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+            child: Text(t.bookingsBrowseOffers, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
           ),
         ],
       ),

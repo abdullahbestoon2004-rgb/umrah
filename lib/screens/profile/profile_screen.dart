@@ -7,6 +7,7 @@ import '../../models/offer_model.dart';
 import '../../data/sample_data.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/star_rating.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_login_screen.dart';
 import '../agency/agency_dashboard_screen.dart';
 import '../offers/offer_detail_screen.dart';
@@ -17,6 +18,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -28,46 +30,46 @@ class ProfileScreen extends StatelessWidget {
               delegate: SliverChildListDelegate([
                 _MenuCard(
                   icon: Icons.favorite_border_rounded,
-                  label: 'Saved trips',
+                  label: t.profileSavedTrips,
                   badge: provider.saved.isEmpty ? null : '${provider.saved.length}',
                   onTap: () => _openSaved(context, provider),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.calendar_month_rounded,
-                  label: 'My Bookings',
+                  label: t.profileMyBookings,
                   badge: provider.bookings.isEmpty ? null : '${provider.bookings.length}',
                   onTap: () => provider.setTab(3),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.notifications_outlined,
-                  label: 'Notifications',
-                  onTap: () => _placeholder(context, 'Notifications'),
+                  label: t.profileNotifications,
+                  onTap: () => _placeholder(context, t.profileNotifications),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.credit_card_rounded,
-                  label: 'Payment methods',
-                  onTap: () => _placeholder(context, 'Payment methods'),
+                  label: t.profilePaymentMethods,
+                  onTap: () => _placeholder(context, t.profilePaymentMethods),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.language_rounded,
-                  label: 'Language',
-                  onTap: () => _placeholder(context, 'Language'),
+                  label: t.profileLanguage,
+                  onTap: () => _openLanguagePicker(context, provider),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.lock_outline_rounded,
-                  label: 'Privacy & security',
-                  onTap: () => _placeholder(context, 'Privacy & security'),
+                  label: t.profilePrivacySecurity,
+                  onTap: () => _placeholder(context, t.profilePrivacySecurity),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.chat_bubble_outline_rounded,
-                  label: 'Help & support',
-                  onTap: () => _placeholder(context, 'Help & support'),
+                  label: t.profileHelpSupport,
+                  onTap: () => _placeholder(context, t.profileHelpSupport),
                 ),
                 const SizedBox(height: 18),
                 // Agency portal divider
@@ -75,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
                   Expanded(child: Divider(color: AppColors.border)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('Agency', style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.muted)),
+                    child: Text(t.profileAgencyDivider, style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.muted)),
                   ),
                   Expanded(child: Divider(color: AppColors.border)),
                 ]),
@@ -83,8 +85,8 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.business_center_rounded,
                   label: provider.isAgencyLoggedIn
-                      ? 'Agency Dashboard · ${provider.agencyCompany?.name ?? ''}'
-                      : 'Agency Portal',
+                      ? t.profileAgencyDashboardWithName(provider.agencyCompany?.name ?? '')
+                      : t.profileAgencyPortal,
                   tint: AppColors.primary,
                   onTap: () {
                     if (provider.isAgencyLoggedIn) {
@@ -107,7 +109,37 @@ class ProfileScreen extends StatelessWidget {
     Navigator.push(context, MaterialPageRoute(builder: (_) => _SavedScreen(offers: saved)));
   }
 
+  void _openLanguagePicker(BuildContext context, AppProvider provider) {
+    final t = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+            ),
+            const SizedBox(height: 20),
+            Text(t.chooseLanguageTitle, style: AppTheme.serif(22)),
+            const SizedBox(height: 16),
+            _LanguageOption(label: t.languageKurdish, code: 'ku', provider: provider),
+            const SizedBox(height: 10),
+            _LanguageOption(label: t.languageArabic, code: 'ar', provider: provider),
+            const SizedBox(height: 10),
+            _LanguageOption(label: t.languageEnglish, code: 'en', provider: provider),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _placeholder(BuildContext context, String name) {
+    final t = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
@@ -123,7 +155,39 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 14),
             Text(name, style: AppTheme.serif(22)),
             const SizedBox(height: 6),
-            Text('This feature is coming soon.', style: AppTheme.sans(13, color: AppColors.muted)),
+            Text(t.comingSoonBody, style: AppTheme.sans(13, color: AppColors.muted)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageOption extends StatelessWidget {
+  final String label;
+  final String code;
+  final AppProvider provider;
+  const _LanguageOption({required this.label, required this.code, required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    final active = provider.locale.languageCode == code;
+    return GestureDetector(
+      onTap: () {
+        provider.setLocale(Locale(code));
+        Navigator.pop(context);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          color: active ? AppColors.primary.withOpacity(0.08) : AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: active ? AppColors.primary : AppColors.border, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Expanded(child: Text(label, style: AppTheme.sans(15, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.ink))),
+            if (active) Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20),
           ],
         ),
       ),
@@ -137,6 +201,7 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -170,19 +235,19 @@ class _ProfileHeader extends StatelessWidget {
                         width: 66, height: 66,
                         decoration: BoxDecoration(color: const Color(0xFFF3E6C4), borderRadius: BorderRadius.circular(20)),
                         alignment: Alignment.center,
-                        child: Text('P', style: AppTheme.serif(28, color: AppColors.primary)),
+                        child: Icon(Icons.person_rounded, color: AppColors.primary, size: 30),
                       ),
                       const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Pilgrim', style: AppTheme.serif(24, color: Colors.white)),
+                            Text(t.profilePilgrim, style: AppTheme.serif(24, color: Colors.white)),
                             const SizedBox(height: 5),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(color: AppColors.gold.withOpacity(0.95), borderRadius: BorderRadius.circular(8)),
-                              child: Text('★ Gold Member', style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)).copyWith(letterSpacing: 0.4)),
+                              child: Text(t.profileGoldMember, style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)).copyWith(letterSpacing: 0.4)),
                             ),
                           ],
                         ),
@@ -194,11 +259,11 @@ class _ProfileHeader extends StatelessWidget {
                     decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
                     child: Row(
                       children: [
-                        _StatCell(value: '${provider.bookings.length}', label: 'Trips'),
+                        _StatCell(value: '${provider.bookings.length}', label: t.profileStatTrips),
                         _Div(),
-                        _StatCell(value: '${provider.saved.length}', label: 'Saved'),
+                        _StatCell(value: '${provider.saved.length}', label: t.profileStatSaved),
                         _Div(),
-                        const _StatCell(value: '12', label: 'Reviews'),
+                        _StatCell(value: '12', label: t.profileStatReviews),
                       ],
                     ),
                   ),
@@ -288,6 +353,7 @@ class _SavedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -306,7 +372,7 @@ class _SavedScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 14),
-                  Expanded(child: Text('Saved Trips', style: AppTheme.serif(26))),
+                  Expanded(child: Text(t.savedTripsTitle, style: AppTheme.serif(26))),
                 ],
               ),
             ),
@@ -316,9 +382,9 @@ class _SavedScreen extends StatelessWidget {
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         const Icon(Icons.favorite_border_rounded, size: 48, color: AppColors.mutedLight),
                         const SizedBox(height: 14),
-                        Text('No saved trips yet', style: AppTheme.serif(20)),
+                        Text(t.savedTripsEmptyTitle, style: AppTheme.serif(20)),
                         const SizedBox(height: 6),
-                        Text('Tap the heart on any offer to save it.', style: AppTheme.sans(13, color: AppColors.muted)),
+                        Text(t.savedTripsEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
                       ]),
                     )
                   : ListView.separated(
@@ -342,6 +408,7 @@ class _SavedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
+    final t = AppLocalizations.of(context);
     final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId, orElse: () => sampleCompanies.first);
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
@@ -369,7 +436,7 @@ class _SavedCard extends StatelessWidget {
                     StarRating(rating: offer.rating),
                     const Spacer(),
                     Text.rich(TextSpan(children: [
-                      TextSpan(text: 'from ', style: AppTheme.sans(11, color: AppColors.muted)),
+                      TextSpan(text: t.priceFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
                       TextSpan(text: offer.priceFmt, style: AppTheme.serif(16, color: AppColors.primary)),
                     ])),
                   ]),

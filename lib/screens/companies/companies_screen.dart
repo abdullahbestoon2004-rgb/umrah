@@ -6,12 +6,14 @@ import '../../data/sample_data.dart';
 import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
 import 'company_detail_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class CompaniesScreen extends StatelessWidget {
   const CompaniesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -23,10 +25,10 @@ class CompaniesScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Agencies', style: AppTheme.serif(30)),
+                    Text(t.companiesTitle, style: AppTheme.serif(30)),
                     const SizedBox(height: 3),
                     Text(
-                      '${sampleCompanies.length} verified Umrah operators',
+                      t.companiesSubtitle(sampleCompanies.length),
                       style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
                     ),
                     const SizedBox(height: 16),
@@ -56,6 +58,7 @@ class _CompanyListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final offers = context.watch<AppProvider>().getCompanyOffers(company.id);
     final offerCount = offers.length;
     final fromPrice = offers.isEmpty ? 0.0 : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
@@ -122,7 +125,7 @@ class _CompanyListCard extends StatelessWidget {
                               const Icon(Icons.verified_rounded, size: 10, color: Color(0xFF1C2317)),
                               const SizedBox(width: 4),
                               Text(
-                                'VERIFIED',
+                                t.companiesVerifiedBadge,
                                 style: AppTheme.sans(9, weight: FontWeight.w800, color: const Color(0xFF1C2317))
                                     .copyWith(letterSpacing: 0.5),
                               ),
@@ -165,7 +168,7 @@ class _CompanyListCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 1),
                           Text(
-                            '${company.location} · est. ${company.since}',
+                            t.companiesLocationEst(company.location, company.since),
                             style: AppTheme.sans(10.5, weight: FontWeight.w600, color: Colors.white.withOpacity(0.78)),
                           ),
                         ],
@@ -188,12 +191,12 @@ class _CompanyListCard extends StatelessWidget {
                   Text('·', style: AppTheme.sans(13, color: AppColors.mutedLight)),
                   const SizedBox(width: 6),
                   Text(
-                    '$offerCount package${offerCount != 1 ? "s" : ""}',
+                    t.companiesPackageCount(offerCount),
                     style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.inkLight),
                   ),
                   const Spacer(),
                   if (fromPrice > 0) ...[
-                    Text('from ', style: AppTheme.sans(11, color: AppColors.muted)),
+                    Text(t.companiesFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
                     Text('\$${fromPrice.round()}', style: AppTheme.serif(22, color: AppColors.primary)),
                   ],
                 ],

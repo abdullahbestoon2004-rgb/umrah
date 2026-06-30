@@ -13,6 +13,7 @@ import '../../widgets/tag_chip.dart';
 import '../companies/company_detail_screen.dart';
 import '../offers/offer_detail_screen.dart';
 import '../search/search_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -44,6 +45,7 @@ class HomeScreen extends StatelessWidget {
 class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(22, 8, 22, 18),
       child: Row(
@@ -53,7 +55,7 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'السلام عليكم',
+                  t.homeGreeting,
                   style: AppTheme.sans(
                     12,
                     weight: FontWeight.w700,
@@ -61,7 +63,7 @@ class _Header extends StatelessWidget {
                   ).copyWith(letterSpacing: 1.4),
                 ),
                 const SizedBox(height: 2),
-                Text('Welcome, Pilgrim', style: AppTheme.serif(28)),
+                Text(t.homeWelcomePilgrim, style: AppTheme.serif(28)),
               ],
             ),
           ),
@@ -88,6 +90,7 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: GestureDetector(
@@ -126,7 +129,7 @@ class _HeroCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'FEATURED',
+                      t.homeFeatured,
                       style: AppTheme.sans(10.5, weight: FontWeight.w800, color: const Color(0xFF1C2317))
                           .copyWith(letterSpacing: 1),
                     ),
@@ -151,7 +154,7 @@ class _HeroCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${offer.days} days · ${offer.acc}-Star Hotel',
+                              t.homeDaysStarHotel(offer.days, offer.acc),
                               style: AppTheme.sans(12.5, color: Colors.white.withOpacity(0.82)),
                             ),
                           ),
@@ -173,6 +176,7 @@ class _HeroCard extends StatelessWidget {
 class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(22, 18, 22, 6),
       child: GestureDetector(
@@ -196,7 +200,7 @@ class _SearchBar extends StatelessWidget {
               Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
               const SizedBox(width: 11),
               Text(
-                'Search Umrah packages…',
+                t.homeSearchPlaceholder,
                 style: AppTheme.sans(14, color: const Color(0xFF7D8A82)),
               ),
             ],
@@ -213,6 +217,7 @@ class _AgenciesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -220,11 +225,11 @@ class _AgenciesSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(22, 18, 22, 12),
           child: Row(
             children: [
-              Text('Top Agencies', style: AppTheme.serif(21)),
+              Text(t.homeTopAgencies, style: AppTheme.serif(21)),
               const Spacer(),
               GestureDetector(
                 onTap: () => context.read<AppProvider>().setTab(1),
-                child: Text('View all', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                child: Text(t.homeViewAll, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
               ),
             ],
           ),
@@ -250,6 +255,7 @@ class _AgencyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final offerCount = context.watch<AppProvider>().getCompanyOffers(company.id).length;
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CompanyDetailScreen(company: company))),
@@ -277,7 +283,7 @@ class _AgencyCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
-                    '${company.rating} · $offerCount offers',
+                    t.homeRatingOffersCount(company.rating, offerCount),
                     style: AppTheme.sans(11.5, weight: FontWeight.w600, color: const Color(0xFF6B7770)),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -297,12 +303,13 @@ class _CuratedSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
-          child: Text('Curated Packages', style: AppTheme.serif(21)),
+          child: Text(t.homeCuratedPackages, style: AppTheme.serif(21)),
         ),
         ListView.separated(
           shrinkWrap: true,
@@ -323,6 +330,7 @@ class _CuratedOfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId);
 
     return GestureDetector(
@@ -365,7 +373,7 @@ class _CuratedOfferCard extends StatelessWidget {
                   Wrap(
                     spacing: 7,
                     children: [
-                      InfoChip(label: '${offer.days} days'),
+                      InfoChip(label: t.homeDaysCount(offer.days)),
                       InfoChip(label: offer.transportLabel),
                     ],
                   ),
@@ -377,7 +385,7 @@ class _CuratedOfferCard extends StatelessWidget {
                       Text.rich(
                         TextSpan(children: [
                           TextSpan(
-                              text: 'from ',
+                              text: t.homeFromPrefix,
                               style: AppTheme.sans(11, color: AppColors.muted)),
                           TextSpan(
                               text: offer.priceFmt,

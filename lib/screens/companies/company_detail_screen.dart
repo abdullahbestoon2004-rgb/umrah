@@ -8,6 +8,7 @@ import '../../providers/app_provider.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/tag_chip.dart';
 import '../offers/offer_detail_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class CompanyDetailScreen extends StatelessWidget {
   final Company company;
@@ -15,6 +16,7 @@ class CompanyDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final offers = provider.getCompanyOffers(company.id);
     final fromPrice = offers.isEmpty ? 0.0 : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
@@ -30,7 +32,7 @@ class CompanyDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('About', style: AppTheme.serif(19)),
+                  Text(t.companyDetailAbout, style: AppTheme.serif(19)),
                   const SizedBox(height: 7),
                   Text(company.about, style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65)),
                   const SizedBox(height: 16),
@@ -40,7 +42,7 @@ class CompanyDetailScreen extends StatelessWidget {
                     children: company.tags.map((tag) => _TagBadge(label: tag)).toList(),
                   ),
                   const SizedBox(height: 22),
-                  Text('Packages (${offers.length})', style: AppTheme.serif(19)),
+                  Text(t.companyDetailPackagesHeader(offers.length), style: AppTheme.serif(19)),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -69,6 +71,7 @@ class _CompanyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -137,7 +140,7 @@ class _CompanyHeader extends StatelessWidget {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              '${company.location} · since ${company.since}',
+                              t.companyDetailLocationSince(company.location, company.since),
                               style: AppTheme.sans(12.5, color: Colors.white.withOpacity(0.78)),
                             ),
                           ],
@@ -148,11 +151,11 @@ class _CompanyHeader extends StatelessWidget {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      _StatBox(value: '★ ${company.rating}', label: '${company.reviews} reviews'),
+                      _StatBox(value: '★ ${company.rating}', label: t.companyDetailReviewsCount(company.reviews)),
                       const SizedBox(width: 22),
-                      _StatBox(value: '$offerCount', label: 'packages'),
+                      _StatBox(value: '$offerCount', label: t.companyDetailPackagesLabel),
                       const SizedBox(width: 22),
-                      _StatBox(value: fromPrice > 0 ? '\$${fromPrice.round()}' : '—', label: 'starting'),
+                      _StatBox(value: fromPrice > 0 ? '\$${fromPrice.round()}' : '—', label: t.companyDetailStartingLabel),
                     ],
                   ),
                 ],
@@ -207,6 +210,7 @@ class _CompanyOfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
@@ -244,7 +248,7 @@ class _CompanyOfferCard extends StatelessWidget {
                       const Spacer(),
                       Text.rich(
                         TextSpan(children: [
-                          TextSpan(text: 'from ', style: AppTheme.sans(11, color: AppColors.muted)),
+                          TextSpan(text: t.companyDetailFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
                           TextSpan(text: offer.priceFmt, style: AppTheme.serif(16, color: AppColors.primary)),
                         ]),
                       ),

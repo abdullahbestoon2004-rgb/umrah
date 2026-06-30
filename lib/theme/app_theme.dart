@@ -4,6 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'colors.dart';
 
 class AppTheme {
+  // true for Arabic-script locales (Arabic, Sorani Kurdish) — switches to a font
+  // that actually renders Arabic glyphs, since Plus Jakarta Sans / Cormorant don't.
+  static bool isArabicScript = false;
+
   static ThemeData get theme {
     return ThemeData(
       useMaterial3: true,
@@ -12,7 +16,7 @@ class AppTheme {
         seedColor: AppColors.primary,
         surface: AppColors.background,
       ),
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(),
+      textTheme: isArabicScript ? GoogleFonts.cairoTextTheme() : GoogleFonts.plusJakartaSansTextTheme(),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
         surfaceTintColor: Colors.transparent,
@@ -23,10 +27,14 @@ class AppTheme {
   }
 
   static TextStyle serif(double size, {FontWeight weight = FontWeight.w700, Color color = AppColors.ink}) {
-    return GoogleFonts.cormorantGaramond(fontSize: size, fontWeight: weight, color: color);
+    return isArabicScript
+        ? GoogleFonts.cairo(fontSize: size, fontWeight: weight, color: color)
+        : GoogleFonts.cormorantGaramond(fontSize: size, fontWeight: weight, color: color);
   }
 
   static TextStyle sans(double size, {FontWeight weight = FontWeight.w500, Color color = AppColors.ink}) {
-    return GoogleFonts.plusJakartaSans(fontSize: size, fontWeight: weight, color: color);
+    return isArabicScript
+        ? GoogleFonts.cairo(fontSize: size, fontWeight: weight, color: color)
+        : GoogleFonts.plusJakartaSans(fontSize: size, fontWeight: weight, color: color);
   }
 }

@@ -8,6 +8,7 @@ import '../../data/sample_data.dart';
 import '../offers/offer_detail_screen.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/star_rating.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -31,6 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -60,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         onChanged: _onChanged,
                         style: AppTheme.sans(14),
                         decoration: InputDecoration(
-                          hintText: 'Search packages, agencies, cities…',
+                          hintText: t.searchHint,
                           hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
                           prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
                           suffixIcon: _ctrl.text.isNotEmpty
@@ -101,21 +103,29 @@ class _Suggestions extends StatelessWidget {
   final ValueChanged<String> onTap;
   const _Suggestions({required this.onTap});
 
-  static const _suggestions = ['Premium packages', 'By Air', 'By Coach', 'Ramadan', '5-Star', 'Madinah', 'Family'];
-
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final suggestions = [
+      t.searchSuggestionPremiumPackages,
+      t.searchSuggestionByAir,
+      t.searchSuggestionByCoach,
+      t.searchSuggestionRamadan,
+      t.searchSuggestionFiveStar,
+      t.searchSuggestionMadinah,
+      t.searchSuggestionFamily,
+    ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Popular searches', style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+          Text(t.searchPopularSearches, style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _suggestions.map((s) => GestureDetector(
+            children: suggestions.map((s) => GestureDetector(
               onTap: () => onTap(s),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
@@ -139,15 +149,16 @@ class _NoResults extends StatelessWidget {
   const _NoResults({required this.query});
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.search_off_rounded, size: 52, color: AppColors.mutedLight),
           const SizedBox(height: 14),
-          Text('No results for "$query"', style: AppTheme.serif(20)),
+          Text(t.searchNoResultsFor(query), style: AppTheme.serif(20)),
           const SizedBox(height: 6),
-          Text('Try a different name, city, or hotel.', style: AppTheme.sans(13, color: AppColors.muted)),
+          Text(t.searchTryDifferentTerm, style: AppTheme.sans(13, color: AppColors.muted)),
         ],
       ),
     );
@@ -160,6 +171,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId,
         orElse: () => sampleCompanies.first);
     return GestureDetector(
@@ -188,7 +200,7 @@ class _ResultCard extends StatelessWidget {
                     StarRating(rating: offer.rating),
                     const Spacer(),
                     Text.rich(TextSpan(children: [
-                      TextSpan(text: 'from ', style: AppTheme.sans(11, color: AppColors.muted)),
+                      TextSpan(text: t.searchFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
                       TextSpan(text: offer.priceFmt, style: AppTheme.serif(16, color: AppColors.primary)),
                     ])),
                   ]),

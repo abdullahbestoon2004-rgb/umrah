@@ -9,6 +9,7 @@ import '../../providers/app_provider.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/star_rating.dart';
 import '../companies/company_detail_screen.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class OfferDetailScreen extends StatelessWidget {
   final Offer offer;
@@ -18,6 +19,7 @@ class OfferDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final saved = provider.isSaved(offer.id);
     final company = _company;
@@ -39,12 +41,18 @@ class OfferDetailScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _RatingRow(offer: offer, company: company),
                       const SizedBox(height: 22),
-                      Text('Overview', style: AppTheme.serif(20)),
+                      Text(t.offerDetailOverview, style: AppTheme.serif(20)),
                       const SizedBox(height: 8),
                       Text(
-                        'A ${offer.days}-day ${offer.transportLabel.toLowerCase()} journey to ${offer.city}, '
-                        'staying at the ${offer.acc}-star ${offer.hotel}, just ${offer.distance} from the Haram. '
-                        'Includes ${company.name}\'s signature group guidance, daily worship support and full ziyarah.',
+                        t.offerDetailOverviewBody(
+                          offer.days,
+                          offer.transportLabel.toLowerCase(),
+                          offer.city,
+                          offer.acc,
+                          offer.hotel,
+                          offer.distance,
+                          company.name,
+                        ),
                         style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65),
                       ),
                       const SizedBox(height: 24),
@@ -179,12 +187,13 @@ class _KeyFacts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Row(
       children: [
         _FactCard(
           icon: Icons.calendar_today_rounded,
-          value: '${offer.days} days',
-          sub: '${offer.nights} nights',
+          value: t.offerDetailDaysCount(offer.days),
+          sub: t.offerDetailNightsCount(offer.nights),
         ),
         const SizedBox(width: 9),
         _FactCard(
@@ -196,8 +205,8 @@ class _KeyFacts extends StatelessWidget {
         _FactCard(
           icon: Icons.hotel_rounded,
           iconColor: AppColors.gold,
-          value: '${offer.acc}-Star',
-          sub: 'hotel',
+          value: t.offerDetailStarCount(offer.acc),
+          sub: t.offerDetailHotelLower,
         ),
       ],
     );
@@ -241,6 +250,7 @@ class _RatingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
       decoration: BoxDecoration(
@@ -251,11 +261,11 @@ class _RatingRow extends StatelessWidget {
       child: Row(
         children: [
           StarRating(rating: offer.rating, reviews: offer.reviews, size: 16),
-          Text(' pilgrim reviews', style: AppTheme.sans(13, color: AppColors.muted)),
+          Text(t.offerDetailPilgrimReviews, style: AppTheme.sans(13, color: AppColors.muted)),
           const Spacer(),
           GestureDetector(
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CompanyDetailScreen(company: company))),
-            child: Text('View agency →', style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.primary)),
+            child: Text(t.offerDetailViewAgency, style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.primary)),
           ),
         ],
       ),
@@ -269,10 +279,11 @@ class _AccommodationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Accommodation', style: AppTheme.serif(20)),
+        Text(t.offerDetailAccommodation, style: AppTheme.serif(20)),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
@@ -303,7 +314,7 @@ class _AccommodationSection extends StatelessWidget {
                       color: const Color(0xFFEAF1EC),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text('${offer.distance} to Haram',
+                    child: Text(t.offerDetailDistanceToHaram(offer.distance),
                         style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.primary)),
                   ),
                 ],
@@ -316,7 +327,7 @@ class _AccommodationSection extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(color: AppColors.surfaceAlt, borderRadius: BorderRadius.circular(12)),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Room', style: AppTheme.sans(10.5, color: AppColors.muted, weight: FontWeight.w600)),
+                        Text(t.offerDetailRoom, style: AppTheme.sans(10.5, color: AppColors.muted, weight: FontWeight.w600)),
                         const SizedBox(height: 2),
                         Text(offer.room, style: AppTheme.sans(13, weight: FontWeight.w700)),
                       ]),
@@ -328,7 +339,7 @@ class _AccommodationSection extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(color: AppColors.surfaceAlt, borderRadius: BorderRadius.circular(12)),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Meals', style: AppTheme.sans(10.5, color: AppColors.muted, weight: FontWeight.w600)),
+                        Text(t.offerDetailMeals, style: AppTheme.sans(10.5, color: AppColors.muted, weight: FontWeight.w600)),
                         const SizedBox(height: 2),
                         Text(offer.meals, style: AppTheme.sans(13, weight: FontWeight.w700)),
                       ]),
@@ -350,10 +361,11 @@ class _TransportSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Transportation', style: AppTheme.serif(20)),
+        Text(t.offerDetailTransportation, style: AppTheme.serif(20)),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
@@ -379,7 +391,7 @@ class _TransportSection extends StatelessWidget {
                     Text(offer.transportLong, style: AppTheme.sans(14, weight: FontWeight.w700)),
                     const SizedBox(height: 2),
                     Text(
-                      '${offer.carrier} · All ground transfers included',
+                      t.offerDetailCarrierTransfersIncluded(offer.carrier),
                       style: AppTheme.sans(12, color: const Color(0xFF7D8A82)),
                     ),
                   ],
@@ -399,11 +411,12 @@ class _ItinerarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final days = offer.buildItinerary();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Itinerary', style: AppTheme.serif(20)),
+        Text(t.offerDetailItinerary, style: AppTheme.serif(20)),
         const SizedBox(height: 12),
         ...List.generate(days.length, (i) {
           final it = days[i];
@@ -469,11 +482,12 @@ class _IncludesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final items = offer.buildIncludes();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('What\'s Included', style: AppTheme.serif(20)),
+        Text(t.offerDetailWhatsIncluded, style: AppTheme.serif(20)),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -512,6 +526,7 @@ class _PriceBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
@@ -524,18 +539,18 @@ class _PriceBreakdown extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _PriceLine(label: 'Package (per person)', value: offer.priceFmt),
+          _PriceLine(label: t.offerDetailPackagePerPerson, value: offer.priceFmt),
           const SizedBox(height: 10),
-          _PriceLine(label: 'Visa & processing', value: 'Included'),
+          _PriceLine(label: t.offerDetailVisaProcessing, value: t.offerDetailIncluded),
           const SizedBox(height: 10),
-          _PriceLine(label: 'Taxes & fees', value: 'Included'),
+          _PriceLine(label: t.offerDetailTaxesFees, value: t.offerDetailIncluded),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 9),
             child: Divider(color: Colors.white24, height: 1),
           ),
           Row(
             children: [
-              Text('Total from', style: AppTheme.sans(14, weight: FontWeight.w700, color: Colors.white)),
+              Text(t.offerDetailTotalFrom, style: AppTheme.sans(14, weight: FontWeight.w700, color: Colors.white)),
               const Spacer(),
               Text(offer.priceFmt, style: AppTheme.serif(26, color: const Color(0xFFF3E6C4))),
             ],
@@ -570,6 +585,7 @@ class _StickyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background.withOpacity(0.96),
@@ -582,7 +598,7 @@ class _StickyBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('from / person', style: AppTheme.sans(11, color: AppColors.muted)),
+              Text(t.offerDetailFromPerPerson, style: AppTheme.sans(11, color: AppColors.muted)),
               Text(offer.priceFmt, style: AppTheme.serif(25, color: AppColors.primary)),
             ],
           ),
@@ -601,7 +617,7 @@ class _StickyBar extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Book this trip',
+                  t.offerDetailBookThisTrip,
                   style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
                 ),
               ),
@@ -642,6 +658,7 @@ class _BookingSheetState extends State<_BookingSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.background,
@@ -667,7 +684,7 @@ class _BookingSheetState extends State<_BookingSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Confirm booking', style: AppTheme.serif(24)),
+                Text(t.offerDetailConfirmBooking, style: AppTheme.serif(24)),
                 const SizedBox(height: 16),
                 // offer summary
                 Container(
@@ -701,7 +718,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                             Text(widget.offer.title, style: AppTheme.serif(18)),
                             const SizedBox(height: 4),
                             Text(
-                              '${widget.offer.days} days · ${widget.offer.transportLabel} · ${widget.offer.acc}★',
+                              t.offerDetailBookingSummaryLine(widget.offer.days, widget.offer.transportLabel, widget.offer.acc),
                               style: AppTheme.sans(11.5, color: const Color(0xFF7D8A82)),
                             ),
                           ],
@@ -725,8 +742,8 @@ class _BookingSheetState extends State<_BookingSheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Travelers', style: AppTheme.sans(14, weight: FontWeight.w700)),
-                            Text('${widget.offer.priceFmt} per person',
+                            Text(t.offerDetailTravelers, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                            Text(t.offerDetailPricePerPerson(widget.offer.priceFmt),
                                 style: AppTheme.sans(11.5, color: AppColors.muted)),
                           ],
                         ),
@@ -749,7 +766,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                 const SizedBox(height: 18),
                 Row(
                   children: [
-                    Text('Total', style: AppTheme.sans(15, weight: FontWeight.w700)),
+                    Text(t.offerDetailTotal, style: AppTheme.sans(15, weight: FontWeight.w700)),
                     const Spacer(),
                     Text(_totalFmt, style: AppTheme.serif(28, color: AppColors.primary)),
                   ],
@@ -761,7 +778,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                     Navigator.popUntil(context, (route) => route.isFirst);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Booking confirmed!', style: AppTheme.sans(13, weight: FontWeight.w600)),
+                        content: Text(t.offerDetailBookingConfirmed, style: AppTheme.sans(13, weight: FontWeight.w600)),
                         backgroundColor: AppColors.ink,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -780,7 +797,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Confirm & pay $_totalFmt',
+                      t.offerDetailConfirmAndPay(_totalFmt),
                       style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
                     ),
                   ),
@@ -788,7 +805,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                 const SizedBox(height: 10),
                 Center(
                   child: Text(
-                    'Free cancellation up to 30 days before departure',
+                    t.offerDetailFreeCancellation,
                     style: AppTheme.sans(11, color: AppColors.mutedLight),
                   ),
                 ),

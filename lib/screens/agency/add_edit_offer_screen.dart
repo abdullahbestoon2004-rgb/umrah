@@ -6,6 +6,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 // ── Holds controllers for one itinerary row ───────────────────────────────────
 class _ItineraryEntry {
@@ -134,7 +135,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   }
 
   void _addItineraryDay() {
-    setState(() => _itinerary.add(_ItineraryEntry(d: 'Day ${_itinerary.length + 1}')));
+    final t = AppLocalizations.of(context);
+    setState(() => _itinerary.add(_ItineraryEntry(d: t.addEditOfferDayN(_itinerary.length + 1))));
   }
 
   void _removeItineraryDay(int i) {
@@ -158,11 +160,12 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   }
 
   void _save() {
+    final t = AppLocalizations.of(context);
     final title = _titleCtrl.text.trim();
     final price = double.tryParse(_priceCtrl.text.trim()) ?? 0;
     if (title.isEmpty || price <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please fill in title and a valid price.', style: AppTheme.sans(13)),
+        content: Text(t.addEditOfferFillTitlePrice, style: AppTheme.sans(13)),
         backgroundColor: AppColors.errorRed,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -218,7 +221,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
     messenger.showSnackBar(SnackBar(
-      content: Text(_isEdit ? 'Package updated!' : 'Package published!',
+      content: Text(_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished,
           style: AppTheme.sans(13, weight: FontWeight.w600)),
       backgroundColor: AppColors.ink,
       behavior: SnackBarBehavior.floating,
@@ -235,6 +238,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -245,7 +249,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
           onTap: () => Navigator.pop(context),
           child: const Icon(Icons.close_rounded, color: AppColors.ink),
         ),
-        title: Text(_isEdit ? 'Edit Package' : 'New Package', style: AppTheme.serif(22)),
+        title: Text(_isEdit ? t.addEditOfferEditTitle : t.addEditOfferNewTitle, style: AppTheme.serif(22)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -256,7 +260,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                 decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
                 child: _saving
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text('Save', style: AppTheme.sans(13, weight: FontWeight.w800, color: Colors.white)),
+                    : Text(t.addEditOfferSave, style: AppTheme.sans(13, weight: FontWeight.w800, color: Colors.white)),
               ),
             ),
           ),
@@ -277,19 +281,19 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             const SizedBox(height: 28),
 
             // ── Basic details ────────────────────────────────────────────
-            _SectionHeader('Package details'),
-            _Field(label: 'Title *', controller: _titleCtrl, hint: 'e.g. Premium Makkah & Madinah'),
+            _SectionHeader(t.addEditOfferPackageDetails),
+            _Field(label: t.addEditOfferTitleField, controller: _titleCtrl, hint: t.addEditOfferTitleHint),
             const SizedBox(height: 14),
-            _Field(label: 'Cities / Route', controller: _cityCtrl, hint: 'e.g. Makkah · Madinah'),
+            _Field(label: t.addEditOfferCitiesRoute, controller: _cityCtrl, hint: t.addEditOfferCitiesRouteHint),
             const SizedBox(height: 14),
-            _Field(label: 'Badge (optional)', controller: _badgeCtrl, hint: 'e.g. Bestseller, Ramadan'),
+            _Field(label: t.addEditOfferBadgeOptional, controller: _badgeCtrl, hint: t.addEditOfferBadgeHint),
 
             // ── Transport & dates ────────────────────────────────────────
             const SizedBox(height: 28),
-            _SectionHeader('Transport & stay'),
+            _SectionHeader(t.addEditOfferTransportStay),
             _SegmentRow(
-              label: 'Transport',
-              options: const ['By Air', 'By Coach'],
+              label: t.addEditOfferTransport,
+              options: [t.addEditOfferByAir, t.addEditOfferByCoach],
               icons: const [Icons.flight_rounded, Icons.directions_bus_rounded],
               values: const ['plane', 'bus'],
               selected: _transport,
@@ -297,39 +301,39 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             ),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(child: _Stepper(label: 'Days', value: _days, min: 3, max: 30, onChanged: (v) => setState(() => _days = v))),
+              Expanded(child: _Stepper(label: t.addEditOfferDays, value: _days, min: 3, max: 30, onChanged: (v) => setState(() => _days = v))),
               const SizedBox(width: 14),
-              Expanded(child: _Stepper(label: 'Stars', value: _acc, min: 1, max: 5, onChanged: (v) => setState(() => _acc = v))),
+              Expanded(child: _Stepper(label: t.addEditOfferStars, value: _acc, min: 1, max: 5, onChanged: (v) => setState(() => _acc = v))),
             ]),
             const SizedBox(height: 16),
-            _DropdownField(label: 'Meals', value: _meals, items: _mealOptions, onChanged: (v) => setState(() => _meals = v!)),
+            _DropdownField(label: t.addEditOfferMeals, value: _meals, items: _mealOptions, onChanged: (v) => setState(() => _meals = v!)),
 
             // ── Hotel ────────────────────────────────────────────────────
             const SizedBox(height: 28),
-            _SectionHeader('Hotel'),
-            _Field(label: 'Hotel name', controller: _hotelCtrl, hint: 'e.g. Conrad Makkah Suites'),
+            _SectionHeader(t.addEditOfferHotel),
+            _Field(label: t.addEditOfferHotelName, controller: _hotelCtrl, hint: t.addEditOfferHotelNameHint),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: _Field(label: 'Distance to Haram', controller: _distCtrl, hint: 'e.g. 200m')),
+              Expanded(child: _Field(label: t.addEditOfferDistanceToHaram, controller: _distCtrl, hint: t.addEditOfferDistanceHint)),
               const SizedBox(width: 14),
-              Expanded(child: _Field(label: 'Room type', controller: _roomCtrl, hint: 'e.g. Deluxe Twin')),
+              Expanded(child: _Field(label: t.addEditOfferRoomType, controller: _roomCtrl, hint: t.addEditOfferRoomTypeHint)),
             ]),
             const SizedBox(height: 14),
-            _Field(label: 'Carrier / Coach', controller: _carrierCtrl, hint: 'e.g. Saudia, Flynas'),
+            _Field(label: t.addEditOfferCarrierCoach, controller: _carrierCtrl, hint: t.addEditOfferCarrierHint),
 
             // ── Pricing ──────────────────────────────────────────────────
             const SizedBox(height: 28),
-            _SectionHeader('Pricing'),
+            _SectionHeader(t.addEditOfferPricing),
             Row(children: [
-              Expanded(child: _Field(label: 'Price (USD) *', controller: _priceCtrl, hint: '0', numeric: true)),
+              Expanded(child: _Field(label: t.addEditOfferPriceUsd, controller: _priceCtrl, hint: '0', numeric: true)),
               const SizedBox(width: 14),
-              Expanded(child: _Field(label: 'Original price', controller: _originalCtrl, hint: '0 (optional)', numeric: true)),
+              Expanded(child: _Field(label: t.addEditOfferOriginalPrice, controller: _originalCtrl, hint: t.addEditOfferOriginalPriceHint, numeric: true)),
             ]),
 
             // ── Itinerary ────────────────────────────────────────────────
             const SizedBox(height: 28),
-            _SectionHeader('Itinerary'),
-            Text('Add day-by-day breakdown of the trip.',
+            _SectionHeader(t.addEditOfferItinerary),
+            Text(t.addEditOfferItineraryHelper,
                 style: AppTheme.sans(12.5, color: AppColors.muted)),
             const SizedBox(height: 16),
 
@@ -357,7 +361,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   children: [
                     const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
                     const SizedBox(width: 8),
-                    Text('Add itinerary day', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                    Text(t.addEditOfferAddItineraryDay, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
                   ],
                 ),
               ),
@@ -365,8 +369,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
 
             // ── What's included ──────────────────────────────────────────
             const SizedBox(height: 28),
-            _SectionHeader("What's included"),
-            Text("List everything included in the package.",
+            _SectionHeader(t.addEditOfferWhatsIncluded),
+            Text(t.addEditOfferWhatsIncludedHelper,
                 style: AppTheme.sans(12.5, color: AppColors.muted)),
             const SizedBox(height: 16),
 
@@ -387,7 +391,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                         controller: e.value.ctrl,
                         style: AppTheme.sans(13.5),
                         decoration: InputDecoration(
-                          hintText: 'e.g. Return flights, Visa processing…',
+                          hintText: t.addEditOfferIncludeItemHint,
                           hintStyle: AppTheme.sans(13.5, color: AppColors.mutedLight),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
@@ -426,7 +430,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   children: [
                     const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
                     const SizedBox(width: 8),
-                    Text('Add included item', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                    Text(t.addEditOfferAddIncludedItem, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
                   ],
                 ),
               ),
@@ -456,6 +460,7 @@ class _ItineraryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       margin: EdgeInsets.only(bottom: isLast ? 0 : 16),
       decoration: !isLast ? BoxDecoration(
@@ -493,7 +498,7 @@ class _ItineraryRow extends StatelessWidget {
                         flex: 2,
                         child: _InlineField(
                           controller: entry.day,
-                          hint: 'Day 1',
+                          hint: t.addEditOfferDayOneHint,
                           style: AppTheme.sans(11, weight: FontWeight.w800, color: AppColors.gold)
                               .copyWith(letterSpacing: 0.5),
                           onChanged: onChanged,
@@ -517,7 +522,7 @@ class _ItineraryRow extends StatelessWidget {
                   // title
                   _InlineField(
                     controller: entry.title,
-                    hint: 'Day title…',
+                    hint: t.addEditOfferDayTitleHint,
                     style: AppTheme.sans(14, weight: FontWeight.w700),
                     onChanged: onChanged,
                   ),
@@ -535,7 +540,7 @@ class _ItineraryRow extends StatelessWidget {
                       style: AppTheme.sans(13, color: AppColors.inkLight),
                       onChanged: (_) => onChanged(),
                       decoration: InputDecoration(
-                        hintText: 'Describe what happens on this day…',
+                        hintText: t.addEditOfferDaySummaryHint,
                         hintStyle: AppTheme.sans(13, color: AppColors.mutedLight),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(12),
@@ -594,6 +599,7 @@ class _CoverImagePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onPick,
       child: ClipRRect(
@@ -641,7 +647,7 @@ class _CoverImagePicker extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      imageBytes != null ? 'Change image' : 'Add cover image',
+                      imageBytes != null ? t.addEditOfferChangeImage : t.addEditOfferAddCoverImage,
                       style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white),
                     ),
                   ],

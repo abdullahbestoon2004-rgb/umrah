@@ -5,6 +5,7 @@ import '../models/booking_model.dart';
 import '../models/company_model.dart';
 import '../models/agency_account.dart';
 import '../data/sample_data.dart';
+import '../theme/app_theme.dart';
 
 class OfferFilters {
   final String transport;
@@ -52,10 +53,23 @@ class OfferFilters {
 }
 
 class AppProvider extends ChangeNotifier {
+  AppProvider() {
+    AppTheme.isArabicScript = _locale.languageCode != 'en';
+  }
+
   // ── tab navigation ───────────────────────────────────────────────────────
   int _currentTab = 0;
   int get currentTab => _currentTab;
   void setTab(int i) { _currentTab = i; notifyListeners(); }
+
+  // ── locale ───────────────────────────────────────────────────────────────
+  Locale _locale = const Locale('ku'); // Kurdish (Sorani) is the default
+  Locale get locale => _locale;
+  void setLocale(Locale l) {
+    _locale = l;
+    AppTheme.isArabicScript = l.languageCode != 'en';
+    notifyListeners();
+  }
 
   // ── saved / bookings ─────────────────────────────────────────────────────
   final List<String> _saved = ['o3', 'o7'];

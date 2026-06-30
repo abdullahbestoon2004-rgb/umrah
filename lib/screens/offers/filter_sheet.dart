@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class FilterSheet extends StatefulWidget {
   const FilterSheet({super.key});
@@ -38,6 +39,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.background,
@@ -65,11 +67,11 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 6, 22, 4),
               child: Row(
                 children: [
-                  Text('Filters', style: AppTheme.serif(24)),
+                  Text(t.filterSheetTitle, style: AppTheme.serif(24)),
                   const Spacer(),
                   GestureDetector(
                     onTap: _reset,
-                    child: Text('Reset', style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                    child: Text(t.filterSheetReset, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
                   ),
                 ],
               ),
@@ -80,7 +82,7 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 0),
               child: Row(
                 children: [
-                  Text('Max price / person', style: AppTheme.sans(14, weight: FontWeight.w700)),
+                  Text(t.filterSheetMaxPricePerPerson, style: AppTheme.sans(14, weight: FontWeight.w700)),
                   const Spacer(),
                   Text('\$${_local.priceMax.round()}', style: AppTheme.serif(20, color: AppColors.primary)),
                 ],
@@ -110,26 +112,26 @@ class _FilterSheetState extends State<FilterSheet> {
               ),
             ),
 
-            _Section(label: 'Transportation'),
+            _Section(label: t.filterSheetTransportation),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: 'All', active: _local.transport == 'all', onTap: () => setState(() => _local = _local.copyWith(transport: 'all')))),
+                  Expanded(child: _Opt(label: t.filterSheetAll, active: _local.transport == 'all', onTap: () => setState(() => _local = _local.copyWith(transport: 'all')))),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: 'By Air', icon: Icons.flight_rounded, active: _local.transport == 'plane', onTap: () => setState(() => _local = _local.copyWith(transport: 'plane')))),
+                  Expanded(child: _Opt(label: t.filterSheetByAir, icon: Icons.flight_rounded, active: _local.transport == 'plane', onTap: () => setState(() => _local = _local.copyWith(transport: 'plane')))),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: 'By Coach', icon: Icons.directions_bus_rounded, active: _local.transport == 'bus', onTap: () => setState(() => _local = _local.copyWith(transport: 'bus')))),
+                  Expanded(child: _Opt(label: t.filterSheetByCoach, icon: Icons.directions_bus_rounded, active: _local.transport == 'bus', onTap: () => setState(() => _local = _local.copyWith(transport: 'bus')))),
                 ],
               ),
             ),
 
-            _Section(label: 'Accommodation'),
+            _Section(label: t.filterSheetAccommodation),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: 'Any', active: _local.acc == 'all', onTap: () => setState(() => _local = _local.copyWith(acc: 'all')))),
+                  Expanded(child: _Opt(label: t.filterSheetAny, active: _local.acc == 'all', onTap: () => setState(() => _local = _local.copyWith(acc: 'all')))),
                   const SizedBox(width: 9),
                   Expanded(child: _Opt(label: '5★', active: _local.acc == '5', onTap: () => setState(() => _local = _local.copyWith(acc: '5')))),
                   const SizedBox(width: 9),
@@ -140,26 +142,26 @@ class _FilterSheetState extends State<FilterSheet> {
               ),
             ),
 
-            _Section(label: 'Trip duration'),
+            _Section(label: t.filterSheetTripDuration),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Wrap(
                 spacing: 9,
                 children: [
-                  _Opt(label: 'Any', active: _local.dur == 'all', onTap: () => setState(() => _local = _local.copyWith(dur: 'all'))),
-                  _Opt(label: '7–9 days', active: _local.dur == 'short', onTap: () => setState(() => _local = _local.copyWith(dur: 'short'))),
-                  _Opt(label: '10–14 days', active: _local.dur == 'mid', onTap: () => setState(() => _local = _local.copyWith(dur: 'mid'))),
-                  _Opt(label: '15+ days', active: _local.dur == 'long', onTap: () => setState(() => _local = _local.copyWith(dur: 'long'))),
+                  _Opt(label: t.filterSheetAny, active: _local.dur == 'all', onTap: () => setState(() => _local = _local.copyWith(dur: 'all'))),
+                  _Opt(label: t.filterSheetDuration7to9, active: _local.dur == 'short', onTap: () => setState(() => _local = _local.copyWith(dur: 'short'))),
+                  _Opt(label: t.filterSheetDuration10to14, active: _local.dur == 'mid', onTap: () => setState(() => _local = _local.copyWith(dur: 'mid'))),
+                  _Opt(label: t.filterSheetDuration15Plus, active: _local.dur == 'long', onTap: () => setState(() => _local = _local.copyWith(dur: 'long'))),
                 ],
               ),
             ),
 
-            _Section(label: 'Agency rating'),
+            _Section(label: t.filterSheetAgencyRating),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: 'Any', active: _local.rating == 0, onTap: () => setState(() => _local = _local.copyWith(rating: 0)))),
+                  Expanded(child: _Opt(label: t.filterSheetAny, active: _local.rating == 0, onTap: () => setState(() => _local = _local.copyWith(rating: 0)))),
                   const SizedBox(width: 9),
                   Expanded(child: _Opt(label: '★ 4.5+', active: _local.rating == 4.5, onTap: () => setState(() => _local = _local.copyWith(rating: 4.5)))),
                   const SizedBox(width: 9),
@@ -184,7 +186,7 @@ class _FilterSheetState extends State<FilterSheet> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    'Show ${_countMatching()} packages',
+                    t.filterSheetShowPackages(_countMatching()),
                     style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
                   ),
                 ),

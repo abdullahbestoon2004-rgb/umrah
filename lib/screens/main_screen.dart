@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../theme/app_theme.dart';
 import '../providers/app_provider.dart';
+import '../l10n/generated/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'companies/companies_screen.dart';
 import 'offers/offers_screen.dart';
@@ -102,6 +103,7 @@ class _BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.read<AppProvider>();
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background.withOpacity(0.96),
@@ -113,11 +115,11 @@ class _BottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
             children: [
-              _NavItem(icon: Icons.home_rounded,          label: 'Home',     active: currentIndex == 0, onTap: () => provider.setTab(0)),
-              _NavItem(icon: Icons.business_rounded,      label: 'Agencies', active: currentIndex == 1, onTap: () => provider.setTab(1)),
-              _NavItem(icon: Icons.local_offer_rounded,   label: 'Offers',   active: currentIndex == 2, onTap: () => provider.setTab(2)),
-              _NavItem(icon: Icons.calendar_month_rounded,label: 'Bookings', active: currentIndex == 3, onTap: () => provider.setTab(3)),
-              _NavItem(icon: Icons.person_rounded,        label: 'Profile',  active: currentIndex == 4, onTap: () => provider.setTab(4)),
+              _NavItem(icon: Icons.home_rounded,          label: t.navHome,     active: currentIndex == 0, onTap: () => provider.setTab(0)),
+              _NavItem(icon: Icons.business_rounded,      label: t.navAgencies, active: currentIndex == 1, onTap: () => provider.setTab(1)),
+              _NavItem(icon: Icons.local_offer_rounded,   label: t.navOffers,   active: currentIndex == 2, onTap: () => provider.setTab(2)),
+              _NavItem(icon: Icons.calendar_month_rounded,label: t.navBookings, active: currentIndex == 3, onTap: () => provider.setTab(3)),
+              _NavItem(icon: Icons.person_rounded,        label: t.navProfile,  active: currentIndex == 4, onTap: () => provider.setTab(4)),
             ],
           ),
         ),

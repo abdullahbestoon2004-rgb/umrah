@@ -4,6 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/company_model.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class EditAgencyProfileScreen extends StatefulWidget {
   final Company company;
@@ -36,6 +37,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   }
 
   void _save() {
+    final t = AppLocalizations.of(context);
     setState(() => _saving = true);
     final tags = _tagsCtrl.text
         .split(',')
@@ -52,7 +54,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
 
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Profile updated!', style: AppTheme.sans(13, weight: FontWeight.w600)),
+      content: Text(t.editAgencyProfileUpdated, style: AppTheme.sans(13, weight: FontWeight.w600)),
       backgroundColor: AppColors.ink,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -61,6 +63,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -70,7 +73,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
           onTap: () => Navigator.pop(context),
           child: const Icon(Icons.close_rounded, color: AppColors.ink),
         ),
-        title: Text('Edit Profile', style: AppTheme.serif(22)),
+        title: Text(t.editAgencyProfileTitle, style: AppTheme.serif(22)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -81,7 +84,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                 decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
                 child: _saving
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text('Save', style: AppTheme.sans(13, weight: FontWeight.w800, color: Colors.white)),
+                    : Text(t.editAgencyProfileSave, style: AppTheme.sans(13, weight: FontWeight.w800, color: Colors.white)),
               ),
             ),
           ),
@@ -113,7 +116,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(widget.company.name, style: AppTheme.sans(16, weight: FontWeight.w700)),
                       const SizedBox(height: 2),
-                      Text('Since ${widget.company.since} · Read-only fields above', style: AppTheme.sans(11.5, color: AppColors.muted)),
+                      Text(t.editAgencyProfileSinceReadOnly(widget.company.since), style: AppTheme.sans(11.5, color: AppColors.muted)),
                     ]),
                   ),
                 ],
@@ -121,22 +124,22 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            _Field(label: 'Location / City', controller: _locationCtrl, hint: 'e.g. Riyadh, KSA'),
+            _Field(label: t.editAgencyProfileLocationLabel, controller: _locationCtrl, hint: t.editAgencyProfileLocationHint),
             const SizedBox(height: 18),
             _Field(
-              label: 'About your agency',
+              label: t.editAgencyProfileAboutLabel,
               controller: _aboutCtrl,
-              hint: 'Describe your agency, specialisations, history…',
+              hint: t.editAgencyProfileAboutHint,
               maxLines: 5,
             ),
             const SizedBox(height: 18),
             _Field(
-              label: 'Tags (comma-separated)',
+              label: t.editAgencyProfileTagsLabel,
               controller: _tagsCtrl,
-              hint: 'e.g. Govt. licensed, Family specialist',
+              hint: t.editAgencyProfileTagsHint,
             ),
             const SizedBox(height: 8),
-            Text('Tags appear on your agency profile as badges.',
+            Text(t.editAgencyProfileTagsBadgeHint,
                 style: AppTheme.sans(11.5, color: AppColors.muted)),
             const SizedBox(height: 32),
           ],
