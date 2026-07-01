@@ -4,8 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
-import '../../data/sample_data.dart';
-import '../../widgets/gradient_card.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/star_rating.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_login_screen.dart';
@@ -391,7 +390,7 @@ class _SavedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
     final t = AppLocalizations.of(context);
-    final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId, orElse: () => sampleCompanies.first);
+    final company = provider.companyById(offer.companyId);
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
@@ -404,13 +403,13 @@ class _SavedCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            GradientCard(colors: offer.gradColors, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
+            OfferImage(offer: offer, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
             const SizedBox(width: 13),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company.name, style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(company?.name ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 2),
                   Text(offer.title, style: AppTheme.serif(16), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),

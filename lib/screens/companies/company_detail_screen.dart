@@ -5,7 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../models/company_model.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
-import '../../widgets/gradient_card.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/tag_chip.dart';
 import '../offers/offer_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -225,7 +225,7 @@ class _CompanyOfferCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            GradientCard(colors: offer.gradColors, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
+            OfferImage(offer: offer, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
             const SizedBox(width: 13),
             Expanded(
               child: Column(

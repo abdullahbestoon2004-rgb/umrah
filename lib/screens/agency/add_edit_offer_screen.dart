@@ -6,6 +6,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 // ── Holds controllers for one itinerary row ───────────────────────────────────
@@ -164,12 +165,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     final title = _titleCtrl.text.trim();
     final price = double.tryParse(_priceCtrl.text.trim()) ?? 0;
     if (title.isEmpty || price <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(t.addEditOfferFillTitlePrice, style: AppTheme.sans(13)),
-        backgroundColor: AppColors.errorRed,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+      showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
       return;
     }
     setState(() => _saving = true);
@@ -220,13 +216,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     if (!mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(
-      content: Text(_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished,
-          style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ));
+    messenger.showSnackBar(appSnack(_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished));
   }
 
   List<Color> _gradColors() {

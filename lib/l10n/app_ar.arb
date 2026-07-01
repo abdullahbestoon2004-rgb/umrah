@@ -65,6 +65,8 @@
   "offerDetailBookingConfirmed": "تم تأكيد الحجز!",
   "offerDetailConfirmAndPay": "تأكيد والدفع {total}",
   "offerDetailFreeCancellation": "إلغاء مجاني حتى 30 يومًا قبل موعد السفر",
+  "offerDetailDepartureDate": "تاريخ المغادرة",
+  "dateToBeScheduled": "يُحدد لاحقًا",
 
   "offersTitle": "العروض",
   "offersPackagesMatch": "{count, plural, =1{{count} باقة مطابقة} other{{count} باقة مطابقة}}",

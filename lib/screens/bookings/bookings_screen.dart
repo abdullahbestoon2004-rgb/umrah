@@ -4,6 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../models/booking_model.dart';
 import '../../providers/app_provider.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class BookingsScreen extends StatelessWidget {
@@ -66,6 +67,12 @@ class _BookingCard extends StatelessWidget {
     }
   }
 
+  String _dateLabel(AppLocalizations t) {
+    final d = booking.departureDate;
+    if (d == null) return t.dateToBeScheduled;
+    return '${d.day}/${d.month}/${d.year}';
+  }
+
   void _confirmCancel(BuildContext context) {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
@@ -86,14 +93,7 @@ class _BookingCard extends StatelessWidget {
             onPressed: () {
               provider.cancelBooking(booking.id);
               Navigator.pop(dialogCtx);
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text(t.bookingsCancelledSnack, style: AppTheme.sans(13, weight: FontWeight.w600)),
-                  backgroundColor: AppColors.ink,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              );
+              messenger.showSnackBar(appSnack(t.bookingsCancelledSnack));
             },
             child: Text(t.bookingsConfirmCancel, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
           ),
@@ -162,7 +162,7 @@ class _BookingCard extends StatelessWidget {
                       const SizedBox(height: 7),
                       Row(
                         children: [
-                          Text(booking.date, style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
+                          Text(_dateLabel(t), style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
                           const Text(' · ', style: TextStyle(color: Color(0xFF5E6B63))),
                           Text(t.bookingsPaxCount(booking.travelers), style: AppTheme.sans(11.5, color: const Color(0xFF5E6B63))),
                         ],

@@ -221,6 +221,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Free cancellation up to 30 days before departure';
 
   @override
+  String get offerDetailDepartureDate => 'Departure date';
+
+  @override
+  String get dateToBeScheduled => 'To be scheduled';
+
+  @override
   String get offersTitle => 'Offers';
 
   @override

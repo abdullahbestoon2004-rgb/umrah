@@ -5,6 +5,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/payment_card_model.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PaymentMethodsScreen extends StatelessWidget {
@@ -203,12 +204,7 @@ class _CardTile extends StatelessWidget {
             onPressed: () {
               provider.removeCard(card.id);
               Navigator.pop(dialogCtx);
-              messenger.showSnackBar(SnackBar(
-                content: Text(t.paymentCardRemoved, style: AppTheme.sans(13, weight: FontWeight.w600)),
-                backgroundColor: AppColors.ink,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              ));
+              messenger.showSnackBar(appSnack(t.paymentCardRemoved));
             },
             child: Text(t.paymentConfirmRemove, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
           ),
@@ -270,12 +266,7 @@ class _AddCardSheetState extends State<_AddCardSheet> {
           expiry: _expiryCtrl.text.trim(),
         );
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(
-      content: Text(t.paymentCardAdded, style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    ));
+    messenger.showSnackBar(appSnack(t.paymentCardAdded));
   }
 
   @override

@@ -94,6 +94,8 @@
   "offerDetailConfirmAndPay": "Confirm & pay {total}",
   "@offerDetailConfirmAndPay": {"placeholders": {"total": {"type": "String"}}},
   "offerDetailFreeCancellation": "Free cancellation up to 30 days before departure",
+  "offerDetailDepartureDate": "Departure date",
+  "dateToBeScheduled": "To be scheduled",
 
   "offersTitle": "Offers",
   "offersPackagesMatch": "{count, plural, =1{{count} package matches} other{{count} packages match}}",

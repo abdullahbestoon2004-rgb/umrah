@@ -31,11 +31,7 @@ class _FilterSheetState extends State<FilterSheet> {
     context.read<AppProvider>().resetFilters();
   }
 
-  int _countMatching() {
-    final tmp = AppProvider();
-    tmp.updateFilters(_local);
-    return tmp.getFilteredOffers().length;
-  }
+  int _countMatching() => context.read<AppProvider>().getFilteredOffers(_local).length;
 
   @override
   Widget build(BuildContext context) {

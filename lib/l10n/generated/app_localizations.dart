@@ -474,6 +474,18 @@ abstract class AppLocalizations {
   /// **'Free cancellation up to 30 days before departure'**
   String get offerDetailFreeCancellation;
 
+  /// No description provided for @offerDetailDepartureDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure date'**
+  String get offerDetailDepartureDate;
+
+  /// No description provided for @dateToBeScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'To be scheduled'**
+  String get dateToBeScheduled;
+
   /// No description provided for @offersTitle.
   ///
   /// In en, this message translates to:

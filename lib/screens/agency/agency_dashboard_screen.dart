@@ -4,7 +4,8 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
-import '../../widgets/gradient_card.dart';
+import '../../models/company_model.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/tag_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'add_edit_offer_screen.dart';
@@ -106,7 +107,7 @@ class AgencyDashboardScreen extends StatelessWidget {
 }
 
 class _DashboardHeader extends StatelessWidget {
-  final dynamic company;
+  final Company company;
   final AppProvider provider;
   const _DashboardHeader({required this.company, required this.provider});
 
@@ -212,7 +213,7 @@ class _DashboardHeader extends StatelessWidget {
 
 class _PackageCard extends StatelessWidget {
   final Offer offer;
-  final dynamic company;
+  final Company company;
   final AppProvider provider;
   const _PackageCard({required this.offer, required this.company, required this.provider});
 
@@ -234,7 +235,10 @@ class _PackageCard extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
             child: Stack(
               children: [
-                GradientCard(colors: offer.gradColors, height: 100, borderRadius: BorderRadius.circular(0)),
+                SizedBox(
+                  width: double.infinity,
+                  child: OfferImage(offer: offer, height: 100),
+                ),
                 Positioned(
                   left: 12, bottom: 10, right: 12,
                   child: Column(

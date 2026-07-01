@@ -221,6 +221,12 @@ class AppLocalizationsAr extends AppLocalizations {
       'إلغاء مجاني حتى 30 يومًا قبل موعد السفر';
 
   @override
+  String get offerDetailDepartureDate => 'تاريخ المغادرة';
+
+  @override
+  String get dateToBeScheduled => 'يُحدد لاحقًا';
+
+  @override
   String get offersTitle => 'العروض';
 
   @override

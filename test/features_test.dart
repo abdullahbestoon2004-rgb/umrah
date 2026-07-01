@@ -72,6 +72,38 @@ void main() {
       p.setSecuritySetting('biometric', true);
       expect(p.biometricLock, true);
     });
+
+    test('booking stores departure date', () {
+      final p = AppProvider();
+      final date = DateTime(2026, 12, 20);
+      p.confirmBooking(sampleOffers.first, 1, 'Al-Safwah Travel', departureDate: date);
+      expect(p.bookings.first.departureDate, date);
+    });
+
+    test('getFilteredOffers accepts a preview override without committing', () {
+      final p = AppProvider();
+      final all = p.getFilteredOffers().length;
+      final byAir = p.getFilteredOffers(const OfferFilters(transport: 'plane')).length;
+      expect(byAir, lessThan(all));
+      // committed filters unchanged
+      expect(p.filters.transport, 'all');
+      expect(p.getFilteredOffers().length, all);
+    });
+
+    test('search suggestions all return results', () {
+      final p = AppProvider();
+      final suggestions = p.searchSuggestions;
+      expect(suggestions, isNotEmpty);
+      for (final s in suggestions) {
+        expect(p.searchOffers(s), isNotEmpty, reason: 'suggestion "$s" returned no results');
+      }
+    });
+
+    test('companyById resolves pending companies too', () {
+      final p = AppProvider();
+      expect(p.companyById('c7'), isNotNull);
+      expect(p.companyById('nope'), isNull);
+    });
   });
 
   group('Screens render', () {

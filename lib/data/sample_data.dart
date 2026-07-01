@@ -258,7 +258,7 @@ final List<Booking> sampleBookings = [
     title: 'Family Umrah Retreat',
     companyName: 'Noor Al-Haramain',
     gradColors: [const Color(0xFF15706A), const Color(0xFF0A3F3A)],
-    date: '14 Aug 2026',
+    departureDate: DateTime(2026, 8, 14),
     travelers: 4,
     status: 'Confirmed',
     ref: 'UM-7K2940',

@@ -222,6 +222,12 @@ class AppLocalizationsKu extends AppLocalizations {
       'هەڵوەشاندنەوەی بەخۆڕایی تا ٣٠ ڕۆژ پێش بەڕێکەوتن';
 
   @override
+  String get offerDetailDepartureDate => 'بەرواری گەشت';
+
+  @override
+  String get dateToBeScheduled => 'دواتر دیاری دەکرێت';
+
+  @override
   String get offersTitle => 'ئۆفەرەکان';
 
   @override

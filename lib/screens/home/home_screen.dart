@@ -6,10 +6,10 @@ import '../../data/sample_data.dart';
 import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
-import '../../widgets/gradient_card.dart';
 import '../../widgets/star_rating.dart';
 import '../../widgets/company_avatar.dart';
 import '../../widgets/tag_chip.dart';
+import '../../widgets/offer_image.dart';
 import '../companies/company_detail_screen.dart';
 import '../offers/offer_detail_screen.dart';
 import '../search/search_screen.dart';
@@ -20,9 +20,16 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hero = sampleOffers.first;
-    final companies = sampleCompanies.take(4).toList();
-    final homeOffers = sampleOffers.skip(1).take(4).toList();
+    final provider = context.watch<AppProvider>();
+    // Live data: includes agency-published packages, best-rated first.
+    final byRating = List<Offer>.from(provider.allOffers)
+      ..sort((a, b) => b.rating.compareTo(a.rating));
+    final hero = byRating.first;
+    final homeOffers = byRating.skip(1).take(4).toList();
+    final companies = (List<Company>.from(sampleCompanies)
+          ..sort((a, b) => b.rating.compareTo(a.rating)))
+        .take(4)
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -102,11 +109,7 @@ class _HeroCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                GradientCard(
-                  colors: offer.gradColors,
-                  height: 240,
-                  borderRadius: BorderRadius.circular(26),
-                ),
+                OfferImage(offer: offer, height: 240),
                 // dim overlay
                 Container(
                   decoration: BoxDecoration(
@@ -144,7 +147,7 @@ class _HeroCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        sampleCompanies.firstWhere((c) => c.id == offer.companyId).name,
+                        context.read<AppProvider>().companyById(offer.companyId)?.name ?? '',
                         style: AppTheme.sans(11, weight: FontWeight.w700, color: const Color(0xFFE7CF95)),
                       ),
                       const SizedBox(height: 2),
@@ -331,7 +334,7 @@ class _CuratedOfferCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId);
+    final company = context.read<AppProvider>().companyById(offer.companyId);
 
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
@@ -349,7 +352,7 @@ class _CuratedOfferCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                GradientCard(colors: offer.gradColors, height: 96, width: 96, borderRadius: BorderRadius.circular(15)),
+                OfferImage(offer: offer, height: 96, width: 96, borderRadius: BorderRadius.circular(15)),
                 Positioned(
                   left: 8,
                   bottom: 7,
@@ -365,7 +368,7 @@ class _CuratedOfferCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company.name,
+                  Text(company?.name ?? '',
                       style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 1),
                   Text(offer.title, style: AppTheme.serif(17.5), maxLines: 2, overflow: TextOverflow.ellipsis),

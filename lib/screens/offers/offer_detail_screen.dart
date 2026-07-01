@@ -8,6 +8,7 @@ import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/gradient_card.dart';
 import '../../widgets/star_rating.dart';
+import '../../widgets/app_snackbar.dart';
 import '../companies/company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -15,14 +16,13 @@ class OfferDetailScreen extends StatelessWidget {
   final Offer offer;
   const OfferDetailScreen({super.key, required this.offer});
 
-  Company get _company => sampleCompanies.firstWhere((c) => c.id == offer.companyId);
-
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final saved = provider.isSaved(offer.id);
-    final company = _company;
+    // companyById also covers pending agencies, unlike sampleCompanies alone
+    final company = provider.companyById(offer.companyId) ?? sampleCompanies.first;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -652,9 +652,27 @@ class _BookingSheet extends StatefulWidget {
 
 class _BookingSheetState extends State<_BookingSheet> {
   int _travelers = 1;
+  DateTime? _departureDate;
 
   double get _total => widget.offer.price * _travelers;
   String get _totalFmt => '\$${_total.round()}';
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _departureDate ?? now.add(const Duration(days: 30)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365 * 2)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: AppColors.primary),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() => _departureDate = picked);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -728,6 +746,47 @@ class _BookingSheetState extends State<_BookingSheet> {
                   ),
                 ),
                 const SizedBox(height: 18),
+                // departure date
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 38, height: 38,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                          child: const Icon(Icons.event_rounded, color: AppColors.primary, size: 20),
+                        ),
+                        const SizedBox(width: 13),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(t.offerDetailDepartureDate, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                              Text(
+                                _departureDate == null
+                                    ? t.dateToBeScheduled
+                                    : '${_departureDate!.day}/${_departureDate!.month}/${_departureDate!.year}',
+                                style: AppTheme.sans(11.5, color: _departureDate == null ? AppColors.muted : AppColors.primary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.edit_calendar_rounded, color: AppColors.primary, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 // traveler count
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -774,16 +833,13 @@ class _BookingSheetState extends State<_BookingSheet> {
                 const SizedBox(height: 16),
                 GestureDetector(
                   onTap: () {
-                    context.read<AppProvider>().confirmBooking(widget.offer, _travelers, widget.company.name);
+                    final messenger = ScaffoldMessenger.of(context);
+                    context.read<AppProvider>().confirmBooking(
+                          widget.offer, _travelers, widget.company.name,
+                          departureDate: _departureDate,
+                        );
                     Navigator.popUntil(context, (route) => route.isFirst);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(t.offerDetailBookingConfirmed, style: AppTheme.sans(13, weight: FontWeight.w600)),
-                        backgroundColor: AppColors.ink,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                    );
+                    messenger.showSnackBar(appSnack(t.offerDetailBookingConfirmed));
                   },
                   child: Container(
                     width: double.infinity,

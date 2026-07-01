@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
-import '../../data/sample_data.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/gradient_card.dart';
@@ -109,7 +108,12 @@ class _QuickChips extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(22, 10, 22, 10),
         children: [
-          TagChip(label: t.offersAll, active: f.transport == 'all' && f.acc == 'all', onTap: () => provider.resetFilters()),
+          TagChip(
+            label: t.offersAll,
+            active: f.transport == 'all' && f.acc == 'all',
+            // clear the filters but keep the user's chosen sort order
+            onTap: () => provider.updateFilters(OfferFilters(sort: f.sort)),
+          ),
           const SizedBox(width: 9),
           TagChip(
             label: t.offersByAir,
@@ -248,7 +252,7 @@ class OfferCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
     final saved = provider.isSaved(offer.id);
-    final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId);
+    final company = provider.companyById(offer.companyId);
     final t = AppLocalizations.of(context);
 
     final imageBytes = provider.getOfferImage(offer.id);
@@ -337,7 +341,7 @@ class OfferCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(company.name,
+                          Text(company?.name ?? '',
                               style: AppTheme.sans(10.5, weight: FontWeight.w700, color: const Color(0xFFE7CF95))),
                           const SizedBox(height: 1),
                           Text(offer.title, style: AppTheme.serif(21, color: Colors.white)),

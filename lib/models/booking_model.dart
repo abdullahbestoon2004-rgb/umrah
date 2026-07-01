@@ -6,7 +6,7 @@ class Booking {
   final String title;
   final String companyName;
   final List<Color> gradColors;
-  final String date;
+  final DateTime? departureDate; // null = to be scheduled
   final int travelers;
   final String status;
   final String ref;
@@ -18,7 +18,7 @@ class Booking {
     required this.title,
     required this.companyName,
     required this.gradColors,
-    required this.date,
+    this.departureDate,
     required this.travelers,
     required this.status,
     required this.ref,
@@ -33,7 +33,7 @@ class Booking {
         title: title,
         companyName: companyName,
         gradColors: gradColors,
-        date: date,
+        departureDate: departureDate,
         travelers: travelers,
         status: status ?? this.status,
         ref: ref,

@@ -65,6 +65,8 @@
   "offerDetailBookingConfirmed": "حجز دڵنیا کرایەوە!",
   "offerDetailConfirmAndPay": "دڵنیاکردنەوە و پارەدان {total}",
   "offerDetailFreeCancellation": "هەڵوەشاندنەوەی بەخۆڕایی تا ٣٠ ڕۆژ پێش بەڕێکەوتن",
+  "offerDetailDepartureDate": "بەرواری گەشت",
+  "dateToBeScheduled": "دواتر دیاری دەکرێت",
 
   "offersTitle": "ئۆفەرەکان",
   "offersPackagesMatch": "{count, plural, =1{{count} پاکێج گونجاوە} other{{count} پاکێج گونجاون}}",

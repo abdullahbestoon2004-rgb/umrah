@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PrivacySecurityScreen extends StatelessWidget {
@@ -233,12 +234,7 @@ class _ChangePasswordSheetState extends State<_ChangePasswordSheet> {
     }
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(
-      content: Text(t.privacyPasswordChanged, style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    ));
+    messenger.showSnackBar(appSnack(t.privacyPasswordChanged));
   }
 
   @override

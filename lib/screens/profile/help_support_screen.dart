@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class HelpSupportScreen extends StatefulWidget {
@@ -27,34 +28,18 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   void _copy(String value) {
     final t = AppLocalizations.of(context);
     Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(t.helpCopiedToClipboard(value), style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    ));
+    showAppSnack(context, t.helpCopiedToClipboard(value));
   }
 
   void _sendMessage() {
     final t = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     if (_messageCtrl.text.trim().isEmpty) {
-      messenger.showSnackBar(SnackBar(
-        content: Text(t.helpMessageEmpty, style: AppTheme.sans(13, weight: FontWeight.w600)),
-        backgroundColor: AppColors.ink,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ));
+      showAppSnack(context, t.helpMessageEmpty, isError: true);
       return;
     }
     _messageCtrl.clear();
     FocusScope.of(context).unfocus();
-    messenger.showSnackBar(SnackBar(
-      content: Text(t.helpMessageSent, style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    ));
+    showAppSnack(context, t.helpMessageSent);
   }
 
   @override

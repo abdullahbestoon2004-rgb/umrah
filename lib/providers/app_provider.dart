@@ -108,8 +108,33 @@ class AppProvider extends ChangeNotifier {
       return o.title.toLowerCase().contains(lower) ||
           o.city.toLowerCase().contains(lower) ||
           (company?.name.toLowerCase().contains(lower) ?? false) ||
-          o.hotel.toLowerCase().contains(lower);
+          o.hotel.toLowerCase().contains(lower) ||
+          o.badge.toLowerCase().contains(lower);
     }).toList();
+  }
+
+  /// Suggestion chips built from real data (cities, badges, agency names),
+  /// so tapping one always returns results regardless of the UI language.
+  List<String> get searchSuggestions {
+    final seen = <String>{};
+    final out = <String>[];
+    void add(String s) {
+      final key = s.toLowerCase();
+      if (s.isNotEmpty && seen.add(key)) out.add(s);
+    }
+
+    for (final o in allOffers) {
+      for (final city in o.city.split('·')) {
+        add(city.trim());
+      }
+    }
+    for (final o in allOffers) {
+      add(o.badge);
+    }
+    for (final c in sampleCompanies.take(3)) {
+      add(c.name);
+    }
+    return out.take(10).toList();
   }
 
   // ── offer images ─────────────────────────────────────────────────────────
@@ -137,9 +162,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Offer> getFilteredOffers() {
+  /// Filters [allOffers]; pass [override] to preview a filter selection
+  /// without committing it (used by the filter sheet's live count).
+  List<Offer> getFilteredOffers([OfferFilters? override]) {
     var list = List<Offer>.from(allOffers);
-    final f = _filters;
+    final f = override ?? _filters;
     if (f.transport != 'all') list = list.where((o) => o.transport == f.transport).toList();
     if (f.acc != 'all') list = list.where((o) => o.acc == int.parse(f.acc)).toList();
     if (f.dur == 'short') list = list.where((o) => o.days >= 7 && o.days <= 9).toList();
@@ -204,7 +231,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   // ── bookings ─────────────────────────────────────────────────────────────
-  void confirmBooking(Offer offer, int travelers, String companyName) {
+  void confirmBooking(Offer offer, int travelers, String companyName, {DateTime? departureDate}) {
     final ref = 'UM-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase().substring(0, 6)}';
     _bookings = [
       Booking(
@@ -213,7 +240,7 @@ class AppProvider extends ChangeNotifier {
         title: offer.title,
         companyName: companyName,
         gradColors: offer.gradColors,
-        date: 'To be scheduled',
+        departureDate: departureDate,
         travelers: travelers,
         status: 'Confirmed',
         ref: ref,

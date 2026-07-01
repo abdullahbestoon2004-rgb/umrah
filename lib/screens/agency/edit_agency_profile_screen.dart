@@ -4,6 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/company_model.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class EditAgencyProfileScreen extends StatefulWidget {
@@ -52,13 +53,9 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
       tags:     tags,
     );
 
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(t.editAgencyProfileUpdated, style: AppTheme.sans(13, weight: FontWeight.w600)),
-      backgroundColor: AppColors.ink,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ));
+    messenger.showSnackBar(appSnack(t.editAgencyProfileUpdated));
   }
 
   @override

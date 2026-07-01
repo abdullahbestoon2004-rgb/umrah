@@ -4,9 +4,8 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
-import '../../data/sample_data.dart';
 import '../offers/offer_detail_screen.dart';
-import '../../widgets/gradient_card.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/star_rating.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -106,15 +105,9 @@ class _Suggestions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final suggestions = [
-      t.searchSuggestionPremiumPackages,
-      t.searchSuggestionByAir,
-      t.searchSuggestionByCoach,
-      t.searchSuggestionRamadan,
-      t.searchSuggestionFiveStar,
-      t.searchSuggestionMadinah,
-      t.searchSuggestionFamily,
-    ];
+    // Built from live data so every chip is guaranteed to return results,
+    // whatever language the UI is in.
+    final suggestions = context.watch<AppProvider>().searchSuggestions;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Column(
@@ -172,8 +165,7 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final company = sampleCompanies.firstWhere((c) => c.id == offer.companyId,
-        orElse: () => sampleCompanies.first);
+    final company = context.read<AppProvider>().companyById(offer.companyId);
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
@@ -186,13 +178,13 @@ class _ResultCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            GradientCard(colors: offer.gradColors, height: 80, width: 80, borderRadius: BorderRadius.circular(12)),
+            OfferImage(offer: offer, height: 80, width: 80, borderRadius: BorderRadius.circular(12)),
             const SizedBox(width: 13),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company.name, style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(company?.name ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 2),
                   Text(offer.title, style: AppTheme.serif(16), maxLines: 1, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),
