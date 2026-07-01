@@ -551,6 +551,347 @@ class AppLocalizationsKu extends AppLocalizations {
   String get bookingsBrowseOffers => 'بینینی پێشنیارەکان';
 
   @override
+  String get bookingsStatusConfirmed => 'پشتڕاستکراوە';
+
+  @override
+  String get bookingsStatusPending => 'چاوەڕوانە';
+
+  @override
+  String get bookingsStatusCancelled => 'هەڵوەشێنراوە';
+
+  @override
+  String get bookingsCancelBooking => 'هەڵوەشاندنەوەی گەشت';
+
+  @override
+  String get bookingsCancelTitle => 'ئەم گەشتە هەڵبوەشێنرێتەوە؟';
+
+  @override
+  String bookingsCancelBody(String title) {
+    return '\"$title\" هەڵدەوەشێنرێتەوە. هەڵوەشاندنەوە بێبەرامبەرە تا 30 ڕۆژ پێش گەشت.';
+  }
+
+  @override
+  String get bookingsKeepBooking => 'هێشتنەوەی گەشت';
+
+  @override
+  String get bookingsConfirmCancel => 'بەڵێ، هەڵیبوەشێنەوە';
+
+  @override
+  String get bookingsCancelledSnack => 'گەشتەکە هەڵوەشێنرایەوە.';
+
+  @override
+  String get notificationsTitle => 'ئاگادارکردنەوەکان';
+
+  @override
+  String get notificationsMarkAllRead => 'هەموو وەک خوێندراوە دابنێ';
+
+  @override
+  String get notificationsClearAll => 'سڕینەوەی هەموو';
+
+  @override
+  String get notificationsEmptyTitle => 'هیچ ئاگادارکردنەوەیەک نییە';
+
+  @override
+  String get notificationsEmptyBody => 'هەموو شتێکت بینیوە.';
+
+  @override
+  String get notifWelcomeTitle => 'بەخێربێیت بۆ ئەپی عومرە';
+
+  @override
+  String get notifWelcomeBody =>
+      'ئاژانسی متمانەپێکراو و پاکێجی هەڵبژێردراو بۆ گەشتەکەت بدۆزەرەوە.';
+
+  @override
+  String get notifPromoTitle => 'پێشنیارە وەرزییەکان بەردەستن';
+
+  @override
+  String get notifPromoBody =>
+      'ئەم مانگە تا 20% لە پاکێجە هەڵبژێردراوەکان پاشەکەوت بکە.';
+
+  @override
+  String get notifTripReminderTitle => 'گەشتی داهاتوو';
+
+  @override
+  String notifTripReminderBody(String title) {
+    return 'گەشتەکەت \"$title\" نزیک بووەتەوە. بەڵگەنامەکانت بپشکنە.';
+  }
+
+  @override
+  String get notifBookingConfirmedTitle => 'گەشتەکە پشتڕاستکرایەوە';
+
+  @override
+  String notifBookingConfirmedBody(String title) {
+    return 'گەشتەکەت بۆ \"$title\" پشتڕاستکرایەوە. بۆ وردەکاری سەیری گەشتەکانم بکە.';
+  }
+
+  @override
+  String get notifBookingCancelledTitle => 'گەشتەکە هەڵوەشێنرایەوە';
+
+  @override
+  String notifBookingCancelledBody(String title) {
+    return 'گەشتەکەت بۆ \"$title\" هەڵوەشێنرایەوە.';
+  }
+
+  @override
+  String get notifJustNow => 'هەر ئێستا';
+
+  @override
+  String notifMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count خولەک لەمەوبەر',
+      one: '$count خولەک لەمەوبەر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count کاتژمێر لەمەوبەر',
+      one: '$count کاتژمێر لەمەوبەر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ڕۆژ لەمەوبەر',
+      one: '$count ڕۆژ لەمەوبەر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentTitle => 'شێوازەکانی پارەدان';
+
+  @override
+  String get paymentDefaultBadge => 'بنەڕەتی';
+
+  @override
+  String get paymentSetDefault => 'کردنە بنەڕەتی';
+
+  @override
+  String get paymentRemoveCard => 'لابردنی کارت';
+
+  @override
+  String get paymentRemoveTitle => 'ئەم کارتە لاببرێت؟';
+
+  @override
+  String paymentRemoveBody(String brand, String last4) {
+    return 'کارتی $brand کە بە $last4 کۆتایی دێت لادەبرێت.';
+  }
+
+  @override
+  String get paymentKeepCard => 'هێشتنەوە';
+
+  @override
+  String get paymentConfirmRemove => 'لابردن';
+
+  @override
+  String get paymentAddCard => 'زیادکردنی کارت';
+
+  @override
+  String get paymentAddCardTitle => 'زیادکردنی کارتی نوێ';
+
+  @override
+  String get paymentCardHolder => 'ناوی خاوەنی کارت';
+
+  @override
+  String get paymentCardHolderHint => 'ناو لەسەر کارت';
+
+  @override
+  String get paymentCardNumber => 'ژمارەی کارت';
+
+  @override
+  String get paymentCardNumberHint => '1234 5678 9012 3456';
+
+  @override
+  String get paymentExpiry => 'بەرواری بەسەرچوون';
+
+  @override
+  String get paymentExpiryHint => 'MM/YY';
+
+  @override
+  String get paymentCvv => 'CVV';
+
+  @override
+  String get paymentCvvHint => '123';
+
+  @override
+  String get paymentSaveCard => 'پاشەکەوتکردنی کارت';
+
+  @override
+  String get paymentCardAdded => 'کارتەکە زیادکرا.';
+
+  @override
+  String get paymentCardRemoved => 'کارتەکە لابرا.';
+
+  @override
+  String get paymentEmptyTitle => 'هیچ کارتێک پاشەکەوت نەکراوە';
+
+  @override
+  String get paymentEmptyBody => 'کارتێک زیاد بکە بۆ خێراکردنی پارەدان.';
+
+  @override
+  String paymentExpiresLabel(String expiry) {
+    return 'بەسەردەچێت لە $expiry';
+  }
+
+  @override
+  String get paymentErrHolder => 'ناوی خاوەنی کارت بنووسە.';
+
+  @override
+  String get paymentErrNumber => 'ژمارەیەکی دروستی کارت بنووسە (13–19 ژمارە).';
+
+  @override
+  String get paymentErrExpiry => 'بەروارێکی دروستی داهاتوو بنووسە (MM/YY).';
+
+  @override
+  String get paymentErrCvv => 'کۆدێکی دروستی CVV بنووسە (3–4 ژمارە).';
+
+  @override
+  String get privacyTitle => 'تایبەتمەندی و ئاسایش';
+
+  @override
+  String get privacySectionSecurity => 'ئاسایش';
+
+  @override
+  String get privacyBiometric => 'قوفڵی ئەپ بە پەنجەمۆر';
+
+  @override
+  String get privacyBiometricSub =>
+      'داواکردنی ناسینەوەی ڕوخسار / پەنجەمۆر بۆ کردنەوەی ئەپ';
+
+  @override
+  String get privacyTwoFactor => 'سەلماندنی دوو هەنگاوی';
+
+  @override
+  String get privacyTwoFactorSub =>
+      'پشتڕاستکردنەوەی چوونەژوورەوە بە کۆدی تاک بەکارهێنان';
+
+  @override
+  String get privacySectionPrivacy => 'تایبەتمەندی';
+
+  @override
+  String get privacyMarketing => 'ئیمەیلی بازرگانی';
+
+  @override
+  String get privacyMarketingSub =>
+      'وەرگرتنی پێشنیار و ئامۆژگاری گەشت بە ئیمەیل';
+
+  @override
+  String get privacyActivity => 'هاوبەشکردنی داتای بەکارهێنان';
+
+  @override
+  String get privacyActivitySub =>
+      'یارمەتی باشترکردنی ئەپ بدە بە داتای نەناسراو';
+
+  @override
+  String get privacyChangePassword => 'گۆڕینی وشەی نهێنی';
+
+  @override
+  String get privacyCurrentPassword => 'وشەی نهێنی ئێستا';
+
+  @override
+  String get privacyNewPassword => 'وشەی نهێنی نوێ';
+
+  @override
+  String get privacyConfirmPassword => 'دووبارە وشەی نهێنی نوێ';
+
+  @override
+  String get privacyUpdatePassword => 'نوێکردنەوەی وشەی نهێنی';
+
+  @override
+  String get privacyPasswordChanged => 'وشەی نهێنی نوێکرایەوە.';
+
+  @override
+  String get privacyErrCurrentRequired => 'وشەی نهێنی ئێستات بنووسە.';
+
+  @override
+  String get privacyErrTooShort => 'وشەی نهێنی نوێ دەبێت لانیکەم 6 پیت بێت.';
+
+  @override
+  String get privacyErrNoMatch => 'وشە نهێنییەکان وەک یەک نین.';
+
+  @override
+  String get helpTitle => 'یارمەتی و پشتگیری';
+
+  @override
+  String get helpFaqHeader => 'پرسیارە باوەکان';
+
+  @override
+  String get helpFaq1Q => 'چۆن پاکێجی عومرە تۆمار بکەم؟';
+
+  @override
+  String get helpFaq1A =>
+      'هەر پێشنیارێک بکەرەوە، دەست بنێ بە \"ئەم گەشتە تۆمار بکە\"، ژمارەی گەشتیاران هەڵبژێرە و پشتڕاستی بکەرەوە. گەشتەکەت لە گەشتەکانم دەردەکەوێت لەگەڵ ژمارەی سەلماندن.';
+
+  @override
+  String get helpFaq2Q => 'دەتوانم گەشتێک هەڵبوەشێنمەوە؟';
+
+  @override
+  String get helpFaq2A =>
+      'بەڵێ — هەڵوەشاندنەوە بێبەرامبەرە تا 30 ڕۆژ پێش گەشت. گەشتەکانم بکەرەوە و دەست بنێ بە \"هەڵوەشاندنەوەی گەشت\".';
+
+  @override
+  String get helpFaq3Q => 'ئاژانسەکان پشتڕاستکراون؟';
+
+  @override
+  String get helpFaq3A =>
+      'هەموو ئاژانسێکی تۆمارکراو مۆڵەتی حکومی هەیە و لەلایەن تیمەکەمانەوە پشتڕاستکراوەتەوە پێش بڵاوکردنەوەی پاکێجەکانیان.';
+
+  @override
+  String get helpFaq4Q => 'پاکێجەکە چی لەخۆدەگرێت؟';
+
+  @override
+  String get helpFaq4A =>
+      'هەر پێشنیارێک ئەوانە دەنووسێت کە لەخۆی دەگرێت — ڤیزا، گواستنەوە، هوتێل، خواردن و زیارەتی بە ڕێنمایی. سەیری بەشی \"چی لەخۆدەگرێت\" بکە.';
+
+  @override
+  String get helpFaq5Q => 'ئاژانسەکان چۆن بەشداری پلاتفۆرمەکە دەکەن؟';
+
+  @override
+  String get helpFaq5A =>
+      'ئاژانسەکان لە ڕێگەی پۆرتاڵی ئاژانسەوە لە تابی پڕۆفایل خۆیان تۆمار دەکەن. دوای پشتڕاستکردنەوە دەتوانن پاکێج بڵاو بکەنەوە و بەڕێوەیان ببەن.';
+
+  @override
+  String get helpContactHeader => 'پەیوەندیمان پێوە بکە';
+
+  @override
+  String get helpContactEmail => 'پشتگیری بە ئیمەیل';
+
+  @override
+  String get helpContactPhone => 'پەیوەندی تەلەفۆنی';
+
+  @override
+  String helpCopiedToClipboard(String value) {
+    return '$value کۆپی کرا';
+  }
+
+  @override
+  String get helpMessageHeader => 'نامەیەکمان بۆ بنێرە';
+
+  @override
+  String get helpMessageHint => 'پرسیار یان کێشەکەت باس بکە…';
+
+  @override
+  String get helpMessageSend => 'ناردنی نامە';
+
+  @override
+  String get helpMessageSent =>
+      'نامەکە نێردرا! لە ماوەی 24 کاتژمێردا وەڵام دەدەینەوە.';
+
+  @override
+  String get helpMessageEmpty => 'تکایە سەرەتا نامەیەک بنووسە.';
+
+  @override
   String get agencyLoginTitle => 'پۆرتاڵی ئاژانس';
 
   @override

@@ -11,6 +11,10 @@ import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_login_screen.dart';
 import '../agency/agency_dashboard_screen.dart';
 import '../offers/offer_detail_screen.dart';
+import 'notifications_screen.dart';
+import 'payment_methods_screen.dart';
+import 'privacy_security_screen.dart';
+import 'help_support_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -45,13 +49,14 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.notifications_outlined,
                   label: t.profileNotifications,
-                  onTap: () => _placeholder(context, t.profileNotifications),
+                  badge: provider.unreadNotifications == 0 ? null : '${provider.unreadNotifications}',
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.credit_card_rounded,
                   label: t.profilePaymentMethods,
-                  onTap: () => _placeholder(context, t.profilePaymentMethods),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen())),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
@@ -63,13 +68,13 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.lock_outline_rounded,
                   label: t.profilePrivacySecurity,
-                  onTap: () => _placeholder(context, t.profilePrivacySecurity),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacySecurityScreen())),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.chat_bubble_outline_rounded,
                   label: t.profileHelpSupport,
-                  onTap: () => _placeholder(context, t.profileHelpSupport),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen())),
                 ),
                 const SizedBox(height: 18),
                 // Agency portal divider
@@ -138,29 +143,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _placeholder(BuildContext context, String name) {
-    final t = AppLocalizations.of(context);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.background,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 20),
-            Icon(Icons.construction_rounded, color: AppColors.primary, size: 40),
-            const SizedBox(height: 14),
-            Text(name, style: AppTheme.serif(22)),
-            const SizedBox(height: 6),
-            Text(t.comingSoonBody, style: AppTheme.sans(13, color: AppColors.muted)),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _LanguageOption extends StatelessWidget {

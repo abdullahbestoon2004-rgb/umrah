@@ -549,6 +549,344 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingsBrowseOffers => 'Browse offers';
 
   @override
+  String get bookingsStatusConfirmed => 'Confirmed';
+
+  @override
+  String get bookingsStatusPending => 'Pending';
+
+  @override
+  String get bookingsStatusCancelled => 'Cancelled';
+
+  @override
+  String get bookingsCancelBooking => 'Cancel booking';
+
+  @override
+  String get bookingsCancelTitle => 'Cancel this booking?';
+
+  @override
+  String bookingsCancelBody(String title) {
+    return '\"$title\" will be cancelled. This is free up to 30 days before departure.';
+  }
+
+  @override
+  String get bookingsKeepBooking => 'Keep booking';
+
+  @override
+  String get bookingsConfirmCancel => 'Yes, cancel';
+
+  @override
+  String get bookingsCancelledSnack => 'Booking cancelled.';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
+  String get notificationsClearAll => 'Clear all';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications';
+
+  @override
+  String get notificationsEmptyBody => 'You\'re all caught up.';
+
+  @override
+  String get notifWelcomeTitle => 'Welcome to Umrah';
+
+  @override
+  String get notifWelcomeBody =>
+      'Discover trusted agencies and curated packages for your pilgrimage.';
+
+  @override
+  String get notifPromoTitle => 'Seasonal offers are live';
+
+  @override
+  String get notifPromoBody =>
+      'Save up to 20% on selected packages this month.';
+
+  @override
+  String get notifTripReminderTitle => 'Upcoming trip';
+
+  @override
+  String notifTripReminderBody(String title) {
+    return 'Your trip \"$title\" is coming up. Check your documents.';
+  }
+
+  @override
+  String get notifBookingConfirmedTitle => 'Booking confirmed';
+
+  @override
+  String notifBookingConfirmedBody(String title) {
+    return 'Your booking for \"$title\" is confirmed. See My Bookings for details.';
+  }
+
+  @override
+  String get notifBookingCancelledTitle => 'Booking cancelled';
+
+  @override
+  String notifBookingCancelledBody(String title) {
+    return 'Your booking for \"$title\" was cancelled.';
+  }
+
+  @override
+  String get notifJustNow => 'Just now';
+
+  @override
+  String notifMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mins ago',
+      one: '1 min ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentTitle => 'Payment methods';
+
+  @override
+  String get paymentDefaultBadge => 'DEFAULT';
+
+  @override
+  String get paymentSetDefault => 'Set as default';
+
+  @override
+  String get paymentRemoveCard => 'Remove card';
+
+  @override
+  String get paymentRemoveTitle => 'Remove this card?';
+
+  @override
+  String paymentRemoveBody(String brand, String last4) {
+    return '$brand ending in $last4 will be removed.';
+  }
+
+  @override
+  String get paymentKeepCard => 'Keep';
+
+  @override
+  String get paymentConfirmRemove => 'Remove';
+
+  @override
+  String get paymentAddCard => 'Add card';
+
+  @override
+  String get paymentAddCardTitle => 'Add new card';
+
+  @override
+  String get paymentCardHolder => 'Cardholder name';
+
+  @override
+  String get paymentCardHolderHint => 'Name on card';
+
+  @override
+  String get paymentCardNumber => 'Card number';
+
+  @override
+  String get paymentCardNumberHint => '1234 5678 9012 3456';
+
+  @override
+  String get paymentExpiry => 'Expiry';
+
+  @override
+  String get paymentExpiryHint => 'MM/YY';
+
+  @override
+  String get paymentCvv => 'CVV';
+
+  @override
+  String get paymentCvvHint => '123';
+
+  @override
+  String get paymentSaveCard => 'Save card';
+
+  @override
+  String get paymentCardAdded => 'Card added.';
+
+  @override
+  String get paymentCardRemoved => 'Card removed.';
+
+  @override
+  String get paymentEmptyTitle => 'No cards saved';
+
+  @override
+  String get paymentEmptyBody => 'Add a card to speed up checkout.';
+
+  @override
+  String paymentExpiresLabel(String expiry) {
+    return 'Expires $expiry';
+  }
+
+  @override
+  String get paymentErrHolder => 'Enter the cardholder name.';
+
+  @override
+  String get paymentErrNumber => 'Enter a valid card number (13–19 digits).';
+
+  @override
+  String get paymentErrExpiry => 'Enter a valid future expiry (MM/YY).';
+
+  @override
+  String get paymentErrCvv => 'Enter a valid CVV (3–4 digits).';
+
+  @override
+  String get privacyTitle => 'Privacy & security';
+
+  @override
+  String get privacySectionSecurity => 'Security';
+
+  @override
+  String get privacyBiometric => 'Biometric app lock';
+
+  @override
+  String get privacyBiometricSub =>
+      'Require Face ID / fingerprint to open the app';
+
+  @override
+  String get privacyTwoFactor => 'Two-factor authentication';
+
+  @override
+  String get privacyTwoFactorSub => 'Verify sign-ins with a one-time code';
+
+  @override
+  String get privacySectionPrivacy => 'Privacy';
+
+  @override
+  String get privacyMarketing => 'Marketing emails';
+
+  @override
+  String get privacyMarketingSub => 'Receive offers and travel tips by email';
+
+  @override
+  String get privacyActivity => 'Share usage analytics';
+
+  @override
+  String get privacyActivitySub => 'Help improve the app with anonymous data';
+
+  @override
+  String get privacyChangePassword => 'Change password';
+
+  @override
+  String get privacyCurrentPassword => 'Current password';
+
+  @override
+  String get privacyNewPassword => 'New password';
+
+  @override
+  String get privacyConfirmPassword => 'Confirm new password';
+
+  @override
+  String get privacyUpdatePassword => 'Update password';
+
+  @override
+  String get privacyPasswordChanged => 'Password updated.';
+
+  @override
+  String get privacyErrCurrentRequired => 'Enter your current password.';
+
+  @override
+  String get privacyErrTooShort =>
+      'New password must be at least 6 characters.';
+
+  @override
+  String get privacyErrNoMatch => 'Passwords do not match.';
+
+  @override
+  String get helpTitle => 'Help & support';
+
+  @override
+  String get helpFaqHeader => 'Frequently asked questions';
+
+  @override
+  String get helpFaq1Q => 'How do I book an Umrah package?';
+
+  @override
+  String get helpFaq1A =>
+      'Open any offer, tap \"Book this trip\", choose the number of travelers and confirm. Your booking appears under My Bookings with a reference number.';
+
+  @override
+  String get helpFaq2Q => 'Can I cancel a booking?';
+
+  @override
+  String get helpFaq2A =>
+      'Yes — cancellation is free up to 30 days before departure. Open My Bookings and tap \"Cancel booking\" on the trip.';
+
+  @override
+  String get helpFaq3Q => 'Are the agencies verified?';
+
+  @override
+  String get helpFaq3A =>
+      'Every listed agency is government-licensed and verified by our team before their packages go live.';
+
+  @override
+  String get helpFaq4Q => 'What is included in a package?';
+
+  @override
+  String get helpFaq4A =>
+      'Each offer lists its inclusions — visa processing, transport, hotel, meals and guided ziyarah. Check the \"What\'s Included\" section of the offer.';
+
+  @override
+  String get helpFaq5Q => 'How do agencies join the platform?';
+
+  @override
+  String get helpFaq5A =>
+      'Agencies register through the Agency Portal on the Profile tab. After verification they can publish and manage packages.';
+
+  @override
+  String get helpContactHeader => 'Contact us';
+
+  @override
+  String get helpContactEmail => 'Email support';
+
+  @override
+  String get helpContactPhone => 'Call us';
+
+  @override
+  String helpCopiedToClipboard(String value) {
+    return '$value copied to clipboard';
+  }
+
+  @override
+  String get helpMessageHeader => 'Send us a message';
+
+  @override
+  String get helpMessageHint => 'Describe your question or issue…';
+
+  @override
+  String get helpMessageSend => 'Send message';
+
+  @override
+  String get helpMessageSent => 'Message sent! We\'ll reply within 24 hours.';
+
+  @override
+  String get helpMessageEmpty => 'Please write a message first.';
+
+  @override
   String get agencyLoginTitle => 'Agency Portal';
 
   @override

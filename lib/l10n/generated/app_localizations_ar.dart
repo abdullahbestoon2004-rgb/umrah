@@ -549,6 +549,341 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bookingsBrowseOffers => 'تصفح العروض';
 
   @override
+  String get bookingsStatusConfirmed => 'مؤكد';
+
+  @override
+  String get bookingsStatusPending => 'قيد الانتظار';
+
+  @override
+  String get bookingsStatusCancelled => 'ملغى';
+
+  @override
+  String get bookingsCancelBooking => 'إلغاء الحجز';
+
+  @override
+  String get bookingsCancelTitle => 'إلغاء هذا الحجز؟';
+
+  @override
+  String bookingsCancelBody(String title) {
+    return 'سيتم إلغاء \"$title\". الإلغاء مجاني حتى 30 يومًا قبل المغادرة.';
+  }
+
+  @override
+  String get bookingsKeepBooking => 'الاحتفاظ بالحجز';
+
+  @override
+  String get bookingsConfirmCancel => 'نعم، إلغاء';
+
+  @override
+  String get bookingsCancelledSnack => 'تم إلغاء الحجز.';
+
+  @override
+  String get notificationsTitle => 'الإشعارات';
+
+  @override
+  String get notificationsMarkAllRead => 'تعليم الكل كمقروء';
+
+  @override
+  String get notificationsClearAll => 'مسح الكل';
+
+  @override
+  String get notificationsEmptyTitle => 'لا توجد إشعارات';
+
+  @override
+  String get notificationsEmptyBody => 'لقد اطلعت على كل شيء.';
+
+  @override
+  String get notifWelcomeTitle => 'مرحبًا بك في تطبيق العمرة';
+
+  @override
+  String get notifWelcomeBody => 'اكتشف وكالات موثوقة وباقات مختارة لرحلتك.';
+
+  @override
+  String get notifPromoTitle => 'العروض الموسمية متاحة الآن';
+
+  @override
+  String get notifPromoBody => 'وفّر حتى 20% على باقات مختارة هذا الشهر.';
+
+  @override
+  String get notifTripReminderTitle => 'رحلة قادمة';
+
+  @override
+  String notifTripReminderBody(String title) {
+    return 'رحلتك \"$title\" قادمة قريبًا. تحقق من مستنداتك.';
+  }
+
+  @override
+  String get notifBookingConfirmedTitle => 'تم تأكيد الحجز';
+
+  @override
+  String notifBookingConfirmedBody(String title) {
+    return 'تم تأكيد حجزك لباقة \"$title\". راجع حجوزاتي للتفاصيل.';
+  }
+
+  @override
+  String get notifBookingCancelledTitle => 'تم إلغاء الحجز';
+
+  @override
+  String notifBookingCancelledBody(String title) {
+    return 'تم إلغاء حجزك لباقة \"$title\".';
+  }
+
+  @override
+  String get notifJustNow => 'الآن';
+
+  @override
+  String notifMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count دقيقة',
+      one: 'قبل دقيقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count ساعة',
+      one: 'قبل ساعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count يوم',
+      one: 'قبل يوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentTitle => 'طرق الدفع';
+
+  @override
+  String get paymentDefaultBadge => 'افتراضي';
+
+  @override
+  String get paymentSetDefault => 'تعيين كافتراضي';
+
+  @override
+  String get paymentRemoveCard => 'إزالة البطاقة';
+
+  @override
+  String get paymentRemoveTitle => 'إزالة هذه البطاقة؟';
+
+  @override
+  String paymentRemoveBody(String brand, String last4) {
+    return 'سيتم إزالة بطاقة $brand المنتهية بـ $last4.';
+  }
+
+  @override
+  String get paymentKeepCard => 'الاحتفاظ';
+
+  @override
+  String get paymentConfirmRemove => 'إزالة';
+
+  @override
+  String get paymentAddCard => 'إضافة بطاقة';
+
+  @override
+  String get paymentAddCardTitle => 'إضافة بطاقة جديدة';
+
+  @override
+  String get paymentCardHolder => 'اسم حامل البطاقة';
+
+  @override
+  String get paymentCardHolderHint => 'الاسم على البطاقة';
+
+  @override
+  String get paymentCardNumber => 'رقم البطاقة';
+
+  @override
+  String get paymentCardNumberHint => '1234 5678 9012 3456';
+
+  @override
+  String get paymentExpiry => 'تاريخ الانتهاء';
+
+  @override
+  String get paymentExpiryHint => 'شش/سس';
+
+  @override
+  String get paymentCvv => 'رمز الأمان';
+
+  @override
+  String get paymentCvvHint => '123';
+
+  @override
+  String get paymentSaveCard => 'حفظ البطاقة';
+
+  @override
+  String get paymentCardAdded => 'تمت إضافة البطاقة.';
+
+  @override
+  String get paymentCardRemoved => 'تمت إزالة البطاقة.';
+
+  @override
+  String get paymentEmptyTitle => 'لا توجد بطاقات محفوظة';
+
+  @override
+  String get paymentEmptyBody => 'أضف بطاقة لتسريع عملية الدفع.';
+
+  @override
+  String paymentExpiresLabel(String expiry) {
+    return 'تنتهي في $expiry';
+  }
+
+  @override
+  String get paymentErrHolder => 'أدخل اسم حامل البطاقة.';
+
+  @override
+  String get paymentErrNumber => 'أدخل رقم بطاقة صالحًا (13–19 رقمًا).';
+
+  @override
+  String get paymentErrExpiry =>
+      'أدخل تاريخ انتهاء صالحًا في المستقبل (شش/سس).';
+
+  @override
+  String get paymentErrCvv => 'أدخل رمز أمان صالحًا (3–4 أرقام).';
+
+  @override
+  String get privacyTitle => 'الخصوصية والأمان';
+
+  @override
+  String get privacySectionSecurity => 'الأمان';
+
+  @override
+  String get privacyBiometric => 'قفل التطبيق بالبصمة';
+
+  @override
+  String get privacyBiometricSub => 'طلب بصمة الوجه / الإصبع لفتح التطبيق';
+
+  @override
+  String get privacyTwoFactor => 'المصادقة الثنائية';
+
+  @override
+  String get privacyTwoFactorSub => 'تأكيد تسجيل الدخول برمز لمرة واحدة';
+
+  @override
+  String get privacySectionPrivacy => 'الخصوصية';
+
+  @override
+  String get privacyMarketing => 'رسائل تسويقية';
+
+  @override
+  String get privacyMarketingSub => 'استلام العروض ونصائح السفر عبر البريد';
+
+  @override
+  String get privacyActivity => 'مشاركة بيانات الاستخدام';
+
+  @override
+  String get privacyActivitySub => 'ساعد في تحسين التطبيق ببيانات مجهولة';
+
+  @override
+  String get privacyChangePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get privacyCurrentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get privacyNewPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get privacyConfirmPassword => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get privacyUpdatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get privacyPasswordChanged => 'تم تحديث كلمة المرور.';
+
+  @override
+  String get privacyErrCurrentRequired => 'أدخل كلمة المرور الحالية.';
+
+  @override
+  String get privacyErrTooShort => 'يجب ألا تقل كلمة المرور الجديدة عن 6 أحرف.';
+
+  @override
+  String get privacyErrNoMatch => 'كلمتا المرور غير متطابقتين.';
+
+  @override
+  String get helpTitle => 'المساعدة والدعم';
+
+  @override
+  String get helpFaqHeader => 'الأسئلة الشائعة';
+
+  @override
+  String get helpFaq1Q => 'كيف أحجز باقة عمرة؟';
+
+  @override
+  String get helpFaq1A =>
+      'افتح أي عرض، اضغط \"احجز هذه الرحلة\"، اختر عدد المسافرين وأكّد. سيظهر حجزك في حجوزاتي مع رقم مرجعي.';
+
+  @override
+  String get helpFaq2Q => 'هل يمكنني إلغاء الحجز؟';
+
+  @override
+  String get helpFaq2A =>
+      'نعم — الإلغاء مجاني حتى 30 يومًا قبل المغادرة. افتح حجوزاتي واضغط \"إلغاء الحجز\" على الرحلة.';
+
+  @override
+  String get helpFaq3Q => 'هل الوكالات موثقة؟';
+
+  @override
+  String get helpFaq3A =>
+      'كل وكالة مدرجة مرخصة حكوميًا وتم التحقق منها من قبل فريقنا قبل نشر باقاتها.';
+
+  @override
+  String get helpFaq4Q => 'ماذا تشمل الباقة؟';
+
+  @override
+  String get helpFaq4A =>
+      'كل عرض يوضح ما يشمله — التأشيرة والنقل والفندق والوجبات والزيارات المصحوبة بمرشد. راجع قسم \"ما تشمله الباقة\" في العرض.';
+
+  @override
+  String get helpFaq5Q => 'كيف تنضم الوكالات إلى المنصة؟';
+
+  @override
+  String get helpFaq5A =>
+      'تسجل الوكالات عبر بوابة الوكالات في تبويب الملف الشخصي. بعد التحقق يمكنها نشر الباقات وإدارتها.';
+
+  @override
+  String get helpContactHeader => 'تواصل معنا';
+
+  @override
+  String get helpContactEmail => 'الدعم عبر البريد';
+
+  @override
+  String get helpContactPhone => 'اتصل بنا';
+
+  @override
+  String helpCopiedToClipboard(String value) {
+    return 'تم نسخ $value';
+  }
+
+  @override
+  String get helpMessageHeader => 'أرسل لنا رسالة';
+
+  @override
+  String get helpMessageHint => 'اشرح سؤالك أو مشكلتك…';
+
+  @override
+  String get helpMessageSend => 'إرسال الرسالة';
+
+  @override
+  String get helpMessageSent => 'تم إرسال الرسالة! سنرد خلال 24 ساعة.';
+
+  @override
+  String get helpMessageEmpty => 'يرجى كتابة رسالة أولًا.';
+
+  @override
   String get agencyLoginTitle => 'بوابة الوكالة';
 
   @override

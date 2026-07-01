@@ -19,6 +19,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late final PageController _pageController;
+  late final AppProvider _provider;
   bool _isProgrammaticScroll = false;
 
   static const _screens = [
@@ -32,19 +33,20 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: context.read<AppProvider>().currentTab);
-    context.read<AppProvider>().addListener(_onProviderTabChanged);
+    _provider = context.read<AppProvider>();
+    _pageController = PageController(initialPage: _provider.currentTab);
+    _provider.addListener(_onProviderTabChanged);
   }
 
   @override
   void dispose() {
-    context.read<AppProvider>().removeListener(_onProviderTabChanged);
+    _provider.removeListener(_onProviderTabChanged);
     _pageController.dispose();
     super.dispose();
   }
 
   void _onProviderTabChanged() {
-    final tab = context.read<AppProvider>().currentTab;
+    final tab = _provider.currentTab;
     if (_pageController.hasClients && _pageController.page?.round() != tab) {
       _isProgrammaticScroll = true;
       _pageController

@@ -930,6 +930,588 @@ abstract class AppLocalizations {
   /// **'Browse offers'**
   String get bookingsBrowseOffers;
 
+  /// No description provided for @bookingsStatusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get bookingsStatusConfirmed;
+
+  /// No description provided for @bookingsStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get bookingsStatusPending;
+
+  /// No description provided for @bookingsStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingsStatusCancelled;
+
+  /// No description provided for @bookingsCancelBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking'**
+  String get bookingsCancelBooking;
+
+  /// No description provided for @bookingsCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this booking?'**
+  String get bookingsCancelTitle;
+
+  /// No description provided for @bookingsCancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" will be cancelled. This is free up to 30 days before departure.'**
+  String bookingsCancelBody(String title);
+
+  /// No description provided for @bookingsKeepBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep booking'**
+  String get bookingsKeepBooking;
+
+  /// No description provided for @bookingsConfirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, cancel'**
+  String get bookingsConfirmCancel;
+
+  /// No description provided for @bookingsCancelledSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled.'**
+  String get bookingsCancelledSnack;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get notificationsMarkAllRead;
+
+  /// No description provided for @notificationsClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get notificationsClearAll;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up.'**
+  String get notificationsEmptyBody;
+
+  /// No description provided for @notifWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Umrah'**
+  String get notifWelcomeTitle;
+
+  /// No description provided for @notifWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover trusted agencies and curated packages for your pilgrimage.'**
+  String get notifWelcomeBody;
+
+  /// No description provided for @notifPromoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal offers are live'**
+  String get notifPromoTitle;
+
+  /// No description provided for @notifPromoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Save up to 20% on selected packages this month.'**
+  String get notifPromoBody;
+
+  /// No description provided for @notifTripReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming trip'**
+  String get notifTripReminderTitle;
+
+  /// No description provided for @notifTripReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip \"{title}\" is coming up. Check your documents.'**
+  String notifTripReminderBody(String title);
+
+  /// No description provided for @notifBookingConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking confirmed'**
+  String get notifBookingConfirmedTitle;
+
+  /// No description provided for @notifBookingConfirmedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking for \"{title}\" is confirmed. See My Bookings for details.'**
+  String notifBookingConfirmedBody(String title);
+
+  /// No description provided for @notifBookingCancelledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled'**
+  String get notifBookingCancelledTitle;
+
+  /// No description provided for @notifBookingCancelledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking for \"{title}\" was cancelled.'**
+  String notifBookingCancelledBody(String title);
+
+  /// No description provided for @notifJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notifJustNow;
+
+  /// No description provided for @notifMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 min ago} other{{count} mins ago}}'**
+  String notifMinutesAgo(int count);
+
+  /// No description provided for @notifHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String notifHoursAgo(int count);
+
+  /// No description provided for @notifDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String notifDaysAgo(int count);
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment methods'**
+  String get paymentTitle;
+
+  /// No description provided for @paymentDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'DEFAULT'**
+  String get paymentDefaultBadge;
+
+  /// No description provided for @paymentSetDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get paymentSetDefault;
+
+  /// No description provided for @paymentRemoveCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove card'**
+  String get paymentRemoveCard;
+
+  /// No description provided for @paymentRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this card?'**
+  String get paymentRemoveTitle;
+
+  /// No description provided for @paymentRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{brand} ending in {last4} will be removed.'**
+  String paymentRemoveBody(String brand, String last4);
+
+  /// No description provided for @paymentKeepCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get paymentKeepCard;
+
+  /// No description provided for @paymentConfirmRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get paymentConfirmRemove;
+
+  /// No description provided for @paymentAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add card'**
+  String get paymentAddCard;
+
+  /// No description provided for @paymentAddCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new card'**
+  String get paymentAddCardTitle;
+
+  /// No description provided for @paymentCardHolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardholder name'**
+  String get paymentCardHolder;
+
+  /// No description provided for @paymentCardHolderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name on card'**
+  String get paymentCardHolderHint;
+
+  /// No description provided for @paymentCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card number'**
+  String get paymentCardNumber;
+
+  /// No description provided for @paymentCardNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1234 5678 9012 3456'**
+  String get paymentCardNumberHint;
+
+  /// No description provided for @paymentExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry'**
+  String get paymentExpiry;
+
+  /// No description provided for @paymentExpiryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/YY'**
+  String get paymentExpiryHint;
+
+  /// No description provided for @paymentCvv.
+  ///
+  /// In en, this message translates to:
+  /// **'CVV'**
+  String get paymentCvv;
+
+  /// No description provided for @paymentCvvHint.
+  ///
+  /// In en, this message translates to:
+  /// **'123'**
+  String get paymentCvvHint;
+
+  /// No description provided for @paymentSaveCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Save card'**
+  String get paymentSaveCard;
+
+  /// No description provided for @paymentCardAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Card added.'**
+  String get paymentCardAdded;
+
+  /// No description provided for @paymentCardRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Card removed.'**
+  String get paymentCardRemoved;
+
+  /// No description provided for @paymentEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No cards saved'**
+  String get paymentEmptyTitle;
+
+  /// No description provided for @paymentEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a card to speed up checkout.'**
+  String get paymentEmptyBody;
+
+  /// No description provided for @paymentExpiresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {expiry}'**
+  String paymentExpiresLabel(String expiry);
+
+  /// No description provided for @paymentErrHolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the cardholder name.'**
+  String get paymentErrHolder;
+
+  /// No description provided for @paymentErrNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid card number (13–19 digits).'**
+  String get paymentErrNumber;
+
+  /// No description provided for @paymentErrExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid future expiry (MM/YY).'**
+  String get paymentErrExpiry;
+
+  /// No description provided for @paymentErrCvv.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid CVV (3–4 digits).'**
+  String get paymentErrCvv;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & security'**
+  String get privacyTitle;
+
+  /// No description provided for @privacySectionSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get privacySectionSecurity;
+
+  /// No description provided for @privacyBiometric.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric app lock'**
+  String get privacyBiometric;
+
+  /// No description provided for @privacyBiometricSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Face ID / fingerprint to open the app'**
+  String get privacyBiometricSub;
+
+  /// No description provided for @privacyTwoFactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-factor authentication'**
+  String get privacyTwoFactor;
+
+  /// No description provided for @privacyTwoFactorSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify sign-ins with a one-time code'**
+  String get privacyTwoFactorSub;
+
+  /// No description provided for @privacySectionPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacySectionPrivacy;
+
+  /// No description provided for @privacyMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing emails'**
+  String get privacyMarketing;
+
+  /// No description provided for @privacyMarketingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive offers and travel tips by email'**
+  String get privacyMarketingSub;
+
+  /// No description provided for @privacyActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Share usage analytics'**
+  String get privacyActivity;
+
+  /// No description provided for @privacyActivitySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Help improve the app with anonymous data'**
+  String get privacyActivitySub;
+
+  /// No description provided for @privacyChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get privacyChangePassword;
+
+  /// No description provided for @privacyCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get privacyCurrentPassword;
+
+  /// No description provided for @privacyNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get privacyNewPassword;
+
+  /// No description provided for @privacyConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get privacyConfirmPassword;
+
+  /// No description provided for @privacyUpdatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get privacyUpdatePassword;
+
+  /// No description provided for @privacyPasswordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated.'**
+  String get privacyPasswordChanged;
+
+  /// No description provided for @privacyErrCurrentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password.'**
+  String get privacyErrCurrentRequired;
+
+  /// No description provided for @privacyErrTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'New password must be at least 6 characters.'**
+  String get privacyErrTooShort;
+
+  /// No description provided for @privacyErrNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get privacyErrNoMatch;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & support'**
+  String get helpTitle;
+
+  /// No description provided for @helpFaqHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently asked questions'**
+  String get helpFaqHeader;
+
+  /// No description provided for @helpFaq1Q.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I book an Umrah package?'**
+  String get helpFaq1Q;
+
+  /// No description provided for @helpFaq1A.
+  ///
+  /// In en, this message translates to:
+  /// **'Open any offer, tap \"Book this trip\", choose the number of travelers and confirm. Your booking appears under My Bookings with a reference number.'**
+  String get helpFaq1A;
+
+  /// No description provided for @helpFaq2Q.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I cancel a booking?'**
+  String get helpFaq2Q;
+
+  /// No description provided for @helpFaq2A.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes — cancellation is free up to 30 days before departure. Open My Bookings and tap \"Cancel booking\" on the trip.'**
+  String get helpFaq2A;
+
+  /// No description provided for @helpFaq3Q.
+  ///
+  /// In en, this message translates to:
+  /// **'Are the agencies verified?'**
+  String get helpFaq3Q;
+
+  /// No description provided for @helpFaq3A.
+  ///
+  /// In en, this message translates to:
+  /// **'Every listed agency is government-licensed and verified by our team before their packages go live.'**
+  String get helpFaq3A;
+
+  /// No description provided for @helpFaq4Q.
+  ///
+  /// In en, this message translates to:
+  /// **'What is included in a package?'**
+  String get helpFaq4Q;
+
+  /// No description provided for @helpFaq4A.
+  ///
+  /// In en, this message translates to:
+  /// **'Each offer lists its inclusions — visa processing, transport, hotel, meals and guided ziyarah. Check the \"What\'s Included\" section of the offer.'**
+  String get helpFaq4A;
+
+  /// No description provided for @helpFaq5Q.
+  ///
+  /// In en, this message translates to:
+  /// **'How do agencies join the platform?'**
+  String get helpFaq5Q;
+
+  /// No description provided for @helpFaq5A.
+  ///
+  /// In en, this message translates to:
+  /// **'Agencies register through the Agency Portal on the Profile tab. After verification they can publish and manage packages.'**
+  String get helpFaq5A;
+
+  /// No description provided for @helpContactHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get helpContactHeader;
+
+  /// No description provided for @helpContactEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email support'**
+  String get helpContactEmail;
+
+  /// No description provided for @helpContactPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Call us'**
+  String get helpContactPhone;
+
+  /// No description provided for @helpCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} copied to clipboard'**
+  String helpCopiedToClipboard(String value);
+
+  /// No description provided for @helpMessageHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Send us a message'**
+  String get helpMessageHeader;
+
+  /// No description provided for @helpMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your question or issue…'**
+  String get helpMessageHint;
+
+  /// No description provided for @helpMessageSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get helpMessageSend;
+
+  /// No description provided for @helpMessageSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent! We\'ll reply within 24 hours.'**
+  String get helpMessageSent;
+
+  /// No description provided for @helpMessageEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write a message first.'**
+  String get helpMessageEmpty;
+
   /// No description provided for @agencyLoginTitle.
   ///
   /// In en, this message translates to:

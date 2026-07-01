@@ -57,6 +57,51 @@ class _BookingCard extends StatelessWidget {
   final Booking booking;
   const _BookingCard({required this.booking});
 
+  String _statusLabel(AppLocalizations t) {
+    switch (booking.status) {
+      case 'Confirmed': return t.bookingsStatusConfirmed;
+      case 'Pending': return t.bookingsStatusPending;
+      case 'Cancelled': return t.bookingsStatusCancelled;
+      default: return booking.status;
+    }
+  }
+
+  void _confirmCancel(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(t.bookingsCancelTitle, style: AppTheme.serif(20)),
+        content: Text(t.bookingsCancelBody(booking.title), style: AppTheme.sans(13, color: AppColors.inkLight)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(t.bookingsKeepBooking, style: AppTheme.sans(13, color: AppColors.muted)),
+          ),
+          TextButton(
+            onPressed: () {
+              provider.cancelBooking(booking.id);
+              Navigator.pop(dialogCtx);
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(t.bookingsCancelledSnack, style: AppTheme.sans(13, weight: FontWeight.w600)),
+                  backgroundColor: AppColors.ink,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              );
+            },
+            child: Text(t.bookingsConfirmCancel, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
@@ -106,7 +151,7 @@ class _BookingCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Text(
-                              booking.status,
+                              _statusLabel(t),
                               style: AppTheme.sans(10.5, weight: FontWeight.w700, color: booking.statusColor),
                             ),
                           ),
@@ -137,11 +182,31 @@ class _BookingCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             child: Row(
               children: [
-                Text(
-                  t.bookingsRefLabel(booking.ref),
-                  style: AppTheme.sans(11, color: AppColors.muted).copyWith(letterSpacing: 0.5, fontFamily: 'monospace'),
+                Expanded(
+                  child: Text(
+                    t.bookingsRefLabel(booking.ref),
+                    style: AppTheme.sans(11, color: AppColors.muted).copyWith(letterSpacing: 0.5, fontFamily: 'monospace'),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                const Spacer(),
+                if (booking.status == 'Confirmed') ...[
+                  GestureDetector(
+                    onTap: () => _confirmCancel(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorRed.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.errorRed.withOpacity(0.25), width: 1),
+                      ),
+                      child: Text(
+                        t.bookingsCancelBooking,
+                        style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.errorRed),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
                 Text(booking.totalFmt, style: AppTheme.serif(18, color: AppColors.primary)),
               ],
             ),
@@ -174,10 +239,13 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 5),
           Text(t.bookingsEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
           const SizedBox(height: 18),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-            child: Text(t.bookingsBrowseOffers, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+          GestureDetector(
+            onTap: () => context.read<AppProvider>().setTab(2),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+              child: Text(t.bookingsBrowseOffers, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+            ),
           ),
         ],
       ),

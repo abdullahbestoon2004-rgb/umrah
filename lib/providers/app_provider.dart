@@ -4,6 +4,8 @@ import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/company_model.dart';
 import '../models/agency_account.dart';
+import '../models/notification_model.dart';
+import '../models/payment_card_model.dart';
 import '../data/sample_data.dart';
 import '../theme/app_theme.dart';
 
@@ -219,6 +221,112 @@ class AppProvider extends ChangeNotifier {
       ),
       ..._bookings,
     ];
+    pushNotification(NotificationType.bookingConfirmed, arg: offer.title);
+    notifyListeners();
+  }
+
+  void cancelBooking(String bookingId) {
+    final i = _bookings.indexWhere((b) => b.id == bookingId);
+    if (i < 0) return;
+    _bookings = List.from(_bookings);
+    _bookings[i] = _bookings[i].copyWith(status: 'Cancelled');
+    pushNotification(NotificationType.bookingCancelled, arg: _bookings[i].title);
+    notifyListeners();
+  }
+
+  // ── notifications ────────────────────────────────────────────────────────
+  final List<AppNotification> _notifications = [
+    AppNotification(
+      id: 'n3',
+      type: NotificationType.tripReminder,
+      arg: 'Family Umrah Retreat',
+      time: DateTime.now().subtract(const Duration(hours: 5)),
+    ),
+    AppNotification(
+      id: 'n2',
+      type: NotificationType.promo,
+      time: DateTime.now().subtract(const Duration(days: 1)),
+    ),
+    AppNotification(
+      id: 'n1',
+      type: NotificationType.welcome,
+      time: DateTime.now().subtract(const Duration(days: 3)),
+      read: true,
+    ),
+  ];
+  List<AppNotification> get notifications => List.unmodifiable(_notifications);
+  int get unreadNotifications => _notifications.where((n) => !n.read).length;
+
+  void pushNotification(NotificationType type, {String? arg}) {
+    _notifications.insert(0, AppNotification(
+      id: 'n${DateTime.now().millisecondsSinceEpoch}',
+      type: type,
+      arg: arg,
+      time: DateTime.now(),
+    ));
+    notifyListeners();
+  }
+
+  void markNotificationRead(String id) {
+    final n = _notifications.where((n) => n.id == id).firstOrNull;
+    if (n != null && !n.read) { n.read = true; notifyListeners(); }
+  }
+
+  void markAllNotificationsRead() {
+    for (final n in _notifications) { n.read = true; }
+    notifyListeners();
+  }
+
+  void clearNotifications() {
+    _notifications.clear();
+    notifyListeners();
+  }
+
+  // ── payment methods ──────────────────────────────────────────────────────
+  final List<PaymentCard> _cards = [
+    const PaymentCard(id: 'pc1', holder: 'Pilgrim', last4: '4242', expiry: '08/27', brand: 'Visa'),
+  ];
+  String _defaultCardId = 'pc1';
+  List<PaymentCard> get cards => List.unmodifiable(_cards);
+  String get defaultCardId => _defaultCardId;
+
+  void addCard({required String holder, required String number, required String expiry}) {
+    final card = PaymentCard(
+      id: 'pc${DateTime.now().millisecondsSinceEpoch}',
+      holder: holder,
+      last4: number.substring(number.length - 4),
+      expiry: expiry,
+      brand: PaymentCard.detectBrand(number),
+    );
+    _cards.add(card);
+    if (_cards.length == 1) _defaultCardId = card.id;
+    notifyListeners();
+  }
+
+  void removeCard(String id) {
+    _cards.removeWhere((c) => c.id == id);
+    if (_defaultCardId == id && _cards.isNotEmpty) _defaultCardId = _cards.first.id;
+    notifyListeners();
+  }
+
+  void setDefaultCard(String id) {
+    _defaultCardId = id;
+    notifyListeners();
+  }
+
+  // ── privacy & security settings ──────────────────────────────────────────
+  bool biometricLock = false;
+  bool twoFactorAuth = false;
+  bool marketingEmails = true;
+  bool shareActivity = false;
+
+  void setSecuritySetting(String key, bool value) {
+    switch (key) {
+      case 'biometric': biometricLock = value;
+      case 'twoFactor': twoFactorAuth = value;
+      case 'marketing': marketingEmails = value;
+      case 'activity': shareActivity = value;
+    }
     notifyListeners();
   }
 }
