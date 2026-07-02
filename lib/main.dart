@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
 import 'screens/main_screen.dart';
 import 'l10n/generated/app_localizations.dart';
+import 'supabase_config.dart';
 
 // Flutter's built-in Material/Cupertino localizations don't ship Kurdish
 // translations. Without a fallback, widgets that read MaterialLocalizations
@@ -34,8 +36,14 @@ class _KuCupertinoLocalizationsDelegate extends LocalizationsDelegate<CupertinoL
   bool shouldReload(_KuCupertinoLocalizationsDelegate old) => false;
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    anonKey: SupabaseConfig.anonKey,
+  );
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
