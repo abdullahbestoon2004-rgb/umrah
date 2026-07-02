@@ -194,7 +194,7 @@ class _BookingCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (booking.status == 'Confirmed') ...[
+                if (booking.status == 'Confirmed' || booking.status == 'Pending') ...[
                   GestureDetector(
                     onTap: () => _confirmCancel(context),
                     child: Container(
