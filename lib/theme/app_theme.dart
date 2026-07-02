@@ -16,7 +16,7 @@ class AppTheme {
         seedColor: AppColors.primary,
         surface: AppColors.background,
       ),
-      textTheme: isArabicScript ? GoogleFonts.cairoTextTheme() : GoogleFonts.plusJakartaSansTextTheme(),
+      textTheme: isArabicScript ? GoogleFonts.vazirmatnTextTheme() : GoogleFonts.interTextTheme(),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
         surfaceTintColor: Colors.transparent,
@@ -28,13 +28,13 @@ class AppTheme {
 
   static TextStyle serif(double size, {FontWeight weight = FontWeight.w700, Color color = AppColors.ink}) {
     return isArabicScript
-        ? GoogleFonts.cairo(fontSize: size, fontWeight: weight, color: color)
-        : GoogleFonts.cormorantGaramond(fontSize: size, fontWeight: weight, color: color);
+        ? GoogleFonts.vazirmatn(fontSize: size, fontWeight: weight, color: color)
+        : GoogleFonts.playfairDisplay(fontSize: size, fontWeight: weight, color: color);
   }
 
   static TextStyle sans(double size, {FontWeight weight = FontWeight.w500, Color color = AppColors.ink}) {
     return isArabicScript
-        ? GoogleFonts.cairo(fontSize: size, fontWeight: weight, color: color)
-        : GoogleFonts.plusJakartaSans(fontSize: size, fontWeight: weight, color: color);
+        ? GoogleFonts.vazirmatn(fontSize: size, fontWeight: weight, color: color)
+        : GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color);
   }
 }
