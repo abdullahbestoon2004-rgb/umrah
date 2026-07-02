@@ -32,16 +32,21 @@ class CompanyDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t.companyDetailAbout, style: AppTheme.serif(19)),
-                  const SizedBox(height: 7),
-                  Text(company.about, style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65)),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: company.tags.map((tag) => _TagBadge(label: tag)).toList(),
-                  ),
-                  const SizedBox(height: 22),
+                  if (company.about.isNotEmpty) ...[
+                    Text(t.companyDetailAbout, style: AppTheme.serif(19)),
+                    const SizedBox(height: 7),
+                    Text(company.about, style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65)),
+                    const SizedBox(height: 16),
+                  ],
+                  if (company.tags.isNotEmpty) ...[
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: company.tags.map((tag) => _TagBadge(label: tag)).toList(),
+                    ),
+                    const SizedBox(height: 22),
+                  ] else
+                    const SizedBox(height: 6),
                   Text(t.companyDetailPackagesHeader(offers.length), style: AppTheme.serif(19)),
                   const SizedBox(height: 12),
                 ],
@@ -133,7 +138,7 @@ class _CompanyHeader extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                Flexible(child: Text(company.name, style: AppTheme.serif(24, color: Colors.white))),
+                                Flexible(child: Text(company.nameFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(24, color: Colors.white))),
                                 const SizedBox(width: 6),
                                 const Icon(Icons.verified_rounded, color: Colors.white, size: 18),
                               ],
@@ -155,7 +160,7 @@ class _CompanyHeader extends StatelessWidget {
                       const SizedBox(width: 22),
                       _StatBox(value: '$offerCount', label: t.companyDetailPackagesLabel),
                       const SizedBox(width: 22),
-                      _StatBox(value: fromPrice > 0 ? '\$${fromPrice.round()}' : '—', label: t.companyDetailStartingLabel),
+                      _StatBox(value: fromPrice > 0 ? fmtIqd(fromPrice) : '—', label: t.companyDetailStartingLabel),
                     ],
                   ),
                 ],
@@ -231,7 +236,7 @@ class _CompanyOfferCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(offer.title, style: AppTheme.serif(17), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(17), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 7),
                   Wrap(
                     spacing: 6,

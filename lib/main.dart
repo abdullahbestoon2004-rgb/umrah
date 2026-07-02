@@ -52,12 +52,14 @@ void main() async {
 }
 
 class UmrahApp extends StatelessWidget {
-  const UmrahApp({super.key});
+  /// Injectable for tests; defaults to the real backend-backed provider.
+  final AppProvider Function()? createProvider;
+  const UmrahApp({super.key, this.createProvider});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+      create: (_) => (createProvider ?? AppProvider.new)(),
       child: Consumer<AppProvider>(
         builder: (context, provider, _) {
           final isRtl = provider.locale.languageCode != 'en';

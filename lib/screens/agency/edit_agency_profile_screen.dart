@@ -37,7 +37,8 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
+    if (_saving) return;
     final t = AppLocalizations.of(context);
     setState(() => _saving = true);
     final tags = _tagsCtrl.text
@@ -46,13 +47,19 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
         .where((t) => t.isNotEmpty)
         .toList();
 
-    context.read<AppProvider>().updateCompanyProfile(
+    final err = await context.read<AppProvider>().updateCompanyProfile(
       widget.company.id,
       location: _locationCtrl.text.trim(),
       about:    _aboutCtrl.text.trim(),
       tags:     tags,
     );
 
+    if (!mounted) return;
+    if (err != null) {
+      setState(() => _saving = false);
+      showAppSnack(context, err, isError: true);
+      return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
     messenger.showSnackBar(appSnack(t.editAgencyProfileUpdated));

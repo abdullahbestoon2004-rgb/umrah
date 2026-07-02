@@ -912,10 +912,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get agencyLoginDemoCredentials => 'بيانات تجريبية';
 
   @override
-  String get agencyLoginDemoEmail => 'البريد الإلكتروني: admin@alsafwah.com';
+  String get agencyLoginDemoEmail =>
+      'البريد الإلكتروني: agency.demo@umrahapp.dev';
 
   @override
-  String get agencyLoginDemoPassword => 'كلمة المرور: pass123';
+  String get agencyLoginDemoPassword => 'كلمة المرور: demo1234';
 
   @override
   String get agencyLoginDemoHint =>
@@ -1162,4 +1163,116 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addEditOfferPublished => 'تم نشر الباقة!';
+
+  @override
+  String get authSignInTitle => 'مرحبًا بعودتك';
+
+  @override
+  String get authSignUpTitle => 'إنشاء حساب';
+
+  @override
+  String get authSubtitle => 'سجّل الدخول لحجز الرحلات وإدارة حجوزاتك.';
+
+  @override
+  String get authFullName => 'الاسم الكامل';
+
+  @override
+  String get authFullNameHint => 'اسمك';
+
+  @override
+  String get authPhone => 'رقم الهاتف';
+
+  @override
+  String get authSignUpBtn => 'إنشاء حساب';
+
+  @override
+  String get authNoAccount => 'جديد هنا؟';
+
+  @override
+  String get authHaveAccount => 'لديك حساب بالفعل؟';
+
+  @override
+  String get authErrFillAll => 'يرجى ملء جميع الحقول.';
+
+  @override
+  String get authConfirmEmailSent =>
+      'تم إنشاء الحساب — تحقق من بريدك لتأكيده ثم سجّل الدخول.';
+
+  @override
+  String get authWelcomeSnack => 'مرحبًا بك!';
+
+  @override
+  String get profileSignIn => 'تسجيل الدخول / إنشاء حساب';
+
+  @override
+  String get profileSignOut => 'تسجيل الخروج';
+
+  @override
+  String get profileSignedOut => 'تم تسجيل الخروج.';
+
+  @override
+  String get profileGuestBadge => 'زائر';
+
+  @override
+  String get profileStatAlerts => 'تنبيهات';
+
+  @override
+  String get bookingPayMethod => 'طريقة الدفع';
+
+  @override
+  String get payCash => 'نقدًا';
+
+  @override
+  String get payCard => 'بطاقة';
+
+  @override
+  String get payFib => 'FIB';
+
+  @override
+  String get bookingFailed => 'تعذر إتمام الحجز. حاول مرة أخرى.';
+
+  @override
+  String get bookingsCancelFailed =>
+      'تعذر إلغاء هذا الحجز — يرجى التواصل مع الوكالة.';
+
+  @override
+  String get loadErrorTitle => 'تعذر تحميل البيانات';
+
+  @override
+  String get loadErrorBody => 'تحقق من اتصالك بالإنترنت وحاول مرة أخرى.';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get agencyRegisterTitle => 'تسجيل وكالة';
+
+  @override
+  String get agencyRegisterSubtitle =>
+      'أنشئ حسابًا لنشر باقات العمرة الخاصة بك.';
+
+  @override
+  String get agencyRegisterBtn => 'تسجيل الوكالة';
+
+  @override
+  String get agencyRegisterPrompt => 'وكالة جديدة؟';
+
+  @override
+  String get agencyCompanyName => 'اسم الوكالة';
+
+  @override
+  String get agencyCompanyNameHint => 'مثال: شركة النور';
+
+  @override
+  String get agencyCompanyLocation => 'المدينة / الموقع';
+
+  @override
+  String get agencyCompanyLocationHint => 'مثال: أربيل';
+
+  @override
+  String get agencyNotAgencyAccount => 'هذا الحساب ليس حساب وكالة.';
+
+  @override
+  String get addEditOfferSaveFailed =>
+      'تعذر حفظ الباقة. تحقق من الاتصال وحاول مرة أخرى.';
 }

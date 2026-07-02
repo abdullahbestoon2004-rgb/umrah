@@ -6,6 +6,7 @@ import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
 import '../../widgets/offer_image.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../widgets/tag_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'add_edit_offer_screen.dart';
@@ -251,7 +252,7 @@ class _PackageCard extends StatelessWidget {
                           decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(6)),
                           child: Text(offer.badge.toUpperCase(), style: AppTheme.sans(9, weight: FontWeight.w800, color: const Color(0xFF1C2317))),
                         ),
-                      Text(offer.title, style: AppTheme.serif(17, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(17, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
@@ -301,17 +302,25 @@ class _PackageCard extends StatelessWidget {
 
   void _confirmDelete(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final lang = Localizations.localeOf(context).languageCode;
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogCtx) => AlertDialog(
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.agencyDashboardDeletePackageTitle, style: AppTheme.serif(20)),
-        content: Text(t.agencyDashboardDeletePackageBody(offer.title), style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(t.agencyDashboardDeletePackageBody(offer.titleFor(lang)), style: AppTheme.sans(13, color: AppColors.inkLight)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted))),
+          TextButton(onPressed: () => Navigator.pop(dialogCtx), child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted))),
           TextButton(
-            onPressed: () { provider.deleteOffer(offer.id); Navigator.pop(context); },
+            onPressed: () async {
+              Navigator.pop(dialogCtx);
+              final ok = await provider.deleteOffer(offer.id);
+              if (!ok) {
+                messenger.showSnackBar(appSnack(t.addEditOfferSaveFailed, isError: true));
+              }
+            },
             child: Text(t.agencyDashboardDelete, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
           ),
         ],

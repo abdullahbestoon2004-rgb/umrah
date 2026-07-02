@@ -14,6 +14,8 @@ import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
 import 'privacy_security_screen.dart';
 import 'help_support_screen.dart';
+import '../auth/auth_screen.dart';
+import '../../widgets/app_snackbar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -75,6 +77,25 @@ class ProfileScreen extends StatelessWidget {
                   label: t.profileHelpSupport,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen())),
                 ),
+                const SizedBox(height: 10),
+                if (provider.isSignedIn)
+                  _MenuCard(
+                    icon: Icons.logout_rounded,
+                    label: t.profileSignOut,
+                    tint: AppColors.errorRed,
+                    onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      await provider.signOut();
+                      messenger.showSnackBar(appSnack(t.profileSignedOut));
+                    },
+                  )
+                else
+                  _MenuCard(
+                    icon: Icons.login_rounded,
+                    label: t.profileSignIn,
+                    tint: AppColors.primary,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
+                  ),
                 const SizedBox(height: 18),
                 // Agency portal divider
                 Row(children: [
@@ -223,13 +244,25 @@ class _ProfileHeader extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(t.profilePilgrim, style: AppTheme.serif(24, color: Colors.white)),
-                            const SizedBox(height: 5),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(color: AppColors.gold.withOpacity(0.95), borderRadius: BorderRadius.circular(8)),
-                              child: Text(t.profileGoldMember, style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)).copyWith(letterSpacing: 0.4)),
+                            Text(
+                              provider.user?.fullName.isNotEmpty == true
+                                  ? provider.user!.fullName
+                                  : t.profilePilgrim,
+                              style: AppTheme.serif(24, color: Colors.white),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                            const SizedBox(height: 5),
+                            if (provider.isSignedIn)
+                              Text(provider.user!.email,
+                                  style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8)),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis)
+                            else
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(color: AppColors.gold.withOpacity(0.95), borderRadius: BorderRadius.circular(8)),
+                                child: Text(t.profileGuestBadge, style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)).copyWith(letterSpacing: 0.4)),
+                              ),
                           ],
                         ),
                       ),
@@ -244,7 +277,7 @@ class _ProfileHeader extends StatelessWidget {
                         _Div(),
                         _StatCell(value: '${provider.saved.length}', label: t.profileStatSaved),
                         _Div(),
-                        _StatCell(value: '12', label: t.profileStatReviews),
+                        _StatCell(value: '${provider.unreadNotifications}', label: t.profileStatAlerts),
                       ],
                     ),
                   ),
@@ -409,9 +442,9 @@ class _SavedCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company?.name ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 2),
-                  Text(offer.title, style: AppTheme.serif(16), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(16), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),
                   Row(children: [
                     StarRating(rating: offer.rating),

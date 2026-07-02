@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/company_model.dart';
-import '../models/agency_account.dart';
 import '../models/notification_model.dart';
 import '../models/payment_card_model.dart';
-import '../data/sample_data.dart';
+import '../models/user_profile.dart';
+import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
 
 class OfferFilters {
@@ -17,12 +17,14 @@ class OfferFilters {
   final double priceMax;
   final String sort;
 
+  static const double priceCeiling = 5000000; // IQD
+
   const OfferFilters({
     this.transport = 'all',
     this.acc = 'all',
     this.dur = 'all',
     this.rating = 0,
-    this.priceMax = 5000,
+    this.priceMax = priceCeiling,
     this.sort = 'popular',
   });
 
@@ -41,7 +43,7 @@ class OfferFilters {
   OfferFilters reset() => const OfferFilters();
 
   bool get hasActiveFilters =>
-      transport != 'all' || acc != 'all' || dur != 'all' || rating > 0 || priceMax < 5000;
+      transport != 'all' || acc != 'all' || dur != 'all' || rating > 0 || priceMax < priceCeiling;
 
   int get activeCount {
     int c = 0;
@@ -49,14 +51,49 @@ class OfferFilters {
     if (acc != 'all') c++;
     if (dur != 'all') c++;
     if (rating > 0) c++;
-    if (priceMax < 5000) c++;
+    if (priceMax < priceCeiling) c++;
     return c;
   }
 }
 
 class AppProvider extends ChangeNotifier {
-  AppProvider() {
+  AppProvider({DataService? service, bool autoLoad = true})
+      : _service = service ?? SupabaseService() {
     AppTheme.isArabicScript = _locale.languageCode != 'en';
+    if (autoLoad) init();
+  }
+
+  final DataService _service;
+
+  Future<void> init() async {
+    await loadData();
+    await restoreAuth();
+  }
+
+  // ── remote data ──────────────────────────────────────────────────────────
+  List<Company> _companies = [];
+  List<Offer> _offers = [];
+  bool _loading = true;
+  bool _loadFailed = false;
+
+  bool get isLoading => _loading;
+  bool get loadFailed => _loadFailed;
+  List<Company> get companies => List.unmodifiable(_companies);
+  List<Offer> get allOffers => List.unmodifiable(_offers);
+
+  Future<void> loadData() async {
+    _loading = true;
+    _loadFailed = false;
+    notifyListeners();
+    try {
+      _companies = await _service.fetchCompanies();
+      _offers = await _service.fetchOffers(_companies);
+      _loadFailed = false;
+    } catch (_) {
+      _loadFailed = true;
+    }
+    _loading = false;
+    notifyListeners();
   }
 
   // ── tab navigation ───────────────────────────────────────────────────────
@@ -73,11 +110,84 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── saved / bookings ─────────────────────────────────────────────────────
-  final List<String> _saved = ['o3', 'o7'];
-  List<Booking> _bookings = List.from(sampleBookings);
+  String get lang => _locale.languageCode;
+
+  // ── auth ─────────────────────────────────────────────────────────────────
+  UserProfile? _user;
+  Company? _myCompany; // the agency user's own company (may be unverified)
+
+  UserProfile? get user => _user;
+  bool get isSignedIn => _user != null;
+  bool get isAgencyUser => _user?.isAgency ?? false;
+  bool get isAgencyLoggedIn => isAgencyUser;
+  Company? get agencyCompany => _myCompany;
+
+  Future<void> restoreAuth() async {
+    try {
+      _user = await _service.restoreSession();
+      if (_user != null) {
+        if (_user!.isAgency) _myCompany = await _service.fetchMyCompany(_user!.id);
+        await refreshBookings();
+      }
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<String?> signIn(String email, String password) async {
+    final err = await _service.signIn(email, password);
+    if (err != null) return err;
+    await restoreAuth();
+    return null;
+  }
+
+  Future<String?> signUpClient({
+    required String email,
+    required String password,
+    required String fullName,
+    String phone = '',
+  }) async {
+    final err = await _service.signUp(
+        email: email, password: password, fullName: fullName, phone: phone);
+    if (err != null) return err;
+    await restoreAuth();
+    return null;
+  }
+
+  Future<String?> signUpAgency({
+    required String email,
+    required String password,
+    required String fullName,
+    required String companyName,
+    required String companyLocation,
+    String phone = '',
+  }) async {
+    final err = await _service.signUp(
+        email: email, password: password, fullName: fullName, phone: phone, role: 'agency');
+    if (err != null) return err;
+    await restoreAuth();
+    if (_user != null && _myCompany == null) {
+      _myCompany = await _service.createCompany(
+          ownerId: _user!.id, name: companyName, location: companyLocation);
+      notifyListeners();
+    }
+    return null;
+  }
+
+  Future<void> signOut() async {
+    await _service.signOut();
+    _user = null;
+    _myCompany = null;
+    _bookings = [];
+    notifyListeners();
+  }
+
+  void agencyLogout() {
+    signOut();
+  }
+
+  // ── saved trips (local, per device) ──────────────────────────────────────
+  final List<String> _saved = [];
   List<String> get saved => List.unmodifiable(_saved);
-  List<Booking> get bookings => List.unmodifiable(_bookings);
 
   bool isSaved(String offerId) => _saved.contains(offerId);
 
@@ -87,7 +197,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<Offer> get savedOffers =>
-      allOffers.where((o) => _saved.contains(o.id)).toList();
+      _offers.where((o) => _saved.contains(o.id)).toList();
 
   // ── filters ──────────────────────────────────────────────────────────────
   OfferFilters _filters = const OfferFilters();
@@ -96,76 +206,109 @@ class AppProvider extends ChangeNotifier {
   void resetFilters() { _filters = const OfferFilters(); notifyListeners(); }
 
   // ── search ───────────────────────────────────────────────────────────────
-  String _searchQuery = '';
-  String get searchQuery => _searchQuery;
-  void setSearch(String q) { _searchQuery = q; notifyListeners(); }
-
   List<Offer> searchOffers(String q) {
     if (q.trim().isEmpty) return [];
     final lower = q.toLowerCase();
-    return allOffers.where((o) {
+    bool hit(String? s) => (s ?? '').toLowerCase().contains(lower);
+    return _offers.where((o) {
       final company = companyById(o.companyId);
-      return o.title.toLowerCase().contains(lower) ||
-          o.city.toLowerCase().contains(lower) ||
-          (company?.name.toLowerCase().contains(lower) ?? false) ||
-          o.hotel.toLowerCase().contains(lower) ||
-          o.badge.toLowerCase().contains(lower);
+      return hit(o.title) || hit(o.titleAr) || hit(o.titleEn) ||
+          hit(o.city) || hit(o.hotel) || hit(o.badge) ||
+          hit(company?.name) || hit(company?.nameAr) || hit(company?.nameEn);
     }).toList();
   }
 
-  /// Suggestion chips built from real data (cities, badges, agency names),
-  /// so tapping one always returns results regardless of the UI language.
+  /// Suggestion chips built from real data so every chip returns results.
   List<String> get searchSuggestions {
     final seen = <String>{};
     final out = <String>[];
     void add(String s) {
-      final key = s.toLowerCase();
-      if (s.isNotEmpty && seen.add(key)) out.add(s);
+      final key = s.trim().toLowerCase();
+      if (key.isNotEmpty && seen.add(key)) out.add(s.trim());
     }
 
-    for (final o in allOffers) {
-      for (final city in o.city.split('·')) {
-        add(city.trim());
-      }
-    }
-    for (final o in allOffers) {
+    for (final o in _offers) {
       add(o.badge);
     }
-    for (final c in sampleCompanies.take(3)) {
-      add(c.name);
+    for (final o in _offers) {
+      add(o.hotel);
+    }
+    for (final c in _companies.take(3)) {
+      add(c.nameFor(lang));
     }
     return out.take(10).toList();
   }
 
-  // ── offer images ─────────────────────────────────────────────────────────
+  // ── offer images (local preview for freshly picked covers) ──────────────
   final Map<String, Uint8List> _offerImages = {};
   Uint8List? getOfferImage(String id) => _offerImages[id];
   void setOfferImage(String id, Uint8List bytes) { _offerImages[id] = bytes; notifyListeners(); }
   void removeOfferImage(String id) { _offerImages.remove(id); notifyListeners(); }
 
-  // ── offers (sample + agency-added) ───────────────────────────────────────
-  List<Offer> get allOffers => [...sampleOffers, ...agencyOffers];
+  // ── offers (agency CRUD against the backend) ─────────────────────────────
+  Map<String, dynamic> _pkgFields(Offer o) => {
+        'company_id': o.companyId,
+        'title': o.title,
+        'overview': o.overview.isEmpty ? null : o.overview,
+        'price_iqd': o.price.round(),
+        'original_iqd': o.original > 0 ? o.original.round() : null,
+        'days': o.days,
+        'nights': o.nights,
+        'transport': o.transport,
+        'carrier': o.carrier.isEmpty ? null : o.carrier,
+        'acc_stars': o.acc,
+        'hotel': o.hotel.isEmpty ? null : o.hotel,
+        'distance_haram': o.distance.isEmpty ? null : o.distance,
+        'room': o.room.isEmpty ? null : o.room,
+        'meals': o.meals.isEmpty ? null : o.meals,
+        'includes': o.customIncludes ?? const [],
+        'badge': o.badge.isEmpty ? null : o.badge,
+        'is_published': true,
+      };
 
-  void addOffer(Offer offer) {
-    agencyOffers.add(offer);
+  Future<bool> addOffer(Offer offer, {Uint8List? imageBytes}) async {
+    final company = companyById(offer.companyId);
+    if (company == null) return false;
+    final created = await _service.createPackage(
+        _pkgFields(offer), offer.customItinerary ?? const [], company);
+    if (created == null) return false;
+    var withImage = created;
+    if (imageBytes != null) {
+      _offerImages[created.id] = imageBytes;
+      await _service.uploadPackageImage(created.id, imageBytes);
+    }
+    _offers = [withImage, ..._offers];
     notifyListeners();
+    return true;
   }
 
-  void updateOffer(Offer updated) {
-    final i = agencyOffers.indexWhere((o) => o.id == updated.id);
-    if (i >= 0) agencyOffers[i] = updated;
+  Future<bool> updateOffer(Offer updated, {Uint8List? imageBytes}) async {
+    final err = await _service.updatePackage(
+        updated.id, _pkgFields(updated), updated.customItinerary ?? const []);
+    if (err != null) return false;
+    if (imageBytes != null) {
+      _offerImages[updated.id] = imageBytes;
+      await _service.uploadPackageImage(updated.id, imageBytes);
+    }
+    final i = _offers.indexWhere((o) => o.id == updated.id);
+    if (i >= 0) {
+      _offers = List.from(_offers);
+      _offers[i] = updated;
+    }
     notifyListeners();
+    return true;
   }
 
-  void deleteOffer(String offerId) {
-    agencyOffers.removeWhere((o) => o.id == offerId);
+  Future<bool> deleteOffer(String offerId) async {
+    final err = await _service.deletePackage(offerId);
+    if (err != null) return false;
+    _offers = _offers.where((o) => o.id != offerId).toList();
     notifyListeners();
+    return true;
   }
 
-  /// Filters [allOffers]; pass [override] to preview a filter selection
-  /// without committing it (used by the filter sheet's live count).
   List<Offer> getFilteredOffers([OfferFilters? override]) {
-    var list = List<Offer>.from(allOffers);
+    var list = List<Offer>.from(_offers);
     final f = override ?? _filters;
     if (f.transport != 'all') list = list.where((o) => o.transport == f.transport).toList();
     if (f.acc != 'all') list = list.where((o) => o.acc == int.parse(f.acc)).toList();
@@ -183,102 +326,85 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<Offer> getCompanyOffers(String companyId) =>
-      allOffers.where((o) => o.companyId == companyId).toList();
+      _offers.where((o) => o.companyId == companyId).toList();
 
-  // ── companies ─────────────────────────────────────────────────────────────
+  // ── companies ────────────────────────────────────────────────────────────
   Company? companyById(String id) {
-    try {
-      return [...sampleCompanies, ...pendingCompanies].firstWhere((c) => c.id == id);
-    } catch (_) { return null; }
-  }
-
-  void updateCompanyProfile(String companyId, {
-    String? location, String? about, List<String>? tags,
-  }) {
-    final list = [...sampleCompanies, ...pendingCompanies];
-    final c = list.firstWhere((c) => c.id == companyId);
-    if (location != null) c.location = location;
-    if (about != null) c.about = about;
-    if (tags != null) c.tags = tags;
-    notifyListeners();
-  }
-
-  // ── agency auth ──────────────────────────────────────────────────────────
-  AgencyAccount? _loggedInAgency;
-  AgencyAccount? get loggedInAgency => _loggedInAgency;
-  bool get isAgencyLoggedIn => _loggedInAgency != null;
-
-  Company? get agencyCompany => _loggedInAgency == null
-      ? null
-      : companyById(_loggedInAgency!.companyId);
-
-  bool agencyLogin(String email, String password) {
-    try {
-      final account = [...sampleAgencyAccounts].firstWhere(
-        (a) => a.email.toLowerCase() == email.toLowerCase() && a.password == password,
-      );
-      _loggedInAgency = account;
-      notifyListeners();
-      return true;
-    } catch (_) {
-      return false;
+    for (final c in _companies) {
+      if (c.id == id) return c;
     }
+    if (_myCompany?.id == id) return _myCompany;
+    return null;
   }
 
-  void agencyLogout() {
-    _loggedInAgency = null;
+  Future<String?> updateCompanyProfile(String companyId, {
+    String? location, String? about, List<String>? tags,
+  }) async {
+    final err = await _service.updateCompany(companyId,
+        location: location, about: about, tags: tags);
+    if (err != null) return err;
+    final c = companyById(companyId);
+    if (c != null) {
+      if (location != null) c.location = location;
+      if (about != null) c.about = about;
+      if (tags != null) c.tags = tags;
+    }
     notifyListeners();
+    return null;
   }
 
   // ── bookings ─────────────────────────────────────────────────────────────
-  void confirmBooking(Offer offer, int travelers, String companyName, {DateTime? departureDate}) {
-    final ref = 'UM-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase().substring(0, 6)}';
-    _bookings = [
-      Booking(
-        id: 'b${DateTime.now().millisecondsSinceEpoch}',
-        offerId: offer.id,
-        title: offer.title,
-        companyName: companyName,
-        gradColors: offer.gradColors,
-        departureDate: departureDate,
-        travelers: travelers,
-        status: 'Confirmed',
-        ref: ref,
-        total: offer.price * travelers,
-      ),
-      ..._bookings,
-    ];
-    pushNotification(NotificationType.bookingConfirmed, arg: offer.title);
+  List<Booking> _bookings = [];
+  List<Booking> get bookings => List.unmodifiable(_bookings);
+
+  Future<void> refreshBookings() async {
+    if (_user == null) return;
+    try {
+      _bookings = await _service.fetchMyBookings(_user!.id);
+    } catch (_) {}
     notifyListeners();
   }
 
-  void cancelBooking(String bookingId) {
+  Future<String?> confirmBooking(
+    Offer offer,
+    int travelers, {
+    String payMethod = 'cash',
+    DateTime? departureDate,
+  }) async {
+    if (_user == null) return 'auth';
+    final err = await _service.createBooking(
+      packageId: offer.id,
+      clientId: _user!.id,
+      travellers: travelers,
+      payMethod: payMethod,
+      departureDate: departureDate,
+      contactPhone: _user!.phone,
+    );
+    if (err != null) return err;
+    await refreshBookings();
+    pushNotification(NotificationType.bookingConfirmed, arg: offer.titleFor(lang));
+    return null;
+  }
+
+  Future<String?> cancelBooking(String bookingId) async {
+    final err = await _service.cancelBooking(bookingId);
+    if (err != null) return err;
     final i = _bookings.indexWhere((b) => b.id == bookingId);
-    if (i < 0) return;
-    _bookings = List.from(_bookings);
-    _bookings[i] = _bookings[i].copyWith(status: 'Cancelled');
-    pushNotification(NotificationType.bookingCancelled, arg: _bookings[i].title);
+    if (i >= 0) {
+      _bookings = List.from(_bookings);
+      _bookings[i] = _bookings[i].copyWith(status: 'Cancelled');
+      pushNotification(NotificationType.bookingCancelled, arg: _bookings[i].titleFor(lang));
+    }
     notifyListeners();
+    return null;
   }
 
-  // ── notifications ────────────────────────────────────────────────────────
+  // ── notifications (local) ────────────────────────────────────────────────
   final List<AppNotification> _notifications = [
-    AppNotification(
-      id: 'n3',
-      type: NotificationType.tripReminder,
-      arg: 'Family Umrah Retreat',
-      time: DateTime.now().subtract(const Duration(hours: 5)),
-    ),
-    AppNotification(
-      id: 'n2',
-      type: NotificationType.promo,
-      time: DateTime.now().subtract(const Duration(days: 1)),
-    ),
     AppNotification(
       id: 'n1',
       type: NotificationType.welcome,
-      time: DateTime.now().subtract(const Duration(days: 3)),
-      read: true,
+      time: DateTime.now(),
     ),
   ];
   List<AppNotification> get notifications => List.unmodifiable(_notifications);
@@ -309,11 +435,9 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── payment methods ──────────────────────────────────────────────────────
-  final List<PaymentCard> _cards = [
-    const PaymentCard(id: 'pc1', holder: 'Pilgrim', last4: '4242', expiry: '08/27', brand: 'Visa'),
-  ];
-  String _defaultCardId = 'pc1';
+  // ── payment methods (local) ──────────────────────────────────────────────
+  final List<PaymentCard> _cards = [];
+  String _defaultCardId = '';
   List<PaymentCard> get cards => List.unmodifiable(_cards);
   String get defaultCardId => _defaultCardId;
 
@@ -341,7 +465,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── privacy & security settings ──────────────────────────────────────────
+  // ── privacy & security settings (local) ──────────────────────────────────
   bool biometricLock = false;
   bool twoFactorAuth = false;
   bool marketingEmails = true;

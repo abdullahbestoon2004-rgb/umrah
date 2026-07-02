@@ -184,9 +184,9 @@ class _ResultCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company?.name ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 2),
-                  Text(offer.title, style: AppTheme.serif(16), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(16), maxLines: 1, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),
                   Row(children: [
                     StarRating(rating: offer.rating),

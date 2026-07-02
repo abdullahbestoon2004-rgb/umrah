@@ -921,10 +921,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get agencyLoginDemoCredentials => 'زانیاری نموونەیی';
 
   @override
-  String get agencyLoginDemoEmail => 'ئیمەیل: admin@alsafwah.com';
+  String get agencyLoginDemoEmail => 'ئیمەیل: agency.demo@umrahapp.dev';
 
   @override
-  String get agencyLoginDemoPassword => 'وشەی نهێنی: pass123';
+  String get agencyLoginDemoPassword => 'وشەی نهێنی: demo1234';
 
   @override
   String get agencyLoginDemoHint =>
@@ -1175,4 +1175,119 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get addEditOfferPublished => 'پاکێج بڵاوکرایەوە!';
+
+  @override
+  String get authSignInTitle => 'بەخێربێیتەوە';
+
+  @override
+  String get authSignUpTitle => 'دروستکردنی هەژمار';
+
+  @override
+  String get authSubtitle =>
+      'بچۆ ژوورەوە بۆ تۆمارکردنی گەشت و بەڕێوەبردنی گەشتەکانت.';
+
+  @override
+  String get authFullName => 'ناوی تەواو';
+
+  @override
+  String get authFullNameHint => 'ناوت';
+
+  @override
+  String get authPhone => 'ژمارەی تەلەفۆن';
+
+  @override
+  String get authSignUpBtn => 'دروستکردنی هەژمار';
+
+  @override
+  String get authNoAccount => 'تازەیت لێرە؟';
+
+  @override
+  String get authHaveAccount => 'پێشتر هەژمارت هەیە؟';
+
+  @override
+  String get authErrFillAll => 'تکایە هەموو خانەکان پڕ بکەرەوە.';
+
+  @override
+  String get authConfirmEmailSent =>
+      'هەژمارەکە دروستکرا — ئیمەیلەکەت بپشکنە بۆ پشتڕاستکردنەوە، پاشان بچۆ ژوورەوە.';
+
+  @override
+  String get authWelcomeSnack => 'بەخێربێیت!';
+
+  @override
+  String get profileSignIn => 'چوونەژوورەوە / دروستکردنی هەژمار';
+
+  @override
+  String get profileSignOut => 'چوونەدەرەوە';
+
+  @override
+  String get profileSignedOut => 'چوویتە دەرەوە.';
+
+  @override
+  String get profileGuestBadge => 'میوان';
+
+  @override
+  String get profileStatAlerts => 'ئاگادارییەکان';
+
+  @override
+  String get bookingPayMethod => 'شێوازی پارەدان';
+
+  @override
+  String get payCash => 'نەقد';
+
+  @override
+  String get payCard => 'کارت';
+
+  @override
+  String get payFib => 'FIB';
+
+  @override
+  String get bookingFailed =>
+      'نەتوانرا گەشتەکە تۆمار بکرێت. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get bookingsCancelFailed =>
+      'نەتوانرا ئەم گەشتە هەڵبوەشێنرێتەوە — تکایە پەیوەندی بە ئاژانسەکە بکە.';
+
+  @override
+  String get loadErrorTitle => 'نەتوانرا داتاکان بار بکرێن';
+
+  @override
+  String get loadErrorBody =>
+      'پەیوەندی ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get retry => 'دووبارە هەوڵ بدەرەوە';
+
+  @override
+  String get agencyRegisterTitle => 'تۆمارکردنی ئاژانس';
+
+  @override
+  String get agencyRegisterSubtitle =>
+      'هەژمارێک دروست بکە بۆ بڵاوکردنەوەی پاکێجەکانی عومرەت.';
+
+  @override
+  String get agencyRegisterBtn => 'تۆمارکردنی ئاژانس';
+
+  @override
+  String get agencyRegisterPrompt => 'ئاژانسی نوێیت؟';
+
+  @override
+  String get agencyCompanyName => 'ناوی ئاژانس';
+
+  @override
+  String get agencyCompanyNameHint => 'وەک: گەشتیاری نوور';
+
+  @override
+  String get agencyCompanyLocation => 'شار / شوێن';
+
+  @override
+  String get agencyCompanyLocationHint => 'وەک: هەولێر';
+
+  @override
+  String get agencyNotAgencyAccount => 'ئەم هەژمارە هەژماری ئاژانس نییە.';
+
+  @override
+  String get addEditOfferSaveFailed =>
+      'نەتوانرا پاکێجەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
 }

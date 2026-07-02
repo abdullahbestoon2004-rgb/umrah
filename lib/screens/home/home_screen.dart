@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
-import '../../data/sample_data.dart';
 import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
@@ -21,15 +20,47 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
-    // Live data: includes agency-published packages, best-rated first.
+    final t = AppLocalizations.of(context);
+
+    if (provider.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      );
+    }
+    if (provider.loadFailed || provider.allOffers.isEmpty) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.wifi_off_rounded, size: 48, color: AppColors.mutedLight),
+              const SizedBox(height: 14),
+              Text(t.loadErrorTitle, style: AppTheme.serif(22)),
+              const SizedBox(height: 6),
+              Text(t.loadErrorBody, style: AppTheme.sans(13, color: AppColors.muted)),
+              const SizedBox(height: 18),
+              GestureDetector(
+                onTap: () => provider.loadData(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                  child: Text(t.retry, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Live data: best-rated first.
     final byRating = List<Offer>.from(provider.allOffers)
       ..sort((a, b) => b.rating.compareTo(a.rating));
     final hero = byRating.first;
     final homeOffers = byRating.skip(1).take(4).toList();
-    final companies = (List<Company>.from(sampleCompanies)
-          ..sort((a, b) => b.rating.compareTo(a.rating)))
-        .take(4)
-        .toList();
+    final companies = provider.companies.take(4).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -40,7 +71,8 @@ class HomeScreen extends StatelessWidget {
             SliverToBoxAdapter(child: _HeroCard(offer: hero)),
             SliverToBoxAdapter(child: _SearchBar()),
             SliverToBoxAdapter(child: _AgenciesSection(companies: companies)),
-            SliverToBoxAdapter(child: _CuratedSection(offers: homeOffers)),
+            if (homeOffers.isNotEmpty)
+              SliverToBoxAdapter(child: _CuratedSection(offers: homeOffers)),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
         ),
@@ -147,11 +179,11 @@ class _HeroCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        context.read<AppProvider>().companyById(offer.companyId)?.name ?? '',
+                        context.read<AppProvider>().companyById(offer.companyId)?.nameFor(Localizations.localeOf(context).languageCode) ?? '',
                         style: AppTheme.sans(11, weight: FontWeight.w700, color: const Color(0xFFE7CF95)),
                       ),
                       const SizedBox(height: 2),
-                      Text(offer.title, style: AppTheme.serif(25, color: Colors.white)),
+                      Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(25, color: Colors.white)),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -278,7 +310,7 @@ class _AgencyCard extends StatelessWidget {
           children: [
             CompanyAvatar(mono: company.mono, tint: company.tint, size: 44, fontSize: 19, borderRadius: 13),
             const SizedBox(height: 11),
-            Text(company.name, style: AppTheme.sans(13.5, weight: FontWeight.w700), maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(company.nameFor(Localizations.localeOf(context).languageCode), style: AppTheme.sans(13.5, weight: FontWeight.w700), maxLines: 2, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 7),
             Row(
               children: [
@@ -368,10 +400,10 @@ class _CuratedOfferCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company?.name ?? '',
+                  Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '',
                       style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 1),
-                  Text(offer.title, style: AppTheme.serif(17.5), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(17.5), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),
                   Wrap(
                     spacing: 7,

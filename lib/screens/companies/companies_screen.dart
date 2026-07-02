@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
-import '../../data/sample_data.dart';
 import '../../models/company_model.dart';
+import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
 import 'company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -28,7 +28,7 @@ class CompaniesScreen extends StatelessWidget {
                     Text(t.companiesTitle, style: AppTheme.serif(30)),
                     const SizedBox(height: 3),
                     Text(
-                      t.companiesSubtitle(sampleCompanies.length),
+                      t.companiesSubtitle(context.watch<AppProvider>().companies.length),
                       style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
                     ),
                     const SizedBox(height: 16),
@@ -38,11 +38,14 @@ class CompaniesScreen extends StatelessWidget {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, i) => Padding(
-                  padding: EdgeInsets.fromLTRB(22, 0, 22, i < sampleCompanies.length - 1 ? 13 : 24),
-                  child: _CompanyListCard(company: sampleCompanies[i]),
-                ),
-                childCount: sampleCompanies.length,
+                (context, i) {
+                  final list = context.watch<AppProvider>().companies;
+                  return Padding(
+                    padding: EdgeInsets.fromLTRB(22, 0, 22, i < list.length - 1 ? 13 : 24),
+                    child: _CompanyListCard(company: list[i]),
+                  );
+                },
+                childCount: context.watch<AppProvider>().companies.length,
               ),
             ),
           ],
@@ -161,7 +164,7 @@ class _CompanyListCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            company.name,
+                            company.nameFor(Localizations.localeOf(context).languageCode),
                             style: AppTheme.serif(21, color: Colors.white),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -197,7 +200,7 @@ class _CompanyListCard extends StatelessWidget {
                   const Spacer(),
                   if (fromPrice > 0) ...[
                     Text(t.companiesFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
-                    Text('\$${fromPrice.round()}', style: AppTheme.serif(22, color: AppColors.primary)),
+                    Text(fmtIqd(fromPrice), style: AppTheme.serif(17, color: AppColors.primary)),
                   ],
                 ],
               ),

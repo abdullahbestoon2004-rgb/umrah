@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../models/offer_model.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class FilterSheet extends StatefulWidget {
@@ -80,7 +81,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 children: [
                   Text(t.filterSheetMaxPricePerPerson, style: AppTheme.sans(14, weight: FontWeight.w700)),
                   const Spacer(),
-                  Text('\$${_local.priceMax.round()}', style: AppTheme.serif(20, color: AppColors.primary)),
+                  Text(fmtIqd(_local.priceMax), style: AppTheme.serif(17, color: AppColors.primary)),
                 ],
               ),
             ),
@@ -89,9 +90,9 @@ class _FilterSheetState extends State<FilterSheet> {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(activeTrackColor: AppColors.primary, thumbColor: AppColors.primary, inactiveTrackColor: AppColors.primary.withOpacity(0.15)),
                 child: Slider(
-                  min: 1000,
-                  max: 5000,
-                  divisions: 40,
+                  min: 500000,
+                  max: OfferFilters.priceCeiling,
+                  divisions: 45,
                   value: _local.priceMax,
                   onChanged: (v) => setState(() => _local = _local.copyWith(priceMax: v)),
                 ),
@@ -102,8 +103,8 @@ class _FilterSheetState extends State<FilterSheet> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('\$1,000', style: AppTheme.sans(11, color: AppColors.mutedLight)),
-                  Text('\$5,000+', style: AppTheme.sans(11, color: AppColors.mutedLight)),
+                  Text('500,000', style: AppTheme.sans(11, color: AppColors.mutedLight)),
+                  Text('5,000,000+', style: AppTheme.sans(11, color: AppColors.mutedLight)),
                 ],
               ),
             ),

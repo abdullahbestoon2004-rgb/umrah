@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
-import '../../data/sample_data.dart';
 import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
 import '../../providers/app_provider.dart';
-import '../../widgets/gradient_card.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/star_rating.dart';
 import '../../widgets/app_snackbar.dart';
 import '../companies/company_detail_screen.dart';
+import '../auth/auth_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class OfferDetailScreen extends StatelessWidget {
@@ -21,8 +21,8 @@ class OfferDetailScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final saved = provider.isSaved(offer.id);
-    // companyById also covers pending agencies, unlike sampleCompanies alone
-    final company = provider.companyById(offer.companyId) ?? sampleCompanies.first;
+    final company = provider.companyById(offer.companyId) ??
+        Company(id: offer.companyId, name: '');
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -44,15 +44,17 @@ class OfferDetailScreen extends StatelessWidget {
                       Text(t.offerDetailOverview, style: AppTheme.serif(20)),
                       const SizedBox(height: 8),
                       Text(
-                        t.offerDetailOverviewBody(
-                          offer.days,
-                          offer.transportLabel.toLowerCase(),
-                          offer.city,
-                          offer.acc,
-                          offer.hotel,
-                          offer.distance,
-                          company.name,
-                        ),
+                        offer.overview.isNotEmpty
+                            ? offer.overview
+                            : t.offerDetailOverviewBody(
+                                offer.days,
+                                offer.transportLabel.toLowerCase(),
+                                offer.city,
+                                offer.acc,
+                                offer.hotel,
+                                offer.distance,
+                                company.nameFor(Localizations.localeOf(context).languageCode),
+                              ),
                         style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65),
                       ),
                       const SizedBox(height: 24),
@@ -93,21 +95,12 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageBytes = provider.getOfferImage(offer.id);
-
     return SizedBox(
       height: 280,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (imageBytes != null)
-            Image.memory(imageBytes, fit: BoxFit.cover)
-          else
-            GradientCard(
-              colors: offer.gradColors,
-              height: 280,
-              borderRadius: BorderRadius.zero,
-            ),
+          OfferImage(offer: offer, height: 280),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -168,10 +161,11 @@ class _HeroSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(company.name,
+                Text(company.nameFor(Localizations.localeOf(context).languageCode),
                     style: AppTheme.sans(12, weight: FontWeight.w700, color: const Color(0xFFE7CF95))),
                 const SizedBox(height: 2),
-                Text(offer.title, style: AppTheme.serif(28, color: Colors.white)),
+                Text(offer.titleFor(Localizations.localeOf(context).languageCode),
+                    style: AppTheme.serif(28, color: Colors.white)),
               ],
             ),
           ),
@@ -653,9 +647,40 @@ class _BookingSheet extends StatefulWidget {
 class _BookingSheetState extends State<_BookingSheet> {
   int _travelers = 1;
   DateTime? _departureDate;
+  String _payMethod = 'cash';
+  bool _submitting = false;
 
   double get _total => widget.offer.price * _travelers;
-  String get _totalFmt => '\$${_total.round()}';
+  String get _totalFmt => fmtIqd(_total);
+
+  Future<void> _confirm() async {
+    if (_submitting) return;
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (!provider.isSignedIn) {
+      final ok = await Navigator.push<bool>(
+          context, MaterialPageRoute(builder: (_) => const AuthScreen()));
+      if (ok != true || !mounted) return;
+    }
+
+    setState(() => _submitting = true);
+    final err = await provider.confirmBooking(
+      widget.offer,
+      _travelers,
+      payMethod: _payMethod,
+      departureDate: _departureDate,
+    );
+    if (!mounted) return;
+    if (err == null) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+      messenger.showSnackBar(appSnack(t.offerDetailBookingConfirmed));
+    } else {
+      setState(() => _submitting = false);
+      messenger.showSnackBar(appSnack(t.bookingFailed, isError: true));
+    }
+  }
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -731,9 +756,10 @@ class _BookingSheetState extends State<_BookingSheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.company.name,
+                            Text(widget.company.nameFor(Localizations.localeOf(context).languageCode),
                                 style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
-                            Text(widget.offer.title, style: AppTheme.serif(18)),
+                            Text(widget.offer.titleFor(Localizations.localeOf(context).languageCode),
+                                style: AppTheme.serif(18)),
                             const SizedBox(height: 4),
                             Text(
                               t.offerDetailBookingSummaryLine(widget.offer.days, widget.offer.transportLabel, widget.offer.acc),
@@ -787,6 +813,35 @@ class _BookingSheetState extends State<_BookingSheet> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                // payment method
+                Container(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t.bookingPayMethod, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          _PayOption(label: t.payCash, icon: Icons.payments_outlined, value: 'cash',
+                              current: _payMethod, onTap: (v) => setState(() => _payMethod = v)),
+                          const SizedBox(width: 8),
+                          _PayOption(label: t.payFib, icon: Icons.account_balance_rounded, value: 'fib',
+                              current: _payMethod, onTap: (v) => setState(() => _payMethod = v)),
+                          const SizedBox(width: 8),
+                          _PayOption(label: t.payCard, icon: Icons.credit_card_rounded, value: 'card',
+                              current: _payMethod, onTap: (v) => setState(() => _payMethod = v)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
                 // traveler count
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -832,15 +887,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                 ),
                 const SizedBox(height: 16),
                 GestureDetector(
-                  onTap: () {
-                    final messenger = ScaffoldMessenger.of(context);
-                    context.read<AppProvider>().confirmBooking(
-                          widget.offer, _travelers, widget.company.name,
-                          departureDate: _departureDate,
-                        );
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                    messenger.showSnackBar(appSnack(t.offerDetailBookingConfirmed));
-                  },
+                  onTap: _confirm,
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -852,10 +899,12 @@ class _BookingSheetState extends State<_BookingSheet> {
                       ],
                     ),
                     alignment: Alignment.center,
-                    child: Text(
-                      t.offerDetailConfirmAndPay(_totalFmt),
-                      style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
-                    ),
+                    child: _submitting
+                        ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                        : Text(
+                            t.offerDetailConfirmAndPay(_totalFmt),
+                            style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -870,6 +919,49 @@ class _BookingSheetState extends State<_BookingSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PayOption extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final String value;
+  final String current;
+  final ValueChanged<String> onTap;
+  const _PayOption({
+    required this.label, required this.icon, required this.value,
+    required this.current, required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final active = value == current;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: active ? const Color(0xFFEEF4F0) : AppColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(
+              color: active ? AppColors.primary : AppColors.primary.withOpacity(0.1),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 18, color: active ? AppColors.primary : AppColors.muted),
+              const SizedBox(height: 4),
+              Text(label,
+                  style: AppTheme.sans(11.5,
+                      weight: FontWeight.w700,
+                      color: active ? AppColors.primary : AppColors.inkLight)),
+            ],
+          ),
+        ),
       ),
     );
   }

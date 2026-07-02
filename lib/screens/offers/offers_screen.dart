@@ -341,10 +341,10 @@ class OfferCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(company?.name ?? '',
+                          Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '',
                               style: AppTheme.sans(10.5, weight: FontWeight.w700, color: const Color(0xFFE7CF95))),
                           const SizedBox(height: 1),
-                          Text(offer.title, style: AppTheme.serif(21, color: Colors.white)),
+                          Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(21, color: Colors.white)),
                         ],
                       ),
                     ),

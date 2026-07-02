@@ -22,18 +22,31 @@ class OfferImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fallback = GradientCard(
+      colors: offer.gradColors,
+      height: height ?? 100,
+      width: width,
+      borderRadius: borderRadius,
+    );
     final bytes = context.watch<AppProvider>().getOfferImage(offer.id);
-    if (bytes == null) {
-      return GradientCard(
-        colors: offer.gradColors,
-        height: height ?? 100,
-        width: width,
+    if (bytes != null) {
+      return ClipRRect(
         borderRadius: borderRadius,
+        child: Image.memory(bytes, height: height, width: width, fit: BoxFit.cover),
       );
     }
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: Image.memory(bytes, height: height, width: width, fit: BoxFit.cover),
-    );
+    if ((offer.imageUrl ?? '').isNotEmpty) {
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: Image.network(
+          offer.imageUrl!,
+          height: height,
+          width: width,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => fallback,
+        ),
+      );
+    }
+    return fallback;
   }
 }

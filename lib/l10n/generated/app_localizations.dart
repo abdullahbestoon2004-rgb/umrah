@@ -1569,13 +1569,13 @@ abstract class AppLocalizations {
   /// No description provided for @agencyLoginDemoEmail.
   ///
   /// In en, this message translates to:
-  /// **'Email: admin@alsafwah.com'**
+  /// **'Email: agency.demo@umrahapp.dev'**
   String get agencyLoginDemoEmail;
 
   /// No description provided for @agencyLoginDemoPassword.
   ///
   /// In en, this message translates to:
-  /// **'Password: pass123'**
+  /// **'Password: demo1234'**
   String get agencyLoginDemoPassword;
 
   /// No description provided for @agencyLoginDemoHint.
@@ -2009,6 +2009,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Package published!'**
   String get addEditOfferPublished;
+
+  /// No description provided for @authSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authSignInTitle;
+
+  /// No description provided for @authSignUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authSignUpTitle;
+
+  /// No description provided for @authSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to book trips and manage your bookings.'**
+  String get authSubtitle;
+
+  /// No description provided for @authFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get authFullName;
+
+  /// No description provided for @authFullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get authFullNameHint;
+
+  /// No description provided for @authPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get authPhone;
+
+  /// No description provided for @authSignUpBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authSignUpBtn;
+
+  /// No description provided for @authNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'New here?'**
+  String get authNoAccount;
+
+  /// No description provided for @authHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get authHaveAccount;
+
+  /// No description provided for @authErrFillAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields.'**
+  String get authErrFillAll;
+
+  /// No description provided for @authConfirmEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created — check your email to confirm, then sign in.'**
+  String get authConfirmEmailSent;
+
+  /// No description provided for @authWelcomeSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get authWelcomeSnack;
+
+  /// No description provided for @profileSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in / Create account'**
+  String get profileSignIn;
+
+  /// No description provided for @profileSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get profileSignOut;
+
+  /// No description provided for @profileSignedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out.'**
+  String get profileSignedOut;
+
+  /// No description provided for @profileGuestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'GUEST'**
+  String get profileGuestBadge;
+
+  /// No description provided for @profileStatAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get profileStatAlerts;
+
+  /// No description provided for @bookingPayMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get bookingPayMethod;
+
+  /// No description provided for @payCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get payCash;
+
+  /// No description provided for @payCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get payCard;
+
+  /// No description provided for @payFib.
+  ///
+  /// In en, this message translates to:
+  /// **'FIB'**
+  String get payFib;
+
+  /// No description provided for @bookingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete the booking. Please try again.'**
+  String get bookingFailed;
+
+  /// No description provided for @bookingsCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel this booking — please contact the agency.'**
+  String get bookingsCancelFailed;
+
+  /// No description provided for @loadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load data'**
+  String get loadErrorTitle;
+
+  /// No description provided for @loadErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get loadErrorBody;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @agencyRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register agency'**
+  String get agencyRegisterTitle;
+
+  /// No description provided for @agencyRegisterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account to publish your Umrah packages.'**
+  String get agencyRegisterSubtitle;
+
+  /// No description provided for @agencyRegisterBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Register agency'**
+  String get agencyRegisterBtn;
+
+  /// No description provided for @agencyRegisterPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'New agency?'**
+  String get agencyRegisterPrompt;
+
+  /// No description provided for @agencyCompanyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency name'**
+  String get agencyCompanyName;
+
+  /// No description provided for @agencyCompanyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Noor Travel'**
+  String get agencyCompanyNameHint;
+
+  /// No description provided for @agencyCompanyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'City / Location'**
+  String get agencyCompanyLocation;
+
+  /// No description provided for @agencyCompanyLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Erbil'**
+  String get agencyCompanyLocationHint;
+
+  /// No description provided for @agencyNotAgencyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is not an agency account.'**
+  String get agencyNotAgencyAccount;
+
+  /// No description provided for @addEditOfferSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the package. Check your connection and try again.'**
+  String get addEditOfferSaveFailed;
 }
 
 class _AppLocalizationsDelegate

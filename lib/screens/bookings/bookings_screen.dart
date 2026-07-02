@@ -77,23 +77,26 @@ class _BookingCard extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
     final messenger = ScaffoldMessenger.of(context);
+    final lang = Localizations.localeOf(context).languageCode;
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.bookingsCancelTitle, style: AppTheme.serif(20)),
-        content: Text(t.bookingsCancelBody(booking.title), style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(t.bookingsCancelBody(booking.titleFor(lang)), style: AppTheme.sans(13, color: AppColors.inkLight)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(t.bookingsKeepBooking, style: AppTheme.sans(13, color: AppColors.muted)),
           ),
           TextButton(
-            onPressed: () {
-              provider.cancelBooking(booking.id);
+            onPressed: () async {
               Navigator.pop(dialogCtx);
-              messenger.showSnackBar(appSnack(t.bookingsCancelledSnack));
+              final err = await provider.cancelBooking(booking.id);
+              messenger.showSnackBar(err == null
+                  ? appSnack(t.bookingsCancelledSnack)
+                  : appSnack(t.bookingsCancelFailed, isError: true));
             },
             child: Text(t.bookingsConfirmCancel, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
           ),
@@ -141,7 +144,8 @@ class _BookingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Text(booking.title, style: AppTheme.serif(17)),
+                            child: Text(booking.titleFor(Localizations.localeOf(context).languageCode),
+                                style: AppTheme.serif(17)),
                           ),
                           const SizedBox(width: 8),
                           Container(
@@ -158,7 +162,8 @@ class _BookingCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 3),
-                      Text(booking.companyName, style: AppTheme.sans(11.5, color: const Color(0xFF7D8A82), weight: FontWeight.w600)),
+                      Text(booking.companyNameFor(Localizations.localeOf(context).languageCode),
+                          style: AppTheme.sans(11.5, color: const Color(0xFF7D8A82), weight: FontWeight.w600)),
                       const SizedBox(height: 7),
                       Row(
                         children: [

@@ -44,7 +44,6 @@ class AddEditOfferScreen extends StatefulWidget {
 class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   // ── basic fields ─────────────────────────────────────────────────────────
   final _titleCtrl    = TextEditingController();
-  final _cityCtrl     = TextEditingController();
   final _hotelCtrl    = TextEditingController();
   final _distCtrl     = TextEditingController();
   final _roomCtrl     = TextEditingController();
@@ -76,7 +75,6 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     final o = widget.existing;
     if (o != null) {
       _titleCtrl.text    = o.title;
-      _cityCtrl.text     = o.city;
       _hotelCtrl.text    = o.hotel;
       _distCtrl.text     = o.distance;
       _roomCtrl.text     = o.room;
@@ -126,7 +124,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
 
   @override
   void dispose() {
-    for (final c in [_titleCtrl, _cityCtrl, _hotelCtrl, _distCtrl, _roomCtrl,
+    for (final c in [_titleCtrl, _hotelCtrl, _distCtrl, _roomCtrl,
                      _carrierCtrl, _priceCtrl, _originalCtrl, _badgeCtrl]) {
       c.dispose();
     }
@@ -160,10 +158,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     setState(() => _imageBytes = bytes);
   }
 
-  void _save() {
+  Future<void> _save() async {
+    if (_saving) return;
     final t = AppLocalizations.of(context);
     final title = _titleCtrl.text.trim();
-    final price = double.tryParse(_priceCtrl.text.trim()) ?? 0;
+    final price = double.tryParse(_priceCtrl.text.trim().replaceAll(',', '')) ?? 0;
     if (title.isEmpty || price <= 0) {
       showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
       return;
@@ -180,50 +179,46 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
         .map((e) => e.ctrl.text.trim())
         .toList();
 
-    final id = _isEdit ? widget.existing!.id : 'custom_${DateTime.now().millisecondsSinceEpoch}';
+    final provider = context.read<AppProvider>();
+    final company = provider.companyById(widget.companyId);
 
     final offer = Offer(
-      id: id, companyId: widget.companyId,
+      id: _isEdit ? widget.existing!.id : '',
+      companyId: widget.companyId,
       title:      title,
-      city:       _cityCtrl.text.trim().isEmpty ? 'Makkah' : _cityCtrl.text.trim(),
-      cityCode:   'MAKKAH',
       transport:  _transport,
       acc:        _acc,
       days:       _days,
       price:      price,
-      original:   double.tryParse(_originalCtrl.text.trim()) ?? 0,
-      rating:     _isEdit ? widget.existing!.rating : 0,
-      reviews:    _isEdit ? widget.existing!.reviews : 0,
-      hotel:      _hotelCtrl.text.trim().isEmpty ? 'TBA' : _hotelCtrl.text.trim(),
-      distance:   _distCtrl.text.trim().isEmpty ? 'TBA' : _distCtrl.text.trim(),
-      room:       _roomCtrl.text.trim().isEmpty ? 'Standard' : _roomCtrl.text.trim(),
+      original:   double.tryParse(_originalCtrl.text.trim().replaceAll(',', '')) ?? 0,
+      rating:     company?.rating ?? 0,
+      hotel:      _hotelCtrl.text.trim(),
+      distance:   _distCtrl.text.trim(),
+      room:       _roomCtrl.text.trim(),
       meals:      _meals,
-      carrier:    _carrierCtrl.text.trim().isEmpty ? 'TBA' : _carrierCtrl.text.trim(),
+      carrier:    _carrierCtrl.text.trim(),
       badge:      _badgeCtrl.text.trim(),
-      gradColors: _gradColors(),
+      gradColors: [
+        company?.tint ?? AppColors.primary,
+        Color.alphaBlend(Colors.black.withOpacity(0.55), company?.tint ?? AppColors.primary),
+      ],
       customItinerary: itinerary.isEmpty ? null : itinerary,
       customIncludes:  includes.isEmpty  ? null : includes,
     );
 
-    final provider = context.read<AppProvider>();
-    if (_imageBytes != null) {
-      provider.setOfferImage(id, _imageBytes!);
-    } else if (_isEdit) {
-      provider.removeOfferImage(id);
-    }
-    _isEdit ? provider.updateOffer(offer) : provider.addOffer(offer);
+    final ok = _isEdit
+        ? await provider.updateOffer(offer, imageBytes: _imageBytes)
+        : await provider.addOffer(offer, imageBytes: _imageBytes);
 
     if (!mounted) return;
+    if (!ok) {
+      setState(() => _saving = false);
+      showAppSnack(context, t.addEditOfferSaveFailed, isError: true);
+      return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
     messenger.showSnackBar(appSnack(_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished));
-  }
-
-  List<Color> _gradColors() {
-    if (_transport == 'plane' && _acc >= 5) return [const Color(0xFF0F5C4D), const Color(0xFF072C25)];
-    if (_transport == 'plane' && _acc == 4) return [const Color(0xFF15706A), const Color(0xFF0A3F3A)];
-    if (_transport == 'bus'   && _acc >= 4) return [const Color(0xFFA87F2E), const Color(0xFF4F3C16)];
-    return [const Color(0xFF1D6B5F), const Color(0xFF0A3F35)];
   }
 
   @override
@@ -264,7 +259,10 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             // ── Cover image ──────────────────────────────────────────────
             _CoverImagePicker(
               imageBytes: _imageBytes,
-              gradColors: _gradColors(),
+              gradColors: () {
+                final tint = context.read<AppProvider>().companyById(widget.companyId)?.tint ?? AppColors.primary;
+                return [tint, Color.alphaBlend(Colors.black.withOpacity(0.55), tint)];
+              }(),
               onPick: _pickImage,
               onRemove: () => setState(() => _imageBytes = null),
             ),
@@ -273,8 +271,6 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             // ── Basic details ────────────────────────────────────────────
             _SectionHeader(t.addEditOfferPackageDetails),
             _Field(label: t.addEditOfferTitleField, controller: _titleCtrl, hint: t.addEditOfferTitleHint),
-            const SizedBox(height: 14),
-            _Field(label: t.addEditOfferCitiesRoute, controller: _cityCtrl, hint: t.addEditOfferCitiesRouteHint),
             const SizedBox(height: 14),
             _Field(label: t.addEditOfferBadgeOptional, controller: _badgeCtrl, hint: t.addEditOfferBadgeHint),
 

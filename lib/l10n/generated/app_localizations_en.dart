@@ -916,10 +916,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agencyLoginDemoCredentials => 'Demo credentials';
 
   @override
-  String get agencyLoginDemoEmail => 'Email: admin@alsafwah.com';
+  String get agencyLoginDemoEmail => 'Email: agency.demo@umrahapp.dev';
 
   @override
-  String get agencyLoginDemoPassword => 'Password: pass123';
+  String get agencyLoginDemoPassword => 'Password: demo1234';
 
   @override
   String get agencyLoginDemoHint =>
@@ -1169,4 +1169,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addEditOfferPublished => 'Package published!';
+
+  @override
+  String get authSignInTitle => 'Welcome back';
+
+  @override
+  String get authSignUpTitle => 'Create account';
+
+  @override
+  String get authSubtitle => 'Sign in to book trips and manage your bookings.';
+
+  @override
+  String get authFullName => 'Full name';
+
+  @override
+  String get authFullNameHint => 'Your name';
+
+  @override
+  String get authPhone => 'Phone number';
+
+  @override
+  String get authSignUpBtn => 'Create account';
+
+  @override
+  String get authNoAccount => 'New here?';
+
+  @override
+  String get authHaveAccount => 'Already have an account?';
+
+  @override
+  String get authErrFillAll => 'Please fill in all fields.';
+
+  @override
+  String get authConfirmEmailSent =>
+      'Account created — check your email to confirm, then sign in.';
+
+  @override
+  String get authWelcomeSnack => 'Welcome!';
+
+  @override
+  String get profileSignIn => 'Sign in / Create account';
+
+  @override
+  String get profileSignOut => 'Sign out';
+
+  @override
+  String get profileSignedOut => 'Signed out.';
+
+  @override
+  String get profileGuestBadge => 'GUEST';
+
+  @override
+  String get profileStatAlerts => 'Alerts';
+
+  @override
+  String get bookingPayMethod => 'Payment method';
+
+  @override
+  String get payCash => 'Cash';
+
+  @override
+  String get payCard => 'Card';
+
+  @override
+  String get payFib => 'FIB';
+
+  @override
+  String get bookingFailed =>
+      'Could not complete the booking. Please try again.';
+
+  @override
+  String get bookingsCancelFailed =>
+      'Could not cancel this booking — please contact the agency.';
+
+  @override
+  String get loadErrorTitle => 'Couldn\'t load data';
+
+  @override
+  String get loadErrorBody => 'Check your internet connection and try again.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get agencyRegisterTitle => 'Register agency';
+
+  @override
+  String get agencyRegisterSubtitle =>
+      'Create an account to publish your Umrah packages.';
+
+  @override
+  String get agencyRegisterBtn => 'Register agency';
+
+  @override
+  String get agencyRegisterPrompt => 'New agency?';
+
+  @override
+  String get agencyCompanyName => 'Agency name';
+
+  @override
+  String get agencyCompanyNameHint => 'e.g. Noor Travel';
+
+  @override
+  String get agencyCompanyLocation => 'City / Location';
+
+  @override
+  String get agencyCompanyLocationHint => 'e.g. Erbil';
+
+  @override
+  String get agencyNotAgencyAccount => 'This account is not an agency account.';
+
+  @override
+  String get addEditOfferSaveFailed =>
+      'Could not save the package. Check your connection and try again.';
 }
