@@ -1228,6 +1228,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileSignIn => 'تسجيل الدخول / إنشاء حساب';
 
   @override
+  String get profileSignInBannerSubtitle =>
+      'احجز رحلاتك، احفظ المفضلة، وتابع حجوزاتك.';
+
+  @override
   String get profileSignOut => 'تسجيل الخروج';
 
   @override

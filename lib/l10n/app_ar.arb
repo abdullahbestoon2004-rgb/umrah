@@ -357,6 +357,7 @@
   "authConfirmEmailSent": "تم إنشاء الحساب — تحقق من بريدك لتأكيده ثم سجّل الدخول.",
   "authWelcomeSnack": "مرحبًا بك!",
   "profileSignIn": "تسجيل الدخول / إنشاء حساب",
+  "profileSignInBannerSubtitle": "احجز رحلاتك، احفظ المفضلة، وتابع حجوزاتك.",
   "profileSignOut": "تسجيل الخروج",
   "profileSignedOut": "تم تسجيل الخروج.",
   "profileGuestBadge": "زائر",

@@ -34,6 +34,12 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                if (!provider.isSignedIn) ...[
+                  _SignInBanner(
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
+                  ),
+                  const SizedBox(height: 18),
+                ],
                 _MenuCard(
                   icon: Icons.favorite_border_rounded,
                   label: t.profileSavedTrips,
@@ -78,8 +84,8 @@ class ProfileScreen extends StatelessWidget {
                   label: t.profileHelpSupport,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen())),
                 ),
-                const SizedBox(height: 10),
-                if (provider.isSignedIn)
+                if (provider.isSignedIn) ...[
+                  const SizedBox(height: 10),
                   _MenuCard(
                     icon: Icons.logout_rounded,
                     label: t.profileSignOut,
@@ -89,14 +95,8 @@ class ProfileScreen extends StatelessWidget {
                       await provider.signOut();
                       messenger.showSnackBar(appSnack(t.profileSignedOut));
                     },
-                  )
-                else
-                  _MenuCard(
-                    icon: Icons.login_rounded,
-                    label: t.profileSignIn,
-                    tint: AppColors.primary,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
                   ),
+                ],
                 const SizedBox(height: 18),
                 // Agency portal divider
                 Row(children: [
@@ -191,6 +191,57 @@ class _LanguageOption extends StatelessWidget {
           children: [
             Expanded(child: Text(label, style: AppTheme.sans(15, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.ink))),
             if (active) Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SignInBanner extends StatelessWidget {
+  final VoidCallback onTap;
+  const _SignInBanner({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.primary, AppColors.primaryDark],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46, height: 46,
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(14)),
+              alignment: Alignment.center,
+              child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(t.profileSignIn, style: AppTheme.sans(15.5, weight: FontWeight.w800, color: Colors.white)),
+                  const SizedBox(height: 3),
+                  Text(t.profileSignInBannerSubtitle,
+                      style: AppTheme.sans(12, color: Colors.white.withOpacity(0.82)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
           ],
         ),
       ),

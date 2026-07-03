@@ -2130,6 +2130,12 @@ abstract class AppLocalizations {
   /// **'Sign in / Create account'**
   String get profileSignIn;
 
+  /// No description provided for @profileSignInBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Book trips, save favorites, and track your bookings.'**
+  String get profileSignInBannerSubtitle;
+
   /// No description provided for @profileSignOut.
   ///
   /// In en, this message translates to:

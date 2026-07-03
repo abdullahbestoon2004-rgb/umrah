@@ -357,6 +357,7 @@
   "authConfirmEmailSent": "هەژمارەکە دروستکرا — ئیمەیلەکەت بپشکنە بۆ پشتڕاستکردنەوە، پاشان بچۆ ژوورەوە.",
   "authWelcomeSnack": "بەخێربێیت!",
   "profileSignIn": "چوونەژوورەوە / دروستکردنی هەژمار",
+  "profileSignInBannerSubtitle": "گەشت حجز بکە، دڵخوازەکان هەڵبگرە، و گەشتەکانت بەدواداچوون بکە.",
   "profileSignOut": "چوونەدەرەوە",
   "profileSignedOut": "چوویتە دەرەوە.",
   "profileGuestBadge": "میوان",

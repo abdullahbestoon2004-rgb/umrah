@@ -426,6 +426,7 @@
   "authConfirmEmailSent": "Account created — check your email to confirm, then sign in.",
   "authWelcomeSnack": "Welcome!",
   "profileSignIn": "Sign in / Create account",
+  "profileSignInBannerSubtitle": "Book trips, save favorites, and track your bookings.",
   "profileSignOut": "Sign out",
   "profileSignedOut": "Signed out.",
   "profileGuestBadge": "GUEST",

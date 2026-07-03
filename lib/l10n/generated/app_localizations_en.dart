@@ -1234,6 +1234,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSignIn => 'Sign in / Create account';
 
   @override
+  String get profileSignInBannerSubtitle =>
+      'Book trips, save favorites, and track your bookings.';
+
+  @override
   String get profileSignOut => 'Sign out';
 
   @override

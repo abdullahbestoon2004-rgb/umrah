@@ -1241,6 +1241,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get profileSignIn => 'چوونەژوورەوە / دروستکردنی هەژمار';
 
   @override
+  String get profileSignInBannerSubtitle =>
+      'گەشت حجز بکە، دڵخوازەکان هەڵبگرە، و گەشتەکانت بەدواداچوون بکە.';
+
+  @override
   String get profileSignOut => 'چوونەدەرەوە';
 
   @override
