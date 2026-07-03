@@ -4,6 +4,20 @@ import '../models/company_model.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/user_profile.dart';
+import '../models/payment_card_model.dart';
+
+/// Account-wide preferences that follow the user across devices
+/// (as opposed to the biometric lock, which is deliberately per-device).
+class AccountPrefs {
+  final bool marketingEmails;
+  final bool twoFactorEnabled;
+  final bool shareActivity;
+  const AccountPrefs({
+    this.marketingEmails = true,
+    this.twoFactorEnabled = false,
+    this.shareActivity = false,
+  });
+}
 
 /// All backend access goes through this interface so tests can fake it.
 abstract class DataService {
@@ -44,6 +58,29 @@ abstract class DataService {
     String? contactPhone,
   });
   Future<String?> cancelBooking(String id);
+
+  // ── account sync ────────────────────────────────────────────────────────
+  Future<Set<String>> fetchSavedOfferIds(String clientId);
+  Future<void> saveOfferRemote(String clientId, String packageId);
+  Future<void> unsaveOfferRemote(String clientId, String packageId);
+
+  Future<List<PaymentCard>> fetchPaymentCards(String clientId);
+  Future<PaymentCard?> addPaymentCard(String clientId, {
+    required String holder,
+    required String last4,
+    required String expiry,
+    required String brand,
+    required bool isDefault,
+  });
+  Future<void> removePaymentCard(String id);
+  Future<void> setDefaultPaymentCard(String clientId, String id);
+
+  Future<AccountPrefs> fetchAccountPrefs(String clientId);
+  Future<void> updateAccountPrefs(String clientId, {
+    bool? marketingEmails,
+    bool? twoFactorEnabled,
+    bool? shareActivity,
+  });
 }
 
 class SupabaseService implements DataService {
@@ -314,5 +351,123 @@ class SupabaseService implements DataService {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  // ── account sync ─────────────────────────────────────────────────────────
+  // Every method here degrades gracefully (empty/no-op) if
+  // supabase/patches_account_sync.sql hasn't been run yet, so the app still
+  // works — saves and cards just won't follow the account until it has.
+
+  @override
+  Future<Set<String>> fetchSavedOfferIds(String clientId) async {
+    try {
+      final rows = await _c.from('saved_offers').select('package_id').eq('client_id', clientId);
+      return rows.map((r) => r['package_id'] as String).toSet();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  @override
+  Future<void> saveOfferRemote(String clientId, String packageId) async {
+    try {
+      await _c.from('saved_offers').insert({'client_id': clientId, 'package_id': packageId});
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> unsaveOfferRemote(String clientId, String packageId) async {
+    try {
+      await _c.from('saved_offers').delete().eq('client_id', clientId).eq('package_id', packageId);
+    } catch (_) {}
+  }
+
+  @override
+  Future<List<PaymentCard>> fetchPaymentCards(String clientId) async {
+    try {
+      final rows = await _c
+          .from('payment_cards')
+          .select()
+          .eq('client_id', clientId)
+          .order('created_at');
+      return rows.map((r) => PaymentCard.fromRow(r)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<PaymentCard?> addPaymentCard(String clientId, {
+    required String holder,
+    required String last4,
+    required String expiry,
+    required String brand,
+    required bool isDefault,
+  }) async {
+    try {
+      if (isDefault) {
+        await _c.from('payment_cards').update({'is_default': false}).eq('client_id', clientId);
+      }
+      final row = await _c.from('payment_cards').insert({
+        'client_id': clientId,
+        'holder': holder,
+        'last4': last4,
+        'expiry': expiry,
+        'brand': brand,
+        'is_default': isDefault,
+      }).select().single();
+      return PaymentCard.fromRow(row);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> removePaymentCard(String id) async {
+    try {
+      await _c.from('payment_cards').delete().eq('id', id);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> setDefaultPaymentCard(String clientId, String id) async {
+    try {
+      await _c.from('payment_cards').update({'is_default': false}).eq('client_id', clientId);
+      await _c.from('payment_cards').update({'is_default': true}).eq('id', id);
+    } catch (_) {}
+  }
+
+  @override
+  Future<AccountPrefs> fetchAccountPrefs(String clientId) async {
+    try {
+      final row = await _c
+          .from('profiles')
+          .select('marketing_emails, two_factor_enabled, share_activity')
+          .eq('id', clientId)
+          .maybeSingle();
+      if (row == null) return const AccountPrefs();
+      return AccountPrefs(
+        marketingEmails: (row['marketing_emails'] ?? true) as bool,
+        twoFactorEnabled: (row['two_factor_enabled'] ?? false) as bool,
+        shareActivity: (row['share_activity'] ?? false) as bool,
+      );
+    } catch (_) {
+      return const AccountPrefs();
+    }
+  }
+
+  @override
+  Future<void> updateAccountPrefs(String clientId, {
+    bool? marketingEmails,
+    bool? twoFactorEnabled,
+    bool? shareActivity,
+  }) async {
+    try {
+      await _c.from('profiles').update({
+        if (marketingEmails != null) 'marketing_emails': marketingEmails,
+        if (twoFactorEnabled != null) 'two_factor_enabled': twoFactorEnabled,
+        if (shareActivity != null) 'share_activity': shareActivity,
+      }).eq('id', clientId);
+    } catch (_) {}
   }
 }

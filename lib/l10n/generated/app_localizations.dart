@@ -1278,6 +1278,24 @@ abstract class AppLocalizations {
   /// **'Enter a valid CVV (3–4 digits).'**
   String get paymentErrCvv;
 
+  /// No description provided for @paymentSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the card. Try again.'**
+  String get paymentSaveFailed;
+
+  /// No description provided for @paymentSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to add payment methods'**
+  String get paymentSignInTitle;
+
+  /// No description provided for @paymentSignInBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved cards follow your account across every device.'**
+  String get paymentSignInBody;
+
   /// No description provided for @privacyTitle.
   ///
   /// In en, this message translates to:

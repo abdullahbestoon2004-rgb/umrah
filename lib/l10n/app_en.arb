@@ -271,6 +271,9 @@
   "paymentErrNumber": "Enter a valid card number (13–19 digits).",
   "paymentErrExpiry": "Enter a valid future expiry (MM/YY).",
   "paymentErrCvv": "Enter a valid CVV (3–4 digits).",
+  "paymentSaveFailed": "Couldn't save the card. Try again.",
+  "paymentSignInTitle": "Sign in to add payment methods",
+  "paymentSignInBody": "Your saved cards follow your account across every device.",
 
   "privacyTitle": "Privacy & security",
   "privacySectionSecurity": "Security",

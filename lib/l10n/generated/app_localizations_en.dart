@@ -761,6 +761,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentErrCvv => 'Enter a valid CVV (3–4 digits).';
 
   @override
+  String get paymentSaveFailed => 'Couldn\'t save the card. Try again.';
+
+  @override
+  String get paymentSignInTitle => 'Sign in to add payment methods';
+
+  @override
+  String get paymentSignInBody =>
+      'Your saved cards follow your account across every device.';
+
+  @override
   String get privacyTitle => 'Privacy & security';
 
   @override

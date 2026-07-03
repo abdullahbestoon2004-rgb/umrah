@@ -208,6 +208,9 @@
   "paymentErrNumber": "أدخل رقم بطاقة صالحًا (13–19 رقمًا).",
   "paymentErrExpiry": "أدخل تاريخ انتهاء صالحًا في المستقبل (شش/سس).",
   "paymentErrCvv": "أدخل رمز أمان صالحًا (3–4 أرقام).",
+  "paymentSaveFailed": "تعذّر حفظ البطاقة. حاول مرة أخرى.",
+  "paymentSignInTitle": "سجّل الدخول لإضافة وسائل الدفع",
+  "paymentSignInBody": "بطاقاتك المحفوظة تتبع حسابك على كل جهاز.",
 
   "privacyTitle": "الخصوصية والأمان",
   "privacySectionSecurity": "الأمان",

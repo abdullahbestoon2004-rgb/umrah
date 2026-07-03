@@ -8,6 +8,7 @@ import 'package:umrah_app/models/booking_model.dart';
 import 'package:umrah_app/models/company_model.dart';
 import 'package:umrah_app/models/notification_model.dart';
 import 'package:umrah_app/models/offer_model.dart';
+import 'package:umrah_app/models/payment_card_model.dart';
 import 'package:umrah_app/models/user_profile.dart';
 import 'package:umrah_app/providers/app_provider.dart';
 import 'package:umrah_app/services/supabase_service.dart';
@@ -141,6 +142,80 @@ class FakeService implements DataService {
     bookings[i] = bookings[i].copyWith(status: 'Cancelled');
     return null;
   }
+
+  // ── account sync (in-memory, per client id) ──────────────────────────────
+  final Map<String, Set<String>> _savedByClient = {};
+  final Map<String, List<PaymentCard>> _cardsByClient = {};
+  final Map<String, AccountPrefs> _prefsByClient = {};
+
+  @override
+  Future<Set<String>> fetchSavedOfferIds(String clientId) async =>
+      Set.from(_savedByClient[clientId] ?? const {});
+
+  @override
+  Future<void> saveOfferRemote(String clientId, String packageId) async {
+    (_savedByClient[clientId] ??= {}).add(packageId);
+  }
+
+  @override
+  Future<void> unsaveOfferRemote(String clientId, String packageId) async {
+    _savedByClient[clientId]?.remove(packageId);
+  }
+
+  @override
+  Future<List<PaymentCard>> fetchPaymentCards(String clientId) async =>
+      List.from(_cardsByClient[clientId] ?? const []);
+
+  @override
+  Future<PaymentCard?> addPaymentCard(String clientId, {
+    required String holder, required String last4, required String expiry,
+    required String brand, required bool isDefault,
+  }) async {
+    final list = _cardsByClient[clientId] ??= [];
+    if (isDefault) {
+      for (var i = 0; i < list.length; i++) {
+        list[i] = PaymentCard(id: list[i].id, holder: list[i].holder, last4: list[i].last4,
+            expiry: list[i].expiry, brand: list[i].brand, isDefault: false);
+      }
+    }
+    final card = PaymentCard(id: 'pc${list.length + 1}', holder: holder, last4: last4,
+        expiry: expiry, brand: brand, isDefault: isDefault);
+    list.add(card);
+    return card;
+  }
+
+  @override
+  Future<void> removePaymentCard(String id) async {
+    for (final list in _cardsByClient.values) {
+      list.removeWhere((c) => c.id == id);
+    }
+  }
+
+  @override
+  Future<void> setDefaultPaymentCard(String clientId, String id) async {
+    final list = _cardsByClient[clientId];
+    if (list == null) return;
+    for (var i = 0; i < list.length; i++) {
+      list[i] = PaymentCard(id: list[i].id, holder: list[i].holder, last4: list[i].last4,
+          expiry: list[i].expiry, brand: list[i].brand, isDefault: list[i].id == id);
+    }
+  }
+
+  @override
+  Future<AccountPrefs> fetchAccountPrefs(String clientId) async =>
+      _prefsByClient[clientId] ?? const AccountPrefs();
+
+  @override
+  Future<void> updateAccountPrefs(String clientId, {
+    bool? marketingEmails, bool? twoFactorEnabled, bool? shareActivity,
+  }) async {
+    final cur = _prefsByClient[clientId] ?? const AccountPrefs();
+    _prefsByClient[clientId] = AccountPrefs(
+      marketingEmails: marketingEmails ?? cur.marketingEmails,
+      twoFactorEnabled: twoFactorEnabled ?? cur.twoFactorEnabled,
+      shareActivity: shareActivity ?? cur.shareActivity,
+    );
+  }
 }
 
 Future<AppProvider> makeProvider() async {
@@ -262,6 +337,56 @@ void main() {
       expect(p.isSignedIn, false);
       expect(p.bookings, isEmpty);
     });
+
+    test('saved trips sync to the account and merge guest saves on sign-in', () async {
+      final shared = FakeService();
+      final p = AppProvider(service: shared, autoLoad: false);
+      await p.init();
+      // Save one offer as a guest, before signing in.
+      p.toggleSave('o1');
+      expect(p.saved, ['o1']);
+
+      await p.signIn('client@test.com', 'pass');
+      // The guest-made save should have been pushed to the account, not lost.
+      expect(p.saved, contains('o1'));
+
+      // New saves while signed in go straight to the account.
+      p.toggleSave('o2');
+      expect(p.saved, containsAll(['o1', 'o2']));
+
+      // A second session on the same backend for the same account sees both
+      // saves immediately — this is the actual "syncs across devices" check.
+      final p2 = AppProvider(service: shared, autoLoad: false);
+      await p2.init();
+      await p2.signIn('client@test.com', 'pass');
+      expect(p2.saved, containsAll(['o1', 'o2']));
+    });
+
+    test('payment cards require sign-in and sync per account', () async {
+      final p = await makeProvider();
+      expect(await p.addCard(holder: 'Guest', number: '4111111111111111', expiry: '08/29'), false);
+      expect(p.cards, isEmpty);
+
+      await p.signIn('client@test.com', 'pass');
+      expect(await p.addCard(holder: 'Test User', number: '4111111111111111', expiry: '08/29'), true);
+      expect(p.cards, hasLength(1));
+      expect(p.cards.first.isDefault, true);
+      expect(p.defaultCardId, p.cards.first.id);
+    });
+
+    test('cards and cloud-synced prefs are cleared on sign out, biometric survives', () async {
+      final p = await makeProvider();
+      await p.signIn('client@test.com', 'pass');
+      await p.addCard(holder: 'Test User', number: '4111111111111111', expiry: '08/29');
+      p.setSecuritySetting('marketing', false);
+      p.setSecuritySetting('biometric', true);
+      expect(p.cards, isNotEmpty);
+
+      await p.signOut();
+      expect(p.cards, isEmpty);
+      expect(p.marketingEmails, true); // reset to default, not leaked to next user
+      expect(p.biometricLock, true); // device-level setting, unaffected by sign out
+    });
   });
 
   group('Screens render', () {
@@ -276,8 +401,14 @@ void main() {
       expect(p.unreadNotifications, unreadBefore - 1);
     });
 
-    testWidgets('PaymentMethodsScreen add-card sheet validates', (tester) async {
+    testWidgets('PaymentMethodsScreen requires sign-in, then validates add-card sheet', (tester) async {
       final p = await makeProvider();
+      await tester.pumpWidget(wrap(const PaymentMethodsScreen(), p));
+      await tester.pump();
+      expect(find.text('Sign in to add payment methods'), findsOneWidget);
+      expect(find.text('Add card'), findsNothing);
+
+      await p.signIn('client@test.com', 'pass');
       await tester.pumpWidget(wrap(const PaymentMethodsScreen(), p));
       await tester.pump();
       await tester.tap(find.text('Add card'));

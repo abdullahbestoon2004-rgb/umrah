@@ -170,9 +170,42 @@ class AppProvider extends ChangeNotifier {
       if (_user != null) {
         if (_user!.isAgency) _myCompany = await _service.fetchMyCompany(_user!.id);
         await refreshBookings();
+        await _syncAccountData();
       }
     } catch (_) {}
     notifyListeners();
+  }
+
+  /// Pulls everything that belongs to this account down from the backend —
+  /// saved trips, payment methods, preferences — and pushes up any saves
+  /// made as a guest before signing in, so nothing is lost.
+  Future<void> _syncAccountData() async {
+    final uid = _user!.id;
+    try {
+      final remoteSaved = await _service.fetchSavedOfferIds(uid);
+      final localOnly = _saved.where((id) => !remoteSaved.contains(id)).toList();
+      for (final id in localOnly) {
+        await _service.saveOfferRemote(uid, id);
+      }
+      _saved
+        ..clear()
+        ..addAll(remoteSaved)
+        ..addAll(localOnly);
+      await _prefs?.setStringList('saved', _saved);
+    } catch (_) {}
+
+    try {
+      _cards = await _service.fetchPaymentCards(uid);
+      final def = _cards.where((c) => c.isDefault).firstOrNull;
+      _defaultCardId = def?.id ?? (_cards.isNotEmpty ? _cards.first.id : '');
+    } catch (_) {}
+
+    try {
+      final prefs = await _service.fetchAccountPrefs(uid);
+      marketingEmails = prefs.marketingEmails;
+      twoFactorAuth = prefs.twoFactorEnabled;
+      shareActivity = prefs.shareActivity;
+    } catch (_) {}
   }
 
   Future<String?> signIn(String email, String password) async {
@@ -220,6 +253,19 @@ class AppProvider extends ChangeNotifier {
     _user = null;
     _myCompany = null;
     _bookings = [];
+    // Clear account-scoped data so it can't leak to the next person who
+    // uses this device — cards, saves, and account prefs all follow the
+    // account, not the device.
+    _cards = [];
+    _defaultCardId = '';
+    _saved.clear();
+    await _prefs?.remove('saved');
+    marketingEmails = true;
+    twoFactorAuth = false;
+    shareActivity = false;
+    _notifications
+      ..clear()
+      ..add(AppNotification(id: 'n1', type: NotificationType.welcome, time: DateTime.now()));
     notifyListeners();
   }
 
@@ -234,9 +280,17 @@ class AppProvider extends ChangeNotifier {
   bool isSaved(String offerId) => _saved.contains(offerId);
 
   void toggleSave(String offerId) {
-    _saved.contains(offerId) ? _saved.remove(offerId) : _saved.add(offerId);
+    final nowSaved = !_saved.contains(offerId);
+    nowSaved ? _saved.add(offerId) : _saved.remove(offerId);
     _prefs?.setStringList('saved', _saved);
     notifyListeners();
+    // Guests keep saves locally only (there's no account to attach them to);
+    // once signed in this follows the account instead.
+    if (_user != null) {
+      nowSaved
+          ? _service.saveOfferRemote(_user!.id, offerId)
+          : _service.unsaveOfferRemote(_user!.id, offerId);
+    }
   }
 
   List<Offer> get savedOffers =>
@@ -478,37 +532,57 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── payment methods (local) ──────────────────────────────────────────────
-  final List<PaymentCard> _cards = [];
+  // ── payment methods (synced to the account — sign-in required) ──────────
+  List<PaymentCard> _cards = [];
   String _defaultCardId = '';
   List<PaymentCard> get cards => List.unmodifiable(_cards);
   String get defaultCardId => _defaultCardId;
 
-  void addCard({required String holder, required String number, required String expiry}) {
-    final card = PaymentCard(
-      id: 'pc${DateTime.now().millisecondsSinceEpoch}',
+  Future<bool> addCard({required String holder, required String number, required String expiry}) async {
+    if (_user == null) return false;
+    final isDefault = _cards.isEmpty;
+    final card = await _service.addPaymentCard(
+      _user!.id,
       holder: holder,
       last4: number.substring(number.length - 4),
       expiry: expiry,
       brand: PaymentCard.detectBrand(number),
+      isDefault: isDefault,
     );
-    _cards.add(card);
-    if (_cards.length == 1) _defaultCardId = card.id;
+    if (card == null) return false;
+    if (isDefault) {
+      for (var i = 0; i < _cards.length; i++) {
+        final c = _cards[i];
+        if (c.isDefault) _cards[i] = PaymentCard(id: c.id, holder: c.holder, last4: c.last4, expiry: c.expiry, brand: c.brand);
+      }
+    }
+    _cards = [..._cards, card];
+    if (isDefault) _defaultCardId = card.id;
     notifyListeners();
+    return true;
   }
 
-  void removeCard(String id) {
-    _cards.removeWhere((c) => c.id == id);
-    if (_defaultCardId == id && _cards.isNotEmpty) _defaultCardId = _cards.first.id;
+  Future<void> removeCard(String id) async {
+    _cards = _cards.where((c) => c.id != id).toList();
+    if (_defaultCardId == id) {
+      _defaultCardId = _cards.isNotEmpty ? _cards.first.id : '';
+      if (_user != null && _defaultCardId.isNotEmpty) {
+        await _service.setDefaultPaymentCard(_user!.id, _defaultCardId);
+      }
+    }
     notifyListeners();
+    await _service.removePaymentCard(id);
   }
 
-  void setDefaultCard(String id) {
+  Future<void> setDefaultCard(String id) async {
     _defaultCardId = id;
     notifyListeners();
+    if (_user != null) await _service.setDefaultPaymentCard(_user!.id, id);
   }
 
-  // ── privacy & security settings (local) ──────────────────────────────────
+  // ── privacy & security settings ──────────────────────────────────────────
+  // Biometric lock is deliberately per-device (stored only in shared_
+  // preferences); the rest follow the account across devices.
   bool biometricLock = false;
   bool twoFactorAuth = false;
   bool marketingEmails = true;
@@ -521,7 +595,20 @@ class AppProvider extends ChangeNotifier {
       case 'marketing': marketingEmails = value;
       case 'activity': shareActivity = value;
     }
-    _prefs?.setBool(key, value);
     notifyListeners();
+    if (key == 'biometric') {
+      _prefs?.setBool(key, value);
+      return;
+    }
+    if (_user != null) {
+      _service.updateAccountPrefs(
+        _user!.id,
+        twoFactorEnabled: key == 'twoFactor' ? value : null,
+        marketingEmails: key == 'marketing' ? value : null,
+        shareActivity: key == 'activity' ? value : null,
+      );
+    } else {
+      _prefs?.setBool(key, value);
+    }
   }
 }

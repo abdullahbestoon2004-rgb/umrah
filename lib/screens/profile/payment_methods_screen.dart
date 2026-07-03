@@ -6,6 +6,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/payment_card_model.dart';
 import '../../widgets/app_snackbar.dart';
+import '../auth/auth_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PaymentMethodsScreen extends StatelessWidget {
@@ -43,50 +44,56 @@ class PaymentMethodsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: cards.isEmpty
-                  ? Center(
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        const Icon(Icons.credit_card_off_rounded, size: 48, color: AppColors.mutedLight),
-                        const SizedBox(height: 14),
-                        Text(t.paymentEmptyTitle, style: AppTheme.serif(20)),
-                        const SizedBox(height: 6),
-                        Text(t.paymentEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
-                      ]),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                      itemCount: cards.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (context, i) => _CardTile(
-                        card: cards[i],
-                        isDefault: cards[i].id == provider.defaultCardId,
+            if (!provider.isSignedIn)
+              Expanded(child: _SignInRequired(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
+              ))
+            else ...[
+              Expanded(
+                child: cards.isEmpty
+                    ? Center(
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.credit_card_off_rounded, size: 48, color: AppColors.mutedLight),
+                          const SizedBox(height: 14),
+                          Text(t.paymentEmptyTitle, style: AppTheme.serif(20)),
+                          const SizedBox(height: 6),
+                          Text(t.paymentEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
+                        ]),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                        itemCount: cards.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (context, i) => _CardTile(
+                          card: cards[i],
+                          isDefault: cards[i].id == provider.defaultCardId,
+                        ),
                       ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                child: GestureDetector(
+                  onTap: () => _openAddCard(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.35), blurRadius: 22, offset: const Offset(0, 10))],
                     ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-              child: GestureDetector(
-                onTap: () => _openAddCard(context),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.35), blurRadius: 22, offset: const Offset(0, 10))],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.add_rounded, color: Colors.white, size: 20),
-                      const SizedBox(width: 7),
-                      Text(t.paymentAddCard, style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
-                    ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+                        const SizedBox(width: 7),
+                        Text(t.paymentAddCard, style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -101,6 +108,44 @@ class PaymentMethodsScreen extends StatelessWidget {
       builder: (_) => ChangeNotifierProvider.value(
         value: context.read<AppProvider>(),
         child: const _AddCardSheet(),
+      ),
+    );
+  }
+}
+
+class _SignInRequired extends StatelessWidget {
+  final VoidCallback onTap;
+  const _SignInRequired({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72, height: 72,
+              decoration: const BoxDecoration(color: Color(0xFFEAF1EC), shape: BoxShape.circle),
+              child: const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(t.paymentSignInTitle, style: AppTheme.serif(20), textAlign: TextAlign.center),
+            const SizedBox(height: 6),
+            Text(t.paymentSignInBody, style: AppTheme.sans(13, color: AppColors.muted), textAlign: TextAlign.center),
+            const SizedBox(height: 18),
+            GestureDetector(
+              onTap: onTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                child: Text(t.profileSignIn, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -201,9 +246,9 @@ class _CardTile extends StatelessWidget {
             child: Text(t.paymentKeepCard, style: AppTheme.sans(13, color: AppColors.muted)),
           ),
           TextButton(
-            onPressed: () {
-              provider.removeCard(card.id);
+            onPressed: () async {
               Navigator.pop(dialogCtx);
+              await provider.removeCard(card.id);
               messenger.showSnackBar(appSnack(t.paymentCardRemoved));
             },
             child: Text(t.paymentConfirmRemove, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
@@ -252,19 +297,28 @@ class _AddCardSheetState extends State<_AddCardSheet> {
     return null;
   }
 
-  void _save() {
+  bool _saving = false;
+
+  Future<void> _save() async {
+    if (_saving) return;
     final t = AppLocalizations.of(context);
     final err = _validate(t);
     if (err != null) {
       setState(() => _error = err);
       return;
     }
-    final messenger = ScaffoldMessenger.of(context);
-    context.read<AppProvider>().addCard(
+    setState(() { _saving = true; _error = null; });
+    final ok = await context.read<AppProvider>().addCard(
           holder: _holderCtrl.text.trim(),
           number: _numberCtrl.text.replaceAll(RegExp(r'\D'), ''),
           expiry: _expiryCtrl.text.trim(),
         );
+    if (!mounted) return;
+    if (!ok) {
+      setState(() { _saving = false; _error = t.paymentSaveFailed; });
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
     messenger.showSnackBar(appSnack(t.paymentCardAdded));
   }
@@ -368,13 +422,15 @@ class _AddCardSheetState extends State<_AddCardSheet> {
             ],
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: _save,
+              onTap: _saving ? null : _save,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
                 alignment: Alignment.center,
-                child: Text(t.paymentSaveCard, style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+                child: _saving
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                    : Text(t.paymentSaveCard, style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
               ),
             ),
           ],

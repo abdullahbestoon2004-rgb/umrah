@@ -763,6 +763,17 @@ class AppLocalizationsKu extends AppLocalizations {
   String get paymentErrCvv => 'کۆدێکی دروستی CVV بنووسە (3–4 ژمارە).';
 
   @override
+  String get paymentSaveFailed =>
+      'کارتەکە پاشەکەوت نەکرا. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get paymentSignInTitle => 'بچۆ ژوورەوە بۆ زیادکردنی شێوازی پارەدان';
+
+  @override
+  String get paymentSignInBody =>
+      'کارتە پاشەکەوتکراوەکانت لەگەڵ هەژمارەکەت لەسەر هەموو ئامێرێک دەبن.';
+
+  @override
   String get privacyTitle => 'تایبەتمەندی و ئاسایش';
 
   @override

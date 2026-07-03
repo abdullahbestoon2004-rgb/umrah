@@ -760,6 +760,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentErrCvv => 'أدخل رمز أمان صالحًا (3–4 أرقام).';
 
   @override
+  String get paymentSaveFailed => 'تعذّر حفظ البطاقة. حاول مرة أخرى.';
+
+  @override
+  String get paymentSignInTitle => 'سجّل الدخول لإضافة وسائل الدفع';
+
+  @override
+  String get paymentSignInBody => 'بطاقاتك المحفوظة تتبع حسابك على كل جهاز.';
+
+  @override
   String get privacyTitle => 'الخصوصية والأمان';
 
   @override
