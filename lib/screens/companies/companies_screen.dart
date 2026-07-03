@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../models/company_model.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
+import '../../widgets/islamic_pattern.dart';
 import 'company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -100,6 +101,7 @@ class _CompanyListCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const IslamicPattern(opacity: 0.08, cell: 46),
                     // bottom scrim for text legibility
                     Container(
                       decoration: BoxDecoration(

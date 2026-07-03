@@ -6,6 +6,7 @@ import '../../models/company_model.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/offer_image.dart';
+import '../../widgets/islamic_pattern.dart';
 import '../../widgets/tag_chip.dart';
 import '../offers/offer_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -89,6 +90,7 @@ class _CompanyHeader extends StatelessWidget {
         bottom: false,
         child: Stack(
           children: [
+            const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
             Positioned(
               right: -30,
               top: -20,

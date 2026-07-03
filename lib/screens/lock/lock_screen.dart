@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../widgets/islamic_pattern.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Shown at launch when the biometric app lock is enabled.
@@ -35,7 +36,10 @@ class _LockScreenState extends State<LockScreen> {
     final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.primary,
-      body: SafeArea(
+      body: Stack(
+        children: [
+          const Positioned.fill(child: IslamicPattern(opacity: 0.05, cell: 84)),
+          SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +77,8 @@ class _LockScreenState extends State<LockScreen> {
             ],
           ),
         ),
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/offer_model.dart';
 import '../../widgets/offer_image.dart';
+import '../../widgets/islamic_pattern.dart';
 import '../../widgets/star_rating.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_login_screen.dart';
@@ -216,6 +217,7 @@ class _ProfileHeader extends StatelessWidget {
         bottom: false,
         child: Stack(
           children: [
+            const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
             Positioned(
               right: -26, top: -26,
               child: Container(

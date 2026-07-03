@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'islamic_pattern.dart';
 
 class GradientCard extends StatelessWidget {
   final List<Color> colors;
@@ -29,40 +30,17 @@ class GradientCard extends StatelessWidget {
           colors: colors,
         ),
       ),
-      child: Stack(
-        children: [
-          // subtle stripe texture
-          ClipRRect(
-            borderRadius: borderRadius,
-            child: CustomPaint(
-              size: Size(width ?? double.infinity, height),
-              painter: _StripePainter(),
-            ),
-          ),
-          if (child != null) child!,
-        ],
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // small cards get a tighter tile so the motif stays visible
+            IslamicPattern(cell: height < 120 ? 40 : 62, opacity: 0.09),
+            if (child != null) child!,
+          ],
+        ),
       ),
     );
   }
-}
-
-class _StripePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-    const spacing = 16.0;
-    for (double i = -size.height; i < size.width + size.height; i += spacing) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i + size.height, size.height),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
