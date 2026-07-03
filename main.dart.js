@@ -110705,7 +110705,8 @@ k=A.a9(7)
 j=t.p
 n=A.aD(A.b([o,B.cm,A.aS(A.aA(A.b([A.aD(A.b([m,B.cD,A.Z(h,A.D(i.azm(g),h,h,h,A.P(10.5,p.gaeh(),B.y),h,h,h),B.j,h,h,new A.X(l,h,h,k,h,h,B.m),h,h,h,B.Sd,h,h,h)],j),B.A,B.i,B.k),B.dc,A.D(p.aD0(a.a3(n).r.f.gbR()),h,h,h,A.P(11.5,B.ed,B.br),h,h,h),B.lP,A.aD(A.b([A.D(i.amo(g),h,h,h,A.P(11.5,B.jg,B.r),h,h,h),B.ah7,A.D(g.Oh(p.z),h,h,h,A.P(11.5,B.jg,B.r),h,h,h)],j),B.q,B.i,B.k)],j),B.A,B.i,B.k),1)],j),B.q,B.i,B.k)
 k=A.b([A.aS(A.D(g.Oi(p.at),h,B.ao,h,A.P(11,B.S,B.r).aEa("monospace",0.5),h,h,h),1)],j)
-if(p.Q==="Confirmed"){o=A.Q(20,B.X.m()>>>16&255,B.X.m()>>>8&255,B.X.m()&255)
+o=p.Q
+if(o==="Confirmed"||o==="Pending"){o=A.Q(20,B.X.m()>>>16&255,B.X.m()>>>8&255,B.X.m()&255)
 m=A.a9(8)
 l=A.bo(A.Q(64,B.X.m()>>>16&255,B.X.m()>>>8&255,B.X.m()&255),1)
 B.b.O(k,A.b([A.b4(h,A.Z(h,A.D(g.gO9(),h,h,h,A.P(11,B.X,B.y),h,h,h),B.j,h,h,new A.X(o,h,l,m,h,h,B.m),h,h,h,B.tp,h,h,h),B.v,!1,h,h,h,h,h,h,h,h,h,h,h,h,h,h,new A.aC5(i,a),h,h,h,h,h,h),B.dY],j))}k.push(A.D(A.h3(p.ax),h,h,h,A.b9(18,B.f),h,h,h))
