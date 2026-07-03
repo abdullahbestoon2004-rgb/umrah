@@ -91,18 +91,6 @@ class _CompanyHeader extends StatelessWidget {
         child: Stack(
           children: [
             const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
-            Positioned(
-              right: -30,
-              top: -20,
-              child: Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.5),
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               child: Column(

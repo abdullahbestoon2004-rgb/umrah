@@ -218,16 +218,6 @@ class _ProfileHeader extends StatelessWidget {
         child: Stack(
           children: [
             const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
-            Positioned(
-              right: -26, top: -26,
-              child: Container(
-                width: 150, height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.gold.withOpacity(0.35), width: 1.5),
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 30, 22, 26),
               child: Column(

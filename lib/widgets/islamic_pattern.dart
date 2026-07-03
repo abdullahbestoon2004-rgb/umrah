@@ -1,10 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Classic Islamic star-and-cross (khatam) tessellation: eight-pointed
-/// stars built from two overlapping squares, tiled on a grid, with small
-/// diamonds filling the cross-shaped gaps. Drawn as a subtle line texture
-/// over gradients and headers.
+/// Girih-style Islamic pattern: six-pointed stars alternating with
+/// hexagons on a triangular lattice, every shape drawn with a double
+/// parallel outline (strapwork), like classic tile work.
 class IslamicPattern extends StatelessWidget {
   final double opacity;
   final Color color;
@@ -22,48 +21,76 @@ class IslamicPattern extends StatelessWidget {
     return IgnorePointer(
       child: CustomPaint(
         size: Size.infinite,
-        painter: _KhatamPainter(color: color, opacity: opacity, cell: cell),
+        painter: _GirihPainter(color: color, opacity: opacity, cell: cell),
       ),
     );
   }
 }
 
-class _KhatamPainter extends CustomPainter {
+class _GirihPainter extends CustomPainter {
   final Color color;
   final double opacity;
   final double cell;
 
-  _KhatamPainter({required this.color, required this.opacity, required this.cell});
+  _GirihPainter({required this.color, required this.opacity, required this.cell});
 
   @override
   void paint(Canvas canvas, Size size) {
     final stroke = Paint()
       ..color = color.withOpacity(opacity)
-      ..strokeWidth = 1.1
-      ..style = PaintingStyle.stroke;
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.miter;
 
-    final r = cell * 0.48; // star radius — tips almost touch across cells
+    final a = cell; // horizontal lattice spacing
+    final h = a * math.sqrt(3) / 2; // row height
+    final r = a * 0.55; // shape radius — near-touching neighbours
 
-    for (double y = 0; y <= size.height + cell; y += cell) {
-      for (double x = 0; x <= size.width + cell; x += cell) {
-        _drawStar(canvas, Offset(x, y), r, stroke);
-        // small diamond in the middle of each cell (the "cross" filler)
-        _drawSquare(canvas, Offset(x + cell / 2, y + cell / 2), r * 0.30, 0, stroke);
+    var j = 0;
+    for (double y = -h; y <= size.height + h; y += h, j++) {
+      final rowOffset = j.isOdd ? a / 2 : 0.0;
+      var i = 0;
+      for (double x = -a + rowOffset; x <= size.width + a; x += a, i++) {
+        // Triangular lattice split into 3 sublattices: stars on one,
+        // hexagons on another, the third left open (breathing room).
+        final t = (i + 2 * j) % 3;
+        final c = Offset(x, y);
+        if (t == 0) {
+          _star(canvas, c, r, stroke);
+          _star(canvas, c, r * 0.78, stroke);
+        } else if (t == 1) {
+          _hexagon(canvas, c, r * 0.92, stroke);
+          _hexagon(canvas, c, r * 0.92 * 0.78, stroke);
+        }
       }
     }
   }
 
-  void _drawStar(Canvas canvas, Offset c, double r, Paint paint) {
-    _drawSquare(canvas, c, r, 0, paint); // diamond orientation
-    _drawSquare(canvas, c, r, math.pi / 4, paint); // axis-aligned square
+  /// Six-pointed star outline (hexagram silhouette, 12 vertices).
+  void _star(Canvas canvas, Offset c, double r, Paint paint) {
+    final inner = r / math.sqrt(3);
+    final path = Path();
+    for (var k = 0; k < 12; k++) {
+      final outerPoint = k.isEven;
+      final rad = outerPoint ? r : inner;
+      final ang = k * math.pi / 6 - math.pi / 2;
+      final p = Offset(c.dx + rad * math.cos(ang), c.dy + rad * math.sin(ang));
+      if (k == 0) {
+        path.moveTo(p.dx, p.dy);
+      } else {
+        path.lineTo(p.dx, p.dy);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
-  void _drawSquare(Canvas canvas, Offset c, double r, double rot, Paint paint) {
+  void _hexagon(Canvas canvas, Offset c, double r, Paint paint) {
     final path = Path();
-    for (var i = 0; i < 4; i++) {
-      final a = rot + i * math.pi / 2;
-      final p = Offset(c.dx + r * math.cos(a), c.dy + r * math.sin(a));
-      if (i == 0) {
+    for (var k = 0; k < 6; k++) {
+      final ang = k * math.pi / 3 - math.pi / 2;
+      final p = Offset(c.dx + r * math.cos(ang), c.dy + r * math.sin(ang));
+      if (k == 0) {
         path.moveTo(p.dx, p.dy);
       } else {
         path.lineTo(p.dx, p.dy);
@@ -74,6 +101,6 @@ class _KhatamPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _KhatamPainter old) =>
+  bool shouldRepaint(covariant _GirihPainter old) =>
       old.color != color || old.opacity != opacity || old.cell != cell;
 }
