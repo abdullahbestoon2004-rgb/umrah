@@ -827,6 +827,29 @@ class AppLocalizationsKu extends AppLocalizations {
   String get privacyErrNoMatch => 'وشە نهێنییەکان وەک یەک نین.';
 
   @override
+  String get privacyBiometricMobileOnly =>
+      'قوفڵی پەنجەمۆر تەنها لە ئەپی مۆبایلدا بەردەستە.';
+
+  @override
+  String get privacyBiometricUnavailable =>
+      'هیچ پەنجەمۆر یان ناسینەوەی ڕوخسار لەم ئامێرەدا ڕێکنەخراوە.';
+
+  @override
+  String get lockTitle => 'ئەپەکە قوفڵ دراوە';
+
+  @override
+  String get lockSubtitle => 'پەنجەمۆر یان ڕوخسارت بەکاربهێنە بۆ بەردەوامبوون.';
+
+  @override
+  String get lockUnlock => 'کردنەوە';
+
+  @override
+  String get lockFailed => 'سەلماندن سەرنەکەوت. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get lockReason => 'ئەپی عومرە بکەرەوە';
+
+  @override
   String get helpTitle => 'یارمەتی و پشتگیری';
 
   @override

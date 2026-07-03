@@ -1398,6 +1398,48 @@ abstract class AppLocalizations {
   /// **'Passwords do not match.'**
   String get privacyErrNoMatch;
 
+  /// No description provided for @privacyBiometricMobileOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint lock is only available in the mobile app.'**
+  String get privacyBiometricMobileOnly;
+
+  /// No description provided for @privacyBiometricUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No fingerprint or face unlock is set up on this device.'**
+  String get privacyBiometricUnavailable;
+
+  /// No description provided for @lockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App locked'**
+  String get lockTitle;
+
+  /// No description provided for @lockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your fingerprint or face to continue.'**
+  String get lockSubtitle;
+
+  /// No description provided for @lockUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get lockUnlock;
+
+  /// No description provided for @lockFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Try again.'**
+  String get lockFailed;
+
+  /// No description provided for @lockReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock the Umrah app'**
+  String get lockReason;
+
   /// No description provided for @helpTitle.
   ///
   /// In en, this message translates to:

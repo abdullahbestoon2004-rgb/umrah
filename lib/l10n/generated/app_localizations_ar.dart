@@ -820,6 +820,29 @@ class AppLocalizationsAr extends AppLocalizations {
   String get privacyErrNoMatch => 'كلمتا المرور غير متطابقتين.';
 
   @override
+  String get privacyBiometricMobileOnly =>
+      'قفل البصمة متاح فقط في تطبيق الهاتف.';
+
+  @override
+  String get privacyBiometricUnavailable =>
+      'لا توجد بصمة أو التعرف على الوجه مفعّل على هذا الجهاز.';
+
+  @override
+  String get lockTitle => 'التطبيق مقفل';
+
+  @override
+  String get lockSubtitle => 'استخدم بصمتك أو وجهك للمتابعة.';
+
+  @override
+  String get lockUnlock => 'فتح القفل';
+
+  @override
+  String get lockFailed => 'فشل التحقق. حاول مرة أخرى.';
+
+  @override
+  String get lockReason => 'افتح تطبيق العمرة';
+
+  @override
   String get helpTitle => 'المساعدة والدعم';
 
   @override

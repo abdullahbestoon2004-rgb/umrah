@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/company_model.dart';
@@ -7,6 +8,7 @@ import '../models/notification_model.dart';
 import '../models/payment_card_model.dart';
 import '../models/user_profile.dart';
 import '../services/supabase_service.dart';
+import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
 
 class OfferFilters {
@@ -64,10 +66,49 @@ class AppProvider extends ChangeNotifier {
   }
 
   final DataService _service;
+  SharedPreferences? _prefs;
 
   Future<void> init() async {
+    await _loadPrefs();
     await loadData();
     await restoreAuth();
+  }
+
+  // ── persisted settings ───────────────────────────────────────────────────
+  Future<void> _loadPrefs() async {
+    try {
+      _prefs = await SharedPreferences.getInstance();
+    } catch (_) {
+      return; // plugin unavailable (e.g. in tests) — run without persistence
+    }
+    final p = _prefs!;
+    final lang = p.getString('locale');
+    if (lang != null) {
+      _locale = Locale(lang);
+      AppTheme.isArabicScript = lang != 'en';
+    }
+    _saved
+      ..clear()
+      ..addAll(p.getStringList('saved') ?? const []);
+    biometricLock = p.getBool('biometric') ?? false;
+    twoFactorAuth = p.getBool('twoFactor') ?? false;
+    marketingEmails = p.getBool('marketing') ?? true;
+    shareActivity = p.getBool('activity') ?? false;
+    if (biometricLock && BiometricService.isSupported) _locked = true;
+    notifyListeners();
+  }
+
+  // ── biometric app lock ───────────────────────────────────────────────────
+  bool _locked = false;
+  bool get locked => _locked;
+
+  Future<bool> unlock(String reason) async {
+    final ok = await BiometricService.authenticate(reason);
+    if (ok) {
+      _locked = false;
+      notifyListeners();
+    }
+    return ok;
   }
 
   // ── remote data ──────────────────────────────────────────────────────────
@@ -107,6 +148,7 @@ class AppProvider extends ChangeNotifier {
   void setLocale(Locale l) {
     _locale = l;
     AppTheme.isArabicScript = l.languageCode != 'en';
+    _prefs?.setString('locale', l.languageCode);
     notifyListeners();
   }
 
@@ -193,6 +235,7 @@ class AppProvider extends ChangeNotifier {
 
   void toggleSave(String offerId) {
     _saved.contains(offerId) ? _saved.remove(offerId) : _saved.add(offerId);
+    _prefs?.setStringList('saved', _saved);
     notifyListeners();
   }
 
@@ -478,6 +521,7 @@ class AppProvider extends ChangeNotifier {
       case 'marketing': marketingEmails = value;
       case 'activity': shareActivity = value;
     }
+    _prefs?.setBool(key, value);
     notifyListeners();
   }
 }

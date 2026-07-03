@@ -229,6 +229,14 @@
   "privacyErrCurrentRequired": "أدخل كلمة المرور الحالية.",
   "privacyErrTooShort": "يجب ألا تقل كلمة المرور الجديدة عن 6 أحرف.",
   "privacyErrNoMatch": "كلمتا المرور غير متطابقتين.",
+  "privacyBiometricMobileOnly": "قفل البصمة متاح فقط في تطبيق الهاتف.",
+  "privacyBiometricUnavailable": "لا توجد بصمة أو التعرف على الوجه مفعّل على هذا الجهاز.",
+
+  "lockTitle": "التطبيق مقفل",
+  "lockSubtitle": "استخدم بصمتك أو وجهك للمتابعة.",
+  "lockUnlock": "فتح القفل",
+  "lockFailed": "فشل التحقق. حاول مرة أخرى.",
+  "lockReason": "افتح تطبيق العمرة",
 
   "helpTitle": "المساعدة والدعم",
   "helpFaqHeader": "الأسئلة الشائعة",

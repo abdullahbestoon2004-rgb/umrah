@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../services/biometric_service.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -52,7 +53,7 @@ class PrivacySecurityScreen extends StatelessWidget {
                     label: t.privacyBiometric,
                     sub: t.privacyBiometricSub,
                     value: provider.biometricLock,
-                    onChanged: (v) => provider.setSecuritySetting('biometric', v),
+                    onChanged: (v) => _toggleBiometric(context, provider, v),
                   ),
                   const SizedBox(height: 10),
                   _ToggleTile(
@@ -94,6 +95,25 @@ class PrivacySecurityScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _toggleBiometric(BuildContext context, AppProvider provider, bool enable) async {
+    final t = AppLocalizations.of(context);
+    if (!enable) {
+      provider.setSecuritySetting('biometric', false);
+      return;
+    }
+    if (!BiometricService.isSupported) {
+      showAppSnack(context, t.privacyBiometricMobileOnly, isError: true);
+      return;
+    }
+    if (!await BiometricService.canAuthenticate()) {
+      if (context.mounted) showAppSnack(context, t.privacyBiometricUnavailable, isError: true);
+      return;
+    }
+    // Prove the user can actually unlock before locking them out.
+    final ok = await BiometricService.authenticate(t.lockReason);
+    if (ok) provider.setSecuritySetting('biometric', true);
   }
 
   void _openChangePassword(BuildContext context) {

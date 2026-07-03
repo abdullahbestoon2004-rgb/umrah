@@ -229,6 +229,14 @@
   "privacyErrCurrentRequired": "وشەی نهێنی ئێستات بنووسە.",
   "privacyErrTooShort": "وشەی نهێنی نوێ دەبێت لانیکەم 6 پیت بێت.",
   "privacyErrNoMatch": "وشە نهێنییەکان وەک یەک نین.",
+  "privacyBiometricMobileOnly": "قوفڵی پەنجەمۆر تەنها لە ئەپی مۆبایلدا بەردەستە.",
+  "privacyBiometricUnavailable": "هیچ پەنجەمۆر یان ناسینەوەی ڕوخسار لەم ئامێرەدا ڕێکنەخراوە.",
+
+  "lockTitle": "ئەپەکە قوفڵ دراوە",
+  "lockSubtitle": "پەنجەمۆر یان ڕوخسارت بەکاربهێنە بۆ بەردەوامبوون.",
+  "lockUnlock": "کردنەوە",
+  "lockFailed": "سەلماندن سەرنەکەوت. دووبارە هەوڵ بدەرەوە.",
+  "lockReason": "ئەپی عومرە بکەرەوە",
 
   "helpTitle": "یارمەتی و پشتگیری",
   "helpFaqHeader": "پرسیارە باوەکان",

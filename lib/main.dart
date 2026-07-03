@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
 import 'screens/main_screen.dart';
+import 'screens/lock/lock_screen.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'supabase_config.dart';
 
@@ -81,7 +82,7 @@ class UmrahApp extends StatelessWidget {
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
               child: child!,
             ),
-            home: const MainScreen(),
+            home: provider.locked ? const LockScreen() : const MainScreen(),
           );
         },
       ),

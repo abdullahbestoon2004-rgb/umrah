@@ -823,6 +823,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyErrNoMatch => 'Passwords do not match.';
 
   @override
+  String get privacyBiometricMobileOnly =>
+      'Fingerprint lock is only available in the mobile app.';
+
+  @override
+  String get privacyBiometricUnavailable =>
+      'No fingerprint or face unlock is set up on this device.';
+
+  @override
+  String get lockTitle => 'App locked';
+
+  @override
+  String get lockSubtitle => 'Use your fingerprint or face to continue.';
+
+  @override
+  String get lockUnlock => 'Unlock';
+
+  @override
+  String get lockFailed => 'Authentication failed. Try again.';
+
+  @override
+  String get lockReason => 'Unlock the Umrah app';
+
+  @override
   String get helpTitle => 'Help & support';
 
   @override

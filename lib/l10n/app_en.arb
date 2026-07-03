@@ -292,6 +292,14 @@
   "privacyErrCurrentRequired": "Enter your current password.",
   "privacyErrTooShort": "New password must be at least 6 characters.",
   "privacyErrNoMatch": "Passwords do not match.",
+  "privacyBiometricMobileOnly": "Fingerprint lock is only available in the mobile app.",
+  "privacyBiometricUnavailable": "No fingerprint or face unlock is set up on this device.",
+
+  "lockTitle": "App locked",
+  "lockSubtitle": "Use your fingerprint or face to continue.",
+  "lockUnlock": "Unlock",
+  "lockFailed": "Authentication failed. Try again.",
+  "lockReason": "Unlock the Umrah app",
 
   "helpTitle": "Help & support",
   "helpFaqHeader": "Frequently asked questions",

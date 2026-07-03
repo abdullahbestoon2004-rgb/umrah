@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:umrah_app/models/booking_model.dart';
 import 'package:umrah_app/models/company_model.dart';
@@ -161,6 +162,9 @@ Widget wrap(Widget child, AppProvider provider) {
 }
 
 void main() {
+  // In-memory store so provider init doesn't hang on the missing plugin.
+  setUpAll(() => SharedPreferences.setMockInitialValues({}));
+
   group('AppProvider with backend service', () {
     test('loads companies and offers', () async {
       final p = await makeProvider();
@@ -288,9 +292,15 @@ void main() {
       final p = await makeProvider();
       await tester.pumpWidget(wrap(const PrivacySecurityScreen(), p));
       await tester.pump();
+      // Second switch = two-factor. (The first, biometric lock, correctly
+      // refuses to enable when the device has no fingerprint hardware.)
+      await tester.tap(find.byType(Switch).at(1));
+      await tester.pump();
+      expect(p.twoFactorAuth, true);
+      // Biometric toggle stays off without hardware.
       await tester.tap(find.byType(Switch).first);
       await tester.pump();
-      expect(p.biometricLock, true);
+      expect(p.biometricLock, false);
     });
 
     testWidgets('HelpSupportScreen expands FAQ', (tester) async {
