@@ -116,7 +116,7 @@ class _AdsCarouselState extends State<_AdsCarousel> {
   void _startTimer() {
     _timer?.cancel();
     if (widget.ads.length < 2) return;
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
       if (!mounted || !_controller.hasClients) return;
       final next = (_page + 1) % widget.ads.length;
       _controller.animateToPage(next,
