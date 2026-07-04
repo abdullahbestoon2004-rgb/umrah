@@ -5,6 +5,7 @@ import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/user_profile.dart';
 import '../models/payment_card_model.dart';
+import '../models/home_ad_model.dart';
 
 /// Account-wide preferences that follow the user across devices
 /// (as opposed to the biometric lock, which is deliberately per-device).
@@ -81,6 +82,21 @@ abstract class DataService {
     bool? twoFactorEnabled,
     bool? shareActivity,
   });
+
+  // ── home ads & admin ────────────────────────────────────────────────────
+  Future<List<HomeAd>> fetchHomeAds();
+  Future<HomeAd?> createHomeAd({
+    required String title,
+    String? packageId,
+    String? companyId,
+  });
+  Future<String?> updateHomeAd(String id, {String? title, bool? isActive});
+  Future<String?> deleteHomeAd(String id);
+  Future<String?> uploadAdImage(String adId, Uint8List bytes);
+
+  Future<List<Company>> fetchPendingCompanies();
+  Future<String?> setCompanyVerified(String id, bool verified);
+  Future<String?> setPackageFeatured(String id, bool featured);
 }
 
 class SupabaseService implements DataService {
@@ -469,5 +485,123 @@ class SupabaseService implements DataService {
         if (shareActivity != null) 'share_activity': shareActivity,
       }).eq('id', clientId);
     } catch (_) {}
+  }
+
+  // ── home ads & admin ──────────────────────────────────────────────────────
+  // All graceful if patches_admin.sql hasn't been run yet.
+
+  @override
+  Future<List<HomeAd>> fetchHomeAds() async {
+    try {
+      final rows = await _c
+          .from('home_ads')
+          .select()
+          .order('sort_order')
+          .order('created_at', ascending: false);
+      return rows.map((r) => HomeAd.fromRow(r)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<HomeAd?> createHomeAd({
+    required String title,
+    String? packageId,
+    String? companyId,
+  }) async {
+    try {
+      final row = await _c.from('home_ads').insert({
+        'title': title,
+        if (packageId != null) 'package_id': packageId,
+        if (companyId != null) 'company_id': companyId,
+      }).select().single();
+      return HomeAd.fromRow(row);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<String?> updateHomeAd(String id, {String? title, bool? isActive}) async {
+    try {
+      await _c.from('home_ads').update({
+        if (title != null) 'title': title,
+        if (isActive != null) 'is_active': isActive,
+      }).eq('id', id);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> deleteHomeAd(String id) async {
+    try {
+      await _c.from('home_ads').delete().eq('id', id);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> uploadAdImage(String adId, Uint8List bytes) async {
+    try {
+      final path = 'ads/$adId.jpg';
+      await _c.storage.from('package-images').uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+          );
+      final url = _c.storage.from('package-images').getPublicUrl(path);
+      await _c.from('home_ads').update({'image_url': url}).eq('id', adId);
+      return url;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<Company>> fetchPendingCompanies() async {
+    try {
+      final rows = await _c
+          .from('companies')
+          .select()
+          .eq('is_verified', false)
+          .eq('is_active', true)
+          .order('created_at', ascending: false);
+      return rows.map((r) => Company.fromRow(r)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> setCompanyVerified(String id, bool verified) async {
+    try {
+      final rows = await _c
+          .from('companies')
+          .update({'is_verified': verified})
+          .eq('id', id)
+          .select('id');
+      return rows.isEmpty ? 'rls' : null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> setPackageFeatured(String id, bool featured) async {
+    try {
+      final rows = await _c
+          .from('packages')
+          .update({'is_featured': featured})
+          .eq('id', id)
+          .select('id');
+      return rows.isEmpty ? 'rls' : null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 }

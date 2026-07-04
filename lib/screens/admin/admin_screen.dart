@@ -1,0 +1,583 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../../theme/colors.dart';
+import '../../theme/app_theme.dart';
+import '../../providers/app_provider.dart';
+import '../../models/company_model.dart';
+import '../../models/home_ad_model.dart';
+import '../../models/offer_model.dart';
+import '../../widgets/islamic_pattern.dart';
+import '../../widgets/app_snackbar.dart';
+import '../../l10n/generated/app_localizations.dart';
+
+/// Owner-only control panel: approve agencies, manage the paid home-ads
+/// carousel, and pick which offers are featured on the home screen.
+class AdminScreen extends StatefulWidget {
+  const AdminScreen({super.key});
+
+  @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.read<AppProvider>().loadAdminData());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.watch<AppProvider>();
+    if (!provider.isAdminUser) return const SizedBox.shrink();
+    final lang = Localizations.localeOf(context).languageCode;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _AdminHeader(provider: provider)),
+
+          // ── Pending agencies ────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 22, 22, 10),
+              child: Text(t.adminPendingAgencies, style: AppTheme.serif(20)),
+            ),
+          ),
+          if (provider.pendingCompanies.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(t.adminNoPending, style: AppTheme.sans(13, color: AppColors.muted)),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, i) => Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+                  child: _PendingCompanyCard(company: provider.pendingCompanies[i]),
+                ),
+                childCount: provider.pendingCompanies.length,
+              ),
+            ),
+
+          // ── Home ads ────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 26, 22, 10),
+              child: Row(
+                children: [
+                  Expanded(child: Text(t.adminHomeAds, style: AppTheme.serif(20))),
+                  GestureDetector(
+                    onTap: () => _openAddAd(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                      decoration: BoxDecoration(
+                          color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                      child: Row(children: [
+                        const Icon(Icons.add_rounded, color: Colors.white, size: 18),
+                        const SizedBox(width: 6),
+                        Text(t.adminAddAd,
+                            style: AppTheme.sans(13, weight: FontWeight.w700, color: Colors.white)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (provider.allHomeAds.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(t.adminNoAds, style: AppTheme.sans(13, color: AppColors.muted)),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, i) => Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+                  child: _AdRow(ad: provider.allHomeAds[i]),
+                ),
+                childCount: provider.allHomeAds.length,
+              ),
+            ),
+
+          // ── Featured offers ─────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 26, 22, 4),
+              child: Text(t.adminFeaturedOffers, style: AppTheme.serif(20)),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+              child: Text(t.adminFeaturedHint, style: AppTheme.sans(12, color: AppColors.muted)),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, i) {
+                final offer = provider.allOffers[i];
+                final company = provider.companyById(offer.companyId);
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      22, 0, 22, i < provider.allOffers.length - 1 ? 10 : 30),
+                  child: _FeaturedRow(offer: offer, companyName: company?.nameFor(lang) ?? ''),
+                );
+              },
+              childCount: provider.allOffers.length,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openAddAd(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChangeNotifierProvider.value(
+        value: context.read<AppProvider>(),
+        child: const _AddAdSheet(),
+      ),
+    );
+  }
+}
+
+class _AdminHeader extends StatelessWidget {
+  final AppProvider provider;
+  const _AdminHeader({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.primaryDark],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40, height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(13)),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      Container(
+                        width: 56, height: 56,
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.95),
+                            borderRadius: BorderRadius.circular(16)),
+                        child: const Icon(Icons.admin_panel_settings_rounded,
+                            color: AppColors.primary, size: 30),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(t.adminTitle, style: AppTheme.serif(24, color: Colors.white)),
+                            const SizedBox(height: 3),
+                            Text(provider.user?.email ?? '',
+                                style: AppTheme.sans(12, color: Colors.white.withOpacity(0.75)),
+                                maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PendingCompanyCard extends StatelessWidget {
+  final Company company;
+  const _PendingCompanyCard({required this.company});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.gold.withOpacity(0.4), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.schedule_rounded, color: AppColors.gold, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(company.nameFor(lang), style: AppTheme.sans(14, weight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text(company.location, style: AppTheme.sans(12, color: AppColors.muted)),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final ok = await provider.approveCompany(company.id);
+              messenger.showSnackBar(appSnack(
+                  ok ? t.adminApproved : t.adminActionFailed,
+                  isError: !ok));
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              decoration: BoxDecoration(
+                  color: AppColors.primary, borderRadius: BorderRadius.circular(11)),
+              child: Text(t.adminApprove,
+                  style: AppTheme.sans(12.5, weight: FontWeight.w700, color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdRow extends StatelessWidget {
+  final HomeAd ad;
+  const _AdRow({required this.ad});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: SizedBox(
+              width: 64, height: 44,
+              child: (ad.imageUrl ?? '').isNotEmpty
+                  ? Image.network(ad.imageUrl!, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          Container(color: AppColors.primary.withOpacity(0.15)))
+                  : Container(
+                      color: AppColors.primary.withOpacity(0.12),
+                      child: const Icon(Icons.campaign_rounded,
+                          color: AppColors.primary, size: 22),
+                    ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(ad.titleFor(lang),
+                style: AppTheme.sans(13.5, weight: FontWeight.w700),
+                maxLines: 2, overflow: TextOverflow.ellipsis),
+          ),
+          Switch(
+            value: ad.isActive,
+            activeThumbColor: Colors.white,
+            activeTrackColor: AppColors.primary,
+            onChanged: (v) => provider.setAdActive(ad.id, v),
+          ),
+          GestureDetector(
+            onTap: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final ok = await provider.deleteHomeAd(ad.id);
+              if (!ok) messenger.showSnackBar(appSnack(t.adminActionFailed, isError: true));
+            },
+            child: Container(
+              width: 34, height: 34,
+              decoration: BoxDecoration(
+                  color: AppColors.errorRed.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10)),
+              child: const Icon(Icons.delete_outline_rounded,
+                  color: AppColors.errorRed, size: 17),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FeaturedRow extends StatelessWidget {
+  final Offer offer;
+  final String companyName;
+  const _FeaturedRow({required this.offer, required this.companyName});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.read<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+            color: offer.isFeatured ? AppColors.gold : AppColors.border, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(offer.titleFor(lang),
+                    style: AppTheme.sans(13.5, weight: FontWeight.w700),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                Text('$companyName · ${offer.priceFmt}',
+                    style: AppTheme.sans(11.5, color: AppColors.muted),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () => provider.setOfferFeatured(offer.id, !offer.isFeatured),
+            child: Icon(
+              offer.isFeatured ? Icons.star_rounded : Icons.star_border_rounded,
+              color: offer.isFeatured ? AppColors.gold : AppColors.mutedLight,
+              size: 26,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Add-ad sheet ──────────────────────────────────────────────────────────────
+
+class _AddAdSheet extends StatefulWidget {
+  const _AddAdSheet();
+
+  @override
+  State<_AddAdSheet> createState() => _AddAdSheetState();
+}
+
+class _AddAdSheetState extends State<_AddAdSheet> {
+  final _titleCtrl = TextEditingController();
+  String? _packageId;
+  Uint8List? _imageBytes;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (xfile == null) return;
+    final bytes = await xfile.readAsBytes();
+    setState(() => _imageBytes = bytes);
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    final t = AppLocalizations.of(context);
+    if (_titleCtrl.text.trim().isEmpty) {
+      showAppSnack(context, t.authErrFillAll, isError: true);
+      return;
+    }
+    setState(() => _saving = true);
+    final provider = context.read<AppProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await provider.createHomeAd(
+      title: _titleCtrl.text.trim(),
+      packageId: _packageId,
+      imageBytes: _imageBytes,
+    );
+    if (!mounted) return;
+    if (!ok) {
+      setState(() => _saving = false);
+      messenger.showSnackBar(appSnack(t.adminActionFailed, isError: true));
+      return;
+    }
+    Navigator.pop(context);
+    messenger.showSnackBar(appSnack(t.adminAdCreated));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(22, 14, 22, 30),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 42, height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(t.adminAddAd, style: AppTheme.serif(24)),
+            const SizedBox(height: 18),
+
+            Text(t.adminAdTitle, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, width: 1.5),
+              ),
+              child: TextField(
+                controller: _titleCtrl,
+                style: AppTheme.sans(14),
+                decoration: InputDecoration(
+                  hintText: t.adminAdTitleHint,
+                  hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
+                  prefixIcon: const Icon(Icons.campaign_rounded, color: AppColors.primary, size: 20),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Text(t.adminLinkPackage, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, width: 1.5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _packageId,
+                  isExpanded: true,
+                  style: AppTheme.sans(14),
+                  dropdownColor: AppColors.background,
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(t.adminNoLink, style: AppTheme.sans(14, color: AppColors.muted)),
+                    ),
+                    for (final o in provider.allOffers)
+                      DropdownMenuItem<String?>(
+                        value: o.id,
+                        child: Text(o.titleFor(lang),
+                            style: AppTheme.sans(14), overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => _packageId = v),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Text(t.adminAdImage, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: 110,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: _imageBytes != null
+                    ? Image.memory(_imageBytes!, fit: BoxFit.cover)
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add_photo_alternate_outlined,
+                              color: AppColors.primary, size: 28),
+                          const SizedBox(height: 6),
+                          Text(t.adminPickImage,
+                              style: AppTheme.sans(12, color: AppColors.muted)),
+                        ],
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 22),
+            GestureDetector(
+              onTap: _saving ? null : _save,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                    color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
+                alignment: Alignment.center,
+                child: _saving
+                    ? const SizedBox(width: 20, height: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                    : Text(t.adminAddAd,
+                        style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

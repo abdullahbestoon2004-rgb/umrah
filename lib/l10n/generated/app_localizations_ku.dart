@@ -68,7 +68,10 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
-  String get profileAgencyPortal => 'دەروازەی ئاژانس';
+  String get profileAgencyPortal => 'دەروازەی ئاژانس و بەڕێوەبەر';
+
+  @override
+  String get profileAdminDashboard => 'داشبۆردی بەڕێوەبەر';
 
   @override
   String get comingSoonBody => 'ئەم تایبەتمەندییە بەم زووانە دێت.';
@@ -360,6 +363,9 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get homeFeatured => 'تایبەت';
+
+  @override
+  String get homeSponsored => 'ڕیکلام';
 
   @override
   String homeDaysStarHotel(int days, int acc) {
@@ -963,6 +969,64 @@ class AppLocalizationsKu extends AppLocalizations {
   @override
   String get agencyLoginDemoHint =>
       '(admin@noorharamain.com هتد بەکاربهێنە بۆ ئاژانسەکانی تر)';
+
+  @override
+  String get adminTitle => 'داشبۆردی بەڕێوەبەر';
+
+  @override
+  String get adminPendingAgencies => 'ئاژانسە چاوەڕوانەکان';
+
+  @override
+  String get adminNoPending => 'هیچ ئاژانسێک چاوەڕوانی پەسەندکردن نییە.';
+
+  @override
+  String get adminApprove => 'پەسەندکردن';
+
+  @override
+  String get adminApproved =>
+      'ئاژانسەکە پەسەند کرا و ئێستا بۆ هەمووان دەرکەوتووە!';
+
+  @override
+  String get adminActionFailed =>
+      'کردارەکە سەرنەکەوت — دڵنیابە کە patches_admin.sql جێبەجێ کراوە.';
+
+  @override
+  String get adminHomeAds => 'ڕیکلامەکانی پەڕەی سەرەکی';
+
+  @override
+  String get adminNoAds =>
+      'هێشتا هیچ ڕیکلامێک نییە. یەکێک زیاد بکە بۆ سەرەوەی پەڕەی سەرەکی.';
+
+  @override
+  String get adminAddAd => 'زیادکردنی ڕیکلام';
+
+  @override
+  String get adminAdTitle => 'ناونیشانی ڕیکلام';
+
+  @override
+  String get adminAdTitleHint => 'نموونە: ئۆفەری ڕەمەزان — گەشتیاری نوور';
+
+  @override
+  String get adminLinkPackage => 'بەستنەوە بە پاکێجێک (ئارەزوومەندانە)';
+
+  @override
+  String get adminNoLink => 'بێ بەستنەوە';
+
+  @override
+  String get adminAdImage => 'وێنەی ڕیکلام';
+
+  @override
+  String get adminPickImage => 'دەست بنێ بۆ هەڵبژاردنی وێنە';
+
+  @override
+  String get adminAdCreated => 'ڕیکلامەکە لە پەڕەی سەرەکی بڵاوکرایەوە!';
+
+  @override
+  String get adminFeaturedOffers => 'پاکێجە تایبەتەکانی پەڕەی سەرەکی';
+
+  @override
+  String get adminFeaturedHint =>
+      'پاکێجە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.';
 
   @override
   String agencyDashboardYourPackages(int count) {

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:umrah_app/models/booking_model.dart';
 import 'package:umrah_app/models/company_model.dart';
+import 'package:umrah_app/models/home_ad_model.dart';
 import 'package:umrah_app/models/notification_model.dart';
 import 'package:umrah_app/models/offer_model.dart';
 import 'package:umrah_app/models/payment_card_model.dart';
@@ -46,7 +47,8 @@ class FakeService implements DataService {
 
   @override
   Future<String?> signIn(String email, String password) async {
-    user = UserProfile(id: 'u1', email: email, role: 'client', fullName: 'Test User');
+    final role = email.startsWith('admin') ? 'admin' : 'client';
+    user = UserProfile(id: 'u1', email: email, role: role, fullName: 'Test User');
     return null;
   }
 
@@ -216,6 +218,64 @@ class FakeService implements DataService {
       shareActivity: shareActivity ?? cur.shareActivity,
     );
   }
+
+  // ── home ads & admin ──────────────────────────────────────────────────────
+  final homeAds = <HomeAd>[];
+
+  @override
+  Future<List<HomeAd>> fetchHomeAds() async => List.from(homeAds);
+
+  @override
+  Future<HomeAd?> createHomeAd({required String title, String? packageId, String? companyId}) async {
+    final ad = HomeAd(id: 'ad${homeAds.length + 1}', title: title, packageId: packageId, companyId: companyId);
+    homeAds.add(ad);
+    return ad;
+  }
+
+  @override
+  Future<String?> updateHomeAd(String id, {String? title, bool? isActive}) async {
+    final i = homeAds.indexWhere((a) => a.id == id);
+    if (i < 0) return 'not found';
+    homeAds[i] = HomeAd(
+      id: homeAds[i].id,
+      companyId: homeAds[i].companyId,
+      packageId: homeAds[i].packageId,
+      title: title ?? homeAds[i].title,
+      imageUrl: homeAds[i].imageUrl,
+      isActive: isActive ?? homeAds[i].isActive,
+    );
+    return null;
+  }
+
+  @override
+  Future<String?> deleteHomeAd(String id) async {
+    homeAds.removeWhere((a) => a.id == id);
+    return null;
+  }
+
+  @override
+  Future<String?> uploadAdImage(String adId, Uint8List bytes) async => null;
+
+  @override
+  Future<List<Company>> fetchPendingCompanies() async =>
+      companies.where((c) => !c.isVerified).toList();
+
+  @override
+  Future<String?> setCompanyVerified(String id, bool verified) async => null;
+
+  @override
+  Future<String?> setPackageFeatured(String id, bool featured) async {
+    final i = offers.indexWhere((o) => o.id == id);
+    if (i < 0) return 'not found';
+    final o = offers[i];
+    offers[i] = Offer(
+      id: o.id, companyId: o.companyId, title: o.title, titleEn: o.titleEn,
+      transport: o.transport, acc: o.acc, days: o.days, price: o.price,
+      original: o.original, rating: o.rating, hotel: o.hotel, badge: o.badge,
+      gradColors: o.gradColors, isFeatured: featured,
+    );
+    return null;
+  }
 }
 
 Future<AppProvider> makeProvider() async {
@@ -372,6 +432,46 @@ void main() {
       expect(p.cards, hasLength(1));
       expect(p.cards.first.isDefault, true);
       expect(p.defaultCardId, p.cards.first.id);
+    });
+
+    test('admin: home ads CRUD flows through to the home carousel list', () async {
+      final p = await makeProvider();
+      await p.signIn('admin@test.com', 'pass');
+      expect(p.isAdminUser, true);
+
+      expect(await p.createHomeAd(title: 'Ramadan special', packageId: 'o1'), true);
+      expect(p.homeAds, hasLength(1));
+      expect(p.homeAds.first.packageId, 'o1');
+
+      // Deactivating hides it from the public carousel but not the admin list.
+      await p.setAdActive(p.homeAds.first.id, false);
+      expect(p.homeAds, isEmpty);
+      expect(p.allHomeAds, hasLength(1));
+
+      await p.deleteHomeAd(p.allHomeAds.first.id);
+      expect(p.allHomeAds, isEmpty);
+    });
+
+    test('admin: featuring an offer reorders it to the front of home', () async {
+      final p = await makeProvider();
+      await p.signIn('admin@test.com', 'pass');
+      // o2 is lower-rated than o1; featuring should still lift it first.
+      expect(await p.setOfferFeatured('o2', true), true);
+      final featured = p.allOffers.firstWhere((o) => o.id == 'o2');
+      expect(featured.isFeatured, true);
+    });
+
+    test('admin: approving a pending agency removes it from the queue', () async {
+      final shared = FakeService();
+      shared.companies.add(Company(
+          id: 'c9', ownerId: 'x', name: 'New Agency', location: 'Baghdad', isVerified: false));
+      final p = AppProvider(service: shared, autoLoad: false);
+      await p.init();
+      await p.signIn('admin@test.com', 'pass');
+      await p.loadAdminData();
+      expect(p.pendingCompanies, hasLength(1));
+      expect(await p.approveCompany('c9'), true);
+      expect(p.pendingCompanies, isEmpty);
     });
 
     test('cards and cloud-synced prefs are cleared on sign out, biometric survives', () async {

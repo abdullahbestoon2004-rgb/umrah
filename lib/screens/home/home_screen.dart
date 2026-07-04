@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
+import '../../models/home_ad_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/star_rating.dart';
 import '../../widgets/company_avatar.dart';
 import '../../widgets/tag_chip.dart';
+import '../../widgets/gradient_card.dart';
 import '../../widgets/offer_image.dart';
 import '../companies/company_detail_screen.dart';
 import '../offers/offer_detail_screen.dart';
@@ -55,11 +58,15 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    // Live data: best-rated first.
-    final byRating = List<Offer>.from(provider.allOffers)
-      ..sort((a, b) => b.rating.compareTo(a.rating));
-    final hero = byRating.first;
-    final homeOffers = byRating.skip(1).take(4).toList();
+    // Live data: admin-featured packages first, then best-rated.
+    final ranked = List<Offer>.from(provider.allOffers)
+      ..sort((a, b) {
+        if (a.isFeatured != b.isFeatured) return a.isFeatured ? -1 : 1;
+        return b.rating.compareTo(a.rating);
+      });
+    final ads = provider.homeAds;
+    final hero = ranked.first;
+    final homeOffers = (ads.isEmpty ? ranked.skip(1) : ranked).take(4).toList();
     final companies = provider.companies.take(4).toList();
 
     return Scaffold(
@@ -68,12 +75,201 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: _Header()),
-            SliverToBoxAdapter(child: _HeroCard(offer: hero)),
+            // Paid agency ads rotate in a carousel; without any, the
+            // best-rated offer takes the spot.
+            SliverToBoxAdapter(
+              child: ads.isNotEmpty ? _AdsCarousel(ads: ads) : _HeroCard(offer: hero),
+            ),
             SliverToBoxAdapter(child: _SearchBar()),
             SliverToBoxAdapter(child: _AgenciesSection(companies: companies)),
             if (homeOffers.isNotEmpty)
               SliverToBoxAdapter(child: _CuratedSection(offers: homeOffers)),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Paid ads carousel ─────────────────────────────────────────────────────────
+
+class _AdsCarousel extends StatefulWidget {
+  final List<HomeAd> ads;
+  const _AdsCarousel({required this.ads});
+
+  @override
+  State<_AdsCarousel> createState() => _AdsCarouselState();
+}
+
+class _AdsCarouselState extends State<_AdsCarousel> {
+  final _controller = PageController();
+  Timer? _timer;
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    if (widget.ads.length < 2) return;
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || !_controller.hasClients) return;
+      final next = (_page + 1) % widget.ads.length;
+      _controller.animateToPage(next,
+          duration: const Duration(milliseconds: 450), curve: Curves.easeInOut);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 240,
+            child: PageView.builder(
+              controller: _controller,
+              itemCount: widget.ads.length,
+              onPageChanged: (i) => setState(() => _page = i),
+              itemBuilder: (context, i) => _AdCard(ad: widget.ads[i]),
+            ),
+          ),
+          if (widget.ads.length > 1) ...[
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var i = 0; i < widget.ads.length; i++)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: i == _page ? 18 : 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: i == _page
+                          ? AppColors.primary
+                          : AppColors.primary.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AdCard extends StatelessWidget {
+  final HomeAd ad;
+  const _AdCard({required this.ad});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+    final offer = provider.offerById(ad.packageId);
+    final company =
+        provider.companyById(ad.companyId ?? offer?.companyId ?? '');
+
+    return GestureDetector(
+      onTap: offer == null
+          ? null
+          : () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(26),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if ((ad.imageUrl ?? '').isNotEmpty)
+              Image.network(
+                ad.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const GradientCard(
+                  colors: [AppColors.primary, AppColors.primaryDark],
+                  height: 240,
+                ),
+              )
+            else if (offer != null)
+              OfferImage(offer: offer, height: 240)
+            else
+              const GradientCard(
+                colors: [AppColors.primary, AppColors.primaryDark],
+                height: 240,
+              ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, const Color(0xFF071C17).withOpacity(0.92)],
+                  stops: const [0.4, 1.0],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              top: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  t.homeSponsored,
+                  style: AppTheme.sans(10.5, weight: FontWeight.w800, color: const Color(0xFF1C2317))
+                      .copyWith(letterSpacing: 1),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 18,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (company != null)
+                    Text(
+                      company.nameFor(lang),
+                      style: AppTheme.sans(11, weight: FontWeight.w700, color: const Color(0xFFE7CF95)),
+                    ),
+                  const SizedBox(height: 2),
+                  Text(ad.titleFor(lang), style: AppTheme.serif(25, color: Colors.white),
+                      maxLines: 2, overflow: TextOverflow.ellipsis),
+                  if (offer != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            t.homeDaysStarHotel(offer.days, offer.acc),
+                            style: AppTheme.sans(12.5, color: Colors.white.withOpacity(0.82)),
+                          ),
+                        ),
+                        Text(offer.priceFmt, style: AppTheme.serif(18, color: const Color(0xFFF3E6C4))),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -26,7 +26,8 @@
   "@profileAgencyDashboardWithName": {
     "placeholders": {"name": {"type": "String"}}
   },
-  "profileAgencyPortal": "Agency Portal",
+  "profileAgencyPortal": "Agency & Admin portal",
+  "profileAdminDashboard": "Admin Dashboard",
   "comingSoonBody": "This feature is coming soon.",
   "profilePilgrim": "Pilgrim",
   "profileGoldMember": "★ Gold Member",
@@ -139,6 +140,7 @@
   "homeGreeting": "السلام عليكم",
   "homeWelcomePilgrim": "Welcome, Pilgrim",
   "homeFeatured": "FEATURED",
+  "homeSponsored": "SPONSORED",
   "homeDaysStarHotel": "{days, plural, =1{{days} day} other{{days} days}} · {acc}-Star Hotel",
   "@homeDaysStarHotel": {
     "placeholders": {"days": {"type": "int"}, "acc": {"type": "int"}}
@@ -337,6 +339,25 @@
   "agencyLoginDemoEmail": "Email: agency.demo@umrahapp.dev",
   "agencyLoginDemoPassword": "Password: demo1234",
   "agencyLoginDemoHint": "(Use admin@noorharamain.com etc. for other agencies)",
+
+  "adminTitle": "Admin Dashboard",
+  "adminPendingAgencies": "Pending agencies",
+  "adminNoPending": "No agencies waiting for approval.",
+  "adminApprove": "Approve",
+  "adminApproved": "Agency approved and now public!",
+  "adminActionFailed": "Action failed — make sure patches_admin.sql has been run.",
+  "adminHomeAds": "Home ads carousel",
+  "adminNoAds": "No ads yet. Add one to fill the top of the home screen.",
+  "adminAddAd": "Add ad",
+  "adminAdTitle": "Ad title",
+  "adminAdTitleHint": "e.g. Ramadan special — Noor Travel",
+  "adminLinkPackage": "Link to a package (optional)",
+  "adminNoLink": "No link",
+  "adminAdImage": "Ad image",
+  "adminPickImage": "Tap to pick an image",
+  "adminAdCreated": "Ad published to the home screen!",
+  "adminFeaturedOffers": "Featured home offers",
+  "adminFeaturedHint": "Starred packages appear first in the home screen list.",
 
   "agencyDashboardYourPackages": "{count, plural, =0{No Packages} =1{Your Packages (1)} other{Your Packages ({count})}}",
   "@agencyDashboardYourPackages": {"placeholders": {"count": {"type": "int"}}},

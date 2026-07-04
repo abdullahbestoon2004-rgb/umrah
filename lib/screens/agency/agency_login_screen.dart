@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'agency_dashboard_screen.dart';
+import '../admin/admin_screen.dart';
 
 class AgencyLoginScreen extends StatefulWidget {
   const AgencyLoginScreen({super.key});
@@ -57,15 +58,20 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
       );
     } else {
       err = await provider.signIn(email, pass);
-      if (err == null && !provider.isAgencyUser) {
+      if (err == null && !provider.isAgencyUser && !provider.isAdminUser) {
         await provider.signOut();
         err = t.agencyNotAgencyAccount;
       }
     }
     if (!mounted) return;
     if (err == null) {
+      final provider2 = context.read<AppProvider>();
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const AgencyDashboardScreen()));
+          context,
+          MaterialPageRoute(
+              builder: (_) => provider2.isAdminUser
+                  ? const AdminScreen()
+                  : const AgencyDashboardScreen()));
     } else if (err == 'confirm-email') {
       setState(() { _loading = false; _error = t.authConfirmEmailSent; });
     } else {

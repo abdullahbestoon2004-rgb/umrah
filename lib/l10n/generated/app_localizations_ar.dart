@@ -68,7 +68,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get profileAgencyPortal => 'بوابة الوكالة';
+  String get profileAgencyPortal => 'بوابة الوكالة والمشرف';
+
+  @override
+  String get profileAdminDashboard => 'لوحة المشرف';
 
   @override
   String get comingSoonBody => 'هذه الميزة ستتوفر قريبًا.';
@@ -359,6 +362,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeFeatured => 'مميز';
+
+  @override
+  String get homeSponsored => 'إعلان ممول';
 
   @override
   String homeDaysStarHotel(int days, int acc) {
@@ -953,6 +959,63 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get agencyLoginDemoHint =>
       '(استخدم admin@noorharamain.com وغيره للوكالات الأخرى)';
+
+  @override
+  String get adminTitle => 'لوحة المشرف';
+
+  @override
+  String get adminPendingAgencies => 'وكالات بانتظار الموافقة';
+
+  @override
+  String get adminNoPending => 'لا توجد وكالات بانتظار الموافقة.';
+
+  @override
+  String get adminApprove => 'موافقة';
+
+  @override
+  String get adminApproved => 'تمت الموافقة على الوكالة وأصبحت ظاهرة للجميع!';
+
+  @override
+  String get adminActionFailed =>
+      'فشلت العملية — تأكد من تنفيذ patches_admin.sql أولًا.';
+
+  @override
+  String get adminHomeAds => 'إعلانات الصفحة الرئيسية';
+
+  @override
+  String get adminNoAds =>
+      'لا توجد إعلانات بعد. أضف إعلانًا ليظهر أعلى الصفحة الرئيسية.';
+
+  @override
+  String get adminAddAd => 'إضافة إعلان';
+
+  @override
+  String get adminAdTitle => 'عنوان الإعلان';
+
+  @override
+  String get adminAdTitleHint => 'مثال: عرض رمضان — شركة النور';
+
+  @override
+  String get adminLinkPackage => 'ربط بباقة (اختياري)';
+
+  @override
+  String get adminNoLink => 'بدون ربط';
+
+  @override
+  String get adminAdImage => 'صورة الإعلان';
+
+  @override
+  String get adminPickImage => 'اضغط لاختيار صورة';
+
+  @override
+  String get adminAdCreated => 'تم نشر الإعلان في الصفحة الرئيسية!';
+
+  @override
+  String get adminFeaturedOffers => 'الباقات المميزة في الرئيسية';
+
+  @override
+  String get adminFeaturedHint =>
+      'الباقات المميزة بنجمة تظهر أولًا في الصفحة الرئيسية.';
 
   @override
   String agencyDashboardYourPackages(int count) {

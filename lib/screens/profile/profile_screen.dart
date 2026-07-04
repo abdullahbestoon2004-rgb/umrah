@@ -10,6 +10,7 @@ import '../../widgets/star_rating.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_login_screen.dart';
 import '../agency/agency_dashboard_screen.dart';
+import '../admin/admin_screen.dart';
 import '../offers/offer_detail_screen.dart';
 import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
@@ -109,13 +110,19 @@ class ProfileScreen extends StatelessWidget {
                 ]),
                 const SizedBox(height: 14),
                 _MenuCard(
-                  icon: Icons.business_center_rounded,
-                  label: provider.isAgencyLoggedIn
-                      ? t.profileAgencyDashboardWithName(provider.agencyCompany?.name ?? '')
-                      : t.profileAgencyPortal,
+                  icon: provider.isAdminUser
+                      ? Icons.admin_panel_settings_rounded
+                      : Icons.business_center_rounded,
+                  label: provider.isAdminUser
+                      ? t.profileAdminDashboard
+                      : provider.isAgencyLoggedIn
+                          ? t.profileAgencyDashboardWithName(provider.agencyCompany?.name ?? '')
+                          : t.profileAgencyPortal,
                   tint: AppColors.primary,
                   onTap: () {
-                    if (provider.isAgencyLoggedIn) {
+                    if (provider.isAdminUser) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
+                    } else if (provider.isAgencyLoggedIn) {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AgencyDashboardScreen()));
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AgencyLoginScreen()));

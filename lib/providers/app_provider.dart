@@ -6,6 +6,7 @@ import '../models/booking_model.dart';
 import '../models/company_model.dart';
 import '../models/notification_model.dart';
 import '../models/payment_card_model.dart';
+import '../models/home_ad_model.dart';
 import '../models/user_profile.dart';
 import '../services/supabase_service.dart';
 import '../services/biometric_service.dart';
@@ -129,12 +130,27 @@ class AppProvider extends ChangeNotifier {
     try {
       _companies = await _service.fetchCompanies();
       _offers = await _service.fetchOffers(_companies);
+      _homeAds = await _service.fetchHomeAds();
       _loadFailed = false;
     } catch (_) {
       _loadFailed = true;
     }
     _loading = false;
     notifyListeners();
+  }
+
+  // ── home ads (paid agency placements, managed by the admin) ─────────────
+  List<HomeAd> _homeAds = [];
+  List<HomeAd> get homeAds =>
+      List.unmodifiable(_homeAds.where((a) => a.isActive));
+  List<HomeAd> get allHomeAds => List.unmodifiable(_homeAds); // admin view
+
+  Offer? offerById(String? id) {
+    if (id == null) return null;
+    for (final o in _offers) {
+      if (o.id == id) return o;
+    }
+    return null;
   }
 
   // ── tab navigation ───────────────────────────────────────────────────────
@@ -161,6 +177,7 @@ class AppProvider extends ChangeNotifier {
   UserProfile? get user => _user;
   bool get isSignedIn => _user != null;
   bool get isAgencyUser => _user?.isAgency ?? false;
+  bool get isAdminUser => _user?.isAdmin ?? false;
   bool get isAgencyLoggedIn => isAgencyUser;
   Company? get agencyCompany => _myCompany;
 
@@ -271,6 +288,72 @@ class AppProvider extends ChangeNotifier {
 
   void agencyLogout() {
     signOut();
+  }
+
+  // ── admin ─────────────────────────────────────────────────────────────────
+  List<Company> _pendingCompanies = [];
+  List<Company> get pendingCompanies => List.unmodifiable(_pendingCompanies);
+
+  Future<void> loadAdminData() async {
+    if (!isAdminUser) return;
+    try {
+      _pendingCompanies = await _service.fetchPendingCompanies();
+      _homeAds = await _service.fetchHomeAds();
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<bool> approveCompany(String id) async {
+    final err = await _service.setCompanyVerified(id, true);
+    if (err != null) return false;
+    _pendingCompanies = _pendingCompanies.where((c) => c.id != id).toList();
+    await loadData(); // newly verified agency becomes publicly visible
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> createHomeAd({required String title, String? packageId, Uint8List? imageBytes}) async {
+    final offer = offerById(packageId);
+    final ad = await _service.createHomeAd(
+        title: title, packageId: packageId, companyId: offer?.companyId);
+    if (ad == null) return false;
+    if (imageBytes != null) {
+      await _service.uploadAdImage(ad.id, imageBytes);
+    }
+    _homeAds = await _service.fetchHomeAds();
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> setAdActive(String id, bool active) async {
+    final err = await _service.updateHomeAd(id, isActive: active);
+    if (err != null) return false;
+    _homeAds = [
+      for (final a in _homeAds)
+        a.id == id
+            ? HomeAd(
+                id: a.id, companyId: a.companyId, packageId: a.packageId,
+                title: a.title, titleAr: a.titleAr, titleEn: a.titleEn,
+                imageUrl: a.imageUrl, sortOrder: a.sortOrder, isActive: active)
+            : a
+    ];
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> deleteHomeAd(String id) async {
+    final err = await _service.deleteHomeAd(id);
+    if (err != null) return false;
+    _homeAds = _homeAds.where((a) => a.id != id).toList();
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> setOfferFeatured(String id, bool featured) async {
+    final err = await _service.setPackageFeatured(id, featured);
+    if (err != null) return false;
+    await loadData();
+    return true;
   }
 
   // ── saved trips (local, per device) ──────────────────────────────────────

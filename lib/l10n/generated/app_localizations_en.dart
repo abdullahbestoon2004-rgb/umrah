@@ -68,7 +68,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileAgencyPortal => 'Agency Portal';
+  String get profileAgencyPortal => 'Agency & Admin portal';
+
+  @override
+  String get profileAdminDashboard => 'Admin Dashboard';
 
   @override
   String get comingSoonBody => 'This feature is coming soon.';
@@ -359,6 +362,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeFeatured => 'FEATURED';
+
+  @override
+  String get homeSponsored => 'SPONSORED';
 
   @override
   String homeDaysStarHotel(int days, int acc) {
@@ -957,6 +963,63 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get agencyLoginDemoHint =>
       '(Use admin@noorharamain.com etc. for other agencies)';
+
+  @override
+  String get adminTitle => 'Admin Dashboard';
+
+  @override
+  String get adminPendingAgencies => 'Pending agencies';
+
+  @override
+  String get adminNoPending => 'No agencies waiting for approval.';
+
+  @override
+  String get adminApprove => 'Approve';
+
+  @override
+  String get adminApproved => 'Agency approved and now public!';
+
+  @override
+  String get adminActionFailed =>
+      'Action failed — make sure patches_admin.sql has been run.';
+
+  @override
+  String get adminHomeAds => 'Home ads carousel';
+
+  @override
+  String get adminNoAds =>
+      'No ads yet. Add one to fill the top of the home screen.';
+
+  @override
+  String get adminAddAd => 'Add ad';
+
+  @override
+  String get adminAdTitle => 'Ad title';
+
+  @override
+  String get adminAdTitleHint => 'e.g. Ramadan special — Noor Travel';
+
+  @override
+  String get adminLinkPackage => 'Link to a package (optional)';
+
+  @override
+  String get adminNoLink => 'No link';
+
+  @override
+  String get adminAdImage => 'Ad image';
+
+  @override
+  String get adminPickImage => 'Tap to pick an image';
+
+  @override
+  String get adminAdCreated => 'Ad published to the home screen!';
+
+  @override
+  String get adminFeaturedOffers => 'Featured home offers';
+
+  @override
+  String get adminFeaturedHint =>
+      'Starred packages appear first in the home screen list.';
 
   @override
   String agencyDashboardYourPackages(int count) {

@@ -36,6 +36,7 @@ class Offer {
   final String carrier;
   final String badge;
   final String? imageUrl;
+  final bool isFeatured;
   final List<Color> gradColors;
   final List<ItineraryDay>? customItinerary;
   final List<String>? customIncludes;
@@ -64,6 +65,7 @@ class Offer {
     this.carrier = '',
     this.badge = '',
     this.imageUrl,
+    this.isFeatured = false,
     required this.gradColors,
     this.customItinerary,
     this.customIncludes,
@@ -116,6 +118,7 @@ class Offer {
       carrier: (r['carrier'] ?? '') as String,
       badge: (r['badge'] ?? '') as String,
       imageUrl: r['image_url'] as String?,
+      isFeatured: (r['is_featured'] ?? false) as bool,
       gradColors: [tint, dark],
       customItinerary: itinerary.isEmpty
           ? null

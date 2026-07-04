@@ -217,8 +217,14 @@ abstract class AppLocalizations {
   /// No description provided for @profileAgencyPortal.
   ///
   /// In en, this message translates to:
-  /// **'Agency Portal'**
+  /// **'Agency & Admin portal'**
   String get profileAgencyPortal;
+
+  /// No description provided for @profileAdminDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Dashboard'**
+  String get profileAdminDashboard;
 
   /// No description provided for @comingSoonBody.
   ///
@@ -701,6 +707,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FEATURED'**
   String get homeFeatured;
+
+  /// No description provided for @homeSponsored.
+  ///
+  /// In en, this message translates to:
+  /// **'SPONSORED'**
+  String get homeSponsored;
 
   /// No description provided for @homeDaysStarHotel.
   ///
@@ -1643,6 +1655,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'(Use admin@noorharamain.com etc. for other agencies)'**
   String get agencyLoginDemoHint;
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Dashboard'**
+  String get adminTitle;
+
+  /// No description provided for @adminPendingAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending agencies'**
+  String get adminPendingAgencies;
+
+  /// No description provided for @adminNoPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No agencies waiting for approval.'**
+  String get adminNoPending;
+
+  /// No description provided for @adminApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get adminApprove;
+
+  /// No description provided for @adminApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency approved and now public!'**
+  String get adminApproved;
+
+  /// No description provided for @adminActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Action failed — make sure patches_admin.sql has been run.'**
+  String get adminActionFailed;
+
+  /// No description provided for @adminHomeAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Home ads carousel'**
+  String get adminHomeAds;
+
+  /// No description provided for @adminNoAds.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads yet. Add one to fill the top of the home screen.'**
+  String get adminNoAds;
+
+  /// No description provided for @adminAddAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ad'**
+  String get adminAddAd;
+
+  /// No description provided for @adminAdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad title'**
+  String get adminAdTitle;
+
+  /// No description provided for @adminAdTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Ramadan special — Noor Travel'**
+  String get adminAdTitleHint;
+
+  /// No description provided for @adminLinkPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a package (optional)'**
+  String get adminLinkPackage;
+
+  /// No description provided for @adminNoLink.
+  ///
+  /// In en, this message translates to:
+  /// **'No link'**
+  String get adminNoLink;
+
+  /// No description provided for @adminAdImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad image'**
+  String get adminAdImage;
+
+  /// No description provided for @adminPickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to pick an image'**
+  String get adminPickImage;
+
+  /// No description provided for @adminAdCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad published to the home screen!'**
+  String get adminAdCreated;
+
+  /// No description provided for @adminFeaturedOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured home offers'**
+  String get adminFeaturedOffers;
+
+  /// No description provided for @adminFeaturedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Starred packages appear first in the home screen list.'**
+  String get adminFeaturedHint;
 
   /// No description provided for @agencyDashboardYourPackages.
   ///
