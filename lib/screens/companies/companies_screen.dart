@@ -6,6 +6,7 @@ import '../../models/company_model.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/company_avatar.dart';
 import 'company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -143,24 +144,33 @@ class _CompanyListCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    // mono logo — top right
+                    // logo (or mono fallback) — top right
                     Positioned(
                       top: 12,
                       right: 14,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.92),
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                        child: Center(
-                          child: Text(
-                            company.mono,
-                            style: AppTheme.sans(20, weight: FontWeight.w800, color: company.tint),
-                          ),
-                        ),
-                      ),
+                      child: (company.logoUrl ?? '').isNotEmpty
+                          ? CompanyAvatar(
+                              mono: company.mono,
+                              tint: company.tint,
+                              logoUrl: company.logoUrl,
+                              size: 44,
+                              fontSize: 20,
+                              borderRadius: 13,
+                            )
+                          : Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.92),
+                                borderRadius: BorderRadius.circular(13),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  company.mono,
+                                  style: AppTheme.sans(20, weight: FontWeight.w800, color: company.tint),
+                                ),
+                              ),
+                            ),
                     ),
                     // company name + location — bottom left
                     Positioned(

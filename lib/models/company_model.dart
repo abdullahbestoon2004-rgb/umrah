@@ -7,14 +7,14 @@ class Company {
   final String? nameAr;
   final String? nameEn;
   String location;
-  final int since;
+  int since;
   final double rating;
   final int reviews;
   String about;
   List<String> tags;
   final bool isVerified;
   final Color tint;
-  final String? logoUrl;
+  String? logoUrl;
 
   Company({
     required this.id,
@@ -50,11 +50,42 @@ class Company {
     return source.substring(0, source.length >= 2 ? 2 : 1).toUpperCase();
   }
 
+  // Agency tints come straight from the database with no in-app color
+  // picker to constrain them. Snapping to the nearest of these curated,
+  // brand-harmonious hues keeps every company card in tune with the
+  // emerald/gold palette instead of risking an arbitrary clashing color.
+  static const List<Color> curatedTints = [
+    Color(0xFF0F5C4D), // emerald (default)
+    Color(0xFF1F6E8C), // teal-blue
+    Color(0xFF3D5A3D), // olive green
+    Color(0xFF6B4226), // warm brown
+    Color(0xFF8C6A1F), // antique gold-brown
+    Color(0xFF7A3B69), // muted plum
+    Color(0xFF7A3B3B), // muted brick red
+  ];
+
   static Color parseTint(String? hex) {
     if (hex == null || hex.isEmpty) return const Color(0xFF0F5C4D);
     var h = hex.replaceFirst('#', '');
     if (h.length == 6) h = 'FF$h';
-    return Color(int.tryParse(h, radix: 16) ?? 0xFF0F5C4D);
+    final parsed = Color(int.tryParse(h, radix: 16) ?? 0xFF0F5C4D);
+    return _nearestCuratedTint(parsed);
+  }
+
+  static Color _nearestCuratedTint(Color color) {
+    var closest = curatedTints.first;
+    var bestDist = double.infinity;
+    for (final c in curatedTints) {
+      final dr = c.r - color.r;
+      final dg = c.g - color.g;
+      final db = c.b - color.b;
+      final dist = dr * dr + dg * dg + db * db;
+      if (dist < bestDist) {
+        bestDist = dist;
+        closest = c;
+      }
+    }
+    return closest;
   }
 
   factory Company.fromRow(Map<String, dynamic> r) => Company(

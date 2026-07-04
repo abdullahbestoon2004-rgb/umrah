@@ -2,10 +2,10 @@ class UserProfile {
   final String id;
   final String email;
   final String role; // 'client' | 'agency' | 'admin'
-  final String fullName;
-  final String phone;
+  String fullName;
+  String phone;
 
-  const UserProfile({
+  UserProfile({
     required this.id,
     required this.email,
     required this.role,

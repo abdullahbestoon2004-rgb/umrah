@@ -17,6 +17,8 @@ import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
 import 'privacy_security_screen.dart';
 import 'help_support_screen.dart';
+import 'account_details_screen.dart';
+import 'legal_screen.dart';
 import '../auth/auth_screen.dart';
 import '../../widgets/app_snackbar.dart';
 
@@ -41,6 +43,15 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
                   ),
                   const SizedBox(height: 18),
+                ],
+                if (provider.isSignedIn) ...[
+                  _MenuCard(
+                    icon: Icons.manage_accounts_rounded,
+                    label: t.profileAccountDetails,
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
+                  ),
+                  const SizedBox(height: 10),
                 ],
                 _MenuCard(
                   icon: Icons.favorite_border_rounded,
@@ -85,6 +96,12 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.chat_bubble_outline_rounded,
                   label: t.profileHelpSupport,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen())),
+                ),
+                const SizedBox(height: 10),
+                _MenuCard(
+                  icon: Icons.info_outline_rounded,
+                  label: t.profileAbout,
+                  onTap: () => _openAbout(context),
                 ),
                 if (provider.isSignedIn) ...[
                   const SizedBox(height: 10),
@@ -143,6 +160,67 @@ class ProfileScreen extends StatelessWidget {
     Navigator.push(context, MaterialPageRoute(builder: (_) => _SavedScreen(offers: saved)));
   }
 
+  // Keep in sync with the version in pubspec.yaml.
+  static const String _appVersion = '1.0.0';
+
+  void _openAbout(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetCtx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Container(
+                  width: 52, height: 52,
+                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
+                  child: const Icon(Icons.mosque_rounded, color: Color(0xFFF3E6C4), size: 26),
+                ),
+                const SizedBox(width: 14),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(t.appTitle, style: AppTheme.serif(22)),
+                    const SizedBox(height: 2),
+                    Text(t.aboutVersion(_appVersion), style: AppTheme.sans(12, color: AppColors.muted)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
+            _AboutLink(
+              icon: Icons.privacy_tip_outlined,
+              label: t.aboutPrivacyPolicy,
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const LegalScreen(kind: LegalKind.privacy)));
+              },
+            ),
+            const SizedBox(height: 10),
+            _AboutLink(
+              icon: Icons.description_outlined,
+              label: t.aboutTermsOfUse,
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const LegalScreen(kind: LegalKind.terms)));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _openLanguagePicker(BuildContext context, AppProvider provider) {
     final t = AppLocalizations.of(context);
     showModalBottomSheet(
@@ -172,6 +250,36 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+}
+
+class _AboutLink extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _AboutLink({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.primary, size: 20),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600))),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFFC1C8BF), size: 20),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _LanguageOption extends StatelessWidget {
@@ -288,7 +396,17 @@ class _ProfileHeader extends StatelessWidget {
                         width: 66, height: 66,
                         decoration: BoxDecoration(color: const Color(0xFFF3E6C4), borderRadius: BorderRadius.circular(20)),
                         alignment: Alignment.center,
-                        child: Icon(Icons.person_rounded, color: AppColors.primary, size: 30),
+                        // show the user's initial (like the home header); generic icon for guests
+                        child: provider.isSignedIn &&
+                                (provider.user!.fullName.isNotEmpty || provider.user!.email.isNotEmpty)
+                            ? Text(
+                                (provider.user!.fullName.isNotEmpty
+                                        ? provider.user!.fullName.trim()[0]
+                                        : provider.user!.email[0])
+                                    .toUpperCase(),
+                                style: AppTheme.serif(28, color: AppColors.primary),
+                              )
+                            : Icon(Icons.person_rounded, color: AppColors.primary, size: 30),
                       ),
                       const SizedBox(width: 15),
                       Expanded(

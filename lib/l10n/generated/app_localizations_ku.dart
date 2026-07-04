@@ -1332,6 +1332,81 @@ class AppLocalizationsKu extends AppLocalizations {
   String get profileStatAlerts => 'ئاگادارییەکان';
 
   @override
+  String get profileAccountDetails => 'وردەکاری هەژمار';
+
+  @override
+  String get accountPhoneHint => '+964 750 000 0000';
+
+  @override
+  String get accountSaveChanges => 'پاشەکەوتکردنی گۆڕانکارییەکان';
+
+  @override
+  String get accountUpdated => 'پرۆفایلەکە نوێکرایەوە.';
+
+  @override
+  String get accountChangePassword => 'گۆڕینی وشەی نهێنی';
+
+  @override
+  String get accountNewPassword => 'وشەی نهێنی نوێ';
+
+  @override
+  String get accountNewPasswordHint => 'لانیکەم ٦ پیت';
+
+  @override
+  String get accountPasswordUpdated => 'وشەی نهێنی نوێکرایەوە.';
+
+  @override
+  String get accountPasswordTooShort => 'وشەی نهێنی دەبێت لانیکەم ٦ پیت بێت.';
+
+  @override
+  String get accountDangerZone => 'ناوچەی مەترسی';
+
+  @override
+  String get accountDeleteAccount => 'سڕینەوەی هەژمار';
+
+  @override
+  String get accountDeleteHint => 'هەژمار و زانیارییەکانت بە یەکجاری لادەبات.';
+
+  @override
+  String get accountDeleteTitle => 'هەژمارەکە بسڕدرێتەوە؟';
+
+  @override
+  String get accountDeleteBody =>
+      'ئەمە هەژمارەکەت و حجزەکانت و زانیاریە پاشەکەوتکراوەکانت بە یەکجاری دەسڕێتەوە. ناتوانرێت بگەڕێنرێتەوە.';
+
+  @override
+  String get accountDeleteConfirm => 'بەڵێ، هەژمارەکەم بسڕەوە';
+
+  @override
+  String get accountDeleted => 'هەژمارەکەت سڕایەوە.';
+
+  @override
+  String get accountDeleteFailed =>
+      'نەتوانرا هەژمارەکە بسڕدرێتەوە. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get profileAbout => 'دەربارە';
+
+  @override
+  String aboutVersion(String version) {
+    return 'وەشانی $version';
+  }
+
+  @override
+  String get aboutPrivacyPolicy => 'سیاسەتی تایبەتمەندی';
+
+  @override
+  String get aboutTermsOfUse => 'مەرجەکانی بەکارهێنان';
+
+  @override
+  String get legalPrivacyBody =>
+      'ئەپی عومرە ڕێز لە تایبەتمەندییەکەت دەگرێت. تەنها ئەو زانیاریانە کۆدەکەینەوە کە بۆ کارکردنی خزمەتگوزارییەکە پێویستن: ناوت، زانیاری پەیوەندی و داواکارییەکانی حجز. ئەم زانیاریانە تەنها لەگەڵ ئەو ئاژانسە هاوبەش دەکرێن کە تۆ هەڵیدەبژێریت، و هەرگیز بە لایەنی سێیەم نافرۆشرێن.\n\nزانیارییەکانت بە پارێزراوی هەڵدەگیرێن. دەتوانیت هەر کاتێک لە وردەکاری هەژمارەوە هەژمارەکەت بسڕیتەوە، ئەمەش پرۆفایل و زانیارییە کەسییەکانت بە یەکجاری لە سیستەمەکانمان لادەبات.';
+
+  @override
+  String get legalTermsBody =>
+      'ئەپی عومرە بازاڕێکە کە گەشتیاران بە ئاژانسە گەشتییە مۆڵەتدارەکانەوە دەبەستێتەوە. حجزەکان لە ڕێگەی ئەپەکەوە داواکارین: ئاژانسەکە پشتڕاستیان دەکاتەوە یان ڕەتیان دەکاتەوە، و پارەدان ڕاستەوخۆ لای ئاژانسەکە دەبێت. وردەکاری پاکێج و نرخ و بەردەستبوون لەلایەن ئاژانسەکانەوە دابین دەکرێن و لەوانەیە بگۆڕێن.\n\nبە بەکارهێنانی ئەپەکە ڕازی دەبیت بە پێدانی زانیاری دروست و بەکارهێنانی خزمەتگوزارییەکە تەنها بۆ مەبەستی کەسی و یاسایی. ئەپەکە ئاژانسی گەشت نییە و لایەنێک نییە لە گرێبەستی نێوان تۆ و ئاژانسەکە.';
+
+  @override
   String get bookingPayMethod => 'شێوازی پارەدان';
 
   @override
@@ -1385,6 +1460,32 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get agencyCompanyLocationHint => 'وەک: هەولێر';
+
+  @override
+  String get agencyCompanyAbout => 'دەربارەی ئاژانسەکەت';
+
+  @override
+  String get agencyCompanyAboutHint =>
+      'وەسفێکی کورت کە بۆ گەشتیاران دەردەکەوێت';
+
+  @override
+  String get agencyCompanySince => 'ساڵی دامەزراندن';
+
+  @override
+  String get agencyCompanySinceHint => 'وەک: 2015';
+
+  @override
+  String get agencyCompanyLogo => 'لۆگۆی ئاژانس';
+
+  @override
+  String get agencyLogoAdd => 'زیادکردنی لۆگۆ';
+
+  @override
+  String get agencyLogoChange => 'گۆڕینی لۆگۆ';
+
+  @override
+  String get agencyLogoOptional =>
+      'ئارەزوومەندانەیە — لە پەڕەی ئاژانسەکان دەردەکەوێت';
 
   @override
   String get agencyNotAgencyAccount => 'ئەم هەژمارە هەژماری ئاژانس نییە.';

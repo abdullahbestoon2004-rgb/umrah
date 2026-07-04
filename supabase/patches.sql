@@ -32,3 +32,12 @@ create policy "agencies update package images" on storage.objects
 drop policy if exists "public read package images" on storage.objects;
 create policy "public read package images" on storage.objects
   for select using (bucket_id = 'package-images');
+
+-- 4. Self-service account deletion (required by the app stores).
+--    Runs as definer so the signed-in user can delete their own auth row;
+--    profiles/companies/bookings cascade from auth.users.
+create or replace function delete_my_account()
+returns void language sql security definer set search_path = public as $$
+  delete from auth.users where id = auth.uid();
+$$;
+revoke execute on function delete_my_account() from anon;

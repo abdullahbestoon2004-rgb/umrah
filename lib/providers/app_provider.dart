@@ -185,7 +185,7 @@ class AppProvider extends ChangeNotifier {
     try {
       _user = await _service.restoreSession();
       if (_user != null) {
-        if (_user!.isAgency) _myCompany = await _service.fetchMyCompany(_user!.id);
+        if (_user!.isAgency) _myCompany = await _service.ensureAgencyCompany(_user!.id);
         await refreshBookings();
         await _syncAccountData();
       }
@@ -251,28 +251,54 @@ class AppProvider extends ChangeNotifier {
     required String fullName,
     required String companyName,
     required String companyLocation,
+    String companyAbout = '',
+    int? companySince,
+    Uint8List? logoBytes,
     String phone = '',
   }) async {
     final err = await _service.signUp(
-        email: email, password: password, fullName: fullName, phone: phone, role: 'agency');
+        email: email, password: password, fullName: fullName, phone: phone,
+        role: 'agency', companyName: companyName, companyLocation: companyLocation,
+        companyAbout: companyAbout, companySince: companySince);
     if (err != null) return err;
+    // restoreAuth's ensureAgencyCompany call creates the company row — it
+    // reads the profile fields back from the sign-up metadata, so this also
+    // covers the case where email confirmation delays the first session.
     await restoreAuth();
-    if (_user != null && _myCompany == null) {
-      _myCompany = await _service.createCompany(
-          ownerId: _user!.id, name: companyName, location: companyLocation);
-      notifyListeners();
+    // The logo can't ride along in metadata; upload it now if we already
+    // have a session. With email confirmation on, it's re-added later via
+    // the Edit profile screen.
+    if (logoBytes != null && _myCompany != null) {
+      final url = await _service.uploadCompanyLogo(_myCompany!.id, logoBytes);
+      if (url != null) {
+        _myCompany!.logoUrl = url;
+        notifyListeners();
+      }
     }
     return null;
   }
 
+  /// Re-attempts creating the agency's company from sign-up metadata.
+  /// Lets a user whose confirmation email arrived after they left the
+  /// registration form recover without signing out and back in.
+  Future<void> retryAgencyCompany() async {
+    if (_user == null || !_user!.isAgency) return;
+    _myCompany = await _service.ensureAgencyCompany(_user!.id);
+    notifyListeners();
+  }
+
   Future<void> signOut() async {
     await _service.signOut();
+    await _clearLocalAccountState();
+  }
+
+  /// Clears account-scoped data so it can't leak to the next person who
+  /// uses this device — cards, saves, and account prefs all follow the
+  /// account, not the device.
+  Future<void> _clearLocalAccountState() async {
     _user = null;
     _myCompany = null;
     _bookings = [];
-    // Clear account-scoped data so it can't leak to the next person who
-    // uses this device — cards, saves, and account prefs all follow the
-    // account, not the device.
     _cards = [];
     _defaultCardId = '';
     _saved.clear();
@@ -284,6 +310,26 @@ class AppProvider extends ChangeNotifier {
       ..clear()
       ..add(AppNotification(id: 'n1', type: NotificationType.welcome, time: DateTime.now()));
     notifyListeners();
+  }
+
+  Future<String?> updateAccountDetails({String? fullName, String? phone}) async {
+    if (_user == null) return null;
+    final err = await _service.updateProfile(_user!.id, fullName: fullName, phone: phone);
+    if (err != null) return err;
+    if (fullName != null) _user!.fullName = fullName;
+    if (phone != null) _user!.phone = phone;
+    notifyListeners();
+    return null;
+  }
+
+  Future<String?> changePassword(String newPassword) =>
+      _service.changePassword(newPassword);
+
+  Future<String?> deleteAccount() async {
+    final err = await _service.deleteAccount();
+    if (err != null) return err;
+    await _clearLocalAccountState();
+    return null;
   }
 
   void agencyLogout() {
@@ -518,16 +564,22 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<String?> updateCompanyProfile(String companyId, {
-    String? location, String? about, List<String>? tags,
+    String? location, String? about, List<String>? tags, int? since,
+    Uint8List? logoBytes,
   }) async {
     final err = await _service.updateCompany(companyId,
-        location: location, about: about, tags: tags);
+        location: location, about: about, tags: tags, since: since);
     if (err != null) return err;
     final c = companyById(companyId);
     if (c != null) {
       if (location != null) c.location = location;
       if (about != null) c.about = about;
       if (tags != null) c.tags = tags;
+      if (since != null) c.since = since;
+    }
+    if (logoBytes != null) {
+      final url = await _service.uploadCompanyLogo(companyId, logoBytes);
+      if (url != null) c?.logoUrl = url;
     }
     notifyListeners();
     return null;

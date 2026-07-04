@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
@@ -20,6 +22,9 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
   final _nameCtrl = TextEditingController();
   final _companyCtrl = TextEditingController();
   final _locationCtrl = TextEditingController();
+  final _aboutCtrl = TextEditingController();
+  final _sinceCtrl = TextEditingController();
+  Uint8List? _logoBytes;
   bool _register = false;
   bool _obscure = true;
   bool _loading = false;
@@ -32,7 +37,16 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
     _nameCtrl.dispose();
     _companyCtrl.dispose();
     _locationCtrl.dispose();
+    _aboutCtrl.dispose();
+    _sinceCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickLogo() async {
+    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (xfile == null) return;
+    final bytes = await xfile.readAsBytes();
+    setState(() => _logoBytes = bytes);
   }
 
   Future<void> _submit() async {
@@ -55,6 +69,9 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
         fullName: _nameCtrl.text.trim(),
         companyName: _companyCtrl.text.trim(),
         companyLocation: _locationCtrl.text.trim(),
+        companyAbout: _aboutCtrl.text.trim(),
+        companySince: int.tryParse(_sinceCtrl.text.trim()),
+        logoBytes: _logoBytes,
       );
     } else {
       err = await provider.signIn(email, pass);
@@ -124,6 +141,30 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                 _Label(t.agencyCompanyLocation),
                 const SizedBox(height: 8),
                 _Field(controller: _locationCtrl, hint: t.agencyCompanyLocationHint, icon: Icons.location_on_outlined),
+                const SizedBox(height: 18),
+                _Label(t.agencyCompanySince),
+                const SizedBox(height: 8),
+                _Field(
+                  controller: _sinceCtrl,
+                  hint: t.agencyCompanySinceHint,
+                  icon: Icons.calendar_today_outlined,
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 18),
+                _Label(t.agencyCompanyAbout),
+                const SizedBox(height: 8),
+                _Field(
+                  controller: _aboutCtrl,
+                  hint: t.agencyCompanyAboutHint,
+                  icon: Icons.notes_rounded,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 18),
+                _Label(t.agencyCompanyLogo),
+                const SizedBox(height: 8),
+                _LogoPicker(bytes: _logoBytes, onPick: _pickLogo),
+                const SizedBox(height: 6),
+                Text(t.agencyLogoOptional, style: AppTheme.sans(11.5, color: AppColors.muted)),
                 const SizedBox(height: 18),
               ],
 
@@ -239,6 +280,51 @@ class _Label extends StatelessWidget {
       Text(text, style: AppTheme.sans(13, weight: FontWeight.w700));
 }
 
+class _LogoPicker extends StatelessWidget {
+  final Uint8List? bytes;
+  final VoidCallback onPick;
+  const _LogoPicker({required this.bytes, required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return GestureDetector(
+      onTap: onPick,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 54, height: 54,
+              decoration: BoxDecoration(
+                color: AppColors.chipBg,
+                borderRadius: BorderRadius.circular(13),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: bytes != null
+                  ? Image.memory(bytes!, fit: BoxFit.cover, cacheWidth: 108)
+                  : const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 24),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Text(
+                bytes != null ? t.agencyLogoChange : t.agencyLogoAdd,
+                style: AppTheme.sans(13.5, weight: FontWeight.w700, color: AppColors.primary),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.mutedLight, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _Field extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
@@ -247,10 +333,12 @@ class _Field extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? suffix;
   final ValueChanged<String>? onSubmit;
+  final int maxLines;
 
   const _Field({
     required this.controller, required this.hint, required this.icon,
     this.obscure = false, this.keyboardType, this.suffix, this.onSubmit,
+    this.maxLines = 1,
   });
 
   @override
@@ -266,6 +354,7 @@ class _Field extends StatelessWidget {
         obscureText: obscure,
         keyboardType: keyboardType,
         onSubmitted: onSubmit,
+        maxLines: maxLines,
         style: AppTheme.sans(14),
         decoration: InputDecoration(
           hintText: hint,

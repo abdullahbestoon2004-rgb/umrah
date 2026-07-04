@@ -7,6 +7,7 @@ import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/offer_image.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/company_avatar.dart';
 import '../../widgets/tag_chip.dart';
 import '../offers/offer_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -117,16 +118,25 @@ class _CompanyHeader extends StatelessWidget {
                   const SizedBox(height: 18),
                   Row(
                     children: [
-                      Container(
-                        width: 62,
-                        height: 62,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.95),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(company.mono, style: AppTheme.serif(26, color: company.tint)),
-                      ),
+                      (company.logoUrl ?? '').isNotEmpty
+                          ? CompanyAvatar(
+                              mono: company.mono,
+                              tint: company.tint,
+                              logoUrl: company.logoUrl,
+                              size: 62,
+                              fontSize: 26,
+                              borderRadius: 18,
+                            )
+                          : Container(
+                              width: 62,
+                              height: 62,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.95),
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(company.mono, style: AppTheme.serif(26, color: company.tint)),
+                            ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(

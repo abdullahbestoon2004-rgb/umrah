@@ -7,6 +7,7 @@ import '../../models/offer_model.dart';
 import '../../models/company_model.dart';
 import '../../widgets/offer_image.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/company_avatar.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/tag_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -21,7 +22,7 @@ class AgencyDashboardScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final company = provider.agencyCompany;
-    if (company == null) return const SizedBox.shrink();
+    if (company == null) return _NoCompanyState(provider: provider);
 
     final offers = provider.getCompanyOffers(company.id);
 
@@ -108,6 +109,96 @@ class AgencyDashboardScreen extends StatelessWidget {
   }
 }
 
+// Shown instead of a blank screen when a logged-in agency user has no
+// company row yet — happens when email confirmation delayed their first
+// session past the original sign-up call. Retry re-reads the sign-up
+// metadata and creates it without requiring a fresh sign-out/in.
+class _NoCompanyState extends StatefulWidget {
+  final AppProvider provider;
+  const _NoCompanyState({required this.provider});
+
+  @override
+  State<_NoCompanyState> createState() => _NoCompanyStateState();
+}
+
+class _NoCompanyStateState extends State<_NoCompanyState> {
+  bool _retrying = false;
+
+  Future<void> _retry() async {
+    setState(() => _retrying = true);
+    await widget.provider.retryAgencyCompany();
+    if (mounted) setState(() => _retrying = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = widget.provider.lang;
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.business_center_outlined, size: 48, color: AppColors.mutedLight),
+                const SizedBox(height: 16),
+                Text(_title(lang), style: AppTheme.serif(20), textAlign: TextAlign.center),
+                const SizedBox(height: 6),
+                Text(_body(lang), style: AppTheme.sans(13, color: AppColors.muted), textAlign: TextAlign.center),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: _retrying ? null : _retry,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
+                    decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(13)),
+                    child: _retrying
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                        : Text(_retryLabel(lang), style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                GestureDetector(
+                  onTap: () {
+                    widget.provider.agencyLogout();
+                    Navigator.pop(context);
+                  },
+                  child: Text(_signOutLabel(lang), style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.muted)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _title(String lang) {
+    if (lang == 'ar') return 'ملفك التجاري غير مكتمل بعد';
+    if (lang == 'ku') return 'پرۆفایلی کۆمپانیاکەت هێشتا تەواو نییە';
+    return "Your company profile isn't set up yet";
+  }
+
+  String _body(String lang) {
+    if (lang == 'ar') return 'إذا قمت بتأكيد بريدك الإلكتروني للتو، اضغط إعادة المحاولة لإكمال إعداد حسابك.';
+    if (lang == 'ku') return 'ئەگەر تازە ئیمەیلەکەت پشتڕاست کردووەتەوە، دووبارە هەوڵبدەرەوە بۆ تەواوکردنی هەژمارەکەت.';
+    return "If you just confirmed your email, tap retry to finish setting up your account.";
+  }
+
+  String _retryLabel(String lang) {
+    if (lang == 'ar') return 'إعادة المحاولة';
+    if (lang == 'ku') return 'دووبارە هەوڵدانەوە';
+    return 'Retry';
+  }
+
+  String _signOutLabel(String lang) {
+    if (lang == 'ar') return 'تسجيل الخروج';
+    if (lang == 'ku') return 'چوونەدەرەوە';
+    return 'Sign out';
+  }
+}
+
 class _DashboardHeader extends StatelessWidget {
   final Company company;
   final AppProvider provider;
@@ -178,12 +269,20 @@ class _DashboardHeader extends StatelessWidget {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Container(
-                    width: 56, height: 56,
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.95), borderRadius: BorderRadius.circular(16)),
-                    alignment: Alignment.center,
-                    child: Text(company.mono, style: AppTheme.serif(24, color: company.tint)),
-                  ),
+                  (company.logoUrl ?? '').isNotEmpty
+                      ? CompanyAvatar(
+                          mono: company.mono,
+                          tint: company.tint,
+                          logoUrl: company.logoUrl,
+                          size: 56,
+                          fontSize: 24,
+                        )
+                      : Container(
+                          width: 56, height: 56,
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.95), borderRadius: BorderRadius.circular(16)),
+                          alignment: Alignment.center,
+                          child: Text(company.mono, style: AppTheme.serif(24, color: company.tint)),
+                        ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(

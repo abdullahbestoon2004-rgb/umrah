@@ -31,8 +31,16 @@ abstract class DataService {
     required String fullName,
     String phone,
     String role,
+    String? companyName,
+    String? companyLocation,
+    String? companyAbout,
+    int? companySince,
   });
   Future<void> signOut();
+  Future<String?> updateProfile(String userId, {String? fullName, String? phone});
+  Future<String?> changePassword(String newPassword);
+  /// Permanently deletes the auth user (and everything that cascades from it).
+  Future<String?> deleteAccount();
 
   Future<List<Company>> fetchCompanies();
   Future<List<Offer>> fetchOffers(List<Company> companies);
@@ -41,8 +49,16 @@ abstract class DataService {
     required String ownerId,
     required String name,
     required String location,
+    String about,
+    int? since,
   });
-  Future<String?> updateCompany(String id, {String? location, String? about, List<String>? tags});
+  /// Fetches the agency's company, creating it from the sign-up metadata
+  /// if it doesn't exist yet — covers the case where email confirmation
+  /// delayed the first session past the original sign-up call.
+  Future<Company?> ensureAgencyCompany(String ownerId);
+  Future<String?> updateCompany(String id,
+      {String? location, String? about, List<String>? tags, int? since});
+  Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes);
 
   Future<Offer?> createPackage(Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company);
   Future<String?> updatePackage(String id, Map<String, dynamic> fields, List<ItineraryDay> itinerary);
@@ -148,12 +164,23 @@ class SupabaseService implements DataService {
     required String fullName,
     String phone = '',
     String role = 'client',
+    String? companyName,
+    String? companyLocation,
+    String? companyAbout,
+    int? companySince,
   }) async {
     try {
       final res = await _c.auth.signUp(email: email, password: password, data: {
         'role': role,
         'full_name': fullName,
         'phone': phone,
+        // stashed so the company can still be created once a session exists —
+        // e.g. after the user confirms their email and logs in later, when the
+        // original sign-up form's values are long gone.
+        if (companyName != null) 'company_name': companyName,
+        if (companyLocation != null) 'company_location': companyLocation,
+        if (companyAbout != null) 'company_about': companyAbout,
+        if (companySince != null) 'company_since': companySince,
       });
       if (res.session == null) {
         return 'confirm-email'; // project has email confirmation enabled
@@ -168,6 +195,52 @@ class SupabaseService implements DataService {
 
   @override
   Future<void> signOut() => _c.auth.signOut();
+
+  @override
+  Future<String?> updateProfile(String userId, {String? fullName, String? phone}) async {
+    try {
+      await _c.from('profiles').update({
+        if (fullName != null) 'full_name': fullName,
+        if (phone != null) 'phone': phone,
+      }).eq('id', userId);
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> changePassword(String newPassword) async {
+    try {
+      await _c.auth.updateUser(UserAttributes(password: newPassword));
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> deleteAccount() async {
+    try {
+      // security-definer RPC (see supabase/patches.sql) — a client can't
+      // delete its own auth.users row directly
+      await _c.rpc('delete_my_account');
+      // the auth user is already gone, so revoking the session may 4xx —
+      // that must not surface as a deletion failure
+      try {
+        await _c.auth.signOut();
+      } catch (_) {}
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
 
   // ── companies & packages ─────────────────────────────────────────────────
 
@@ -199,26 +272,57 @@ class SupabaseService implements DataService {
     required String ownerId,
     required String name,
     required String location,
+    String about = '',
+    int? since,
   }) async {
     try {
       final row = await _c
           .from('companies')
-          .insert({'owner_id': ownerId, 'name': name, 'name_en': name, 'location': location})
+          .insert({
+            'owner_id': ownerId,
+            'name': name,
+            'name_en': name,
+            'location': location,
+            if (about.isNotEmpty) 'about': about,
+            if (since != null) 'since': since,
+          })
           .select()
           .single();
       return Company.fromRow(row);
+    } on PostgrestException catch (e) {
+      // 'about' column comes from patches.sql; retry without it
+      if (e.code == 'PGRST204' && about.isNotEmpty) {
+        return createCompany(ownerId: ownerId, name: name, location: location, since: since);
+      }
+      return null;
     } catch (_) {
       return null;
     }
   }
 
   @override
-  Future<String?> updateCompany(String id, {String? location, String? about, List<String>? tags}) async {
+  Future<Company?> ensureAgencyCompany(String ownerId) async {
+    final existing = await fetchMyCompany(ownerId);
+    if (existing != null) return existing;
+    final meta = _c.auth.currentUser?.userMetadata;
+    final name = (meta?['company_name'] as String?)?.trim();
+    if (name == null || name.isEmpty) return null;
+    final location = (meta?['company_location'] as String?)?.trim() ?? '';
+    final about = (meta?['company_about'] as String?)?.trim() ?? '';
+    final since = (meta?['company_since'] as num?)?.toInt();
+    return createCompany(
+        ownerId: ownerId, name: name, location: location, about: about, since: since);
+  }
+
+  @override
+  Future<String?> updateCompany(String id,
+      {String? location, String? about, List<String>? tags, int? since}) async {
     try {
       await _c.from('companies').update({
         if (location != null) 'location': location,
         if (about != null) 'about': about,
         if (tags != null) 'tags': tags,
+        if (since != null) 'since': since,
       }).eq('id', id);
       return null;
     } on PostgrestException catch (e) {
@@ -297,6 +401,27 @@ class SupabaseService implements DataService {
           );
       final url = _c.storage.from('package-images').getPublicUrl(path);
       await _c.from('packages').update({'image_url': url}).eq('id', packageId);
+      return url;
+    } catch (_) {
+      return null; // bucket not created yet (see supabase/patches.sql)
+    }
+  }
+
+  @override
+  Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes) async {
+    try {
+      // lives in the existing package-images bucket (logos/ prefix) so no
+      // extra storage setup is needed beyond patches.sql
+      final path = 'logos/$companyId.jpg';
+      await _c.storage.from('package-images').uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+          );
+      // version param busts image caches when the logo is replaced in place
+      final url =
+          '${_c.storage.from('package-images').getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
+      await _c.from('companies').update({'logo_url': url}).eq('id', companyId);
       return url;
     } catch (_) {
       return null; // bucket not created yet (see supabase/patches.sql)

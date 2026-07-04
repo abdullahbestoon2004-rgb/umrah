@@ -696,6 +696,7 @@ class _AgencyCard extends StatelessWidget {
             CompanyAvatar(
               mono: company.mono,
               tint: company.tint,
+              logoUrl: company.logoUrl,
               size: 44,
               fontSize: 19,
               borderRadius: 13,
@@ -710,8 +711,15 @@ class _AgencyCard extends StatelessWidget {
             const SizedBox(height: 7),
             Row(
               children: [
-                const Icon(Icons.star_rounded, color: AppColors.gold, size: 13),
-                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.star_rounded, color: AppColors.gold, size: 11),
+                ),
+                const SizedBox(width: 5),
                 Flexible(
                   child: Text(
                     t.homeRatingOffersCount(company.rating, offerCount),
@@ -1082,10 +1090,10 @@ class _TrustCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: const Color(0xFFEEF4EF), // soft green tint ties trust band to the brand color
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.08),
+          color: AppColors.primary.withOpacity(0.1),
           width: 1.2,
         ),
         boxShadow: [

@@ -1316,6 +1316,81 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileStatAlerts => 'تنبيهات';
 
   @override
+  String get profileAccountDetails => 'تفاصيل الحساب';
+
+  @override
+  String get accountPhoneHint => '+964 750 000 0000';
+
+  @override
+  String get accountSaveChanges => 'حفظ التغييرات';
+
+  @override
+  String get accountUpdated => 'تم تحديث الملف الشخصي.';
+
+  @override
+  String get accountChangePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get accountNewPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get accountNewPasswordHint => '٦ أحرف على الأقل';
+
+  @override
+  String get accountPasswordUpdated => 'تم تحديث كلمة المرور.';
+
+  @override
+  String get accountPasswordTooShort =>
+      'يجب أن تكون كلمة المرور ٦ أحرف على الأقل.';
+
+  @override
+  String get accountDangerZone => 'منطقة الخطر';
+
+  @override
+  String get accountDeleteAccount => 'حذف الحساب';
+
+  @override
+  String get accountDeleteHint => 'يزيل حسابك وبياناتك نهائيًا.';
+
+  @override
+  String get accountDeleteTitle => 'حذف الحساب؟';
+
+  @override
+  String get accountDeleteBody =>
+      'سيؤدي هذا إلى حذف حسابك وحجوزاتك وبياناتك المحفوظة نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get accountDeleteConfirm => 'نعم، احذف حسابي';
+
+  @override
+  String get accountDeleted => 'تم حذف حسابك.';
+
+  @override
+  String get accountDeleteFailed => 'تعذر حذف الحساب. حاول مرة أخرى.';
+
+  @override
+  String get profileAbout => 'حول التطبيق';
+
+  @override
+  String aboutVersion(String version) {
+    return 'الإصدار $version';
+  }
+
+  @override
+  String get aboutPrivacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get aboutTermsOfUse => 'شروط الاستخدام';
+
+  @override
+  String get legalPrivacyBody =>
+      'يحترم تطبيق العمرة خصوصيتك. نجمع فقط المعلومات اللازمة لتشغيل الخدمة: اسمك وبيانات الاتصال وطلبات الحجز. تُشارك هذه المعلومات فقط مع وكالة السفر التي تختار الحجز لديها، ولا تُباع أبدًا لأطراف ثالثة.\n\nتُخزَّن بياناتك بأمان. يمكنك حذف حسابك في أي وقت من تفاصيل الحساب، وسيؤدي ذلك إلى إزالة ملفك الشخصي وبياناتك الشخصية نهائيًا من أنظمتنا.';
+
+  @override
+  String get legalTermsBody =>
+      'تطبيق العمرة منصة تربط المعتمرين بوكالات سفر مرخصة. الحجوزات عبر التطبيق هي طلبات: تقوم الوكالة بتأكيدها أو رفضها، ويتم الدفع مباشرة لدى الوكالة. تفاصيل الباقات والأسعار والتوفر تقدمها الوكالات وقد تتغير.\n\nباستخدامك للتطبيق فإنك توافق على تقديم معلومات صحيحة واستخدام الخدمة لأغراض شخصية ومشروعة فقط. التطبيق ليس وكالة سفر وليس طرفًا في العقد بينك وبين الوكالة.';
+
+  @override
   String get bookingPayMethod => 'طريقة الدفع';
 
   @override
@@ -1367,6 +1442,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get agencyCompanyLocationHint => 'مثال: أربيل';
+
+  @override
+  String get agencyCompanyAbout => 'نبذة عن الوكالة';
+
+  @override
+  String get agencyCompanyAboutHint => 'وصف قصير يظهر للمعتمرين';
+
+  @override
+  String get agencyCompanySince => 'سنة التأسيس';
+
+  @override
+  String get agencyCompanySinceHint => 'مثال: 2015';
+
+  @override
+  String get agencyCompanyLogo => 'شعار الوكالة';
+
+  @override
+  String get agencyLogoAdd => 'إضافة شعار';
+
+  @override
+  String get agencyLogoChange => 'تغيير الشعار';
+
+  @override
+  String get agencyLogoOptional => 'اختياري — يظهر في صفحة الوكالات';
 
   @override
   String get agencyNotAgencyAccount => 'هذا الحساب ليس حساب وكالة.';

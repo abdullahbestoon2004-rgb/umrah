@@ -1,10 +1,13 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/company_model.dart';
 import '../../widgets/app_snackbar.dart';
+import '../../widgets/company_avatar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class EditAgencyProfileScreen extends StatefulWidget {
@@ -19,6 +22,8 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   late final TextEditingController _locationCtrl;
   late final TextEditingController _aboutCtrl;
   late final TextEditingController _tagsCtrl;
+  late final TextEditingController _sinceCtrl;
+  Uint8List? _logoBytes;
   bool _saving = false;
 
   @override
@@ -27,6 +32,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     _locationCtrl = TextEditingController(text: widget.company.location);
     _aboutCtrl    = TextEditingController(text: widget.company.about);
     _tagsCtrl     = TextEditingController(text: widget.company.tags.join(', '));
+    _sinceCtrl    = TextEditingController(text: '${widget.company.since}');
   }
 
   @override
@@ -34,7 +40,15 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     _locationCtrl.dispose();
     _aboutCtrl.dispose();
     _tagsCtrl.dispose();
+    _sinceCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickLogo() async {
+    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (xfile == null) return;
+    final bytes = await xfile.readAsBytes();
+    setState(() => _logoBytes = bytes);
   }
 
   Future<void> _save() async {
@@ -52,6 +66,8 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
       location: _locationCtrl.text.trim(),
       about:    _aboutCtrl.text.trim(),
       tags:     tags,
+      since:    int.tryParse(_sinceCtrl.text.trim()),
+      logoBytes: _logoBytes,
     );
 
     if (!mounted) return;
@@ -99,36 +115,61 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Identity (read-only)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border, width: 1.5),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 52, height: 52,
-                    decoration: BoxDecoration(color: widget.company.tint, borderRadius: BorderRadius.circular(14)),
-                    alignment: Alignment.center,
-                    child: Text(widget.company.mono, style: AppTheme.serif(22, color: Colors.white)),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(widget.company.name, style: AppTheme.sans(16, weight: FontWeight.w700)),
-                      const SizedBox(height: 2),
-                      Text(t.editAgencyProfileSinceReadOnly(widget.company.since), style: AppTheme.sans(11.5, color: AppColors.muted)),
-                    ]),
-                  ),
-                ],
+            // Identity — name is read-only; tap the avatar to change the logo
+            GestureDetector(
+              onTap: _pickLogo,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+                child: Row(
+                  children: [
+                    _logoBytes != null
+                        ? Container(
+                            width: 52, height: 52,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14)),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.memory(_logoBytes!, fit: BoxFit.cover, cacheWidth: 104),
+                          )
+                        : CompanyAvatar(
+                            mono: widget.company.mono,
+                            tint: widget.company.tint,
+                            logoUrl: widget.company.logoUrl,
+                            size: 52,
+                            fontSize: 22,
+                            borderRadius: 14,
+                          ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(widget.company.name, style: AppTheme.sans(16, weight: FontWeight.w700)),
+                        const SizedBox(height: 2),
+                        Text(
+                          (_logoBytes != null || (widget.company.logoUrl ?? '').isNotEmpty)
+                              ? t.agencyLogoChange
+                              : t.agencyLogoAdd,
+                          style: AppTheme.sans(11.5, weight: FontWeight.w700, color: AppColors.primary),
+                        ),
+                      ]),
+                    ),
+                    const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 20),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
 
             _Field(label: t.editAgencyProfileLocationLabel, controller: _locationCtrl, hint: t.editAgencyProfileLocationHint),
+            const SizedBox(height: 18),
+            _Field(
+              label: t.agencyCompanySince,
+              controller: _sinceCtrl,
+              hint: t.agencyCompanySinceHint,
+              keyboardType: TextInputType.number,
+            ),
             const SizedBox(height: 18),
             _Field(
               label: t.editAgencyProfileAboutLabel,
@@ -158,7 +199,9 @@ class _Field extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final int maxLines;
-  const _Field({required this.label, required this.controller, required this.hint, this.maxLines = 1});
+  final TextInputType? keyboardType;
+  const _Field({required this.label, required this.controller, required this.hint,
+      this.maxLines = 1, this.keyboardType});
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +219,7 @@ class _Field extends StatelessWidget {
           child: TextField(
             controller: controller,
             maxLines: maxLines,
+            keyboardType: keyboardType,
             style: AppTheme.sans(14),
             decoration: InputDecoration(
               hintText: hint,

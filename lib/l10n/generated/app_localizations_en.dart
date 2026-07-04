@@ -1323,6 +1323,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileStatAlerts => 'Alerts';
 
   @override
+  String get profileAccountDetails => 'Account details';
+
+  @override
+  String get accountPhoneHint => '+964 750 000 0000';
+
+  @override
+  String get accountSaveChanges => 'Save changes';
+
+  @override
+  String get accountUpdated => 'Profile updated.';
+
+  @override
+  String get accountChangePassword => 'Change password';
+
+  @override
+  String get accountNewPassword => 'New password';
+
+  @override
+  String get accountNewPasswordHint => 'At least 6 characters';
+
+  @override
+  String get accountPasswordUpdated => 'Password updated.';
+
+  @override
+  String get accountPasswordTooShort =>
+      'Password must be at least 6 characters.';
+
+  @override
+  String get accountDangerZone => 'Danger zone';
+
+  @override
+  String get accountDeleteAccount => 'Delete account';
+
+  @override
+  String get accountDeleteHint => 'Permanently removes your account and data.';
+
+  @override
+  String get accountDeleteTitle => 'Delete account?';
+
+  @override
+  String get accountDeleteBody =>
+      'This permanently deletes your account, bookings, and saved data. This cannot be undone.';
+
+  @override
+  String get accountDeleteConfirm => 'Yes, delete my account';
+
+  @override
+  String get accountDeleted => 'Your account has been deleted.';
+
+  @override
+  String get accountDeleteFailed =>
+      'Could not delete the account. Please try again.';
+
+  @override
+  String get profileAbout => 'About';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get aboutTermsOfUse => 'Terms of Use';
+
+  @override
+  String get legalPrivacyBody =>
+      'Umrah App respects your privacy. We collect only the information needed to operate the service: your name, contact details, and booking requests. This information is shared only with the travel agency you choose to book with, and is never sold to third parties.\n\nYour data is stored securely. You can delete your account at any time from Account details, which permanently removes your profile and personal data from our systems.';
+
+  @override
+  String get legalTermsBody =>
+      'Umrah App is a marketplace that connects pilgrims with licensed travel agencies. Bookings made through the app are requests: the agency confirms or declines them, and payment is made directly at the agency. Package details, prices, and availability are provided by the agencies and may change.\n\nBy using the app you agree to provide accurate information and to use the service only for personal, lawful purposes. The app is not a travel agency and is not a party to the contract between you and the agency.';
+
+  @override
   String get bookingPayMethod => 'Payment method';
 
   @override
@@ -1375,6 +1451,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agencyCompanyLocationHint => 'e.g. Erbil';
+
+  @override
+  String get agencyCompanyAbout => 'About your agency';
+
+  @override
+  String get agencyCompanyAboutHint => 'A short description shown to pilgrims';
+
+  @override
+  String get agencyCompanySince => 'Founded year';
+
+  @override
+  String get agencyCompanySinceHint => 'e.g. 2015';
+
+  @override
+  String get agencyCompanyLogo => 'Agency logo';
+
+  @override
+  String get agencyLogoAdd => 'Add logo';
+
+  @override
+  String get agencyLogoChange => 'Change logo';
+
+  @override
+  String get agencyLogoOptional => 'Optional — shown on the Agencies page';
 
   @override
   String get agencyNotAgencyAccount => 'This account is not an agency account.';

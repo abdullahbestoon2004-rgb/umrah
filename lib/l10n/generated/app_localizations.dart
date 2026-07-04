@@ -2298,6 +2298,144 @@ abstract class AppLocalizations {
   /// **'Alerts'**
   String get profileStatAlerts;
 
+  /// No description provided for @profileAccountDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Account details'**
+  String get profileAccountDetails;
+
+  /// No description provided for @accountPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+964 750 000 0000'**
+  String get accountPhoneHint;
+
+  /// No description provided for @accountSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get accountSaveChanges;
+
+  /// No description provided for @accountUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated.'**
+  String get accountUpdated;
+
+  /// No description provided for @accountChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get accountChangePassword;
+
+  /// No description provided for @accountNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get accountNewPassword;
+
+  /// No description provided for @accountNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 6 characters'**
+  String get accountNewPasswordHint;
+
+  /// No description provided for @accountPasswordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated.'**
+  String get accountPasswordUpdated;
+
+  /// No description provided for @accountPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get accountPasswordTooShort;
+
+  /// No description provided for @accountDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get accountDangerZone;
+
+  /// No description provided for @accountDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get accountDeleteAccount;
+
+  /// No description provided for @accountDeleteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently removes your account and data.'**
+  String get accountDeleteHint;
+
+  /// No description provided for @accountDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get accountDeleteTitle;
+
+  /// No description provided for @accountDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account, bookings, and saved data. This cannot be undone.'**
+  String get accountDeleteBody;
+
+  /// No description provided for @accountDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, delete my account'**
+  String get accountDeleteConfirm;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get accountDeleted;
+
+  /// No description provided for @accountDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the account. Please try again.'**
+  String get accountDeleteFailed;
+
+  /// No description provided for @profileAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get profileAbout;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String aboutVersion(String version);
+
+  /// No description provided for @aboutPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get aboutPrivacyPolicy;
+
+  /// No description provided for @aboutTermsOfUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get aboutTermsOfUse;
+
+  /// No description provided for @legalPrivacyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Umrah App respects your privacy. We collect only the information needed to operate the service: your name, contact details, and booking requests. This information is shared only with the travel agency you choose to book with, and is never sold to third parties.\n\nYour data is stored securely. You can delete your account at any time from Account details, which permanently removes your profile and personal data from our systems.'**
+  String get legalPrivacyBody;
+
+  /// No description provided for @legalTermsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Umrah App is a marketplace that connects pilgrims with licensed travel agencies. Bookings made through the app are requests: the agency confirms or declines them, and payment is made directly at the agency. Package details, prices, and availability are provided by the agencies and may change.\n\nBy using the app you agree to provide accurate information and to use the service only for personal, lawful purposes. The app is not a travel agency and is not a party to the contract between you and the agency.'**
+  String get legalTermsBody;
+
   /// No description provided for @bookingPayMethod.
   ///
   /// In en, this message translates to:
@@ -2399,6 +2537,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. Erbil'**
   String get agencyCompanyLocationHint;
+
+  /// No description provided for @agencyCompanyAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About your agency'**
+  String get agencyCompanyAbout;
+
+  /// No description provided for @agencyCompanyAboutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A short description shown to pilgrims'**
+  String get agencyCompanyAboutHint;
+
+  /// No description provided for @agencyCompanySince.
+  ///
+  /// In en, this message translates to:
+  /// **'Founded year'**
+  String get agencyCompanySince;
+
+  /// No description provided for @agencyCompanySinceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2015'**
+  String get agencyCompanySinceHint;
+
+  /// No description provided for @agencyCompanyLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency logo'**
+  String get agencyCompanyLogo;
+
+  /// No description provided for @agencyLogoAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add logo'**
+  String get agencyLogoAdd;
+
+  /// No description provided for @agencyLogoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get agencyLogoChange;
+
+  /// No description provided for @agencyLogoOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — shown on the Agencies page'**
+  String get agencyLogoOptional;
 
   /// No description provided for @agencyNotAgencyAccount.
   ///

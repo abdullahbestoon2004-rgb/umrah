@@ -52,15 +52,44 @@ class FakeService implements DataService {
     return null;
   }
 
+  String? _pendingCompanyName;
+  String? _pendingCompanyLocation;
+  String _pendingCompanyAbout = '';
+  int? _pendingCompanySince;
+
   @override
   Future<String?> signUp({required String email, required String password,
-      required String fullName, String phone = '', String role = 'client'}) async {
+      required String fullName, String phone = '', String role = 'client',
+      String? companyName, String? companyLocation,
+      String? companyAbout, int? companySince}) async {
     user = UserProfile(id: 'u1', email: email, role: role, fullName: fullName, phone: phone);
+    _pendingCompanyName = companyName;
+    _pendingCompanyLocation = companyLocation;
+    _pendingCompanyAbout = companyAbout ?? '';
+    _pendingCompanySince = companySince;
     return null;
   }
 
   @override
   Future<void> signOut() async => user = null;
+
+  @override
+  Future<String?> updateProfile(String userId, {String? fullName, String? phone}) async {
+    if (user != null) {
+      if (fullName != null) user!.fullName = fullName;
+      if (phone != null) user!.phone = phone;
+    }
+    return null;
+  }
+
+  @override
+  Future<String?> changePassword(String newPassword) async => null;
+
+  @override
+  Future<String?> deleteAccount() async {
+    user = null;
+    return null;
+  }
 
   @override
   Future<List<Company>> fetchCompanies() async => companies;
@@ -74,14 +103,30 @@ class FakeService implements DataService {
 
   @override
   Future<Company?> createCompany({required String ownerId, required String name,
-      required String location}) async {
-    final c = Company(id: 'c${companies.length + 1}', ownerId: ownerId, name: name, location: location);
+      required String location, String about = '', int? since}) async {
+    final c = Company(id: 'c${companies.length + 1}', ownerId: ownerId, name: name,
+        location: location, about: about, since: since ?? 2020);
     companies.add(c);
     return c;
   }
 
   @override
-  Future<String?> updateCompany(String id, {String? location, String? about, List<String>? tags}) async => null;
+  Future<Company?> ensureAgencyCompany(String ownerId) async {
+    final existing = await fetchMyCompany(ownerId);
+    if (existing != null) return existing;
+    final name = _pendingCompanyName;
+    if (name == null || name.isEmpty) return null;
+    return createCompany(ownerId: ownerId, name: name,
+        location: _pendingCompanyLocation ?? '',
+        about: _pendingCompanyAbout, since: _pendingCompanySince);
+  }
+
+  @override
+  Future<String?> updateCompany(String id,
+      {String? location, String? about, List<String>? tags, int? since}) async => null;
+
+  @override
+  Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes) async => null;
 
   @override
   Future<Offer?> createPackage(Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company) async {
