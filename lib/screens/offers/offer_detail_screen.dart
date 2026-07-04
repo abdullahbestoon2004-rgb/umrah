@@ -11,10 +11,12 @@ import '../../widgets/app_snackbar.dart';
 import '../companies/company_detail_screen.dart';
 import '../auth/auth_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/islamic_pattern.dart';
 
 class OfferDetailScreen extends StatelessWidget {
   final Offer offer;
-  const OfferDetailScreen({super.key, required this.offer});
+  final String? heroTag;
+  const OfferDetailScreen({super.key, required this.offer, this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +30,10 @@ class OfferDetailScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
+          const IslamicPattern(opacity: 0.04, isEightFold: true),
           CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _HeroSection(offer: offer, company: company, saved: saved, provider: provider)),
+              SliverToBoxAdapter(child: _HeroSection(offer: offer, company: company, saved: saved, provider: provider, heroTag: heroTag)),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
@@ -91,7 +94,8 @@ class _HeroSection extends StatelessWidget {
   final Company company;
   final bool saved;
   final AppProvider provider;
-  const _HeroSection({required this.offer, required this.company, required this.saved, required this.provider});
+  final String? heroTag;
+  const _HeroSection({required this.offer, required this.company, required this.saved, required this.provider, this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +104,7 @@ class _HeroSection extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          OfferImage(offer: offer, height: 280),
+          OfferImage(offer: offer, height: 280, heroTag: heroTag),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

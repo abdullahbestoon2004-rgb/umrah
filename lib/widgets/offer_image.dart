@@ -11,6 +11,7 @@ class OfferImage extends StatelessWidget {
   final double? height;
   final double? width;
   final BorderRadius borderRadius;
+  final String? heroTag;
 
   const OfferImage({
     super.key,
@@ -18,6 +19,7 @@ class OfferImage extends StatelessWidget {
     this.height,
     this.width,
     this.borderRadius = BorderRadius.zero,
+    this.heroTag,
   });
 
   @override
@@ -28,15 +30,16 @@ class OfferImage extends StatelessWidget {
       width: width,
       borderRadius: borderRadius,
     );
+    
+    Widget imageWidget;
     final bytes = context.watch<AppProvider>().getOfferImage(offer.id);
     if (bytes != null) {
-      return ClipRRect(
+      imageWidget = ClipRRect(
         borderRadius: borderRadius,
         child: Image.memory(bytes, height: height, width: width, fit: BoxFit.cover),
       );
-    }
-    if ((offer.imageUrl ?? '').isNotEmpty) {
-      return ClipRRect(
+    } else if ((offer.imageUrl ?? '').isNotEmpty) {
+      imageWidget = ClipRRect(
         borderRadius: borderRadius,
         child: Image.network(
           offer.imageUrl!,
@@ -46,7 +49,16 @@ class OfferImage extends StatelessWidget {
           errorBuilder: (_, __, ___) => fallback,
         ),
       );
+    } else {
+      imageWidget = fallback;
     }
-    return fallback;
+
+    if (heroTag != null) {
+      return Hero(
+        tag: heroTag!,
+        child: imageWidget,
+      );
+    }
+    return imageWidget;
   }
 }

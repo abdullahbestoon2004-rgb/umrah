@@ -6,6 +6,7 @@ import '../../models/booking_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/islamic_pattern.dart';
 
 class BookingsScreen extends StatelessWidget {
   const BookingsScreen({super.key});
@@ -18,35 +19,40 @@ class BookingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 8, 22, 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(t.bookingsTitle, style: AppTheme.serif(30)),
-                    const SizedBox(height: 3),
-                    Text(t.bookingsTripCount(bookings.length),
-                        style: AppTheme.sans(13, color: const Color(0xFF7D8A82))),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-            if (bookings.isEmpty)
-              SliverFillRemaining(child: _EmptyState())
-            else
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) => Padding(
-                    padding: EdgeInsets.fromLTRB(22, 0, 22, i < bookings.length - 1 ? 14 : 24),
-                    child: _BookingCard(booking: bookings[i]),
+        child: Stack(
+          children: [
+            const IslamicPattern(opacity: 0.04, isEightFold: true),
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 8, 22, 3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t.bookingsTitle, style: AppTheme.serif(30)),
+                        const SizedBox(height: 3),
+                        Text(t.bookingsTripCount(bookings.length),
+                            style: AppTheme.sans(13, color: const Color(0xFF7D8A82))),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
-                  childCount: bookings.length,
                 ),
-              ),
+                if (bookings.isEmpty)
+                  SliverFillRemaining(child: _EmptyState())
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, i) => Padding(
+                        padding: EdgeInsets.fromLTRB(22, 0, 22, i < bookings.length - 1 ? 14 : 24),
+                        child: _BookingCard(booking: bookings[i]),
+                      ),
+                      childCount: bookings.length,
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

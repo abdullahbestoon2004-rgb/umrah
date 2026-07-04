@@ -12,6 +12,7 @@ import '../agency/agency_login_screen.dart';
 import '../agency/agency_dashboard_screen.dart';
 import '../admin/admin_screen.dart';
 import '../offers/offer_detail_screen.dart';
+import '../../widgets/interactive_scale.dart';
 import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
 import 'privacy_security_screen.dart';
@@ -474,8 +475,9 @@ class _SavedCard extends StatelessWidget {
     final provider = context.watch<AppProvider>();
     final t = AppLocalizations.of(context);
     final company = provider.companyById(offer.companyId);
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
+    final tag = 'offer-saved-${offer.id}';
+    return InteractiveScale(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag))),
       child: Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(

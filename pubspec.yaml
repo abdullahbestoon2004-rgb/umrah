@@ -1,7 +1,7 @@
 name: umrah_app
 description: "Umrah trip booking app"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+4
 
 environment:
   sdk: ^3.12.2
@@ -19,6 +19,7 @@ dependencies:
   supabase_flutter: ^2.15.3
   shared_preferences: ^2.3.0
   local_auth: ^2.3.0
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

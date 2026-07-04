@@ -8,6 +8,8 @@ import '../offers/offer_detail_screen.dart';
 import '../../widgets/offer_image.dart';
 import '../../widgets/star_rating.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/interactive_scale.dart';
+import '../../widgets/islamic_pattern.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -35,61 +37,66 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            // search bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 42, height: 42,
-                      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(13), border: Border.all(color: AppColors.border, width: 1.5)),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border, width: 1.5)),
-                      child: TextField(
-                        controller: _ctrl,
-                        autofocus: true,
-                        onChanged: _onChanged,
-                        style: AppTheme.sans(14),
-                        decoration: InputDecoration(
-                          hintText: t.searchHint,
-                          hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-                          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
-                          suffixIcon: _ctrl.text.isNotEmpty
-                              ? IconButton(icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.muted), onPressed: () { _ctrl.clear(); _onChanged(''); })
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+            const IslamicPattern(opacity: 0.04, isEightFold: true),
+            Column(
+              children: [
+                // search bar
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 42, height: 42,
+                          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(13), border: Border.all(color: AppColors.border, width: 1.5)),
+                          child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // results
-            Expanded(
-              child: !_hasTyped
-                  ? _Suggestions(onTap: (q) { _ctrl.text = q; _onChanged(q); })
-                  : _results.isEmpty
-                      ? _NoResults(query: _ctrl.text)
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                          itemCount: _results.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 12),
-                          itemBuilder: (context, i) => _ResultCard(offer: _results[i]),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border, width: 1.5)),
+                          child: TextField(
+                            controller: _ctrl,
+                            autofocus: true,
+                            onChanged: _onChanged,
+                            style: AppTheme.sans(14),
+                            decoration: InputDecoration(
+                              hintText: t.searchHint,
+                              hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
+                              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
+                              suffixIcon: _ctrl.text.isNotEmpty
+                                  ? IconButton(icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.muted), onPressed: () { _ctrl.clear(); _onChanged(''); })
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // results
+                Expanded(
+                  child: !_hasTyped
+                      ? _Suggestions(onTap: (q) { _ctrl.text = q; _onChanged(q); })
+                      : _results.isEmpty
+                          ? _NoResults(query: _ctrl.text)
+                          : ListView.separated(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                              itemCount: _results.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 12),
+                              itemBuilder: (context, i) => _ResultCard(offer: _results[i]),
+                            ),
+                ),
+              ],
             ),
           ],
         ),
@@ -166,8 +173,9 @@ class _ResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final company = context.read<AppProvider>().companyById(offer.companyId);
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
+    final tag = 'offer-search-${offer.id}';
+    return InteractiveScale(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag))),
       child: Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
@@ -178,7 +186,7 @@ class _ResultCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            OfferImage(offer: offer, height: 80, width: 80, borderRadius: BorderRadius.circular(12)),
+            OfferImage(offer: offer, height: 80, width: 80, borderRadius: BorderRadius.circular(12), heroTag: tag),
             const SizedBox(width: 13),
             Expanded(
               child: Column(

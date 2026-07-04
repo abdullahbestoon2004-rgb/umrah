@@ -18,36 +18,41 @@ class CompaniesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 8, 22, 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(t.companiesTitle, style: AppTheme.serif(30)),
-                    const SizedBox(height: 3),
-                    Text(
-                      t.companiesSubtitle(context.watch<AppProvider>().companies.length),
-                      style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
+        child: Stack(
+          children: [
+            const IslamicPattern(opacity: 0.04, isEightFold: true),
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 8, 22, 3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t.companiesTitle, style: AppTheme.serif(30)),
+                        const SizedBox(height: 3),
+                        Text(
+                          t.companiesSubtitle(context.watch<AppProvider>().companies.length),
+                          style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, i) {
-                  final list = context.watch<AppProvider>().companies;
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(22, 0, 22, i < list.length - 1 ? 13 : 24),
-                    child: _CompanyListCard(company: list[i]),
-                  );
-                },
-                childCount: context.watch<AppProvider>().companies.length,
-              ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, i) {
+                      final list = context.watch<AppProvider>().companies;
+                      return Padding(
+                        padding: EdgeInsets.fromLTRB(22, 0, 22, i < list.length - 1 ? 13 : 24),
+                        child: _CompanyListCard(company: list[i]),
+                      );
+                    },
+                    childCount: context.watch<AppProvider>().companies.length,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -10,6 +10,7 @@ import '../../widgets/tag_chip.dart';
 import 'offer_detail_screen.dart';
 import 'filter_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/islamic_pattern.dart';
 
 class OffersScreen extends StatelessWidget {
   const OffersScreen({super.key});
@@ -19,12 +20,17 @@ class OffersScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            _OffersHeader(),
-            _QuickChips(),
-            _SortRow(),
-            Expanded(child: _OffersList()),
+            const IslamicPattern(opacity: 0.04, isEightFold: true),
+            Column(
+              children: [
+                _OffersHeader(),
+                _QuickChips(),
+                _SortRow(),
+                Expanded(child: _OffersList()),
+              ],
+            ),
           ],
         ),
       ),

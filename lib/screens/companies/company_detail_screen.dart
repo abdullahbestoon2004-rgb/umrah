@@ -10,6 +10,7 @@ import '../../widgets/islamic_pattern.dart';
 import '../../widgets/tag_chip.dart';
 import '../offers/offer_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/interactive_scale.dart';
 
 class CompanyDetailScreen extends StatelessWidget {
   final Company company;
@@ -24,44 +25,49 @@ class CompanyDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _CompanyHeader(company: company, offerCount: offers.length, fromPrice: fromPrice)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 20, 22, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (company.about.isNotEmpty) ...[
-                    Text(t.companyDetailAbout, style: AppTheme.serif(19)),
-                    const SizedBox(height: 7),
-                    Text(company.about, style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65)),
-                    const SizedBox(height: 16),
-                  ],
-                  if (company.tags.isNotEmpty) ...[
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: company.tags.map((tag) => _TagBadge(label: tag)).toList(),
-                    ),
-                    const SizedBox(height: 22),
-                  ] else
-                    const SizedBox(height: 6),
-                  Text(t.companyDetailPackagesHeader(offers.length), style: AppTheme.serif(19)),
-                  const SizedBox(height: 12),
-                ],
+      body: Stack(
+        children: [
+          const IslamicPattern(opacity: 0.04, isEightFold: true),
+          CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _CompanyHeader(company: company, offerCount: offers.length, fromPrice: fromPrice)),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 20, 22, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (company.about.isNotEmpty) ...[
+                        Text(t.companyDetailAbout, style: AppTheme.serif(19)),
+                        const SizedBox(height: 7),
+                        Text(company.about, style: AppTheme.sans(13.5, color: const Color(0xFF52605A)).copyWith(height: 1.65)),
+                        const SizedBox(height: 18),
+                      ] else
+                        const SizedBox(height: 6),
+                      if (company.tags.isNotEmpty) ...[
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: company.tags.map((tag) => _TagBadge(label: tag)).toList(),
+                        ),
+                        const SizedBox(height: 22),
+                      ],
+                      Text(t.companyDetailPackagesHeader(offers.length), style: AppTheme.serif(19)),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, i) => Padding(
-                padding: EdgeInsets.fromLTRB(22, 0, 22, i < offers.length - 1 ? 13 : 26),
-                child: _CompanyOfferCard(offer: offers[i]),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, i) => Padding(
+                    padding: EdgeInsets.fromLTRB(22, 0, 22, i < offers.length - 1 ? 13 : 26),
+                    child: _CompanyOfferCard(offer: offers[i]),
+                  ),
+                  childCount: offers.length,
+                ),
               ),
-              childCount: offers.length,
-            ),
+            ],
           ),
         ],
       ),
@@ -206,8 +212,9 @@ class _CompanyOfferCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
+    final tag = 'offer-company-${offer.id}';
+    return InteractiveScale(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag))),
       child: Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
@@ -220,7 +227,7 @@ class _CompanyOfferCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            OfferImage(offer: offer, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
+            OfferImage(offer: offer, height: 88, width: 88, borderRadius: BorderRadius.circular(13), heroTag: tag),
             const SizedBox(width: 13),
             Expanded(
               child: Column(
