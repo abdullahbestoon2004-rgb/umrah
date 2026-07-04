@@ -4,7 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../models/offer_model.dart';
 import '../../providers/app_provider.dart';
-import '../../widgets/gradient_card.dart';
+import '../../widgets/offer_image.dart';
 import '../../widgets/star_rating.dart';
 import '../../widgets/tag_chip.dart';
 import 'offer_detail_screen.dart';
@@ -261,8 +261,6 @@ class OfferCard extends StatelessWidget {
     final company = provider.companyById(offer.companyId);
     final t = AppLocalizations.of(context);
 
-    final imageBytes = provider.getOfferImage(offer.id);
-
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
@@ -285,14 +283,7 @@ class OfferCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (imageBytes != null)
-                      Image.memory(imageBytes, fit: BoxFit.cover)
-                    else
-                      GradientCard(
-                        colors: offer.gradColors,
-                        height: 140,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
-                      ),
+                    OfferImage(offer: offer, height: 140),
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(

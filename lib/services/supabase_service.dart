@@ -4,19 +4,21 @@ import '../models/company_model.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/user_profile.dart';
-import '../models/payment_card_model.dart';
 import '../models/home_ad_model.dart';
+import '../models/notification_model.dart';
+import '../models/commission_model.dart';
+import '../models/support_message_model.dart';
 
 /// Account-wide preferences that follow the user across devices
 /// (as opposed to the biometric lock, which is deliberately per-device).
 class AccountPrefs {
   final bool marketingEmails;
-  final bool twoFactorEnabled;
   final bool shareActivity;
+  final String preferredPayMethod; // 'cash' | 'card' | 'fib'
   const AccountPrefs({
     this.marketingEmails = true,
-    this.twoFactorEnabled = false,
     this.shareActivity = false,
+    this.preferredPayMethod = 'cash',
   });
 }
 
@@ -81,22 +83,11 @@ abstract class DataService {
   Future<void> saveOfferRemote(String clientId, String packageId);
   Future<void> unsaveOfferRemote(String clientId, String packageId);
 
-  Future<List<PaymentCard>> fetchPaymentCards(String clientId);
-  Future<PaymentCard?> addPaymentCard(String clientId, {
-    required String holder,
-    required String last4,
-    required String expiry,
-    required String brand,
-    required bool isDefault,
-  });
-  Future<void> removePaymentCard(String id);
-  Future<void> setDefaultPaymentCard(String clientId, String id);
-
   Future<AccountPrefs> fetchAccountPrefs(String clientId);
   Future<void> updateAccountPrefs(String clientId, {
     bool? marketingEmails,
-    bool? twoFactorEnabled,
     bool? shareActivity,
+    String? preferredPayMethod,
   });
 
   // ── home ads & admin ────────────────────────────────────────────────────
@@ -113,6 +104,46 @@ abstract class DataService {
   Future<List<Company>> fetchPendingCompanies();
   Future<String?> setCompanyVerified(String id, bool verified);
   Future<String?> setPackageFeatured(String id, bool featured);
+
+  // ── notifications ────────────────────────────────────────────────────────
+  Future<List<AppNotification>> fetchNotifications(String userId);
+  Future<void> markNotificationRead(String id);
+  Future<void> markAllNotificationsRead(String userId);
+  Future<void> clearNotifications(String userId);
+
+  // ── agency booking management ────────────────────────────────────────────
+  Future<List<Booking>> fetchCompanyBookings(String companyId);
+  Future<String?> setBookingStatus(String bookingId, String status);
+
+  // ── commissions (what each agency owes the platform) ────────────────────
+  /// Pass a companyId to scope to one agency; omit for the admin's full ledger.
+  Future<List<Commission>> fetchCommissions({String? companyId});
+  Future<String?> setCommissionCollected(String id);
+
+  // ── support ───────────────────────────────────────────────────────────────
+  Future<String?> sendSupportMessage({String? userId, String? email, required String message});
+  Future<List<SupportMessage>> fetchSupportMessages();
+
+  // ── reviews ───────────────────────────────────────────────────────────────
+  Future<String?> createReview({
+    required String bookingId,
+    required String companyId,
+    required String clientId,
+    required int rating,
+    String comment,
+  });
+  Future<Set<String>> fetchReviewedBookingIds(String clientId);
+
+  // ── password reset (OTP-code, no deep-linking required) ─────────────────
+  Future<String?> sendPasswordResetCode(String email);
+  Future<String?> resetPasswordWithCode({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
+
+  // ── error logging (best-effort, never throws) ────────────────────────────
+  Future<void> logError({String? userId, required String message, String? stack, String? context});
 }
 
 class SupabaseService implements DataService {
@@ -524,73 +555,18 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<List<PaymentCard>> fetchPaymentCards(String clientId) async {
-    try {
-      final rows = await _c
-          .from('payment_cards')
-          .select()
-          .eq('client_id', clientId)
-          .order('created_at');
-      return rows.map((r) => PaymentCard.fromRow(r)).toList();
-    } catch (_) {
-      return [];
-    }
-  }
-
-  @override
-  Future<PaymentCard?> addPaymentCard(String clientId, {
-    required String holder,
-    required String last4,
-    required String expiry,
-    required String brand,
-    required bool isDefault,
-  }) async {
-    try {
-      if (isDefault) {
-        await _c.from('payment_cards').update({'is_default': false}).eq('client_id', clientId);
-      }
-      final row = await _c.from('payment_cards').insert({
-        'client_id': clientId,
-        'holder': holder,
-        'last4': last4,
-        'expiry': expiry,
-        'brand': brand,
-        'is_default': isDefault,
-      }).select().single();
-      return PaymentCard.fromRow(row);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  @override
-  Future<void> removePaymentCard(String id) async {
-    try {
-      await _c.from('payment_cards').delete().eq('id', id);
-    } catch (_) {}
-  }
-
-  @override
-  Future<void> setDefaultPaymentCard(String clientId, String id) async {
-    try {
-      await _c.from('payment_cards').update({'is_default': false}).eq('client_id', clientId);
-      await _c.from('payment_cards').update({'is_default': true}).eq('id', id);
-    } catch (_) {}
-  }
-
-  @override
   Future<AccountPrefs> fetchAccountPrefs(String clientId) async {
     try {
       final row = await _c
           .from('profiles')
-          .select('marketing_emails, two_factor_enabled, share_activity')
+          .select('marketing_emails, share_activity, preferred_pay_method')
           .eq('id', clientId)
           .maybeSingle();
       if (row == null) return const AccountPrefs();
       return AccountPrefs(
         marketingEmails: (row['marketing_emails'] ?? true) as bool,
-        twoFactorEnabled: (row['two_factor_enabled'] ?? false) as bool,
         shareActivity: (row['share_activity'] ?? false) as bool,
+        preferredPayMethod: (row['preferred_pay_method'] ?? 'cash') as String,
       );
     } catch (_) {
       return const AccountPrefs();
@@ -600,14 +576,14 @@ class SupabaseService implements DataService {
   @override
   Future<void> updateAccountPrefs(String clientId, {
     bool? marketingEmails,
-    bool? twoFactorEnabled,
     bool? shareActivity,
+    String? preferredPayMethod,
   }) async {
     try {
       await _c.from('profiles').update({
         if (marketingEmails != null) 'marketing_emails': marketingEmails,
-        if (twoFactorEnabled != null) 'two_factor_enabled': twoFactorEnabled,
         if (shareActivity != null) 'share_activity': shareActivity,
+        if (preferredPayMethod != null) 'preferred_pay_method': preferredPayMethod,
       }).eq('id', clientId);
     } catch (_) {}
   }
@@ -727,6 +703,218 @@ class SupabaseService implements DataService {
       return rows.isEmpty ? 'rls' : null;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  // ── notifications ────────────────────────────────────────────────────────
+
+  @override
+  Future<List<AppNotification>> fetchNotifications(String userId) async {
+    try {
+      final rows = await _c
+          .from('notifications')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(50);
+      final out = <AppNotification>[];
+      for (final r in rows) {
+        try {
+          out.add(AppNotification.fromRow(r));
+        } catch (_) {
+          // unrecognized type — ignore rather than break the whole list
+        }
+      }
+      return out;
+    } catch (_) {
+      return []; // table not created yet (see supabase/patches.sql)
+    }
+  }
+
+  @override
+  Future<void> markNotificationRead(String id) async {
+    try {
+      await _c.from('notifications').update({'read': true}).eq('id', id);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> markAllNotificationsRead(String userId) async {
+    try {
+      await _c.from('notifications').update({'read': true}).eq('user_id', userId).eq('read', false);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> clearNotifications(String userId) async {
+    try {
+      await _c.from('notifications').delete().eq('user_id', userId);
+    } catch (_) {}
+  }
+
+  // ── agency booking management ────────────────────────────────────────────
+
+  @override
+  Future<List<Booking>> fetchCompanyBookings(String companyId) async {
+    try {
+      final rows = await _c
+          .from('bookings')
+          .select(_bookingSelect)
+          .eq('company_id', companyId)
+          .order('created_at', ascending: false);
+      return rows.map((r) => Booking.fromRow(r)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> setBookingStatus(String bookingId, String status) async {
+    try {
+      final rows = await _c
+          .from('bookings')
+          .update({'status': status})
+          .eq('id', bookingId)
+          .select('id');
+      return rows.isEmpty ? 'rls' : null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  // ── commissions ──────────────────────────────────────────────────────────
+
+  @override
+  Future<List<Commission>> fetchCommissions({String? companyId}) async {
+    try {
+      var query = _c.from('commissions').select('*, companies(name,name_ar,name_en)');
+      if (companyId != null) query = query.eq('company_id', companyId);
+      final rows = await query.order('created_at', ascending: false);
+      return rows.map((r) => Commission.fromRow(r)).toList();
+    } catch (_) {
+      return []; // table not created yet (see supabase/schema.sql)
+    }
+  }
+
+  @override
+  Future<String?> setCommissionCollected(String id) async {
+    try {
+      await _c.from('commissions').update({
+        'status': 'collected',
+        'collected_at': DateTime.now().toIso8601String(),
+      }).eq('id', id);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  // ── support ───────────────────────────────────────────────────────────────
+
+  @override
+  Future<String?> sendSupportMessage({String? userId, String? email, required String message}) async {
+    try {
+      await _c.from('support_messages').insert({
+        if (userId != null) 'user_id': userId,
+        if (email != null) 'email': email,
+        'message': message,
+      });
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<List<SupportMessage>> fetchSupportMessages() async {
+    try {
+      final rows = await _c.from('support_messages').select().order('created_at', ascending: false);
+      return rows.map((r) => SupportMessage.fromRow(r)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  // ── reviews ───────────────────────────────────────────────────────────────
+
+  @override
+  Future<String?> createReview({
+    required String bookingId,
+    required String companyId,
+    required String clientId,
+    required int rating,
+    String comment = '',
+  }) async {
+    try {
+      await _c.from('reviews').insert({
+        'booking_id': bookingId,
+        'company_id': companyId,
+        'client_id': clientId,
+        'rating': rating,
+        'comment': comment,
+      });
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<Set<String>> fetchReviewedBookingIds(String clientId) async {
+    try {
+      final rows = await _c.from('reviews').select('booking_id').eq('client_id', clientId);
+      return rows.map((r) => r['booking_id'] as String).toSet();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  // ── password reset ───────────────────────────────────────────────────────
+
+  @override
+  Future<String?> sendPasswordResetCode(String email) async {
+    try {
+      await _c.auth.resetPasswordForEmail(email);
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> resetPasswordWithCode({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      await _c.auth.verifyOTP(email: email, token: code, type: OtpType.recovery);
+      await _c.auth.updateUser(UserAttributes(password: newPassword));
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  // ── error logging ────────────────────────────────────────────────────────
+
+  @override
+  Future<void> logError({String? userId, required String message, String? stack, String? context}) async {
+    try {
+      await _c.from('error_logs').insert({
+        if (userId != null) 'user_id': userId,
+        'message': message,
+        if (stack != null) 'stack': stack,
+        if (context != null) 'context': context,
+      });
+    } catch (_) {
+      // logging must never throw — worst case we just lose this one report
     }
   }
 }

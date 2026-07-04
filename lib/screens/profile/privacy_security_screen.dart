@@ -6,6 +6,7 @@ import '../../providers/app_provider.dart';
 import '../../services/biometric_service.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'account_details_screen.dart';
 
 class PrivacySecurityScreen extends StatelessWidget {
   const PrivacySecurityScreen({super.key});
@@ -56,18 +57,11 @@ class PrivacySecurityScreen extends StatelessWidget {
                     onChanged: (v) => _toggleBiometric(context, provider, v),
                   ),
                   const SizedBox(height: 10),
-                  _ToggleTile(
-                    icon: Icons.verified_user_outlined,
-                    label: t.privacyTwoFactor,
-                    sub: t.privacyTwoFactorSub,
-                    value: provider.twoFactorAuth,
-                    onChanged: (v) => provider.setSecuritySetting('twoFactor', v),
-                  ),
-                  const SizedBox(height: 10),
                   _ActionTile(
                     icon: Icons.password_rounded,
                     label: t.privacyChangePassword,
-                    onTap: () => _openChangePassword(context),
+                    onTap: () => Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
                   ),
                   const SizedBox(height: 22),
                   Text(t.privacySectionPrivacy,
@@ -114,15 +108,6 @@ class PrivacySecurityScreen extends StatelessWidget {
     // Prove the user can actually unlock before locking them out.
     final ok = await BiometricService.authenticate(t.lockReason);
     if (ok) provider.setSecuritySetting('biometric', true);
-  }
-
-  void _openChangePassword(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _ChangePasswordSheet(),
-    );
   }
 }
 
@@ -213,163 +198,6 @@ class _ActionTile extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ChangePasswordSheet extends StatefulWidget {
-  const _ChangePasswordSheet();
-
-  @override
-  State<_ChangePasswordSheet> createState() => _ChangePasswordSheetState();
-}
-
-class _ChangePasswordSheetState extends State<_ChangePasswordSheet> {
-  final _currentCtrl = TextEditingController();
-  final _newCtrl = TextEditingController();
-  final _confirmCtrl = TextEditingController();
-  String? _error;
-
-  @override
-  void dispose() {
-    _currentCtrl.dispose();
-    _newCtrl.dispose();
-    _confirmCtrl.dispose();
-    super.dispose();
-  }
-
-  void _save() {
-    final t = AppLocalizations.of(context);
-    String? err;
-    if (_currentCtrl.text.isEmpty) {
-      err = t.privacyErrCurrentRequired;
-    } else if (_newCtrl.text.length < 6) {
-      err = t.privacyErrTooShort;
-    } else if (_newCtrl.text != _confirmCtrl.text) {
-      err = t.privacyErrNoMatch;
-    }
-    if (err != null) {
-      setState(() => _error = err);
-      return;
-    }
-    final messenger = ScaffoldMessenger.of(context);
-    Navigator.pop(context);
-    messenger.showSnackBar(appSnack(t.privacyPasswordChanged));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 14, 22, 30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 42, height: 5,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(t.privacyChangePassword, style: AppTheme.serif(24)),
-            const SizedBox(height: 18),
-            _PasswordField(controller: _currentCtrl, label: t.privacyCurrentPassword),
-            const SizedBox(height: 14),
-            _PasswordField(controller: _newCtrl, label: t.privacyNewPassword),
-            const SizedBox(height: 14),
-            _PasswordField(controller: _confirmCtrl, label: t.privacyConfirmPassword),
-            if (_error != null) ...[
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF0EE),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.error_outline_rounded, color: AppColors.errorRed, size: 18),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(_error!, style: AppTheme.sans(12.5, color: AppColors.errorRed))),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: _save,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
-                alignment: Alignment.center,
-                child: Text(t.privacyUpdatePassword,
-                    style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PasswordField extends StatefulWidget {
-  final TextEditingController controller;
-  final String label;
-  const _PasswordField({required this.controller, required this.label});
-
-  @override
-  State<_PasswordField> createState() => _PasswordFieldState();
-}
-
-class _PasswordFieldState extends State<_PasswordField> {
-  bool _obscure = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(widget.label, style: AppTheme.sans(13, weight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border, width: 1.5),
-          ),
-          child: TextField(
-            controller: widget.controller,
-            obscureText: _obscure,
-            style: AppTheme.sans(14),
-            decoration: InputDecoration(
-              hintText: '••••••••',
-              hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-              prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
-              suffixIcon: IconButton(
-                icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: AppColors.muted, size: 20),
-                onPressed: () => setState(() => _obscure = !_obscure),
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

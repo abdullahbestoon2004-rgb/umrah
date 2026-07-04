@@ -627,6 +627,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notifBookingRequestedTitle => 'Booking requested';
+
+  @override
+  String notifBookingRequestedBody(String title) {
+    return 'Your request for \"$title\" was sent to the agency. You\'ll be notified once they respond.';
+  }
+
+  @override
   String get notifBookingConfirmedTitle => 'Booking confirmed';
 
   @override
@@ -1267,6 +1275,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addEditOfferPublished => 'Package published!';
 
   @override
+  String get addEditOfferSavedImageFailed =>
+      'Package saved, but the cover photo couldn\'t be uploaded. Check your connection and try again from Edit.';
+
+  @override
   String get authSignInTitle => 'Welcome back';
 
   @override
@@ -1409,6 +1421,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payFib => 'FIB';
+
+  @override
+  String get preferredPaymentTitle => 'Payment method';
+
+  @override
+  String get preferredPaymentBody =>
+      'Choose how you\'d like to pay. Payment always happens in person at the agency — nothing is ever charged in the app.';
+
+  @override
+  String get preferredPaymentSaved => 'Preference saved.';
 
   @override
   String get bookingFailed =>

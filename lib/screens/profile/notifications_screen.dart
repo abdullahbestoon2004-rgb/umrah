@@ -89,6 +89,7 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.welcome: return Icons.celebration_rounded;
       case NotificationType.promo: return Icons.local_offer_rounded;
       case NotificationType.tripReminder: return Icons.flight_takeoff_rounded;
+      case NotificationType.bookingRequested: return Icons.schedule_send_rounded;
       case NotificationType.bookingConfirmed: return Icons.check_circle_rounded;
       case NotificationType.bookingCancelled: return Icons.cancel_rounded;
     }
@@ -98,6 +99,7 @@ class _NotificationCard extends StatelessWidget {
     switch (item.type) {
       case NotificationType.bookingCancelled: return AppColors.errorRed;
       case NotificationType.promo: return AppColors.gold;
+      case NotificationType.bookingRequested: return AppColors.gold;
       default: return AppColors.primary;
     }
   }
@@ -107,6 +109,7 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.welcome: return t.notifWelcomeTitle;
       case NotificationType.promo: return t.notifPromoTitle;
       case NotificationType.tripReminder: return t.notifTripReminderTitle;
+      case NotificationType.bookingRequested: return t.notifBookingRequestedTitle;
       case NotificationType.bookingConfirmed: return t.notifBookingConfirmedTitle;
       case NotificationType.bookingCancelled: return t.notifBookingCancelledTitle;
     }
@@ -118,6 +121,7 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.welcome: return t.notifWelcomeBody;
       case NotificationType.promo: return t.notifPromoBody;
       case NotificationType.tripReminder: return t.notifTripReminderBody(arg);
+      case NotificationType.bookingRequested: return t.notifBookingRequestedBody(arg);
       case NotificationType.bookingConfirmed: return t.notifBookingConfirmedBody(arg);
       case NotificationType.bookingCancelled: return t.notifBookingCancelledBody(arg);
     }

@@ -625,6 +625,14 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get notifBookingRequestedTitle => 'تم إرسال طلب الحجز';
+
+  @override
+  String notifBookingRequestedBody(String title) {
+    return 'تم إرسال طلبك لباقة \"$title\" إلى الوكالة. سيتم إعلامك عند الرد.';
+  }
+
+  @override
   String get notifBookingConfirmedTitle => 'تم تأكيد الحجز';
 
   @override
@@ -1260,6 +1268,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addEditOfferPublished => 'تم نشر الباقة!';
 
   @override
+  String get addEditOfferSavedImageFailed =>
+      'تم حفظ الباقة، لكن تعذر رفع صورة الغلاف. تحقق من اتصالك وحاول مرة أخرى من التعديل.';
+
+  @override
   String get authSignInTitle => 'مرحبًا بعودتك';
 
   @override
@@ -1401,6 +1413,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get payFib => 'FIB';
+
+  @override
+  String get preferredPaymentTitle => 'طريقة الدفع';
+
+  @override
+  String get preferredPaymentBody =>
+      'اختر طريقة الدفع المفضلة لديك. يتم الدفع دائمًا شخصيًا لدى الوكالة — لا يُخصم أي مبلغ داخل التطبيق أبدًا.';
+
+  @override
+  String get preferredPaymentSaved => 'تم حفظ التفضيل.';
 
   @override
   String get bookingFailed => 'تعذر إتمام الحجز. حاول مرة أخرى.';

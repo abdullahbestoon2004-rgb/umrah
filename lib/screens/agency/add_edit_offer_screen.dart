@@ -206,7 +206,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       customIncludes:  includes.isEmpty  ? null : includes,
     );
 
-    final ok = _isEdit
+    final (ok, imageFailed) = _isEdit
         ? await provider.updateOffer(offer, imageBytes: _imageBytes)
         : await provider.addOffer(offer, imageBytes: _imageBytes);
 
@@ -218,7 +218,12 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     }
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    messenger.showSnackBar(appSnack(_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished));
+    messenger.showSnackBar(appSnack(
+      imageFailed
+          ? t.addEditOfferSavedImageFailed
+          : (_isEdit ? t.addEditOfferUpdated : t.addEditOfferPublished),
+      isError: imageFailed,
+    ));
   }
 
   @override

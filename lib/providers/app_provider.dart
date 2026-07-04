@@ -5,9 +5,10 @@ import '../models/offer_model.dart';
 import '../models/booking_model.dart';
 import '../models/company_model.dart';
 import '../models/notification_model.dart';
-import '../models/payment_card_model.dart';
 import '../models/home_ad_model.dart';
 import '../models/user_profile.dart';
+import '../models/commission_model.dart';
+import '../models/support_message_model.dart';
 import '../services/supabase_service.dart';
 import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
@@ -92,9 +93,9 @@ class AppProvider extends ChangeNotifier {
       ..clear()
       ..addAll(p.getStringList('saved') ?? const []);
     biometricLock = p.getBool('biometric') ?? false;
-    twoFactorAuth = p.getBool('twoFactor') ?? false;
     marketingEmails = p.getBool('marketing') ?? true;
     shareActivity = p.getBool('activity') ?? false;
+    preferredPayMethod = p.getString('payMethod') ?? 'cash';
     if (biometricLock && BiometricService.isSupported) _locked = true;
     notifyListeners();
   }
@@ -188,6 +189,7 @@ class AppProvider extends ChangeNotifier {
         if (_user!.isAgency) _myCompany = await _service.ensureAgencyCompany(_user!.id);
         await refreshBookings();
         await _syncAccountData();
+        await _loadRemoteNotifications();
       }
     } catch (_) {}
     notifyListeners();
@@ -212,16 +214,16 @@ class AppProvider extends ChangeNotifier {
     } catch (_) {}
 
     try {
-      _cards = await _service.fetchPaymentCards(uid);
-      final def = _cards.where((c) => c.isDefault).firstOrNull;
-      _defaultCardId = def?.id ?? (_cards.isNotEmpty ? _cards.first.id : '');
+      final prefs = await _service.fetchAccountPrefs(uid);
+      marketingEmails = prefs.marketingEmails;
+      shareActivity = prefs.shareActivity;
+      preferredPayMethod = prefs.preferredPayMethod;
     } catch (_) {}
 
     try {
-      final prefs = await _service.fetchAccountPrefs(uid);
-      marketingEmails = prefs.marketingEmails;
-      twoFactorAuth = prefs.twoFactorEnabled;
-      shareActivity = prefs.shareActivity;
+      _reviewedBookingIds
+        ..clear()
+        ..addAll(await _service.fetchReviewedBookingIds(uid));
     } catch (_) {}
   }
 
@@ -299,13 +301,14 @@ class AppProvider extends ChangeNotifier {
     _user = null;
     _myCompany = null;
     _bookings = [];
-    _cards = [];
-    _defaultCardId = '';
     _saved.clear();
     await _prefs?.remove('saved');
     marketingEmails = true;
-    twoFactorAuth = false;
     shareActivity = false;
+    preferredPayMethod = 'cash';
+    _reviewedBookingIds.clear();
+    _agencyBookings = [];
+    _commissions = [];
     _notifications
       ..clear()
       ..add(AppNotification(id: 'n1', type: NotificationType.welcome, time: DateTime.now()));
@@ -346,6 +349,8 @@ class AppProvider extends ChangeNotifier {
       _pendingCompanies = await _service.fetchPendingCompanies();
       _homeAds = await _service.fetchHomeAds();
     } catch (_) {}
+    await loadCommissions();
+    await loadSupportMessages();
     notifyListeners();
   }
 
@@ -492,37 +497,55 @@ class AppProvider extends ChangeNotifier {
         'is_published': true,
       };
 
-  Future<bool> addOffer(Offer offer, {Uint8List? imageBytes}) async {
+  /// Returns (ok, imageFailed): ok is whether the package itself saved;
+  /// imageFailed flags that the package saved but its cover photo didn't
+  /// persist (e.g. the storage bucket from patches.sql isn't set up yet) —
+  /// distinct from ok so the caller can warn without treating it as a
+  /// full failure.
+  Future<(bool ok, bool imageFailed)> addOffer(Offer offer, {Uint8List? imageBytes}) async {
     final company = companyById(offer.companyId);
-    if (company == null) return false;
+    if (company == null) return (false, false);
     final created = await _service.createPackage(
         _pkgFields(offer), offer.customItinerary ?? const [], company);
-    if (created == null) return false;
+    if (created == null) return (false, false);
     var withImage = created;
+    var imageFailed = false;
     if (imageBytes != null) {
       _offerImages[created.id] = imageBytes;
-      await _service.uploadPackageImage(created.id, imageBytes);
+      final url = await _service.uploadPackageImage(created.id, imageBytes);
+      if (url != null) {
+        withImage = created.copyWith(imageUrl: url);
+      } else {
+        imageFailed = true;
+      }
     }
     _offers = [withImage, ..._offers];
     notifyListeners();
-    return true;
+    return (true, imageFailed);
   }
 
-  Future<bool> updateOffer(Offer updated, {Uint8List? imageBytes}) async {
+  Future<(bool ok, bool imageFailed)> updateOffer(Offer updated, {Uint8List? imageBytes}) async {
     final err = await _service.updatePackage(
         updated.id, _pkgFields(updated), updated.customItinerary ?? const []);
-    if (err != null) return false;
+    if (err != null) return (false, false);
+    var withImage = updated;
+    var imageFailed = false;
     if (imageBytes != null) {
       _offerImages[updated.id] = imageBytes;
-      await _service.uploadPackageImage(updated.id, imageBytes);
+      final url = await _service.uploadPackageImage(updated.id, imageBytes);
+      if (url != null) {
+        withImage = updated.copyWith(imageUrl: url);
+      } else {
+        imageFailed = true;
+      }
     }
     final i = _offers.indexWhere((o) => o.id == updated.id);
     if (i >= 0) {
       _offers = List.from(_offers);
-      _offers[i] = updated;
+      _offers[i] = withImage;
     }
     notifyListeners();
-    return true;
+    return (true, imageFailed);
   }
 
   Future<bool> deleteOffer(String offerId) async {
@@ -585,7 +608,7 @@ class AppProvider extends ChangeNotifier {
     return null;
   }
 
-  // ── bookings ─────────────────────────────────────────────────────────────
+  // ── bookings (pilgrim side) ───────────────────────────────────────────────
   List<Booking> _bookings = [];
   List<Booking> get bookings => List.unmodifiable(_bookings);
 
@@ -614,7 +637,10 @@ class AppProvider extends ChangeNotifier {
     );
     if (err != null) return err;
     await refreshBookings();
-    pushNotification(NotificationType.bookingConfirmed, arg: offer.titleFor(lang));
+    // Honest about the actual state — the agency hasn't acted on this yet.
+    // A real "confirmed"/"cancelled" notification arrives later from the
+    // backend (see _loadRemoteNotifications) once the agency responds.
+    pushNotification(NotificationType.bookingRequested, arg: offer.titleFor(lang));
     return null;
   }
 
@@ -631,7 +657,113 @@ class AppProvider extends ChangeNotifier {
     return null;
   }
 
-  // ── notifications (local) ────────────────────────────────────────────────
+  // ── reviews (pilgrim side) ────────────────────────────────────────────────
+  final Set<String> _reviewedBookingIds = {};
+  bool hasReviewed(String bookingId) => _reviewedBookingIds.contains(bookingId);
+
+  Future<String?> submitReview(String bookingId, String companyId, int rating, {String comment = ''}) async {
+    if (_user == null) return 'auth';
+    final err = await _service.createReview(
+      bookingId: bookingId, companyId: companyId, clientId: _user!.id,
+      rating: rating, comment: comment,
+    );
+    if (err != null) return err;
+    _reviewedBookingIds.add(bookingId);
+    await loadData(); // the DB trigger just recalculated the company's rating
+    notifyListeners();
+    return null;
+  }
+
+  // ── bookings (agency side: review + confirm/decline requests) ────────────
+  List<Booking> _agencyBookings = [];
+  List<Booking> get agencyBookings => List.unmodifiable(_agencyBookings);
+
+  Future<void> loadAgencyBookings() async {
+    if (_myCompany == null) return;
+    try {
+      _agencyBookings = await _service.fetchCompanyBookings(_myCompany!.id);
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<bool> respondToBooking(String bookingId, {required bool confirm}) async {
+    final err = await _service.setBookingStatus(bookingId, confirm ? 'confirmed' : 'cancelled');
+    if (err != null) return false;
+    final i = _agencyBookings.indexWhere((b) => b.id == bookingId);
+    if (i >= 0) {
+      _agencyBookings = List.from(_agencyBookings);
+      _agencyBookings[i] = _agencyBookings[i].copyWith(status: confirm ? 'Confirmed' : 'Cancelled');
+    }
+    notifyListeners();
+    return true;
+  }
+
+  // ── commissions (what an agency owes the platform) ───────────────────────
+  List<Commission> _commissions = [];
+  List<Commission> get commissions => List.unmodifiable(_commissions);
+  double get commissionsOwed => _commissions
+      .where((c) => c.status == 'owed')
+      .fold(0.0, (sum, c) => sum + c.amount);
+
+  /// Admins see the full ledger; agencies see only their own.
+  Future<void> loadCommissions() async {
+    try {
+      _commissions = await _service.fetchCommissions(companyId: isAdminUser ? null : _myCompany?.id);
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<bool> markCommissionCollected(String id) async {
+    final err = await _service.setCommissionCollected(id);
+    if (err != null) return false;
+    final i = _commissions.indexWhere((c) => c.id == id);
+    if (i >= 0) {
+      final c = _commissions[i];
+      _commissions = List.from(_commissions);
+      _commissions[i] = Commission(
+        id: c.id, bookingId: c.bookingId, companyId: c.companyId,
+        companyName: c.companyName, amount: c.amount,
+        status: 'collected', createdAt: c.createdAt,
+      );
+    }
+    notifyListeners();
+    return true;
+  }
+
+  // ── support messages ──────────────────────────────────────────────────────
+  List<SupportMessage> _supportMessages = [];
+  List<SupportMessage> get supportMessages => List.unmodifiable(_supportMessages);
+
+  Future<void> loadSupportMessages() async {
+    if (!isAdminUser) return;
+    try {
+      _supportMessages = await _service.fetchSupportMessages();
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<bool> sendSupportMessage(String message) async {
+    final err = await _service.sendSupportMessage(
+      userId: _user?.id, email: _user?.email, message: message,
+    );
+    return err == null;
+  }
+
+  // ── password reset (OTP-code, works without deep linking) ────────────────
+  Future<String?> sendPasswordResetCode(String email) => _service.sendPasswordResetCode(email);
+
+  Future<String?> resetPasswordWithCode({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) =>
+      _service.resetPasswordWithCode(email: email, code: code, newPassword: newPassword);
+
+  // ── notifications ─────────────────────────────────────────────────────────
+  // Local, synthetic entries (welcome message, instant feedback on the
+  // pilgrim's own request/cancel) sit alongside real rows fetched from the
+  // backend — the latter cover actions an agency/admin took in a completely
+  // different session (see supabase/patches.sql's notifications table).
   final List<AppNotification> _notifications = [
     AppNotification(
       id: 'n1',
@@ -641,6 +773,18 @@ class AppProvider extends ChangeNotifier {
   ];
   List<AppNotification> get notifications => List.unmodifiable(_notifications);
   int get unreadNotifications => _notifications.where((n) => !n.read).length;
+
+  Future<void> _loadRemoteNotifications() async {
+    if (_user == null) return;
+    try {
+      final remote = await _service.fetchNotifications(_user!.id);
+      _notifications
+        ..removeWhere((n) => n.isRemote)
+        ..addAll(remote)
+        ..sort((a, b) => b.time.compareTo(a.time));
+    } catch (_) {}
+    notifyListeners();
+  }
 
   void pushNotification(NotificationType type, {String? arg}) {
     _notifications.insert(0, AppNotification(
@@ -654,79 +798,36 @@ class AppProvider extends ChangeNotifier {
 
   void markNotificationRead(String id) {
     final n = _notifications.where((n) => n.id == id).firstOrNull;
-    if (n != null && !n.read) { n.read = true; notifyListeners(); }
+    if (n != null && !n.read) {
+      n.read = true;
+      notifyListeners();
+      if (n.isRemote) _service.markNotificationRead(id);
+    }
   }
 
   void markAllNotificationsRead() {
     for (final n in _notifications) { n.read = true; }
     notifyListeners();
+    if (_user != null) _service.markAllNotificationsRead(_user!.id);
   }
 
   void clearNotifications() {
     _notifications.clear();
     notifyListeners();
-  }
-
-  // ── payment methods (synced to the account — sign-in required) ──────────
-  List<PaymentCard> _cards = [];
-  String _defaultCardId = '';
-  List<PaymentCard> get cards => List.unmodifiable(_cards);
-  String get defaultCardId => _defaultCardId;
-
-  Future<bool> addCard({required String holder, required String number, required String expiry}) async {
-    if (_user == null) return false;
-    final isDefault = _cards.isEmpty;
-    final card = await _service.addPaymentCard(
-      _user!.id,
-      holder: holder,
-      last4: number.substring(number.length - 4),
-      expiry: expiry,
-      brand: PaymentCard.detectBrand(number),
-      isDefault: isDefault,
-    );
-    if (card == null) return false;
-    if (isDefault) {
-      for (var i = 0; i < _cards.length; i++) {
-        final c = _cards[i];
-        if (c.isDefault) _cards[i] = PaymentCard(id: c.id, holder: c.holder, last4: c.last4, expiry: c.expiry, brand: c.brand);
-      }
-    }
-    _cards = [..._cards, card];
-    if (isDefault) _defaultCardId = card.id;
-    notifyListeners();
-    return true;
-  }
-
-  Future<void> removeCard(String id) async {
-    _cards = _cards.where((c) => c.id != id).toList();
-    if (_defaultCardId == id) {
-      _defaultCardId = _cards.isNotEmpty ? _cards.first.id : '';
-      if (_user != null && _defaultCardId.isNotEmpty) {
-        await _service.setDefaultPaymentCard(_user!.id, _defaultCardId);
-      }
-    }
-    notifyListeners();
-    await _service.removePaymentCard(id);
-  }
-
-  Future<void> setDefaultCard(String id) async {
-    _defaultCardId = id;
-    notifyListeners();
-    if (_user != null) await _service.setDefaultPaymentCard(_user!.id, id);
+    if (_user != null) _service.clearNotifications(_user!.id);
   }
 
   // ── privacy & security settings ──────────────────────────────────────────
   // Biometric lock is deliberately per-device (stored only in shared_
   // preferences); the rest follow the account across devices.
   bool biometricLock = false;
-  bool twoFactorAuth = false;
   bool marketingEmails = true;
   bool shareActivity = false;
+  String preferredPayMethod = 'cash'; // 'cash' | 'card' | 'fib'
 
   void setSecuritySetting(String key, bool value) {
     switch (key) {
       case 'biometric': biometricLock = value;
-      case 'twoFactor': twoFactorAuth = value;
       case 'marketing': marketingEmails = value;
       case 'activity': shareActivity = value;
     }
@@ -738,12 +839,21 @@ class AppProvider extends ChangeNotifier {
     if (_user != null) {
       _service.updateAccountPrefs(
         _user!.id,
-        twoFactorEnabled: key == 'twoFactor' ? value : null,
         marketingEmails: key == 'marketing' ? value : null,
         shareActivity: key == 'activity' ? value : null,
       );
     } else {
       _prefs?.setBool(key, value);
+    }
+  }
+
+  Future<void> setPreferredPayMethod(String method) async {
+    preferredPayMethod = method;
+    notifyListeners();
+    if (_user != null) {
+      await _service.updateAccountPrefs(_user!.id, preferredPayMethod: method);
+    } else {
+      await _prefs?.setString('payMethod', method);
     }
   }
 }

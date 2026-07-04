@@ -88,6 +88,16 @@ class Offer {
   String get priceFmt => fmtIqd(price);
   String get originalFmt => fmtIqd(original);
 
+  Offer copyWith({String? imageUrl}) => Offer(
+        id: id, companyId: companyId, title: title, titleAr: titleAr, titleEn: titleEn,
+        overview: overview, city: city, cityCode: cityCode, transport: transport,
+        acc: acc, days: days, nights: nights, price: price, original: original,
+        rating: rating, reviews: reviews, hotel: hotel, distance: distance, room: room,
+        meals: meals, carrier: carrier, badge: badge, imageUrl: imageUrl ?? this.imageUrl,
+        isFeatured: isFeatured, gradColors: gradColors, customItinerary: customItinerary,
+        customIncludes: customIncludes,
+      );
+
   factory Offer.fromRow(Map<String, dynamic> r, {Company? company}) {
     final tint = company?.tint ?? const Color(0xFF0F5C4D);
     final dark = Color.alphaBlend(Colors.black.withOpacity(0.55), tint);

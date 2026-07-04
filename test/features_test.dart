@@ -5,11 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:umrah_app/models/booking_model.dart';
+import 'package:umrah_app/models/commission_model.dart';
 import 'package:umrah_app/models/company_model.dart';
 import 'package:umrah_app/models/home_ad_model.dart';
 import 'package:umrah_app/models/notification_model.dart';
 import 'package:umrah_app/models/offer_model.dart';
-import 'package:umrah_app/models/payment_card_model.dart';
+import 'package:umrah_app/models/support_message_model.dart';
 import 'package:umrah_app/models/user_profile.dart';
 import 'package:umrah_app/providers/app_provider.dart';
 import 'package:umrah_app/services/supabase_service.dart';
@@ -190,9 +191,114 @@ class FakeService implements DataService {
     return null;
   }
 
+  // ── agency booking management ─────────────────────────────────────────────
+  @override
+  Future<List<Booking>> fetchCompanyBookings(String companyId) async {
+    return bookings.where((b) {
+      final offer = offers.where((o) => o.id == b.offerId).firstOrNull;
+      return offer?.companyId == companyId;
+    }).toList();
+  }
+
+  @override
+  Future<String?> setBookingStatus(String bookingId, String status) async {
+    final i = bookings.indexWhere((b) => b.id == bookingId);
+    if (i < 0) return 'not found';
+    final capitalized = status[0].toUpperCase() + status.substring(1);
+    bookings[i] = bookings[i].copyWith(status: capitalized);
+    if (status == 'confirmed') {
+      final offer = offers.firstWhere((o) => o.id == bookings[i].offerId);
+      commissions.add(Commission(
+        id: 'com${commissions.length + 1}', bookingId: bookingId, companyId: offer.companyId,
+        amount: bookings[i].total * 0.05, status: 'owed', createdAt: DateTime.now(),
+      ));
+    }
+    return null;
+  }
+
+  // ── commissions ──────────────────────────────────────────────────────────
+  final commissions = <Commission>[];
+
+  @override
+  Future<List<Commission>> fetchCommissions({String? companyId}) async =>
+      commissions.where((c) => companyId == null || c.companyId == companyId).toList();
+
+  @override
+  Future<String?> setCommissionCollected(String id) async {
+    final i = commissions.indexWhere((c) => c.id == id);
+    if (i < 0) return 'not found';
+    final c = commissions[i];
+    commissions[i] = Commission(id: c.id, bookingId: c.bookingId, companyId: c.companyId,
+        companyName: c.companyName, amount: c.amount, status: 'collected', createdAt: c.createdAt);
+    return null;
+  }
+
+  // ── support ───────────────────────────────────────────────────────────────
+  final supportMessages = <SupportMessage>[];
+
+  @override
+  Future<String?> sendSupportMessage({String? userId, String? email, required String message}) async {
+    supportMessages.add(SupportMessage(
+        id: 's${supportMessages.length + 1}', email: email, message: message, createdAt: DateTime.now()));
+    return null;
+  }
+
+  @override
+  Future<List<SupportMessage>> fetchSupportMessages() async => List.from(supportMessages);
+
+  // ── reviews ───────────────────────────────────────────────────────────────
+  final Set<String> _reviewedBookingIds = {};
+
+  @override
+  Future<String?> createReview({
+    required String bookingId, required String companyId, required String clientId,
+    required int rating, String comment = '',
+  }) async {
+    _reviewedBookingIds.add(bookingId);
+    return null;
+  }
+
+  @override
+  Future<Set<String>> fetchReviewedBookingIds(String clientId) async => Set.from(_reviewedBookingIds);
+
+  // ── password reset ───────────────────────────────────────────────────────
+  static const _testResetCode = '123456';
+
+  @override
+  Future<String?> sendPasswordResetCode(String email) async => null;
+
+  @override
+  Future<String?> resetPasswordWithCode({
+    required String email, required String code, required String newPassword,
+  }) async =>
+      code == _testResetCode ? null : 'invalid code';
+
+  // ── error logging ────────────────────────────────────────────────────────
+  @override
+  Future<void> logError({String? userId, required String message, String? stack, String? context}) async {}
+
+  // ── notifications ────────────────────────────────────────────────────────
+  final remoteNotifications = <AppNotification>[];
+
+  @override
+  Future<List<AppNotification>> fetchNotifications(String userId) async => List.from(remoteNotifications);
+
+  @override
+  Future<void> markNotificationRead(String id) async {
+    final n = remoteNotifications.where((n) => n.id == id).firstOrNull;
+    if (n != null) n.read = true;
+  }
+
+  @override
+  Future<void> markAllNotificationsRead(String userId) async {
+    for (final n in remoteNotifications) { n.read = true; }
+  }
+
+  @override
+  Future<void> clearNotifications(String userId) async => remoteNotifications.clear();
+
   // ── account sync (in-memory, per client id) ──────────────────────────────
   final Map<String, Set<String>> _savedByClient = {};
-  final Map<String, List<PaymentCard>> _cardsByClient = {};
   final Map<String, AccountPrefs> _prefsByClient = {};
 
   @override
@@ -210,57 +316,18 @@ class FakeService implements DataService {
   }
 
   @override
-  Future<List<PaymentCard>> fetchPaymentCards(String clientId) async =>
-      List.from(_cardsByClient[clientId] ?? const []);
-
-  @override
-  Future<PaymentCard?> addPaymentCard(String clientId, {
-    required String holder, required String last4, required String expiry,
-    required String brand, required bool isDefault,
-  }) async {
-    final list = _cardsByClient[clientId] ??= [];
-    if (isDefault) {
-      for (var i = 0; i < list.length; i++) {
-        list[i] = PaymentCard(id: list[i].id, holder: list[i].holder, last4: list[i].last4,
-            expiry: list[i].expiry, brand: list[i].brand, isDefault: false);
-      }
-    }
-    final card = PaymentCard(id: 'pc${list.length + 1}', holder: holder, last4: last4,
-        expiry: expiry, brand: brand, isDefault: isDefault);
-    list.add(card);
-    return card;
-  }
-
-  @override
-  Future<void> removePaymentCard(String id) async {
-    for (final list in _cardsByClient.values) {
-      list.removeWhere((c) => c.id == id);
-    }
-  }
-
-  @override
-  Future<void> setDefaultPaymentCard(String clientId, String id) async {
-    final list = _cardsByClient[clientId];
-    if (list == null) return;
-    for (var i = 0; i < list.length; i++) {
-      list[i] = PaymentCard(id: list[i].id, holder: list[i].holder, last4: list[i].last4,
-          expiry: list[i].expiry, brand: list[i].brand, isDefault: list[i].id == id);
-    }
-  }
-
-  @override
   Future<AccountPrefs> fetchAccountPrefs(String clientId) async =>
       _prefsByClient[clientId] ?? const AccountPrefs();
 
   @override
   Future<void> updateAccountPrefs(String clientId, {
-    bool? marketingEmails, bool? twoFactorEnabled, bool? shareActivity,
+    bool? marketingEmails, bool? shareActivity, String? preferredPayMethod,
   }) async {
     final cur = _prefsByClient[clientId] ?? const AccountPrefs();
     _prefsByClient[clientId] = AccountPrefs(
       marketingEmails: marketingEmails ?? cur.marketingEmails,
-      twoFactorEnabled: twoFactorEnabled ?? cur.twoFactorEnabled,
       shareActivity: shareActivity ?? cur.shareActivity,
+      preferredPayMethod: preferredPayMethod ?? cur.preferredPayMethod,
     );
   }
 
@@ -409,7 +476,9 @@ void main() {
         transport: 'plane', acc: 5, days: 10, price: 2000000,
         gradColors: const [Colors.teal, Colors.black],
       );
-      expect(await p.addOffer(offer), true);
+      final (ok, imageFailed) = await p.addOffer(offer);
+      expect(ok, true);
+      expect(imageFailed, false);
       expect(p.allOffers.any((o) => o.title == 'Test Package'), true);
       final created = p.allOffers.firstWhere((o) => o.title == 'Test Package');
       expect(await p.deleteOffer(created.id), true);
@@ -467,16 +536,20 @@ void main() {
       expect(p2.saved, containsAll(['o1', 'o2']));
     });
 
-    test('payment cards require sign-in and sync per account', () async {
-      final p = await makeProvider();
-      expect(await p.addCard(holder: 'Guest', number: '4111111111111111', expiry: '08/29'), false);
-      expect(p.cards, isEmpty);
-
+    test('preferred payment method syncs to the account', () async {
+      final shared = FakeService();
+      final p = AppProvider(service: shared, autoLoad: false);
+      await p.init();
+      expect(p.preferredPayMethod, 'cash');
       await p.signIn('client@test.com', 'pass');
-      expect(await p.addCard(holder: 'Test User', number: '4111111111111111', expiry: '08/29'), true);
-      expect(p.cards, hasLength(1));
-      expect(p.cards.first.isDefault, true);
-      expect(p.defaultCardId, p.cards.first.id);
+      await p.setPreferredPayMethod('fib');
+      expect(p.preferredPayMethod, 'fib');
+
+      // A second session on the same backend sees the saved preference.
+      final p2 = AppProvider(service: shared, autoLoad: false);
+      await p2.init();
+      await p2.signIn('client@test.com', 'pass');
+      expect(p2.preferredPayMethod, 'fib');
     });
 
     test('admin: home ads CRUD flows through to the home carousel list', () async {
@@ -519,17 +592,17 @@ void main() {
       expect(p.pendingCompanies, isEmpty);
     });
 
-    test('cards and cloud-synced prefs are cleared on sign out, biometric survives', () async {
+    test('cloud-synced prefs are cleared on sign out, biometric survives', () async {
       final p = await makeProvider();
       await p.signIn('client@test.com', 'pass');
-      await p.addCard(holder: 'Test User', number: '4111111111111111', expiry: '08/29');
+      await p.setPreferredPayMethod('card');
       p.setSecuritySetting('marketing', false);
       p.setSecuritySetting('biometric', true);
-      expect(p.cards, isNotEmpty);
+      expect(p.preferredPayMethod, 'card');
 
       await p.signOut();
-      expect(p.cards, isEmpty);
-      expect(p.marketingEmails, true); // reset to default, not leaked to next user
+      expect(p.preferredPayMethod, 'cash'); // reset to default, not leaked to next user
+      expect(p.marketingEmails, true);
       expect(p.biometricLock, true); // device-level setting, unaffected by sign out
     });
   });
@@ -546,37 +619,28 @@ void main() {
       expect(p.unreadNotifications, unreadBefore - 1);
     });
 
-    testWidgets('PaymentMethodsScreen requires sign-in, then validates add-card sheet', (tester) async {
+    testWidgets('PaymentMethodsScreen lets a guest pick a preferred method', (tester) async {
       final p = await makeProvider();
       await tester.pumpWidget(wrap(const PaymentMethodsScreen(), p));
       await tester.pump();
-      expect(find.text('Sign in to add payment methods'), findsOneWidget);
-      expect(find.text('Add card'), findsNothing);
-
-      await p.signIn('client@test.com', 'pass');
-      await tester.pumpWidget(wrap(const PaymentMethodsScreen(), p));
+      expect(p.preferredPayMethod, 'cash');
+      await tester.tap(find.text('FIB'));
       await tester.pump();
-      await tester.tap(find.text('Add card'));
-      await tester.pumpAndSettle();
-      expect(find.text('Add new card'), findsOneWidget);
-      await tester.tap(find.text('Save card'));
-      await tester.pump();
-      expect(find.text('Enter the cardholder name.'), findsOneWidget);
+      expect(p.preferredPayMethod, 'fib');
     });
 
     testWidgets('PrivacySecurityScreen toggles update provider', (tester) async {
       final p = await makeProvider();
       await tester.pumpWidget(wrap(const PrivacySecurityScreen(), p));
       await tester.pump();
-      // Second switch = two-factor. (The first, biometric lock, correctly
-      // refuses to enable when the device has no fingerprint hardware.)
-      await tester.tap(find.byType(Switch).at(1));
-      await tester.pump();
-      expect(p.twoFactorAuth, true);
       // Biometric toggle stays off without hardware.
       await tester.tap(find.byType(Switch).first);
       await tester.pump();
       expect(p.biometricLock, false);
+      // Second switch = marketing emails.
+      await tester.tap(find.byType(Switch).at(1));
+      await tester.pump();
+      expect(p.marketingEmails, false);
     });
 
     testWidgets('HelpSupportScreen expands FAQ', (tester) async {

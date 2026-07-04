@@ -1074,6 +1074,18 @@ abstract class AppLocalizations {
   /// **'Your trip \"{title}\" is coming up. Check your documents.'**
   String notifTripReminderBody(String title);
 
+  /// No description provided for @notifBookingRequestedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking requested'**
+  String get notifBookingRequestedTitle;
+
+  /// No description provided for @notifBookingRequestedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request for \"{title}\" was sent to the agency. You\'ll be notified once they respond.'**
+  String notifBookingRequestedBody(String title);
+
   /// No description provided for @notifBookingConfirmedTitle.
   ///
   /// In en, this message translates to:
@@ -2190,6 +2202,12 @@ abstract class AppLocalizations {
   /// **'Package published!'**
   String get addEditOfferPublished;
 
+  /// No description provided for @addEditOfferSavedImageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Package saved, but the cover photo couldn\'t be uploaded. Check your connection and try again from Edit.'**
+  String get addEditOfferSavedImageFailed;
+
   /// No description provided for @authSignInTitle.
   ///
   /// In en, this message translates to:
@@ -2459,6 +2477,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FIB'**
   String get payFib;
+
+  /// No description provided for @preferredPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get preferredPaymentTitle;
+
+  /// No description provided for @preferredPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you\'d like to pay. Payment always happens in person at the agency — nothing is ever charged in the app.'**
+  String get preferredPaymentBody;
+
+  /// No description provided for @preferredPaymentSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Preference saved.'**
+  String get preferredPaymentSaved;
 
   /// No description provided for @bookingFailed.
   ///

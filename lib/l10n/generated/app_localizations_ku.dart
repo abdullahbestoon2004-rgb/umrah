@@ -629,6 +629,14 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
+  String get notifBookingRequestedTitle => 'داواکاری گەشت نێردرا';
+
+  @override
+  String notifBookingRequestedBody(String title) {
+    return 'داواکاریت بۆ \"$title\" بۆ ئاژانسەکە نێردرا. کاتێک وەڵامیان دایەوە ئاگادارت دەکەینەوە.';
+  }
+
+  @override
   String get notifBookingConfirmedTitle => 'گەشتەکە پشتڕاستکرایەوە';
 
   @override
@@ -1275,6 +1283,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get addEditOfferPublished => 'پاکێج بڵاوکرایەوە!';
 
   @override
+  String get addEditOfferSavedImageFailed =>
+      'پاکێجەکە پاشەکەوتکرا، بەڵام وێنەی بەرگ نەتوانرا باربکرێت. پەیوەندییەکەت بپشکنە و لە دەستکاریکردنەوە دووبارە هەوڵ بدەرەوە.';
+
+  @override
   String get authSignInTitle => 'بەخێربێیتەوە';
 
   @override
@@ -1417,6 +1429,16 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get payFib => 'FIB';
+
+  @override
+  String get preferredPaymentTitle => 'شێوازی پارەدان';
+
+  @override
+  String get preferredPaymentBody =>
+      'ئەو شێوازە هەڵبژێرە کە پێت باشترە پێی پارە بدەیت. پارەدان هەمیشە لای ئاژانسەکە بەشێوەی ڕووبەڕوو دەبێت — هیچ شتێک لەناو ئەپەکەدا کەم ناکرێتەوە.';
+
+  @override
+  String get preferredPaymentSaved => 'پەسەندکراوەکە پاشەکەوت کرا.';
 
   @override
   String get bookingFailed =>
