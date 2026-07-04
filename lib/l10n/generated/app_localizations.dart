@@ -972,6 +972,12 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get bookingsStatusCancelled;
 
+  /// No description provided for @bookingsStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bookingsStatusCompleted;
+
   /// No description provided for @bookingsCancelBooking.
   ///
   /// In en, this message translates to:
@@ -1007,6 +1013,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Booking cancelled.'**
   String get bookingsCancelledSnack;
+
+  /// No description provided for @bookingsRateThisTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate this trip'**
+  String get bookingsRateThisTrip;
+
+  /// No description provided for @reviewDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your trip?'**
+  String get reviewDialogTitle;
+
+  /// No description provided for @reviewCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a few words about your experience (optional)'**
+  String get reviewCommentHint;
+
+  /// No description provided for @reviewSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
+  String get reviewSubmit;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your review!'**
+  String get reviewSubmitted;
+
+  /// No description provided for @reviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t submit your review. Try again.'**
+  String get reviewFailed;
+
+  /// No description provided for @actionFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get actionFailedGeneric;
+
+  /// No description provided for @agencyBookingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking requests'**
+  String get agencyBookingsTitle;
+
+  /// No description provided for @agencyBookingsRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get agencyBookingsRequests;
+
+  /// No description provided for @agencyBookingsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No booking requests yet'**
+  String get agencyBookingsEmptyTitle;
+
+  /// No description provided for @agencyBookingsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests from pilgrims will show up here.'**
+  String get agencyBookingsEmptyBody;
+
+  /// No description provided for @agencyBookingsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get agencyBookingsCompleted;
+
+  /// No description provided for @agencyBookingsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get agencyBookingsConfirm;
+
+  /// No description provided for @agencyBookingsDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get agencyBookingsDecline;
+
+  /// No description provided for @agencyBookingsMarkCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark completed'**
+  String get agencyBookingsMarkCompleted;
+
+  /// No description provided for @agencyBookingsConfirmedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking confirmed.'**
+  String get agencyBookingsConfirmedSnack;
+
+  /// No description provided for @agencyBookingsDeclinedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking declined.'**
+  String get agencyBookingsDeclinedSnack;
+
+  /// No description provided for @agencyBookingsCompletedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as completed.'**
+  String get agencyBookingsCompletedSnack;
+
+  /// No description provided for @adminCommissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions'**
+  String get adminCommissionsTitle;
+
+  /// No description provided for @adminCommissionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No commissions yet'**
+  String get adminCommissionsEmptyTitle;
+
+  /// No description provided for @adminCommissionsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These open automatically once a booking is confirmed.'**
+  String get adminCommissionsEmptyBody;
+
+  /// No description provided for @adminCommissionsOwedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total owed'**
+  String get adminCommissionsOwedLabel;
+
+  /// No description provided for @adminCommissionsOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'OWED'**
+  String get adminCommissionsOwed;
+
+  /// No description provided for @adminCommissionsCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'COLLECTED'**
+  String get adminCommissionsCollected;
 
   /// No description provided for @notificationsTitle.
   ///
@@ -1607,6 +1757,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please write a message first.'**
   String get helpMessageEmpty;
+
+  /// No description provided for @helpMessageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send your message. Check your connection and try again.'**
+  String get helpMessageFailed;
 
   /// No description provided for @agencyLoginTitle.
   ///

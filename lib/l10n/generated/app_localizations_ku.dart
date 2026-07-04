@@ -572,6 +572,9 @@ class AppLocalizationsKu extends AppLocalizations {
   String get bookingsStatusCancelled => 'هەڵوەشێنراوە';
 
   @override
+  String get bookingsStatusCompleted => 'تەواوبووە';
+
+  @override
   String get bookingsCancelBooking => 'هەڵوەشاندنەوەی گەشت';
 
   @override
@@ -590,6 +593,81 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get bookingsCancelledSnack => 'گەشتەکە هەڵوەشێنرایەوە.';
+
+  @override
+  String get bookingsRateThisTrip => 'ئەم گەشتە هەڵسەنگێنە';
+
+  @override
+  String get reviewDialogTitle => 'گەشتەکەت چۆن بوو؟';
+
+  @override
+  String get reviewCommentHint =>
+      'چەند وشەیەک دەربارەی ئەزموونەکەت بنووسە (ئارەزوومەندانە)';
+
+  @override
+  String get reviewSubmit => 'ناردنی هەڵسەنگاندن';
+
+  @override
+  String get reviewSubmitted => 'سوپاس بۆ هەڵسەنگاندنەکەت!';
+
+  @override
+  String get reviewFailed => 'هەڵسەنگاندنەکەت نەنێردرا. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get actionFailedGeneric =>
+      'هەڵەیەک ڕوویدا. تکایە دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get agencyBookingsTitle => 'داواکاری گەشتەکان';
+
+  @override
+  String get agencyBookingsRequests => 'داواکارییەکان';
+
+  @override
+  String get agencyBookingsEmptyTitle => 'هێشتا هیچ داواکاری گەشتێک نییە';
+
+  @override
+  String get agencyBookingsEmptyBody => 'داواکاری حاجییەکان لێرە دەردەکەون.';
+
+  @override
+  String get agencyBookingsCompleted => 'تەواوبووە';
+
+  @override
+  String get agencyBookingsConfirm => 'پشتڕاستکردنەوە';
+
+  @override
+  String get agencyBookingsDecline => 'ڕەتکردنەوە';
+
+  @override
+  String get agencyBookingsMarkCompleted => 'وەک تەواوبوو دابنێ';
+
+  @override
+  String get agencyBookingsConfirmedSnack => 'گەشتەکە پشتڕاستکرایەوە.';
+
+  @override
+  String get agencyBookingsDeclinedSnack => 'گەشتەکە ڕەتکرایەوە.';
+
+  @override
+  String get agencyBookingsCompletedSnack => 'وەک تەواوبوو دانرا.';
+
+  @override
+  String get adminCommissionsTitle => 'کۆمیسیۆنەکان';
+
+  @override
+  String get adminCommissionsEmptyTitle => 'هێشتا هیچ کۆمیسیۆنێک نییە';
+
+  @override
+  String get adminCommissionsEmptyBody =>
+      'ئەمانە بەخۆکار دەکرێنەوە کاتێک گەشتێک پشتڕاست دەکرێتەوە.';
+
+  @override
+  String get adminCommissionsOwedLabel => 'کۆی قەرز';
+
+  @override
+  String get adminCommissionsOwed => 'قەرزە';
+
+  @override
+  String get adminCommissionsCollected => 'کۆکراوەتەوە';
 
   @override
   String get notificationsTitle => 'ئاگادارکردنەوەکان';
@@ -944,6 +1022,10 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get helpMessageEmpty => 'تکایە سەرەتا نامەیەک بنووسە.';
+
+  @override
+  String get helpMessageFailed =>
+      'نامەکەت نەنێردرا. ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
 
   @override
   String get agencyLoginTitle => 'پۆرتاڵی ئاژانس';

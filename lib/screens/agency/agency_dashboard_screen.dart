@@ -13,6 +13,7 @@ import '../../widgets/tag_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'add_edit_offer_screen.dart';
 import 'edit_agency_profile_screen.dart';
+import 'agency_bookings_screen.dart';
 
 class AgencyDashboardScreen extends StatelessWidget {
   const AgencyDashboardScreen({super.key});
@@ -236,7 +237,34 @@ class _DashboardHeader extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (company.isVerified)
+                  if (company.isVerified) ...[
+                    GestureDetector(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => const AgencyBookingsScreen())),
+                      child: Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), borderRadius: BorderRadius.circular(13)),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            const Center(child: Icon(Icons.receipt_long_outlined, color: Colors.white, size: 19)),
+                            if (provider.pendingBookingCount > 0)
+                              Positioned(
+                                right: -4, top: -4,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(color: AppColors.gold, shape: BoxShape.circle),
+                                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                  child: Text('${provider.pendingBookingCount}',
+                                      textAlign: TextAlign.center,
+                                      style: AppTheme.sans(9, weight: FontWeight.w800, color: const Color(0xFF1C2317))),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(
                         builder: (_) => EditAgencyProfileScreen(company: company))),
@@ -252,6 +280,7 @@ class _DashboardHeader extends StatelessWidget {
                         ),
                       ),
                     ),
+                  ],
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {

@@ -11,6 +11,7 @@ import '../../models/offer_model.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../agency/agency_bookings_screen.dart' show CommissionLedger;
 
 /// Owner-only control panel: approve agencies, manage the paid home-ads
 /// carousel, and pick which offers are featured on the home screen.
@@ -129,12 +130,25 @@ class _AdminScreenState extends State<AdminScreen> {
                 final offer = provider.allOffers[i];
                 final company = provider.companyById(offer.companyId);
                 return Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      22, 0, 22, i < provider.allOffers.length - 1 ? 10 : 30),
+                  padding: EdgeInsets.fromLTRB(22, 0, 22, 10),
                   child: _FeaturedRow(offer: offer, companyName: company?.nameFor(lang) ?? ''),
                 );
               },
               childCount: provider.allOffers.length,
+            ),
+          ),
+
+          // ── Commission ledger (every agency) ───────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 26, 22, 4),
+              child: Text(t.adminCommissionsTitle, style: AppTheme.serif(20)),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 420,
+              child: CommissionLedger(commissions: provider.commissions),
             ),
           ),
         ],

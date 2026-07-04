@@ -5,6 +5,7 @@ import 'offer_model.dart';
 class Booking {
   final String id;
   final String offerId;
+  final String companyId;
   final String title; // Kurdish (base)
   final String? titleAr;
   final String? titleEn;
@@ -22,6 +23,7 @@ class Booking {
   const Booking({
     required this.id,
     required this.offerId,
+    this.companyId = '',
     required this.title,
     this.titleAr,
     this.titleEn,
@@ -54,6 +56,7 @@ class Booking {
   Booking copyWith({String? status}) => Booking(
         id: id,
         offerId: offerId,
+        companyId: companyId,
         title: title,
         titleAr: titleAr,
         titleEn: titleEn,
@@ -84,6 +87,7 @@ class Booking {
     return Booking(
       id: r['id'] as String,
       offerId: (r['package_id'] ?? '') as String,
+      companyId: (r['company_id'] ?? '') as String,
       title: (pkg['title'] ?? '') as String,
       titleAr: pkg['title_ar'] as String?,
       titleEn: pkg['title_en'] as String?,

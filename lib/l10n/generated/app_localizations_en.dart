@@ -570,6 +570,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingsStatusCancelled => 'Cancelled';
 
   @override
+  String get bookingsStatusCompleted => 'Completed';
+
+  @override
   String get bookingsCancelBooking => 'Cancel booking';
 
   @override
@@ -588,6 +591,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingsCancelledSnack => 'Booking cancelled.';
+
+  @override
+  String get bookingsRateThisTrip => 'Rate this trip';
+
+  @override
+  String get reviewDialogTitle => 'How was your trip?';
+
+  @override
+  String get reviewCommentHint =>
+      'Share a few words about your experience (optional)';
+
+  @override
+  String get reviewSubmit => 'Submit review';
+
+  @override
+  String get reviewSubmitted => 'Thanks for your review!';
+
+  @override
+  String get reviewFailed => 'Couldn\'t submit your review. Try again.';
+
+  @override
+  String get actionFailedGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get agencyBookingsTitle => 'Booking requests';
+
+  @override
+  String get agencyBookingsRequests => 'Requests';
+
+  @override
+  String get agencyBookingsEmptyTitle => 'No booking requests yet';
+
+  @override
+  String get agencyBookingsEmptyBody =>
+      'Requests from pilgrims will show up here.';
+
+  @override
+  String get agencyBookingsCompleted => 'Completed';
+
+  @override
+  String get agencyBookingsConfirm => 'Confirm';
+
+  @override
+  String get agencyBookingsDecline => 'Decline';
+
+  @override
+  String get agencyBookingsMarkCompleted => 'Mark completed';
+
+  @override
+  String get agencyBookingsConfirmedSnack => 'Booking confirmed.';
+
+  @override
+  String get agencyBookingsDeclinedSnack => 'Booking declined.';
+
+  @override
+  String get agencyBookingsCompletedSnack => 'Marked as completed.';
+
+  @override
+  String get adminCommissionsTitle => 'Commissions';
+
+  @override
+  String get adminCommissionsEmptyTitle => 'No commissions yet';
+
+  @override
+  String get adminCommissionsEmptyBody =>
+      'These open automatically once a booking is confirmed.';
+
+  @override
+  String get adminCommissionsOwedLabel => 'Total owed';
+
+  @override
+  String get adminCommissionsOwed => 'OWED';
+
+  @override
+  String get adminCommissionsCollected => 'COLLECTED';
 
   @override
   String get notificationsTitle => 'Notifications';
@@ -938,6 +1016,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpMessageEmpty => 'Please write a message first.';
+
+  @override
+  String get helpMessageFailed =>
+      'Couldn\'t send your message. Check your connection and try again.';
 
   @override
   String get agencyLoginTitle => 'Agency Portal';

@@ -570,6 +570,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bookingsStatusCancelled => 'ملغى';
 
   @override
+  String get bookingsStatusCompleted => 'مكتمل';
+
+  @override
   String get bookingsCancelBooking => 'إلغاء الحجز';
 
   @override
@@ -588,6 +591,79 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get bookingsCancelledSnack => 'تم إلغاء الحجز.';
+
+  @override
+  String get bookingsRateThisTrip => 'قيّم هذه الرحلة';
+
+  @override
+  String get reviewDialogTitle => 'كيف كانت رحلتك؟';
+
+  @override
+  String get reviewCommentHint => 'شاركنا بضع كلمات عن تجربتك (اختياري)';
+
+  @override
+  String get reviewSubmit => 'إرسال التقييم';
+
+  @override
+  String get reviewSubmitted => 'شكرًا على تقييمك!';
+
+  @override
+  String get reviewFailed => 'تعذّر إرسال تقييمك. حاول مرة أخرى.';
+
+  @override
+  String get actionFailedGeneric => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get agencyBookingsTitle => 'طلبات الحجز';
+
+  @override
+  String get agencyBookingsRequests => 'الطلبات';
+
+  @override
+  String get agencyBookingsEmptyTitle => 'لا توجد طلبات حجز بعد';
+
+  @override
+  String get agencyBookingsEmptyBody => 'ستظهر هنا طلبات الحجاج.';
+
+  @override
+  String get agencyBookingsCompleted => 'مكتمل';
+
+  @override
+  String get agencyBookingsConfirm => 'تأكيد';
+
+  @override
+  String get agencyBookingsDecline => 'رفض';
+
+  @override
+  String get agencyBookingsMarkCompleted => 'تحديد كمكتمل';
+
+  @override
+  String get agencyBookingsConfirmedSnack => 'تم تأكيد الحجز.';
+
+  @override
+  String get agencyBookingsDeclinedSnack => 'تم رفض الحجز.';
+
+  @override
+  String get agencyBookingsCompletedSnack => 'تم تحديده كمكتمل.';
+
+  @override
+  String get adminCommissionsTitle => 'العمولات';
+
+  @override
+  String get adminCommissionsEmptyTitle => 'لا توجد عمولات بعد';
+
+  @override
+  String get adminCommissionsEmptyBody =>
+      'تُفتح هذه تلقائيًا عند تأكيد أي حجز.';
+
+  @override
+  String get adminCommissionsOwedLabel => 'إجمالي المستحق';
+
+  @override
+  String get adminCommissionsOwed => 'مستحقة';
+
+  @override
+  String get adminCommissionsCollected => 'محصّلة';
 
   @override
   String get notificationsTitle => 'الإشعارات';
@@ -934,6 +1010,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get helpMessageEmpty => 'يرجى كتابة رسالة أولًا.';
+
+  @override
+  String get helpMessageFailed =>
+      'تعذّر إرسال رسالتك. تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
   String get agencyLoginTitle => 'بوابة الوكالة';

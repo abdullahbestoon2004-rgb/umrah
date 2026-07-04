@@ -48,8 +48,17 @@ class FakeService implements DataService {
 
   @override
   Future<String?> signIn(String email, String password) async {
-    final role = email.startsWith('admin') ? 'admin' : 'client';
-    user = UserProfile(id: 'u1', email: email, role: role, fullName: 'Test User');
+    // 'agency1' matches the ownerId already seeded on companies c1/c2 above,
+    // so signing in this way lets tests act as the owner of an existing
+    // seeded company without going through signUpAgency's "create a new
+    // company" path.
+    final role = email.startsWith('admin')
+        ? 'admin'
+        : email.startsWith('agency')
+            ? 'agency'
+            : 'client';
+    final id = role == 'agency' ? 'agency1' : 'u1';
+    user = UserProfile(id: id, email: email, role: role, fullName: 'Test User');
     return null;
   }
 
@@ -445,7 +454,11 @@ void main() {
       expect(p.bookings.first.payMethod, 'fib');
       expect(p.bookings.first.departureDate, DateTime(2026, 12, 20));
       expect(p.bookings.first.total, 5500000);
-      expect(p.notifications.first.type, NotificationType.bookingConfirmed);
+      // Bookings start 'pending' until an agency approves, so the immediate
+      // local notification says "requested", not "confirmed". The real
+      // confirmed/cancelled notification arrives later via the backend's
+      // notify_booking_status_change trigger when an agency actually acts.
+      expect(p.notifications.first.type, NotificationType.bookingRequested);
     });
 
     test('cancel booking updates status', () async {
@@ -455,6 +468,65 @@ void main() {
       final err = await p.cancelBooking(p.bookings.first.id);
       expect(err, isNull);
       expect(p.bookings.first.status, 'Cancelled');
+    });
+
+    test('full request → confirm → complete → review loop (the core marketplace flow)', () async {
+      final shared = FakeService();
+
+      // Client requests a booking (starts 'Pending').
+      final client = AppProvider(service: shared, autoLoad: false);
+      await client.init();
+      await client.signIn('client@test.com', 'pass');
+      final offer = client.allOffers.first;
+      await client.confirmBooking(offer, 2);
+      final bookingId = client.bookings.first.id;
+      expect(client.bookings.first.status, 'Pending');
+
+      // Agency sees the request and confirms it — this opens a 5% commission.
+      final agency = AppProvider(service: shared, autoLoad: false);
+      await agency.init();
+      await agency.signIn('agency@test.com', 'pass');
+      await agency.loadAgencyBookings();
+      expect(agency.agencyBookings.map((b) => b.id), contains(bookingId));
+      final ok = await agency.respondToBooking(bookingId, confirm: true);
+      expect(ok, true);
+      expect(agency.agencyBookings.firstWhere((b) => b.id == bookingId).status, 'Confirmed');
+
+      await agency.loadCommissions();
+      expect(agency.commissions, isNotEmpty);
+      expect(agency.commissions.first.status, 'owed');
+      final collected = await agency.markCommissionCollected(agency.commissions.first.id);
+      expect(collected, true);
+      expect(agency.commissions.first.status, 'collected');
+
+      // Trip happens; agency marks it completed.
+      final completedOk = await agency.markBookingCompleted(bookingId);
+      expect(completedOk, true);
+      expect(agency.agencyBookings.firstWhere((b) => b.id == bookingId).status, 'Completed');
+
+      // Client can now leave a review, and only now.
+      expect(client.hasReviewed(bookingId), false);
+      final reviewErr = await client.submitReview(bookingId, offer.companyId, 5, comment: 'Great trip!');
+      expect(reviewErr, isNull);
+      expect(client.hasReviewed(bookingId), true);
+    });
+
+    test('agency declining a booking does not open a commission', () async {
+      final shared = FakeService();
+      final client = AppProvider(service: shared, autoLoad: false);
+      await client.init();
+      await client.signIn('client@test.com', 'pass');
+      await client.confirmBooking(client.allOffers.first, 1);
+      final bookingId = client.bookings.first.id;
+
+      final agency = AppProvider(service: shared, autoLoad: false);
+      await agency.init();
+      await agency.signIn('agency@test.com', 'pass');
+      await agency.loadAgencyBookings();
+      await agency.respondToBooking(bookingId, confirm: false);
+      await agency.loadCommissions();
+      expect(agency.agencyBookings.firstWhere((b) => b.id == bookingId).status, 'Cancelled');
+      expect(agency.commissions, isEmpty);
     });
 
     test('agency sign-up creates company', () async {

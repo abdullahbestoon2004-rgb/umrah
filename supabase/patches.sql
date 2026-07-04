@@ -185,7 +185,11 @@ where id not in (select distinct company_id from reviews);
 -- 10. Preferred payment method (cash/card/fib), replacing the old fake
 --     card-collection form — payment always happens at the agency, so all
 --     the app needs to remember is how the pilgrim intends to pay.
+--     Must be explicitly granted: patches_admin.sql #2 restricted `profiles`
+--     updates to a column allowlist, so a newly-added column is unwritable
+--     by users until granted here.
 alter table profiles add column if not exists preferred_pay_method text not null default 'cash';
+grant update (preferred_pay_method) on profiles to authenticated;
 
 -- 11. Drop the two-factor-auth flag (patches_account_sync.sql) — the app
 --     never had a real TOTP/OTP implementation behind it, so the toggle

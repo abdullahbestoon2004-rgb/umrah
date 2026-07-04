@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/app_provider.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -31,10 +33,22 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     showAppSnack(context, t.helpCopiedToClipboard(value));
   }
 
-  void _sendMessage() {
+  bool _sending = false;
+
+  Future<void> _sendMessage() async {
+    if (_sending) return;
     final t = AppLocalizations.of(context);
-    if (_messageCtrl.text.trim().isEmpty) {
+    final message = _messageCtrl.text.trim();
+    if (message.isEmpty) {
       showAppSnack(context, t.helpMessageEmpty, isError: true);
+      return;
+    }
+    setState(() => _sending = true);
+    final ok = await context.read<AppProvider>().sendSupportMessage(message);
+    if (!mounted) return;
+    setState(() => _sending = false);
+    if (!ok) {
+      showAppSnack(context, t.helpMessageFailed, isError: true);
       return;
     }
     _messageCtrl.clear();
@@ -166,14 +180,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   ),
                   const SizedBox(height: 12),
                   GestureDetector(
-                    onTap: _sendMessage,
+                    onTap: _sending ? null : _sendMessage,
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
                       alignment: Alignment.center,
-                      child: Text(t.helpMessageSend,
-                          style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+                      child: _sending
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                          : Text(t.helpMessageSend,
+                              style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
                     ),
                   ),
                 ],

@@ -186,7 +186,10 @@ class AppProvider extends ChangeNotifier {
     try {
       _user = await _service.restoreSession();
       if (_user != null) {
-        if (_user!.isAgency) _myCompany = await _service.ensureAgencyCompany(_user!.id);
+        if (_user!.isAgency) {
+          _myCompany = await _service.ensureAgencyCompany(_user!.id);
+          await loadAgencyBookings();
+        }
         await refreshBookings();
         await _syncAccountData();
         await _loadRemoteNotifications();
@@ -677,6 +680,7 @@ class AppProvider extends ChangeNotifier {
   // ── bookings (agency side: review + confirm/decline requests) ────────────
   List<Booking> _agencyBookings = [];
   List<Booking> get agencyBookings => List.unmodifiable(_agencyBookings);
+  int get pendingBookingCount => _agencyBookings.where((b) => b.status == 'Pending').length;
 
   Future<void> loadAgencyBookings() async {
     if (_myCompany == null) return;
@@ -693,6 +697,19 @@ class AppProvider extends ChangeNotifier {
     if (i >= 0) {
       _agencyBookings = List.from(_agencyBookings);
       _agencyBookings[i] = _agencyBookings[i].copyWith(status: confirm ? 'Confirmed' : 'Cancelled');
+    }
+    notifyListeners();
+    return true;
+  }
+
+  /// Closes the loop so a completed trip becomes reviewable by the pilgrim.
+  Future<bool> markBookingCompleted(String bookingId) async {
+    final err = await _service.setBookingStatus(bookingId, 'completed');
+    if (err != null) return false;
+    final i = _agencyBookings.indexWhere((b) => b.id == bookingId);
+    if (i >= 0) {
+      _agencyBookings = List.from(_agencyBookings);
+      _agencyBookings[i] = _agencyBookings[i].copyWith(status: 'Completed');
     }
     notifyListeners();
     return true;

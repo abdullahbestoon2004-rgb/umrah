@@ -69,6 +69,7 @@ class _BookingCard extends StatelessWidget {
       case 'Confirmed': return t.bookingsStatusConfirmed;
       case 'Pending': return t.bookingsStatusPending;
       case 'Cancelled': return t.bookingsStatusCancelled;
+      case 'Completed': return t.bookingsStatusCompleted;
       default: return booking.status;
     }
   }
@@ -77,6 +78,74 @@ class _BookingCard extends StatelessWidget {
     final d = booking.departureDate;
     if (d == null) return t.dateToBeScheduled;
     return '${d.day}/${d.month}/${d.year}';
+  }
+
+  void _openReviewDialog(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    int rating = 5;
+    final commentCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(t.reviewDialogTitle, style: AppTheme.serif(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (i) {
+                  final filled = i < rating;
+                  return GestureDetector(
+                    onTap: () => setDialogState(() => rating = i + 1),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Icon(filled ? Icons.star_rounded : Icons.star_border_rounded,
+                          color: AppColors.gold, size: 32),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: commentCtrl,
+                maxLines: 3,
+                style: AppTheme.sans(13.5),
+                decoration: InputDecoration(
+                  hintText: t.reviewCommentHint,
+                  hintStyle: AppTheme.sans(13, color: AppColors.mutedLight),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            ),
+            TextButton(
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final provider = context.read<AppProvider>();
+                Navigator.pop(dialogCtx);
+                final err = await provider.submitReview(
+                    booking.id, booking.companyId, rating, comment: commentCtrl.text.trim());
+                messenger.showSnackBar(err == null
+                    ? appSnack(t.reviewSubmitted)
+                    : appSnack(t.reviewFailed, isError: true));
+              },
+              child: Text(t.reviewSubmit, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _confirmCancel(BuildContext context) {
@@ -213,6 +282,28 @@ class _BookingCard extends StatelessWidget {
                       child: Text(
                         t.bookingsCancelBooking,
                         style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.errorRed),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ] else if (booking.status == 'Completed' && !context.watch<AppProvider>().hasReviewed(booking.id)) ...[
+                  GestureDetector(
+                    onTap: () => _openReviewDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.gold.withOpacity(0.4), width: 1),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star_rounded, color: AppColors.gold, size: 14),
+                          const SizedBox(width: 4),
+                          Text(t.bookingsRateThisTrip,
+                              style: AppTheme.sans(11, weight: FontWeight.w700, color: const Color(0xFF8A7040))),
+                        ],
                       ),
                     ),
                   ),
