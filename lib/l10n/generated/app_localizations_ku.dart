@@ -15,10 +15,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get navHome => 'ماڵەوە';
 
   @override
-  String get navAgencies => 'ئاژانسەکان';
+  String get navAgencies => 'کۆمپانیاکان';
 
   @override
-  String get navOffers => 'ئۆفەرەکان';
+  String get navOffers => 'گەشتەکان';
 
   @override
   String get navBookings => 'حجزەکان';
@@ -60,15 +60,15 @@ class AppLocalizationsKu extends AppLocalizations {
   String get profileHelpSupport => 'یارمەتی و پشتگیری';
 
   @override
-  String get profileAgencyDivider => 'ئاژانس';
+  String get profileAgencyDivider => 'کۆمپانیا';
 
   @override
   String profileAgencyDashboardWithName(String name) {
-    return 'داشبۆردی ئاژانس · $name';
+    return 'داشبۆردی کۆمپانیا · $name';
   }
 
   @override
-  String get profileAgencyPortal => 'دەروازەی ئاژانس و بەڕێوەبەر';
+  String get profileAgencyPortal => 'دەروازەی کۆمپانیا و بەڕێوەبەر';
 
   @override
   String get profileAdminDashboard => 'داشبۆردی بەڕێوەبەر';
@@ -99,7 +99,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get savedTripsEmptyBody =>
-      'کلیک لەسەر دڵی هەر ئۆفەرێک بکە بۆ هەڵگرتنی.';
+      'کلیک لەسەر دڵی هەر گەشتێک بکە بۆ هەڵگرتنی.';
 
   @override
   String get priceFromPrefix => 'لە ';
@@ -173,7 +173,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get offerDetailWhatsIncluded => 'ئەوەی لەخۆدەگرێت';
 
   @override
-  String get offerDetailPackagePerPerson => 'پاکێج (بۆ هەر کەسێک)';
+  String get offerDetailPackagePerPerson => 'گەشت (بۆ هەر کەسێک)';
 
   @override
   String get offerDetailVisaProcessing => 'ڤیزا و پرۆسەکان';
@@ -231,15 +231,15 @@ class AppLocalizationsKu extends AppLocalizations {
   String get dateToBeScheduled => 'دواتر دیاری دەکرێت';
 
   @override
-  String get offersTitle => 'ئۆفەرەکان';
+  String get offersTitle => 'گەشتەکان';
 
   @override
   String offersPackagesMatch(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count پاکێج گونجاون',
-      one: '$count پاکێج گونجاوە',
+      other: '$count گەشت گونجاون',
+      one: '$count گەشت گونجاوە',
     );
     return '$_temp0';
   }
@@ -342,15 +342,15 @@ class AppLocalizationsKu extends AppLocalizations {
   String get filterSheetDuration15Plus => '+١٥ ڕۆژ';
 
   @override
-  String get filterSheetAgencyRating => 'هەڵسەنگاندنی ئاژانس';
+  String get filterSheetAgencyRating => 'هەڵسەنگاندنی کۆمپانیا';
 
   @override
   String filterSheetShowPackages(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'پیشاندانی $count پاکێج',
-      one: 'پیشاندانی $count پاکێج',
+      other: 'پیشاندانی $count گەشت',
+      one: 'پیشاندانی $count گەشت',
     );
     return '$_temp0';
   }
@@ -379,10 +379,10 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
-  String get homeSearchPlaceholder => 'گەڕان بۆ پاکێجەکانی عومرە…';
+  String get homeSearchPlaceholder => 'گەڕان بۆ گەشتەکانی عومرە…';
 
   @override
-  String get homeTopAgencies => 'باشترین ئاژانسەکان';
+  String get homeTopAgencies => 'باشترین کۆمپانیاکان';
 
   @override
   String get homeViewAll => 'بینینی هەموو';
@@ -399,7 +399,7 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
-  String get homeCuratedPackages => 'پاکێجە هەڵبژێردراوەکان';
+  String get homeCuratedPackages => 'گەشتە هەڵبژێردراوەکان';
 
   @override
   String homeDaysCount(int days) {
@@ -416,13 +416,13 @@ class AppLocalizationsKu extends AppLocalizations {
   String get homeFromPrefix => 'لە ';
 
   @override
-  String get searchHint => 'گەڕان بۆ پاکێج، ئاژانس، شار…';
+  String get searchHint => 'گەڕان بۆ گەشت، کۆمپانیا، شار…';
 
   @override
   String get searchPopularSearches => 'گەڕانە باوەکان';
 
   @override
-  String get searchSuggestionPremiumPackages => 'پاکێجی تایبەت';
+  String get searchSuggestionPremiumPackages => 'گەشتی تایبەت';
 
   @override
   String get searchSuggestionByAir => 'بە فڕۆکە';
@@ -455,7 +455,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get searchFromPrefix => 'لە ';
 
   @override
-  String get companiesTitle => 'ئاژانسەکان';
+  String get companiesTitle => 'کۆمپانیاکان';
 
   @override
   String companiesSubtitle(int count) {
@@ -481,8 +481,8 @@ class AppLocalizationsKu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count پاکێج',
-      one: '$count پاکێج',
+      other: '$count گەشت',
+      one: '$count گەشت',
     );
     return '$_temp0';
   }
@@ -495,7 +495,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String companyDetailPackagesHeader(int count) {
-    return 'پاکێجەکان ($count)';
+    return 'گەشتەکان ($count)';
   }
 
   @override
@@ -515,7 +515,7 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
-  String get companyDetailPackagesLabel => 'پاکێجەکان';
+  String get companyDetailPackagesLabel => 'گەشتەکان';
 
   @override
   String get companyDetailStartingLabel => 'نرخی سەرەتا';
@@ -689,14 +689,14 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get notifWelcomeBody =>
-      'ئاژانسی متمانەپێکراو و پاکێجی هەڵبژێردراو بۆ گەشتەکەت بدۆزەرەوە.';
+      'کۆمپانیای متمانەپێکراو و گەشتی هەڵبژێردراو بۆ گەشتەکەت بدۆزەرەوە.';
 
   @override
   String get notifPromoTitle => 'پێشنیارە وەرزییەکان بەردەستن';
 
   @override
   String get notifPromoBody =>
-      'ئەم مانگە تا 20% لە پاکێجە هەڵبژێردراوەکان پاشەکەوت بکە.';
+      'ئەم مانگە تا 20% لە گەشتە هەڵبژێردراوەکان پاشەکەوت بکە.';
 
   @override
   String get notifTripReminderTitle => 'گەشتی داهاتوو';
@@ -711,7 +711,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String notifBookingRequestedBody(String title) {
-    return 'داواکاریت بۆ \"$title\" بۆ ئاژانسەکە نێردرا. کاتێک وەڵامیان دایەوە ئاگادارت دەکەینەوە.';
+    return 'داواکاریت بۆ \"$title\" بۆ کۆمپانیاکە نێردرا. کاتێک وەڵامیان دایەوە ئاگادارت دەکەینەوە.';
   }
 
   @override
@@ -959,7 +959,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get helpFaqHeader => 'پرسیارە باوەکان';
 
   @override
-  String get helpFaq1Q => 'چۆن پاکێجی عومرە تۆمار بکەم؟';
+  String get helpFaq1Q => 'چۆن گەشتی عومرە تۆمار بکەم؟';
 
   @override
   String get helpFaq1A =>
@@ -973,25 +973,25 @@ class AppLocalizationsKu extends AppLocalizations {
       'بەڵێ — هەڵوەشاندنەوە بێبەرامبەرە تا 30 ڕۆژ پێش گەشت. گەشتەکانم بکەرەوە و دەست بنێ بە \"هەڵوەشاندنەوەی گەشت\".';
 
   @override
-  String get helpFaq3Q => 'ئاژانسەکان پشتڕاستکراون؟';
+  String get helpFaq3Q => 'کۆمپانیاکان پشتڕاستکراون؟';
 
   @override
   String get helpFaq3A =>
-      'هەموو ئاژانسێکی تۆمارکراو مۆڵەتی حکومی هەیە و لەلایەن تیمەکەمانەوە پشتڕاستکراوەتەوە پێش بڵاوکردنەوەی پاکێجەکانیان.';
+      'هەموو کۆمپانیایەکی تۆمارکراو مۆڵەتی حکومی هەیە و لەلایەن تیمەکەمانەوە پشتڕاستکراوەتەوە پێش بڵاوکردنەوەی گەشتەکانیان.';
 
   @override
-  String get helpFaq4Q => 'پاکێجەکە چی لەخۆدەگرێت؟';
+  String get helpFaq4Q => 'گەشتەکە چی لەخۆدەگرێت؟';
 
   @override
   String get helpFaq4A =>
       'هەر پێشنیارێک ئەوانە دەنووسێت کە لەخۆی دەگرێت — ڤیزا، گواستنەوە، هوتێل، خواردن و زیارەتی بە ڕێنمایی. سەیری بەشی \"چی لەخۆدەگرێت\" بکە.';
 
   @override
-  String get helpFaq5Q => 'ئاژانسەکان چۆن بەشداری پلاتفۆرمەکە دەکەن؟';
+  String get helpFaq5Q => 'کۆمپانیاکان چۆن بەشداری پلاتفۆرمەکە دەکەن؟';
 
   @override
   String get helpFaq5A =>
-      'ئاژانسەکان لە ڕێگەی پۆرتاڵی ئاژانسەوە لە تابی پڕۆفایل خۆیان تۆمار دەکەن. دوای پشتڕاستکردنەوە دەتوانن پاکێج بڵاو بکەنەوە و بەڕێوەیان ببەن.';
+      'کۆمپانیاکان لە ڕێگەی پۆرتاڵی کۆمپانیاوە لە تابی پڕۆفایل خۆیان تۆمار دەکەن. دوای پشتڕاستکردنەوە دەتوانن گەشت بڵاو بکەنەوە و بەڕێوەیان ببەن.';
 
   @override
   String get helpContactHeader => 'پەیوەندیمان پێوە بکە';
@@ -1028,11 +1028,11 @@ class AppLocalizationsKu extends AppLocalizations {
       'نامەکەت نەنێردرا. ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
 
   @override
-  String get agencyLoginTitle => 'پۆرتاڵی ئاژانس';
+  String get agencyLoginTitle => 'پۆرتاڵی کۆمپانیا';
 
   @override
   String get agencyLoginSubtitle =>
-      'بچۆ ژوورەوە بۆ بەڕێوەبردنی پاکێجەکانت و پڕۆفایلت.';
+      'بچۆ ژوورەوە بۆ بەڕێوەبردنی گەشتەکانت و پڕۆفایلت.';
 
   @override
   String get agencyLoginEmail => 'ئیمەیل';
@@ -1058,23 +1058,23 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get agencyLoginDemoHint =>
-      '(admin@noorharamain.com هتد بەکاربهێنە بۆ ئاژانسەکانی تر)';
+      '(admin@noorharamain.com هتد بەکاربهێنە بۆ کۆمپانیاکانی تر)';
 
   @override
   String get adminTitle => 'داشبۆردی بەڕێوەبەر';
 
   @override
-  String get adminPendingAgencies => 'ئاژانسە چاوەڕوانەکان';
+  String get adminPendingAgencies => 'کۆمپانیا چاوەڕوانەکان';
 
   @override
-  String get adminNoPending => 'هیچ ئاژانسێک چاوەڕوانی پەسەندکردن نییە.';
+  String get adminNoPending => 'هیچ کۆمپانیایەک چاوەڕوانی پەسەندکردن نییە.';
 
   @override
   String get adminApprove => 'پەسەندکردن';
 
   @override
   String get adminApproved =>
-      'ئاژانسەکە پەسەند کرا و ئێستا بۆ هەمووان دەرکەوتووە!';
+      'کۆمپانیاکە پەسەند کرا و ئێستا بۆ هەمووان دەرکەوتووە!';
 
   @override
   String get adminActionFailed =>
@@ -1094,10 +1094,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get adminAdTitle => 'ناونیشانی ڕیکلام';
 
   @override
-  String get adminAdTitleHint => 'نموونە: ئۆفەری ڕەمەزان — گەشتیاری نوور';
+  String get adminAdTitleHint => 'نموونە: گەشتی ڕەمەزان — گەشتیاری نوور';
 
   @override
-  String get adminLinkPackage => 'بەستنەوە بە پاکێجێک (ئارەزوومەندانە)';
+  String get adminLinkPackage => 'بەستنەوە بە گەشتێک (ئارەزوومەندانە)';
 
   @override
   String get adminNoLink => 'بێ بەستنەوە';
@@ -1112,14 +1112,14 @@ class AppLocalizationsKu extends AppLocalizations {
   String get adminAdCreated => 'ڕیکلامەکە لە پەڕەی سەرەکی بڵاوکرایەوە!';
 
   @override
-  String get adminFeaturedOffers => 'پاکێجە تایبەتەکانی پەڕەی سەرەکی';
+  String get adminFeaturedOffers => 'گەشتە تایبەتەکانی پەڕەی سەرەکی';
 
   @override
   String get adminFeaturedHint =>
-      'پاکێجە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.';
+      'گەشتە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.';
 
   @override
-  String get adminNoOffers => 'هێشتا هیچ پاکێجێک بڵاو نەکراوەتەوە.';
+  String get adminNoOffers => 'هێشتا هیچ گەشتێک بڵاو نەکراوەتەوە.';
 
   @override
   String get adminStatPending => 'چاوەڕوان';
@@ -1144,28 +1144,28 @@ class AppLocalizationsKu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'پاکێجەکانت ($count)',
-      one: 'پاکێجەکانت (1)',
-      zero: 'هیچ پاکێجێک نییە',
+      other: 'گەشتەکانت ($count)',
+      one: 'گەشتەکانت (1)',
+      zero: 'هیچ گەشتێک نییە',
     );
     return '$_temp0';
   }
 
   @override
-  String get agencyDashboardAddPackage => 'زیادکردنی پاکێج';
+  String get agencyDashboardAddPackage => 'زیادکردنی گەشت';
 
   @override
   String get agencyDashboardVerificationPending => 'پشتڕاستکردنەوە چاوەڕوانە';
 
   @override
   String get agencyDashboardVerificationPendingBody =>
-      'هەژمارەکەت لەژێر پێداچوونەوەدایە. کاتێک پشتڕاست کرایەوە دەتوانیت پاکێج بڵاو بکەیتەوە و پڕۆفایلت دەستکاری بکەیت.';
+      'هەژمارەکەت لەژێر پێداچوونەوەدایە. کاتێک پشتڕاست کرایەوە دەتوانیت گەشت بڵاو بکەیتەوە و پڕۆفایلت دەستکاری بکەیت.';
 
   @override
   String get agencyDashboardEditProfile => 'دەستکاریکردنی پڕۆفایل';
 
   @override
-  String get agencyDashboardVerifiedAgency => 'ئاژانسی پشتڕاستکراو';
+  String get agencyDashboardVerifiedAgency => 'کۆمپانیای پشتڕاستکراو';
 
   @override
   String get agencyDashboardPendingVerification => 'پشتڕاستکردنەوە چاوەڕوانە';
@@ -1182,7 +1182,7 @@ class AppLocalizationsKu extends AppLocalizations {
   }
 
   @override
-  String get agencyDashboardDeletePackageTitle => 'پاکێجەکە بسڕدرێتەوە؟';
+  String get agencyDashboardDeletePackageTitle => 'گەشتەکە بسڕدرێتەوە؟';
 
   @override
   String agencyDashboardDeletePackageBody(String title) {
@@ -1196,11 +1196,11 @@ class AppLocalizationsKu extends AppLocalizations {
   String get agencyDashboardDelete => 'سڕینەوە';
 
   @override
-  String get agencyDashboardNoPackagesYet => 'هێشتا هیچ پاکێجێک نییە';
+  String get agencyDashboardNoPackagesYet => 'هێشتا هیچ گەشتێک نییە';
 
   @override
   String get agencyDashboardNoPackagesHint =>
-      'لەسەر \"زیادکردنی پاکێج\" دابگرە بۆ بڵاوکردنەوەی یەکەم پێشکەشکردنی عومرەت.';
+      'لەسەر \"زیادکردنی گەشت\" دابگرە بۆ بڵاوکردنەوەی یەکەم پێشکەشکردنی عومرەت.';
 
   @override
   String get editAgencyProfileTitle => 'دەستکاریکردنی پڕۆفایل';
@@ -1223,11 +1223,11 @@ class AppLocalizationsKu extends AppLocalizations {
   String get editAgencyProfileLocationHint => 'بۆ نموونە: ڕیاز، سعودیە';
 
   @override
-  String get editAgencyProfileAboutLabel => 'دەربارەی ئاژانسەکەت';
+  String get editAgencyProfileAboutLabel => 'دەربارەی کۆمپانیاکەت';
 
   @override
   String get editAgencyProfileAboutHint =>
-      'ئاژانسەکەت، تایبەتمەندی و مێژووەکەی باس بکە…';
+      'کۆمپانیاکەت، تایبەتمەندی و مێژووەکەی باس بکە…';
 
   @override
   String get editAgencyProfileTagsLabel => 'تاگەکان (بە کۆما جیاکراوەتەوە)';
@@ -1238,13 +1238,13 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get editAgencyProfileTagsBadgeHint =>
-      'تاگەکان وەک باج لەسەر پڕۆفایلی ئاژانسەکەت دەردەکەون.';
+      'تاگەکان وەک باج لەسەر پڕۆفایلی کۆمپانیاکەت دەردەکەون.';
 
   @override
-  String get addEditOfferEditTitle => 'دەستکاریکردنی پاکێج';
+  String get addEditOfferEditTitle => 'دەستکاریکردنی گەشت';
 
   @override
-  String get addEditOfferNewTitle => 'پاکێجی نوێ';
+  String get addEditOfferNewTitle => 'گەشتی نوێ';
 
   @override
   String get addEditOfferSave => 'پاشەکەوتکردن';
@@ -1256,7 +1256,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get addEditOfferChangeImage => 'گۆڕینی وێنە';
 
   @override
-  String get addEditOfferPackageDetails => 'وردەکارییەکانی پاکێج';
+  String get addEditOfferPackageDetails => 'وردەکارییەکانی گەشت';
 
   @override
   String get addEditOfferTitleField => 'ناونیشان *';
@@ -1366,7 +1366,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get addEditOfferWhatsIncludedHelper =>
-      'هەموو ئەوەی پاکێجەکە لەخۆیدەگرێت بنووسە.';
+      'هەموو ئەوەی گەشتەکە لەخۆیدەگرێت بنووسە.';
 
   @override
   String get addEditOfferIncludeItemHint =>
@@ -1380,14 +1380,14 @@ class AppLocalizationsKu extends AppLocalizations {
       'تکایە ناونیشان و نرخێکی دروست بنووسە.';
 
   @override
-  String get addEditOfferUpdated => 'پاکێج نوێکرایەوە!';
+  String get addEditOfferUpdated => 'گەشت نوێکرایەوە!';
 
   @override
-  String get addEditOfferPublished => 'پاکێج بڵاوکرایەوە!';
+  String get addEditOfferPublished => 'گەشت بڵاوکرایەوە!';
 
   @override
   String get addEditOfferSavedImageFailed =>
-      'پاکێجەکە پاشەکەوتکرا، بەڵام وێنەی بەرگ نەتوانرا باربکرێت. پەیوەندییەکەت بپشکنە و لە دەستکاریکردنەوە دووبارە هەوڵ بدەرەوە.';
+      'گەشتەکە پاشەکەوتکرا، بەڵام وێنەی بەرگ نەتوانرا باربکرێت. پەیوەندییەکەت بپشکنە و لە دەستکاریکردنەوە دووبارە هەوڵ بدەرەوە.';
 
   @override
   String get authSignInTitle => 'بەخێربێیتەوە';
@@ -1531,11 +1531,11 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get legalPrivacyBody =>
-      'ئەپی عومرە ڕێز لە تایبەتمەندییەکەت دەگرێت. تەنها ئەو زانیاریانە کۆدەکەینەوە کە بۆ کارکردنی خزمەتگوزارییەکە پێویستن: ناوت، زانیاری پەیوەندی و داواکارییەکانی حجز. ئەم زانیاریانە تەنها لەگەڵ ئەو ئاژانسە هاوبەش دەکرێن کە تۆ هەڵیدەبژێریت، و هەرگیز بە لایەنی سێیەم نافرۆشرێن.\n\nزانیارییەکانت بە پارێزراوی هەڵدەگیرێن. دەتوانیت هەر کاتێک لە وردەکاری هەژمارەوە هەژمارەکەت بسڕیتەوە، ئەمەش پرۆفایل و زانیارییە کەسییەکانت بە یەکجاری لە سیستەمەکانمان لادەبات.';
+      'ئەپی عومرە ڕێز لە تایبەتمەندییەکەت دەگرێت. تەنها ئەو زانیاریانە کۆدەکەینەوە کە بۆ کارکردنی خزمەتگوزارییەکە پێویستن: ناوت، زانیاری پەیوەندی و داواکارییەکانی حجز. ئەم زانیاریانە تەنها لەگەڵ ئەو کۆمپانیایە هاوبەش دەکرێن کە تۆ هەڵیدەبژێریت، و هەرگیز بە لایەنی سێیەم نافرۆشرێن.\n\nزانیارییەکانت بە پارێزراوی هەڵدەگیرێن. دەتوانیت هەر کاتێک لە وردەکاری هەژمارەوە هەژمارەکەت بسڕیتەوە، ئەمەش پرۆفایل و زانیارییە کەسییەکانت بە یەکجاری لە سیستەمەکانمان لادەبات.';
 
   @override
   String get legalTermsBody =>
-      'ئەپی عومرە بازاڕێکە کە گەشتیاران بە ئاژانسە گەشتییە مۆڵەتدارەکانەوە دەبەستێتەوە. حجزەکان لە ڕێگەی ئەپەکەوە داواکارین: ئاژانسەکە پشتڕاستیان دەکاتەوە یان ڕەتیان دەکاتەوە، و پارەدان ڕاستەوخۆ لای ئاژانسەکە دەبێت. وردەکاری پاکێج و نرخ و بەردەستبوون لەلایەن ئاژانسەکانەوە دابین دەکرێن و لەوانەیە بگۆڕێن.\n\nبە بەکارهێنانی ئەپەکە ڕازی دەبیت بە پێدانی زانیاری دروست و بەکارهێنانی خزمەتگوزارییەکە تەنها بۆ مەبەستی کەسی و یاسایی. ئەپەکە ئاژانسی گەشت نییە و لایەنێک نییە لە گرێبەستی نێوان تۆ و ئاژانسەکە.';
+      'ئەپی عومرە بازاڕێکە کە گەشتیاران بە کۆمپانیا گەشتییە مۆڵەتدارەکانەوە دەبەستێتەوە. حجزەکان لە ڕێگەی ئەپەکەوە داواکارین: کۆمپانیاکە پشتڕاستیان دەکاتەوە یان ڕەتیان دەکاتەوە، و پارەدان ڕاستەوخۆ لای کۆمپانیاکە دەبێت. وردەکاری گەشت و نرخ و بەردەستبوون لەلایەن کۆمپانیاکانەوە دابین دەکرێن و لەوانەیە بگۆڕێن.\n\nبە بەکارهێنانی ئەپەکە ڕازی دەبیت بە پێدانی زانیاری دروست و بەکارهێنانی خزمەتگوزارییەکە تەنها بۆ مەبەستی کەسی و یاسایی. ئەپەکە کۆمپانیای گەشت نییە و لایەنێک نییە لە گرێبەستی نێوان تۆ و کۆمپانیاکە.';
 
   @override
   String get bookingPayMethod => 'شێوازی پارەدان';
@@ -1554,7 +1554,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get preferredPaymentBody =>
-      'ئەو شێوازە هەڵبژێرە کە پێت باشترە پێی پارە بدەیت. پارەدان هەمیشە لای ئاژانسەکە بەشێوەی ڕووبەڕوو دەبێت — هیچ شتێک لەناو ئەپەکەدا کەم ناکرێتەوە.';
+      'ئەو شێوازە هەڵبژێرە کە پێت باشترە پێی پارە بدەیت. پارەدان هەمیشە لای کۆمپانیاکە بەشێوەی ڕووبەڕوو دەبێت — هیچ شتێک لەناو ئەپەکەدا کەم ناکرێتەوە.';
 
   @override
   String get preferredPaymentSaved => 'پەسەندکراوەکە پاشەکەوت کرا.';
@@ -1565,7 +1565,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get bookingsCancelFailed =>
-      'نەتوانرا ئەم گەشتە هەڵبوەشێنرێتەوە — تکایە پەیوەندی بە ئاژانسەکە بکە.';
+      'نەتوانرا ئەم گەشتە هەڵبوەشێنرێتەوە — تکایە پەیوەندی بە کۆمپانیاکە بکە.';
 
   @override
   String get loadErrorTitle => 'نەتوانرا داتاکان بار بکرێن';
@@ -1578,20 +1578,20 @@ class AppLocalizationsKu extends AppLocalizations {
   String get retry => 'دووبارە هەوڵ بدەرەوە';
 
   @override
-  String get agencyRegisterTitle => 'تۆمارکردنی ئاژانس';
+  String get agencyRegisterTitle => 'تۆمارکردنی کۆمپانیا';
 
   @override
   String get agencyRegisterSubtitle =>
-      'هەژمارێک دروست بکە بۆ بڵاوکردنەوەی پاکێجەکانی عومرەت.';
+      'هەژمارێک دروست بکە بۆ بڵاوکردنەوەی گەشتەکانی عومرەت.';
 
   @override
-  String get agencyRegisterBtn => 'تۆمارکردنی ئاژانس';
+  String get agencyRegisterBtn => 'تۆمارکردنی کۆمپانیا';
 
   @override
-  String get agencyRegisterPrompt => 'ئاژانسی نوێیت؟';
+  String get agencyRegisterPrompt => 'کۆمپانیای نوێیت؟';
 
   @override
-  String get agencyCompanyName => 'ناوی ئاژانس';
+  String get agencyCompanyName => 'ناوی کۆمپانیا';
 
   @override
   String get agencyCompanyNameHint => 'وەک: گەشتیاری نوور';
@@ -1603,7 +1603,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get agencyCompanyLocationHint => 'وەک: هەولێر';
 
   @override
-  String get agencyCompanyAbout => 'دەربارەی ئاژانسەکەت';
+  String get agencyCompanyAbout => 'دەربارەی کۆمپانیاکەت';
 
   @override
   String get agencyCompanyAboutHint =>
@@ -1616,7 +1616,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get agencyCompanySinceHint => 'وەک: 2015';
 
   @override
-  String get agencyCompanyLogo => 'لۆگۆی ئاژانس';
+  String get agencyCompanyLogo => 'لۆگۆی کۆمپانیا';
 
   @override
   String get agencyLogoAdd => 'زیادکردنی لۆگۆ';
@@ -1626,12 +1626,12 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get agencyLogoOptional =>
-      'ئارەزوومەندانەیە — لە پەڕەی ئاژانسەکان دەردەکەوێت';
+      'ئارەزوومەندانەیە — لە پەڕەی کۆمپانیاکان دەردەکەوێت';
 
   @override
-  String get agencyNotAgencyAccount => 'ئەم هەژمارە هەژماری ئاژانس نییە.';
+  String get agencyNotAgencyAccount => 'ئەم هەژمارە هەژماری کۆمپانیا نییە.';
 
   @override
   String get addEditOfferSaveFailed =>
-      'نەتوانرا پاکێجەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
+      'نەتوانرا گەشتەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
 }
