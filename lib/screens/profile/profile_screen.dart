@@ -44,6 +44,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                 ],
+                _SectionLabel(t.profileSectionAccount),
+                const SizedBox(height: 10),
                 if (provider.isSignedIn) ...[
                   _MenuCard(
                     icon: Icons.manage_accounts_rounded,
@@ -73,6 +75,8 @@ class ProfileScreen extends StatelessWidget {
                   badge: provider.unreadNotifications == 0 ? null : '${provider.unreadNotifications}',
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
                 ),
+                const SizedBox(height: 22),
+                _SectionLabel(t.profileSectionPreferences),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.credit_card_rounded,
@@ -83,6 +87,7 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.language_rounded,
                   label: t.profileLanguage,
+                  trailingLabel: _languageName(t, provider.locale.languageCode),
                   onTap: () => _openLanguagePicker(context, provider),
                 ),
                 const SizedBox(height: 10),
@@ -91,6 +96,8 @@ class ProfileScreen extends StatelessWidget {
                   label: t.profilePrivacySecurity,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacySecurityScreen())),
                 ),
+                const SizedBox(height: 22),
+                _SectionLabel(t.profileSectionSupport),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.chat_bubble_outline_rounded,
@@ -109,11 +116,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.logout_rounded,
                     label: t.profileSignOut,
                     tint: AppColors.errorRed,
-                    onTap: () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      await provider.signOut();
-                      messenger.showSnackBar(appSnack(t.profileSignedOut));
-                    },
+                    onTap: () => _confirmSignOut(context, provider),
                   ),
                 ],
                 const SizedBox(height: 18),
@@ -156,8 +159,35 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _openSaved(BuildContext context, AppProvider provider) {
-    final saved = provider.savedOffers;
-    Navigator.push(context, MaterialPageRoute(builder: (_) => _SavedScreen(offers: saved)));
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const _SavedScreen()));
+  }
+
+  Future<void> _confirmSignOut(BuildContext context, AppProvider provider) async {
+    final t = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(t.profileSignOutConfirmTitle, style: AppTheme.serif(20)),
+        content: Text(t.profileSignOutConfirmBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: Text(t.profileSignOut,
+                style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await provider.signOut();
+    messenger.showSnackBar(appSnack(t.profileSignedOut));
   }
 
   // Keep in sync with the version in pubspec.yaml.
@@ -219,6 +249,17 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _languageName(AppLocalizations t, String code) {
+    switch (code) {
+      case 'ar':
+        return t.languageArabic;
+      case 'en':
+        return t.languageEnglish;
+      default:
+        return t.languageKurdish;
+    }
   }
 
   void _openLanguagePicker(BuildContext context, AppProvider provider) {
@@ -442,11 +483,23 @@ class _ProfileHeader extends StatelessWidget {
                     decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
                     child: Row(
                       children: [
-                        _StatCell(value: '${provider.bookings.length}', label: t.profileStatTrips),
+                        _StatCell(
+                          value: '${provider.bookings.length}',
+                          label: t.profileStatTrips,
+                          onTap: () => provider.setTab(3),
+                        ),
                         _Div(),
-                        _StatCell(value: '${provider.saved.length}', label: t.profileStatSaved),
+                        _StatCell(
+                          value: '${provider.saved.length}',
+                          label: t.profileStatSaved,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _SavedScreen())),
+                        ),
                         _Div(),
-                        _StatCell(value: '${provider.unreadNotifications}', label: t.profileStatAlerts),
+                        _StatCell(
+                          value: '${provider.unreadNotifications}',
+                          label: t.profileStatAlerts,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                        ),
                       ],
                     ),
                   ),
@@ -462,16 +515,21 @@ class _ProfileHeader extends StatelessWidget {
 
 class _StatCell extends StatelessWidget {
   final String value, label;
-  const _StatCell({required this.value, required this.label});
+  final VoidCallback? onTap;
+  const _StatCell({required this.value, required this.label, this.onTap});
   @override
   Widget build(BuildContext context) => Expanded(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 13),
-      child: Column(children: [
-        Text(value, style: AppTheme.serif(22, color: Colors.white)),
-        const SizedBox(height: 2),
-        Text(label, style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7))),
-      ]),
+    child: GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        child: Column(children: [
+          Text(value, style: AppTheme.serif(22, color: Colors.white)),
+          const SizedBox(height: 2),
+          Text(label, style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7))),
+        ]),
+      ),
     ),
   );
 }
@@ -482,13 +540,30 @@ class _Div extends StatelessWidget {
       Container(width: 1, height: 40, color: Colors.white.withOpacity(0.15));
 }
 
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 2),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTheme.sans(11, weight: FontWeight.w800, color: AppColors.muted).copyWith(letterSpacing: 0.8),
+      ),
+    );
+  }
+}
+
 class _MenuCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String? badge;
+  final String? trailingLabel;
   final Color? tint;
   final VoidCallback onTap;
-  const _MenuCard({required this.icon, required this.label, this.badge, this.tint, required this.onTap});
+  const _MenuCard({required this.icon, required this.label, this.badge, this.trailingLabel, this.tint, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -512,6 +587,10 @@ class _MenuCard extends StatelessWidget {
             ),
             const SizedBox(width: 13),
             Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600, color: const Color(0xFF1F2D26)), overflow: TextOverflow.ellipsis)),
+            if (trailingLabel != null) ...[
+              Text(trailingLabel!, style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.muted)),
+              const SizedBox(width: 6),
+            ],
             if (badge != null) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -531,12 +610,13 @@ class _MenuCard extends StatelessWidget {
 // ── Saved Offers Screen ───────────────────────────────────────────────────────
 
 class _SavedScreen extends StatelessWidget {
-  final List<Offer> offers;
-  const _SavedScreen({required this.offers});
+  const _SavedScreen();
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    // Watch, don't snapshot: unsaving a card must remove it from this list.
+    final offers = context.watch<AppProvider>().savedOffers;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(

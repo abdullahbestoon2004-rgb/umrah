@@ -56,13 +56,17 @@ class PrivacySecurityScreen extends StatelessWidget {
                     value: provider.biometricLock,
                     onChanged: (v) => _toggleBiometric(context, provider, v),
                   ),
-                  const SizedBox(height: 10),
-                  _ActionTile(
-                    icon: Icons.password_rounded,
-                    label: t.privacyChangePassword,
-                    onTap: () => Navigator.push(
-                        context, MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
-                  ),
+                  // Changing a password only makes sense with an account — for
+                  // guests this tile led to a blank Account screen.
+                  if (provider.isSignedIn) ...[
+                    const SizedBox(height: 10),
+                    _ActionTile(
+                      icon: Icons.password_rounded,
+                      label: t.privacyChangePassword,
+                      onTap: () => Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
+                    ),
+                  ],
                   const SizedBox(height: 22),
                   Text(t.privacySectionPrivacy,
                       style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),

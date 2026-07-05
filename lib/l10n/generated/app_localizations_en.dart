@@ -1411,6 +1411,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSignedOut => 'Signed out.';
 
   @override
+  String get profileSignOutConfirmTitle => 'Sign out?';
+
+  @override
+  String get profileSignOutConfirmBody =>
+      'You can sign back in anytime with your email and password.';
+
+  @override
+  String get profileSectionAccount => 'Account';
+
+  @override
+  String get profileSectionPreferences => 'Preferences';
+
+  @override
+  String get profileSectionSupport => 'Support';
+
+  @override
   String get profileGuestBadge => 'GUEST';
 
   @override

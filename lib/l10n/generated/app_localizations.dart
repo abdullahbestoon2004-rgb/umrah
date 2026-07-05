@@ -2460,6 +2460,36 @@ abstract class AppLocalizations {
   /// **'Signed out.'**
   String get profileSignedOut;
 
+  /// No description provided for @profileSignOutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get profileSignOutConfirmTitle;
+
+  /// No description provided for @profileSignOutConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can sign back in anytime with your email and password.'**
+  String get profileSignOutConfirmBody;
+
+  /// No description provided for @profileSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileSectionAccount;
+
+  /// No description provided for @profileSectionPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get profileSectionPreferences;
+
+  /// No description provided for @profileSectionSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get profileSectionSupport;
+
   /// No description provided for @profileGuestBadge.
   ///
   /// In en, this message translates to:

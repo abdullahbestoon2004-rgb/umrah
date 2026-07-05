@@ -1420,6 +1420,22 @@ class AppLocalizationsKu extends AppLocalizations {
   String get profileSignedOut => 'چوویتە دەرەوە.';
 
   @override
+  String get profileSignOutConfirmTitle => 'دەرچیت؟';
+
+  @override
+  String get profileSignOutConfirmBody =>
+      'دەتوانیت هەر کاتێک بە ئیمەیڵ و وشەی نهێنیت دووبارە بچیتەوە ژوورەوە.';
+
+  @override
+  String get profileSectionAccount => 'هەژمار';
+
+  @override
+  String get profileSectionPreferences => 'هەڵبژاردنەکان';
+
+  @override
+  String get profileSectionSupport => 'پشتگیری';
+
+  @override
   String get profileGuestBadge => 'میوان';
 
   @override
