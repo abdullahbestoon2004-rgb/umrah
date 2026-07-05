@@ -1112,6 +1112,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Starred packages appear first in the home screen list.';
 
   @override
+  String get adminNoOffers => 'No packages published yet.';
+
+  @override
+  String get adminStatPending => 'Pending';
+
+  @override
+  String get adminStatOwed => 'Owed';
+
+  @override
+  String get adminStatCollected => 'Collected';
+
+  @override
+  String get adminSupportInbox => 'Support messages';
+
+  @override
+  String get adminSupportEmpty => 'No messages yet.';
+
+  @override
+  String get adminSupportAnonymous => 'Guest';
+
+  @override
   String agencyDashboardYourPackages(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -391,6 +391,13 @@
   "adminAdCreated": "Ad published to the home screen!",
   "adminFeaturedOffers": "Featured home offers",
   "adminFeaturedHint": "Starred packages appear first in the home screen list.",
+  "adminNoOffers": "No packages published yet.",
+  "adminStatPending": "Pending",
+  "adminStatOwed": "Owed",
+  "adminStatCollected": "Collected",
+  "adminSupportInbox": "Support messages",
+  "adminSupportEmpty": "No messages yet.",
+  "adminSupportAnonymous": "Guest",
 
   "agencyDashboardYourPackages": "{count, plural, =0{No Packages} =1{Your Packages (1)} other{Your Packages ({count})}}",
   "@agencyDashboardYourPackages": {"placeholders": {"count": {"type": "int"}}},

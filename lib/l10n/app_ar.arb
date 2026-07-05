@@ -315,6 +315,13 @@
   "adminAdCreated": "تم نشر الإعلان في الصفحة الرئيسية!",
   "adminFeaturedOffers": "الباقات المميزة في الرئيسية",
   "adminFeaturedHint": "الباقات المميزة بنجمة تظهر أولًا في الصفحة الرئيسية.",
+  "adminNoOffers": "لا توجد باقات منشورة بعد.",
+  "adminStatPending": "قيد الانتظار",
+  "adminStatOwed": "مستحق",
+  "adminStatCollected": "محصّل",
+  "adminSupportInbox": "رسائل الدعم",
+  "adminSupportEmpty": "لا توجد رسائل بعد.",
+  "adminSupportAnonymous": "زائر",
 
   "agencyLoginTitle": "بوابة الوكالة",
   "agencyLoginSubtitle": "سجّل الدخول لإدارة باقاتك وملفك الشخصي.",

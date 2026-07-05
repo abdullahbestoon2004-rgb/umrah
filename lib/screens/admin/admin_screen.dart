@@ -8,6 +8,7 @@ import '../../providers/app_provider.dart';
 import '../../models/company_model.dart';
 import '../../models/home_ad_model.dart';
 import '../../models/offer_model.dart';
+import '../../models/support_message_model.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -39,7 +40,11 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () => context.read<AppProvider>().loadAdminData(),
+        child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: _AdminHeader(provider: provider)),
 
@@ -124,19 +129,64 @@ class _AdminScreenState extends State<AdminScreen> {
               child: Text(t.adminFeaturedHint, style: AppTheme.sans(12, color: AppColors.muted)),
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, i) {
-                final offer = provider.allOffers[i];
-                final company = provider.companyById(offer.companyId);
-                return Padding(
-                  padding: EdgeInsets.fromLTRB(22, 0, 22, 10),
-                  child: _FeaturedRow(offer: offer, companyName: company?.nameFor(lang) ?? ''),
-                );
-              },
-              childCount: provider.allOffers.length,
+          if (provider.allOffers.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(t.adminNoOffers, style: AppTheme.sans(13, color: AppColors.muted)),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, i) {
+                  final offer = provider.allOffers[i];
+                  final company = provider.companyById(offer.companyId);
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+                    child: _FeaturedRow(offer: offer, companyName: company?.nameFor(lang) ?? ''),
+                  );
+                },
+                childCount: provider.allOffers.length,
+              ),
+            ),
+
+          // ── Support messages inbox ──────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 26, 22, 10),
+              child: Row(
+                children: [
+                  Expanded(child: Text(t.adminSupportInbox, style: AppTheme.serif(20))),
+                  if (provider.supportMessages.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                      decoration: BoxDecoration(
+                          color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
+                      child: Text('${provider.supportMessages.length}',
+                          style: AppTheme.sans(11, weight: FontWeight.w700, color: Colors.white)),
+                    ),
+                ],
+              ),
             ),
           ),
+          if (provider.supportMessages.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(t.adminSupportEmpty, style: AppTheme.sans(13, color: AppColors.muted)),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, i) => Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+                  child: _SupportRow(message: provider.supportMessages[i]),
+                ),
+                childCount: provider.supportMessages.length,
+              ),
+            ),
 
           // ── Commission ledger (every agency) ───────────────────────────
           SliverToBoxAdapter(
@@ -152,6 +202,7 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -231,6 +282,27 @@ class _AdminHeader extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Row(
+                      children: [
+                        _AdminStat(
+                            value: '${provider.pendingCompanies.length}',
+                            label: t.adminStatPending),
+                        _AdminStatDivider(),
+                        _AdminStat(
+                            value: _compactIqd(provider.commissionsOwed),
+                            label: t.adminStatOwed),
+                        _AdminStatDivider(),
+                        _AdminStat(
+                            value: _compactIqd(provider.commissionsCollected),
+                            label: t.adminStatCollected),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -239,6 +311,40 @@ class _AdminHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Compact IQD for the small header stat cells: 1_200_000 → "1.2M", 45_000 → "45K".
+String _compactIqd(double n) {
+  if (n >= 1000000) {
+    final m = n / 1000000;
+    return '${m.toStringAsFixed(m >= 10 ? 0 : 1)}M';
+  }
+  if (n >= 1000) return '${(n / 1000).toStringAsFixed(0)}K';
+  return n.toStringAsFixed(0);
+}
+
+class _AdminStat extends StatelessWidget {
+  final String value, label;
+  const _AdminStat({required this.value, required this.label});
+  @override
+  Widget build(BuildContext context) => Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          child: Column(children: [
+            Text(value, style: AppTheme.serif(21, color: Colors.white)),
+            const SizedBox(height: 2),
+            Text(label,
+                style: AppTheme.sans(10.5, color: Colors.white.withOpacity(0.7)),
+                maxLines: 1, overflow: TextOverflow.ellipsis),
+          ]),
+        ),
+      );
+}
+
+class _AdminStatDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 38, color: Colors.white.withOpacity(0.15));
 }
 
 class _PendingCompanyCard extends StatelessWidget {
@@ -400,6 +506,53 @@ class _FeaturedRow extends StatelessWidget {
               size: 26,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SupportRow extends StatelessWidget {
+  final SupportMessage message;
+  const _SupportRow({required this.message});
+
+  String _timeAgo(AppLocalizations t) {
+    final diff = DateTime.now().difference(message.createdAt);
+    if (diff.inMinutes < 1) return t.notifJustNow;
+    if (diff.inHours < 1) return t.notifMinutesAgo(diff.inMinutes);
+    if (diff.inDays < 1) return t.notifHoursAgo(diff.inHours);
+    return t.notifDaysAgo(diff.inDays);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final sender = (message.email ?? '').isNotEmpty ? message.email! : t.adminSupportAnonymous;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(sender,
+                    style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.primary),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              const SizedBox(width: 8),
+              Text(_timeAgo(t), style: AppTheme.sans(11, color: AppColors.mutedLight)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(message.message, style: AppTheme.sans(13.5, color: AppColors.ink)),
         ],
       ),
     );

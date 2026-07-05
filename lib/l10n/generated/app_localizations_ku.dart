@@ -1119,6 +1119,27 @@ class AppLocalizationsKu extends AppLocalizations {
       'پاکێجە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.';
 
   @override
+  String get adminNoOffers => 'هێشتا هیچ پاکێجێک بڵاو نەکراوەتەوە.';
+
+  @override
+  String get adminStatPending => 'چاوەڕوان';
+
+  @override
+  String get adminStatOwed => 'قەرز';
+
+  @override
+  String get adminStatCollected => 'کۆکراوە';
+
+  @override
+  String get adminSupportInbox => 'نامەکانی پشتگیری';
+
+  @override
+  String get adminSupportEmpty => 'هێشتا هیچ نامەیەک نییە.';
+
+  @override
+  String get adminSupportAnonymous => 'میوان';
+
+  @override
   String agencyDashboardYourPackages(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

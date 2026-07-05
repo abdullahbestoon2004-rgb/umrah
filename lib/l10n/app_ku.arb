@@ -315,6 +315,13 @@
   "adminAdCreated": "ڕیکلامەکە لە پەڕەی سەرەکی بڵاوکرایەوە!",
   "adminFeaturedOffers": "پاکێجە تایبەتەکانی پەڕەی سەرەکی",
   "adminFeaturedHint": "پاکێجە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.",
+  "adminNoOffers": "هێشتا هیچ پاکێجێک بڵاو نەکراوەتەوە.",
+  "adminStatPending": "چاوەڕوان",
+  "adminStatOwed": "قەرز",
+  "adminStatCollected": "کۆکراوە",
+  "adminSupportInbox": "نامەکانی پشتگیری",
+  "adminSupportEmpty": "هێشتا هیچ نامەیەک نییە.",
+  "adminSupportAnonymous": "میوان",
 
   "agencyLoginTitle": "پۆرتاڵی ئاژانس",
   "agencyLoginSubtitle": "بچۆ ژوورەوە بۆ بەڕێوەبردنی پاکێجەکانت و پڕۆفایلت.",

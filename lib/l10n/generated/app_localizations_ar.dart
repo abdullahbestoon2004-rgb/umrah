@@ -1106,6 +1106,27 @@ class AppLocalizationsAr extends AppLocalizations {
       'الباقات المميزة بنجمة تظهر أولًا في الصفحة الرئيسية.';
 
   @override
+  String get adminNoOffers => 'لا توجد باقات منشورة بعد.';
+
+  @override
+  String get adminStatPending => 'قيد الانتظار';
+
+  @override
+  String get adminStatOwed => 'مستحق';
+
+  @override
+  String get adminStatCollected => 'محصّل';
+
+  @override
+  String get adminSupportInbox => 'رسائل الدعم';
+
+  @override
+  String get adminSupportEmpty => 'لا توجد رسائل بعد.';
+
+  @override
+  String get adminSupportAnonymous => 'زائر';
+
+  @override
   String agencyDashboardYourPackages(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

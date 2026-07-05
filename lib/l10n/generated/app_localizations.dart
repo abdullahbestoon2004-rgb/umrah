@@ -1932,6 +1932,48 @@ abstract class AppLocalizations {
   /// **'Starred packages appear first in the home screen list.'**
   String get adminFeaturedHint;
 
+  /// No description provided for @adminNoOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages published yet.'**
+  String get adminNoOffers;
+
+  /// No description provided for @adminStatPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get adminStatPending;
+
+  /// No description provided for @adminStatOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Owed'**
+  String get adminStatOwed;
+
+  /// No description provided for @adminStatCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected'**
+  String get adminStatCollected;
+
+  /// No description provided for @adminSupportInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Support messages'**
+  String get adminSupportInbox;
+
+  /// No description provided for @adminSupportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet.'**
+  String get adminSupportEmpty;
+
+  /// No description provided for @adminSupportAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get adminSupportAnonymous;
+
   /// No description provided for @agencyDashboardYourPackages.
   ///
   /// In en, this message translates to:

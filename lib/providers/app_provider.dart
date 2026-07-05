@@ -721,6 +721,9 @@ class AppProvider extends ChangeNotifier {
   double get commissionsOwed => _commissions
       .where((c) => c.status == 'owed')
       .fold(0.0, (sum, c) => sum + c.amount);
+  double get commissionsCollected => _commissions
+      .where((c) => c.status == 'collected')
+      .fold(0.0, (sum, c) => sum + c.amount);
 
   /// Admins see the full ledger; agencies see only their own.
   Future<void> loadCommissions() async {

@@ -15,6 +15,7 @@ import 'package:umrah_app/models/user_profile.dart';
 import 'package:umrah_app/providers/app_provider.dart';
 import 'package:umrah_app/services/supabase_service.dart';
 import 'package:umrah_app/screens/profile/help_support_screen.dart';
+import 'package:umrah_app/screens/admin/admin_screen.dart';
 import 'package:umrah_app/screens/profile/notifications_screen.dart';
 import 'package:umrah_app/screens/profile/payment_methods_screen.dart';
 import 'package:umrah_app/screens/profile/privacy_security_screen.dart';
@@ -722,6 +723,31 @@ void main() {
       await tester.tap(find.text('How do I book an Umrah package?'));
       await tester.pump();
       expect(find.textContaining('Book this trip'), findsOneWidget);
+    });
+
+    testWidgets('AdminScreen surfaces support messages sent by users', (tester) async {
+      final shared = FakeService();
+      // A pilgrim sends a support message from the Help screen.
+      final client = AppProvider(service: shared, autoLoad: false);
+      await client.init();
+      await client.signIn('client@test.com', 'pass');
+      expect(await client.sendSupportMessage('My flight time changed, please help'), true);
+
+      // The admin opens the dashboard and should see it in the inbox.
+      final admin = AppProvider(service: shared, autoLoad: false);
+      await admin.init();
+      await admin.signIn('admin@test.com', 'pass');
+      await admin.loadAdminData();
+
+      // Tall surface so the lazily-built support sliver (below the fold) lays out.
+      await tester.binding.setSurfaceSize(const Size(600, 2600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(wrap(const AdminScreen(), admin));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Support messages'), findsOneWidget);
+      expect(find.textContaining('My flight time changed'), findsOneWidget);
     });
   });
 }
