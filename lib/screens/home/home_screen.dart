@@ -16,7 +16,6 @@ import '../../widgets/gradient_card.dart';
 import '../../widgets/offer_image.dart';
 import '../companies/company_detail_screen.dart';
 import '../offers/offer_detail_screen.dart';
-import '../search/search_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/interactive_scale.dart';
 import '../../widgets/islamic_pattern.dart';
@@ -103,7 +102,7 @@ class HomeScreen extends StatelessWidget {
             const IslamicPattern(opacity: 0.04, isEightFold: true),
             CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(child: _Header()),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
                 const SliverToBoxAdapter(child: _PrayerTimesWidget()),
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
                 // Paid agency ads rotate in a carousel; without any, the
@@ -113,9 +112,7 @@ class HomeScreen extends StatelessWidget {
                       ? _AdsCarousel(ads: ads)
                       : _HeroCard(offer: hero),
                 ),
-                SliverToBoxAdapter(child: _SearchBar()),
                 SliverToBoxAdapter(child: _QuickCategories()),
-                SliverToBoxAdapter(child: _TrustGrid()),
                 SliverToBoxAdapter(
                   child: _AgenciesSection(companies: companies),
                 ),
@@ -365,82 +362,6 @@ class _AdCard extends StatelessWidget {
   }
 }
 
-class _Header extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final provider = context.watch<AppProvider>();
-    final user = provider.user;
-
-    final String displayName =
-        provider.isSignedIn && user != null && user.fullName.isNotEmpty
-        ? user.fullName
-        : t.homeWelcomePilgrim;
-
-    final String initial = provider.isSignedIn && user != null
-        ? (user.fullName.isNotEmpty
-              ? user.fullName.trim()[0].toUpperCase()
-              : user.email[0].toUpperCase())
-        : '';
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 8, 22, 18),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t.homeGreeting,
-                  style: AppTheme.sans(
-                    12,
-                    weight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ).copyWith(letterSpacing: 1.4),
-                ),
-                const SizedBox(height: 2),
-                Text(displayName, style: AppTheme.serif(28)),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => provider.setTab(4), // Navigate to Profile Tab
-            child: InteractiveScale(
-              child: Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: AppColors.primary.withOpacity(0.18),
-                    width: 1.5,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: initial.isNotEmpty
-                    ? Text(
-                        initial,
-                        style: AppTheme.serif(
-                          19,
-                          color: const Color(0xFFF3E6C4),
-                        ),
-                      )
-                    : const Icon(
-                        Icons.person_outline_rounded,
-                        color: Color(0xFFF3E6C4),
-                        size: 21,
-                      ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _HeroCard extends StatelessWidget {
   final Offer offer;
   const _HeroCard({required this.offer});
@@ -558,50 +479,6 @@ class _HeroCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 18, 22, 6),
-      child: InteractiveScale(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SearchScreen()),
-        ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.primary.withOpacity(0.12),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF0F3729).withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
-              const SizedBox(width: 11),
-              Text(
-                t.homeSearchPlaceholder,
-                style: AppTheme.sans(14, color: const Color(0xFF7D8A82)),
-              ),
-            ],
           ),
         ),
       ),
@@ -1004,126 +881,6 @@ class _CategoryItem {
     required this.icon,
     required this.onTap,
   });
-}
-
-class _TrustGrid extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>();
-    final lang = provider.lang;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 4, 22, 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: _TrustCard(
-              label: _trustLabel('verified', lang),
-              icon: Icons.verified_user_outlined,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _TrustCard(
-              label: _trustLabel('secure', lang),
-              icon: Icons.lock_outline_rounded,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _TrustCard(
-              label: _trustLabel('support', lang),
-              icon: Icons.support_agent_rounded,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _trustLabel(String key, String lang) {
-    if (lang == 'ar') {
-      switch (key) {
-        case 'verified':
-          return 'وكالات موثقة';
-        case 'secure':
-          return 'دفع آمن';
-        case 'support':
-          return 'دعم متواصل';
-        default:
-          return '';
-      }
-    } else if (lang == 'ku') {
-      switch (key) {
-        case 'verified':
-          return 'بریکاری باوەڕپێکراو';
-        case 'secure':
-          return 'پارەدانی پارێزراو';
-        case 'support':
-          return 'پشتیوانی ٢٤/٧';
-        default:
-          return '';
-      }
-    } else {
-      switch (key) {
-        case 'verified':
-          return 'Verified Agencies';
-        case 'secure':
-          return 'Secure Payments';
-        case 'support':
-          return '24/7 Support';
-        default:
-          return '';
-      }
-    }
-  }
-}
-
-class _TrustCard extends StatelessWidget {
-  final String label;
-  final IconData icon;
-
-  const _TrustCard({required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEEF4EF), // soft green tint ties trust band to the brand color
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.1),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F3729).withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 20, color: AppColors.primary),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: AppTheme.sans(
-              10.5,
-              weight: FontWeight.w700,
-              color: AppColors.ink,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _PrayerTimesWidget extends StatefulWidget {
