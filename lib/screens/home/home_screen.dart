@@ -1377,13 +1377,18 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                             child: Divider(color: Color(0xFF194637), height: 1),
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: _timings.entries.map((e) {
                               final isNext = e.key == _nextPrayer;
-                              return _PrayerTimeCol(
-                                name: _prayerName(e.key, lang),
-                                time: _format12Hour(e.value, lang),
-                                isNext: isNext,
+                              // Expanded so 5 columns always share the
+                              // available width instead of overflowing (and
+                              // silently clipping one off-screen) on narrow
+                              // phones.
+                              return Expanded(
+                                child: _PrayerTimeCol(
+                                  name: _prayerName(e.key, lang),
+                                  time: _format12Hour(e.value, lang),
+                                  isNext: isNext,
+                                ),
                               );
                             }).toList(),
                           ),
@@ -1474,17 +1479,21 @@ class _PrayerTimeCol extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       decoration: BoxDecoration(
         color: isNext ? AppColors.gold : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTheme.sans(
-              10.5,
+              10,
               weight: isNext ? FontWeight.w800 : FontWeight.w600,
               color: isNext ? const Color(0xFF1C2317) : const Color(0xFF9FBBA9),
             ),
@@ -1492,8 +1501,10 @@ class _PrayerTimeCol extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             time,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTheme.serif(
-              14,
+              13,
               color: isNext ? const Color(0xFF1C2317) : Colors.white,
               weight: isNext ? FontWeight.bold : FontWeight.normal,
             ),
