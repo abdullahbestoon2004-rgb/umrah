@@ -248,8 +248,8 @@ class _CompanyOfferCard extends StatelessWidget {
                   Wrap(
                     spacing: 6,
                     children: [
-                      InfoChip(label: '${offer.days}d'),
-                      InfoChip(label: offer.transportLabel),
+                      InfoChip(label: t.offersDaysCount(offer.days)),
+                      InfoChip(label: offer.transportLabelFor(t)),
                       InfoChip(label: '${offer.acc}★'),
                     ],
                   ),

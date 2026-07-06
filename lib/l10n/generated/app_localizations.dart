@@ -372,6 +372,18 @@ abstract class AppLocalizations {
   /// **'Transportation'**
   String get offerDetailTransportation;
 
+  /// No description provided for @offerDetailReturnFlightsEconomy.
+  ///
+  /// In en, this message translates to:
+  /// **'Return flights, economy'**
+  String get offerDetailReturnFlightsEconomy;
+
+  /// No description provided for @offerDetailLuxuryCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Luxury air-conditioned coach'**
+  String get offerDetailLuxuryCoach;
+
   /// No description provided for @offerDetailCarrierTransfersIncluded.
   ///
   /// In en, this message translates to:
@@ -2238,6 +2250,24 @@ abstract class AppLocalizations {
   /// **'Meals'**
   String get addEditOfferMeals;
 
+  /// No description provided for @mealsBreakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get mealsBreakfast;
+
+  /// No description provided for @mealsHalfBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Half board'**
+  String get mealsHalfBoard;
+
+  /// No description provided for @mealsFullBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Full board'**
+  String get mealsFullBoard;
+
   /// No description provided for @addEditOfferHotel.
   ///
   /// In en, this message translates to:
@@ -2861,6 +2891,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save the package. Check your connection and try again.'**
   String get addEditOfferSaveFailed;
+
+  /// No description provided for @offerFallbackDayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {n}'**
+  String offerFallbackDayLabel(int n);
+
+  /// No description provided for @offerFallbackDayRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Days {a}–{b}'**
+  String offerFallbackDayRangeLabel(int a, int b);
+
+  /// No description provided for @offerFallbackFinalDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Final days'**
+  String get offerFallbackFinalDaysLabel;
+
+  /// No description provided for @offerFallbackDay1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival & transfer'**
+  String get offerFallbackDay1Title;
+
+  /// No description provided for @offerFallbackDay1Summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrive in Jeddah, met by your guide, and transfer to your hotel near the Haram.'**
+  String get offerFallbackDay1Summary;
+
+  /// No description provided for @offerFallbackDay2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Perform Umrah'**
+  String get offerFallbackDay2Title;
+
+  /// No description provided for @offerFallbackDay2Summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided Umrah — Tawaf, Sa\'i and Tahallul accompanied by your group scholar.'**
+  String get offerFallbackDay2Summary;
+
+  /// No description provided for @offerFallbackMakkahTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worship in Makkah'**
+  String get offerFallbackMakkahTitle;
+
+  /// No description provided for @offerFallbackMakkahSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Prayers at Masjid al-Haram with optional ziyarah to Mina, Arafah and historic sites.'**
+  String get offerFallbackMakkahSummary;
+
+  /// No description provided for @offerFallbackMadinahTravelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel to Madinah'**
+  String get offerFallbackMadinahTravelTitle;
+
+  /// No description provided for @offerFallbackMadinahTravelSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'High-speed transfer to Madinah and check-in steps from the Prophet\'s Mosque.'**
+  String get offerFallbackMadinahTravelSummary;
+
+  /// No description provided for @offerFallbackMadinahReturnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah & return'**
+  String get offerFallbackMadinahReturnTitle;
+
+  /// No description provided for @offerFallbackMadinahReturnSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Worship at Masjid an-Nabawi, ziyarah tours, then transfer for your homeward journey.'**
+  String get offerFallbackMadinahReturnSummary;
+
+  /// No description provided for @offerFallbackWorshipReturnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worship & return'**
+  String get offerFallbackWorshipReturnTitle;
+
+  /// No description provided for @offerFallbackWorshipReturnSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Final prayers and Tawaf al-Wada, then transfer to the airport for departure.'**
+  String get offerFallbackWorshipReturnSummary;
+
+  /// No description provided for @offerFallbackIncludeVisa.
+  ///
+  /// In en, this message translates to:
+  /// **'Umrah visa & processing'**
+  String get offerFallbackIncludeVisa;
+
+  /// No description provided for @offerFallbackIncludeFlights.
+  ///
+  /// In en, this message translates to:
+  /// **'Return international flights'**
+  String get offerFallbackIncludeFlights;
+
+  /// No description provided for @offerFallbackIncludeCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Air-conditioned coach transfers'**
+  String get offerFallbackIncludeCoach;
+
+  /// No description provided for @offerFallbackIncludeHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'{acc}-star hotel — {hotel}'**
+  String offerFallbackIncludeHotel(int acc, String hotel);
+
+  /// No description provided for @offerFallbackIncludeMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'{meals} dining daily'**
+  String offerFallbackIncludeMeals(String meals);
+
+  /// No description provided for @offerFallbackIncludeZiyarah.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided ziyarah tours'**
+  String get offerFallbackIncludeZiyarah;
+
+  /// No description provided for @offerFallbackIncludeGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'24/7 multilingual group guide'**
+  String get offerFallbackIncludeGuide;
 }
 
 class _AppLocalizationsDelegate

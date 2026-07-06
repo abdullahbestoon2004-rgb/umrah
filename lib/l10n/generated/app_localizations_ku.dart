@@ -162,6 +162,13 @@ class AppLocalizationsKu extends AppLocalizations {
   String get offerDetailTransportation => 'گواستنەوە';
 
   @override
+  String get offerDetailReturnFlightsEconomy =>
+      'فڕینی چوون و هاتنەوە، پۆلی گشتی';
+
+  @override
+  String get offerDetailLuxuryCoach => 'پاسی لوکسی سارد کەرەوەدار';
+
+  @override
   String offerDetailCarrierTransfersIncluded(String carrier) {
     return '$carrier · هەموو گواستنەوە زەمینییەکان لەخۆدەگرێت';
   }
@@ -1298,6 +1305,15 @@ class AppLocalizationsKu extends AppLocalizations {
   String get addEditOfferMeals => 'خواردنەکان';
 
   @override
+  String get mealsBreakfast => 'تەنها نانی بەیانی';
+
+  @override
+  String get mealsHalfBoard => 'نیوە خۆراک';
+
+  @override
+  String get mealsFullBoard => 'خۆراکی تەواو';
+
+  @override
   String get addEditOfferHotel => 'هۆتێل';
 
   @override
@@ -1634,4 +1650,84 @@ class AppLocalizationsKu extends AppLocalizations {
   @override
   String get addEditOfferSaveFailed =>
       'نەتوانرا گەشتەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String offerFallbackDayLabel(int n) {
+    return 'ڕۆژی $n';
+  }
+
+  @override
+  String offerFallbackDayRangeLabel(int a, int b) {
+    return 'ڕۆژی $a–$b';
+  }
+
+  @override
+  String get offerFallbackFinalDaysLabel => 'ڕۆژە کۆتاییەکان';
+
+  @override
+  String get offerFallbackDay1Title => 'گەیشتن و گواستنەوە';
+
+  @override
+  String get offerFallbackDay1Summary =>
+      'گەیشتن بۆ جیدە، بەرێوەبەرەکەت لەوێ چاوەڕوانت دەبێت، و دەگوازرێیتەوە بۆ هۆتێلەکەت لەتەنیشت حەرەم.';
+
+  @override
+  String get offerFallbackDay2Title => 'ئەنجامدانی عومرە';
+
+  @override
+  String get offerFallbackDay2Summary =>
+      'عومرەیەکی ڕابەرایەتیکراو — تەواف، سەعی و تەحەلول لەگەڵ مامۆستای گرووپەکەت.';
+
+  @override
+  String get offerFallbackMakkahTitle => 'عیبادەت لە مەککە';
+
+  @override
+  String get offerFallbackMakkahSummary =>
+      'نوێژ لە مزگەوتی حەرام لەگەڵ زیارەتی ئارەزوومەندانە بۆ مینا، عەرەفات و شوێنە مێژووییەکان.';
+
+  @override
+  String get offerFallbackMadinahTravelTitle => 'گەشتن بۆ مەدینە';
+
+  @override
+  String get offerFallbackMadinahTravelSummary =>
+      'گواستنەوەی خێرا بۆ مەدینە و هەنگاوەکانی چوونەژوورەوەی هۆتێل لەتەنیشت مزگەوتی پێغەمبەر (ﷺ).';
+
+  @override
+  String get offerFallbackMadinahReturnTitle => 'مەدینە و گەڕانەوە';
+
+  @override
+  String get offerFallbackMadinahReturnSummary =>
+      'عیبادەت لە مزگەوتی نەبەوی، گەشتی زیارەتی، پاشان گواستنەوە بۆ گەڕانەوەی ماڵەوە.';
+
+  @override
+  String get offerFallbackWorshipReturnTitle => 'عیبادەت و گەڕانەوە';
+
+  @override
+  String get offerFallbackWorshipReturnSummary =>
+      'دوایین نوێژەکان و تەوافی وەداع، پاشان گواستنەوە بۆ فڕۆکەخانە بۆ گەڕانەوە.';
+
+  @override
+  String get offerFallbackIncludeVisa => 'ڤیزای عومرە و پرۆسەکانی';
+
+  @override
+  String get offerFallbackIncludeFlights => 'فڕینی نێودەوڵەتی چوون و هاتنەوە';
+
+  @override
+  String get offerFallbackIncludeCoach => 'گواستنەوەی پاسی سارد کەرەوەدار';
+
+  @override
+  String offerFallbackIncludeHotel(int acc, String hotel) {
+    return 'هۆتێلی $acc ئەستێرە — $hotel';
+  }
+
+  @override
+  String offerFallbackIncludeMeals(String meals) {
+    return 'خواردنی $meals ڕۆژانە';
+  }
+
+  @override
+  String get offerFallbackIncludeZiyarah => 'گەشتی زیارەتی ڕابەرایەتیکراو';
+
+  @override
+  String get offerFallbackIncludeGuide => 'ڕابەرایەتی فرەزمان ٢٤/٧';
 }

@@ -51,7 +51,7 @@ class OfferDetailScreen extends StatelessWidget {
                             ? offer.overview
                             : t.offerDetailOverviewBody(
                                 offer.days,
-                                offer.transportLabel.toLowerCase(),
+                                offer.transportLabelFor(t).toLowerCase(),
                                 offer.city,
                                 offer.acc,
                                 offer.hotel,
@@ -196,7 +196,7 @@ class _KeyFacts extends StatelessWidget {
         const SizedBox(width: 9),
         _FactCard(
           icon: offer.isByAir ? Icons.flight_rounded : Icons.directions_bus_rounded,
-          value: offer.transportLabel,
+          value: offer.transportLabelFor(t),
           sub: offer.carrier,
         ),
         const SizedBox(width: 9),
@@ -339,7 +339,7 @@ class _AccommodationSection extends StatelessWidget {
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(t.offerDetailMeals, style: AppTheme.sans(10.5, color: AppColors.muted, weight: FontWeight.w600)),
                         const SizedBox(height: 2),
-                        Text(offer.meals, style: AppTheme.sans(13, weight: FontWeight.w700)),
+                        Text(offer.mealsLabelFor(t), style: AppTheme.sans(13, weight: FontWeight.w700)),
                       ]),
                     ),
                   ),
@@ -386,7 +386,7 @@ class _TransportSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(offer.transportLong, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                    Text(offer.transportLongFor(t), style: AppTheme.sans(14, weight: FontWeight.w700)),
                     const SizedBox(height: 2),
                     Text(
                       t.offerDetailCarrierTransfersIncluded(offer.carrier),
@@ -410,7 +410,7 @@ class _ItinerarySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final days = offer.buildItinerary();
+    final days = offer.buildItinerary(t);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -481,7 +481,7 @@ class _IncludesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final items = offer.buildIncludes();
+    final items = offer.buildIncludes(t);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -766,7 +766,7 @@ class _BookingSheetState extends State<_BookingSheet> {
                                 style: AppTheme.serif(18)),
                             const SizedBox(height: 4),
                             Text(
-                              t.offerDetailBookingSummaryLine(widget.offer.days, widget.offer.transportLabel, widget.offer.acc),
+                              t.offerDetailBookingSummaryLine(widget.offer.days, widget.offer.transportLabelFor(t), widget.offer.acc),
                               style: AppTheme.sans(11.5, color: const Color(0xFF7D8A82)),
                             ),
                           ],

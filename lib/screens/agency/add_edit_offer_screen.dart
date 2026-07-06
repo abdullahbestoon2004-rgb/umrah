@@ -73,6 +73,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   void initState() {
     super.initState();
     final o = widget.existing;
+    final t = AppLocalizations.of(context);
     if (o != null) {
       _titleCtrl.text    = o.title;
       _hotelCtrl.text    = o.hotel;
@@ -89,36 +90,36 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       _imageBytes        = context.read<AppProvider>().getOfferImage(o.id);
 
       // load existing itinerary
-      for (final it in o.buildItinerary()) {
+      for (final it in o.buildItinerary(t)) {
         _itinerary.add(_ItineraryEntry(d: it.day, t: it.title, s: it.summary));
       }
       // load existing includes
-      for (final inc in o.buildIncludes()) {
+      for (final inc in o.buildIncludes(t)) {
         _includes.add(_IncludeEntry(text: inc));
       }
     } else {
-      _seedDefaultItinerary();
-      _seedDefaultIncludes();
+      _seedDefaultItinerary(t);
+      _seedDefaultIncludes(t);
     }
   }
 
-  void _seedDefaultItinerary() {
+  void _seedDefaultItinerary(AppLocalizations t) {
     _itinerary.addAll([
-      _ItineraryEntry(d: 'Day 1',       t: 'Arrival & transfer',  s: 'Arrive in Jeddah, met by your guide, and transfer to your hotel near the Haram.'),
-      _ItineraryEntry(d: 'Day 2',       t: 'Perform Umrah',       s: "Guided Umrah — Tawaf, Sa'i and Tahallul accompanied by your group scholar."),
-      _ItineraryEntry(d: 'Days 3–5',    t: 'Worship in Makkah',   s: 'Prayers at Masjid al-Haram with optional ziyarah to Mina, Arafah and historic sites.'),
-      _ItineraryEntry(d: 'Final days',  t: 'Worship & return',    s: 'Final prayers and Tawaf al-Wada, then transfer to the airport for departure.'),
+      _ItineraryEntry(d: t.offerFallbackDayLabel(1), t: t.offerFallbackDay1Title, s: t.offerFallbackDay1Summary),
+      _ItineraryEntry(d: t.offerFallbackDayLabel(2), t: t.offerFallbackDay2Title, s: t.offerFallbackDay2Summary),
+      _ItineraryEntry(d: t.offerFallbackDayRangeLabel(3, 5), t: t.offerFallbackMakkahTitle, s: t.offerFallbackMakkahSummary),
+      _ItineraryEntry(d: t.offerFallbackFinalDaysLabel, t: t.offerFallbackWorshipReturnTitle, s: t.offerFallbackWorshipReturnSummary),
     ]);
   }
 
-  void _seedDefaultIncludes() {
+  void _seedDefaultIncludes(AppLocalizations t) {
     _includes.addAll([
-      _IncludeEntry(text: 'Umrah visa & processing'),
-      _IncludeEntry(text: 'Return international flights'),
-      _IncludeEntry(text: 'Hotel accommodation'),
-      _IncludeEntry(text: 'Daily meals as per plan'),
-      _IncludeEntry(text: 'Guided ziyarah tours'),
-      _IncludeEntry(text: '24/7 multilingual group guide'),
+      _IncludeEntry(text: t.offerFallbackIncludeVisa),
+      _IncludeEntry(text: t.offerFallbackIncludeFlights),
+      _IncludeEntry(text: t.offerDetailAccommodation),
+      _IncludeEntry(text: t.offerFallbackIncludeMeals(t.mealsBreakfast)),
+      _IncludeEntry(text: t.offerFallbackIncludeZiyarah),
+      _IncludeEntry(text: t.offerFallbackIncludeGuide),
     ]);
   }
 
@@ -297,7 +298,13 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
               Expanded(child: _Stepper(label: t.addEditOfferStars, value: _acc, min: 1, max: 5, onChanged: (v) => setState(() => _acc = v))),
             ]),
             const SizedBox(height: 16),
-            _DropdownField(label: t.addEditOfferMeals, value: _meals, items: _mealOptions, onChanged: (v) => setState(() => _meals = v!)),
+            _DropdownField(
+              label: t.addEditOfferMeals,
+              value: _meals,
+              items: _mealOptions,
+              labelBuilder: (v) => Offer.mealsLabel(v, t),
+              onChanged: (v) => setState(() => _meals = v!),
+            ),
 
             // ── Hotel ────────────────────────────────────────────────────
             const SizedBox(height: 28),
@@ -788,7 +795,11 @@ class _DropdownField extends StatelessWidget {
   final String label, value;
   final List<String> items;
   final ValueChanged<String?> onChanged;
-  const _DropdownField({required this.label, required this.value, required this.items, required this.onChanged});
+  final String Function(String)? labelBuilder;
+  const _DropdownField({
+    required this.label, required this.value, required this.items, required this.onChanged,
+    this.labelBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -801,7 +812,7 @@ class _DropdownField extends StatelessWidget {
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             value: value, isExpanded: true, style: AppTheme.sans(14),
-            items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+            items: items.map((e) => DropdownMenuItem(value: e, child: Text(labelBuilder?.call(e) ?? e))).toList(),
             onChanged: onChanged,
           ),
         ),

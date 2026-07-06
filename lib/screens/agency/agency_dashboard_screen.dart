@@ -400,7 +400,7 @@ class _PackageCard extends StatelessWidget {
                 Expanded(
                   child: Wrap(spacing: 6, runSpacing: 4, children: [
                     InfoChip(label: t.agencyDashboardDaysCount(offer.days)),
-                    InfoChip(label: offer.transportLabel),
+                    InfoChip(label: offer.transportLabelFor(t)),
                     InfoChip(label: '${offer.acc}★'),
                     InfoChip(label: offer.priceFmt),
                   ]),

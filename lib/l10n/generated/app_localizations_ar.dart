@@ -161,6 +161,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get offerDetailTransportation => 'وسيلة التنقل';
 
   @override
+  String get offerDetailReturnFlightsEconomy =>
+      'رحلات ذهاب وعودة، درجة اقتصادية';
+
+  @override
+  String get offerDetailLuxuryCoach => 'حافلة فاخرة مكيفة';
+
+  @override
   String offerDetailCarrierTransfersIncluded(String carrier) {
     return '$carrier · تشمل جميع النقلات البرية';
   }
@@ -1284,6 +1291,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addEditOfferMeals => 'الوجبات';
 
   @override
+  String get mealsBreakfast => 'الإفطار فقط';
+
+  @override
+  String get mealsHalfBoard => 'نصف إقامة';
+
+  @override
+  String get mealsFullBoard => 'إقامة كاملة';
+
+  @override
   String get addEditOfferHotel => 'الفندق';
 
   @override
@@ -1612,4 +1628,84 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get addEditOfferSaveFailed =>
       'تعذر حفظ الباقة. تحقق من الاتصال وحاول مرة أخرى.';
+
+  @override
+  String offerFallbackDayLabel(int n) {
+    return 'اليوم $n';
+  }
+
+  @override
+  String offerFallbackDayRangeLabel(int a, int b) {
+    return 'الأيام $a–$b';
+  }
+
+  @override
+  String get offerFallbackFinalDaysLabel => 'الأيام الأخيرة';
+
+  @override
+  String get offerFallbackDay1Title => 'الوصول والتنقل';
+
+  @override
+  String get offerFallbackDay1Summary =>
+      'الوصول إلى جدة، حيث يستقبلك مرشدك، ثم التنقل إلى فندقك بالقرب من الحرم.';
+
+  @override
+  String get offerFallbackDay2Title => 'أداء العمرة';
+
+  @override
+  String get offerFallbackDay2Summary =>
+      'عمرة بإشراف مرشد — الطواف والسعي والتحلل برفقة عالم المجموعة.';
+
+  @override
+  String get offerFallbackMakkahTitle => 'العبادة في مكة';
+
+  @override
+  String get offerFallbackMakkahSummary =>
+      'الصلاة في المسجد الحرام مع إمكانية زيارة منى وعرفات والمواقع التاريخية.';
+
+  @override
+  String get offerFallbackMadinahTravelTitle => 'السفر إلى المدينة';
+
+  @override
+  String get offerFallbackMadinahTravelSummary =>
+      'نقل سريع إلى المدينة المنورة وإجراءات تسجيل الدخول بالقرب من المسجد النبوي.';
+
+  @override
+  String get offerFallbackMadinahReturnTitle => 'المدينة والعودة';
+
+  @override
+  String get offerFallbackMadinahReturnSummary =>
+      'الصلاة في المسجد النبوي وجولات الزيارة، ثم التنقل لرحلة العودة.';
+
+  @override
+  String get offerFallbackWorshipReturnTitle => 'العبادة والعودة';
+
+  @override
+  String get offerFallbackWorshipReturnSummary =>
+      'الصلوات الأخيرة وطواف الوداع، ثم التنقل إلى المطار للمغادرة.';
+
+  @override
+  String get offerFallbackIncludeVisa => 'تأشيرة العمرة وإجراءاتها';
+
+  @override
+  String get offerFallbackIncludeFlights => 'رحلات طيران دولية ذهابًا وإيابًا';
+
+  @override
+  String get offerFallbackIncludeCoach => 'نقل بحافلة مكيفة';
+
+  @override
+  String offerFallbackIncludeHotel(int acc, String hotel) {
+    return 'فندق $acc نجوم — $hotel';
+  }
+
+  @override
+  String offerFallbackIncludeMeals(String meals) {
+    return 'وجبات $meals يوميًا';
+  }
+
+  @override
+  String get offerFallbackIncludeZiyarah => 'جولات زيارة بإشراف مرشد';
+
+  @override
+  String get offerFallbackIncludeGuide => 'مرشد متعدد اللغات على مدار الساعة';
 }

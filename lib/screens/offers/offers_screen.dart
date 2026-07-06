@@ -363,7 +363,7 @@ class OfferCard extends StatelessWidget {
                         label: t.offersDaysCount(offer.days),
                         icon: const Icon(Icons.calendar_today_rounded, color: AppColors.primary, size: 13),
                       ),
-                      InfoChip(label: offer.transportLabel),
+                      InfoChip(label: offer.transportLabelFor(t)),
                       InfoChip(label: t.offersStarCount(offer.acc)),
                     ],
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import 'company_model.dart';
 
 /// Formats an IQD amount with thousands separators, e.g. "2,750,000 IQD".
@@ -80,8 +81,23 @@ class Offer {
   bool get hasDiscount => original > 0;
   bool get isByAir => transport == 'plane';
 
-  String get transportLabel => isByAir ? 'By Air' : 'By Coach';
-  String get transportLong => isByAir ? 'Return flights, economy' : 'Luxury air-conditioned coach';
+  String transportLabelFor(AppLocalizations t) => isByAir ? t.offersByAir : t.offersByCoach;
+  String transportLongFor(AppLocalizations t) =>
+      isByAir ? t.offerDetailReturnFlightsEconomy : t.offerDetailLuxuryCoach;
+
+  String mealsLabelFor(AppLocalizations t) => mealsLabel(meals, t);
+
+  // `meals` is stored as one of a fixed set of English values (see
+  // add_edit_offer_screen.dart's meal options) — translate the known ones,
+  // and fall back to the raw value for anything else (e.g. legacy/free text).
+  static String mealsLabel(String meals, AppLocalizations t) {
+    switch (meals) {
+      case 'Breakfast': return t.mealsBreakfast;
+      case 'Half board': return t.mealsHalfBoard;
+      case 'Full board': return t.mealsFullBoard;
+      default: return meals;
+    }
+  }
 
   String get starGlyph => '★' * acc + '☆' * (5 - acc);
 
@@ -143,39 +159,36 @@ class Offer {
     );
   }
 
-  List<ItineraryDay> buildItinerary() {
+  List<ItineraryDay> buildItinerary(AppLocalizations t) {
     if (customItinerary != null && customItinerary!.isNotEmpty) return customItinerary!;
     final hasTwo = city.contains('·');
     final half = (days / 2).round().clamp(2, days);
     final items = <ItineraryDay>[
-      const ItineraryDay('Day 1', 'Arrival & transfer',
-          'Arrive in Jeddah, met by your guide, and transfer to your hotel near the Haram.'),
-      const ItineraryDay('Day 2', 'Perform Umrah',
-          "Guided Umrah — Tawaf, Sa'i and Tahallul accompanied by your group scholar."),
-      ItineraryDay('Days 3–$half', 'Worship in Makkah',
-          'Prayers at Masjid al-Haram with optional ziyarah to Mina, Arafah and historic sites.'),
+      ItineraryDay(t.offerFallbackDayLabel(1), t.offerFallbackDay1Title, t.offerFallbackDay1Summary),
+      ItineraryDay(t.offerFallbackDayLabel(2), t.offerFallbackDay2Title, t.offerFallbackDay2Summary),
+      ItineraryDay(t.offerFallbackDayRangeLabel(3, half), t.offerFallbackMakkahTitle, t.offerFallbackMakkahSummary),
     ];
     if (hasTwo) {
-      items.add(ItineraryDay('Day ${half + 1}', 'Travel to Madinah',
-          "High-speed transfer to Madinah and check-in steps from the Prophet's Mosque."));
-      items.add(const ItineraryDay('Final days', 'Madinah & return',
-          'Worship at Masjid an-Nabawi, ziyarah tours, then transfer for your homeward journey.'));
+      items.add(ItineraryDay(
+          t.offerFallbackDayLabel(half + 1), t.offerFallbackMadinahTravelTitle, t.offerFallbackMadinahTravelSummary));
+      items.add(ItineraryDay(
+          t.offerFallbackFinalDaysLabel, t.offerFallbackMadinahReturnTitle, t.offerFallbackMadinahReturnSummary));
     } else {
-      items.add(const ItineraryDay('Final days', 'Worship & return',
-          'Final prayers and Tawaf al-Wada, then transfer to the airport for departure.'));
+      items.add(ItineraryDay(
+          t.offerFallbackFinalDaysLabel, t.offerFallbackWorshipReturnTitle, t.offerFallbackWorshipReturnSummary));
     }
     return items;
   }
 
-  List<String> buildIncludes() {
+  List<String> buildIncludes(AppLocalizations t) {
     if (customIncludes != null && customIncludes!.isNotEmpty) return customIncludes!;
     return [
-      'Umrah visa & processing',
-      isByAir ? 'Return international flights' : 'Air-conditioned coach transfers',
-      '$acc-star hotel — $hotel',
-      '$meals dining daily',
-      'Guided ziyarah tours',
-      '24/7 multilingual group guide',
+      t.offerFallbackIncludeVisa,
+      isByAir ? t.offerFallbackIncludeFlights : t.offerFallbackIncludeCoach,
+      t.offerFallbackIncludeHotel(acc, hotel),
+      t.offerFallbackIncludeMeals(mealsLabelFor(t)),
+      t.offerFallbackIncludeZiyarah,
+      t.offerFallbackIncludeGuide,
     ];
   }
 }

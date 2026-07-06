@@ -517,12 +517,12 @@ class _AgenciesSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 168,
+          height: 236,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 22),
             itemCount: companies.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 13),
+            separatorBuilder: (_, __) => const SizedBox(width: 14),
             itemBuilder: (context, i) => _AgencyCard(company: companies[i]),
           ),
         ),
@@ -538,10 +538,13 @@ class _AgencyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final offerCount = context
-        .watch<AppProvider>()
-        .getCompanyOffers(company.id)
-        .length;
+    final offers = context.watch<AppProvider>().getCompanyOffers(company.id);
+    final offerCount = offers.length;
+    final fromPrice = offers.isEmpty
+        ? 0.0
+        : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
+    final gradDark = Color.alphaBlend(Colors.black.withOpacity(0.35), company.tint);
+
     return InteractiveScale(
       onTap: () => Navigator.push(
         context,
@@ -550,65 +553,140 @@ class _AgencyCard extends StatelessWidget {
         ),
       ),
       child: Container(
-        width: 150,
-        padding: const EdgeInsets.all(16),
+        width: 208,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: AppColors.primary.withOpacity(0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.06),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
+              color: const Color(0xFF0F3729).withOpacity(0.07),
+              blurRadius: 26,
+              offset: const Offset(0, 12),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CompanyAvatar(
-              mono: company.mono,
-              tint: company.tint,
-              logoUrl: company.logoUrl,
-              size: 44,
-              fontSize: 19,
-              borderRadius: 13,
-            ),
-            const SizedBox(height: 11),
-            Text(
-              company.nameFor(Localizations.localeOf(context).languageCode),
-              style: AppTheme.sans(13.5, weight: FontWeight.w700),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 7),
-            Row(
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: AppColors.gold.withOpacity(0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.star_rounded, color: AppColors.gold, size: 11),
-                ),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    t.homeRatingOffersCount(company.rating, offerCount),
-                    style: AppTheme.sans(
-                      11.5,
-                      weight: FontWeight.w600,
-                      color: const Color(0xFF6B7770),
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+                  child: SizedBox(
+                    height: 84,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [company.tint, gradDark],
+                            ),
+                          ),
+                        ),
+                        const IslamicPattern(opacity: 0.10, cell: 40),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.95),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.star_rounded, color: AppColors.gold, size: 13),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${company.rating}',
+                                  style: AppTheme.sans(11.5, weight: FontWeight.w800, color: AppColors.ink),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Positioned(
+                  bottom: -26,
+                  left: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 3)),
+                      ],
+                    ),
+                    child: CompanyAvatar(
+                      mono: company.mono,
+                      tint: company.tint,
+                      logoUrl: company.logoUrl,
+                      size: 48,
+                      fontSize: 19,
+                      borderRadius: 24,
+                    ),
                   ),
                 ),
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 34, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    company.nameFor(Localizations.localeOf(context).languageCode),
+                    style: AppTheme.sans(14, weight: FontWeight.w700),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    t.companiesLocationEst(company.location, company.since),
+                    style: AppTheme.sans(11, color: AppColors.muted),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 10),
+                  const Divider(color: AppColors.border, height: 1),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          t.companiesPackageCount(offerCount),
+                          style: AppTheme.sans(11, weight: FontWeight.w600, color: const Color(0xFF6B7770)),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (fromPrice > 0)
+                        Flexible(
+                          child: Text.rich(
+                            TextSpan(children: [
+                              TextSpan(text: t.companiesFromPrefix, style: AppTheme.sans(10.5, color: AppColors.muted)),
+                              TextSpan(text: fmtIqd(fromPrice), style: AppTheme.serif(13.5, color: AppColors.primary)),
+                            ]),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -758,7 +836,7 @@ class _CuratedOfferCard extends StatelessWidget {
                     spacing: 7,
                     children: [
                       InfoChip(label: t.homeDaysCount(offer.days)),
-                      InfoChip(label: offer.transportLabel),
+                      InfoChip(label: offer.transportLabelFor(t)),
                     ],
                   ),
                   const SizedBox(height: 9),
@@ -903,6 +981,7 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
     'Isha': '20:35',
   };
   String _nextPrayer = 'Fajr';
+  bool _expanded = false;
 
   Timer? _timer;
 
@@ -964,9 +1043,16 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
           final timings = data['timings'];
           final hijri = data['date']['hijri'];
           final lang = Localizations.localeOf(context).languageCode;
-          final hijriMonth = lang == 'ar'
-              ? hijri['month']['ar']
-              : hijri['month']['en'];
+          // The API only gives month names in ar/en — Kurdish needs its own
+          // lookup by month number rather than falling back to English.
+          final String hijriMonth;
+          if (lang == 'ar') {
+            hijriMonth = hijri['month']['ar'];
+          } else if (lang == 'ku') {
+            hijriMonth = _hijriMonthKu((hijri['month']['number'] as num).toInt());
+          } else {
+            hijriMonth = hijri['month']['en'];
+          }
 
           if (mounted) {
             setState(() {
@@ -992,12 +1078,33 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
     }
 
     if (mounted) {
+      final lang = Localizations.localeOf(context).languageCode;
+      final fallbackMonth = lang == 'ar' ? 'محرم' : (lang == 'ku' ? _hijriMonthKu(1) : 'Muharram');
       setState(() {
-        _hijriDate = "19 Muharram 1448";
+        _hijriDate = "19 $fallbackMonth 1448";
         _nextPrayer = _calculateNextPrayer(_timings);
         _loading = false;
       });
     }
+  }
+
+  String _hijriMonthKu(int month) {
+    const names = [
+      'موحەڕەم',
+      'سەفەر',
+      'ڕەبیعەلئەوەل',
+      'ڕەبیعەلئاخر',
+      'جومادەلئوولا',
+      'جومادەلئاخرە',
+      'ڕەجەب',
+      'شەعبان',
+      'ڕەمەزان',
+      'شەووال',
+      'زوولقەعدە',
+      'زوولحیجە',
+    ];
+    if (month < 1 || month > 12) return names[0];
+    return names[month - 1];
   }
 
   DateTime _nextPrayerDateTime(Map<String, String> timings) {
@@ -1033,28 +1140,6 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
     );
   }
 
-  String _countdownText(
-    String nextPrayerName,
-    Map<String, String> timings,
-    String lang,
-  ) {
-    final now = DateTime.now();
-    final nextTime = _nextPrayerDateTime(timings);
-    final diff = nextTime.difference(now);
-    final h = diff.inHours;
-    final m = diff.inMinutes % 60;
-
-    final prName = _prayerName(nextPrayerName, lang);
-
-    if (lang == 'ar') {
-      return "الصلاة القادمة: $prName بعد ${h > 0 ? '$hس ' : ''}${m}د";
-    } else if (lang == 'ku') {
-      return "نوێژی داهاتوو: $prName دوای ${h > 0 ? '$hک ' : ''}${m}خ";
-    } else {
-      return "Next: $prName in ${h > 0 ? '${h}h ' : ''}${m}m";
-    }
-  }
-
   String _calculateNextPrayer(Map<String, String> timings) {
     final now = DateTime.now();
     final list = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
@@ -1075,6 +1160,74 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
       }
     }
     return 'Fajr';
+  }
+
+  // Just the "in 26m" part of _countdownText, for the compact header.
+  String _durationShort(String lang) {
+    final now = DateTime.now();
+    final nextTime = _nextPrayerDateTime(_timings);
+    final diff = nextTime.difference(now);
+    final h = diff.inHours;
+    final m = diff.inMinutes % 60;
+    if (lang == 'ar') return "بعد ${h > 0 ? '$hس ' : ''}${m}د";
+    if (lang == 'ku') return "دوای ${h > 0 ? '$hک ' : ''}${m}خ";
+    return "in ${h > 0 ? '${h}h ' : ''}${m}m";
+  }
+
+  String _nowTimeText(String lang) {
+    final now = DateTime.now();
+    final hh = now.hour.toString().padLeft(2, '0');
+    final mm = now.minute.toString().padLeft(2, '0');
+    return _format12Hour('$hh:$mm', lang);
+  }
+
+  String _nextPrayerLabel(String lang) {
+    if (lang == 'ar') return 'الصلاة القادمة';
+    if (lang == 'ku') return 'نوێژی داهاتوو';
+    return 'NEXT PRAYER';
+  }
+
+  // The one "next prayer" text — sits beside the icon when collapsed, and
+  // is repositioned below it when expanded (see build()). Never shown twice.
+  Widget _nextPrayerText(String lang) {
+    final goldBold = AppTheme.serif(15, color: AppColors.gold, weight: FontWeight.bold);
+    final duration = _durationShort(lang);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          _nextPrayerLabel(lang),
+          style: AppTheme.sans(
+            10,
+            weight: FontWeight.w700,
+            color: const Color(0xFF9FBBA9),
+          ).copyWith(letterSpacing: 0.8),
+        ),
+        const SizedBox(height: 2),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('${_prayerName(_nextPrayer, lang)} · ', style: goldBold),
+            // Only the counting-down part animates — a little roll-down
+            // whenever the minute ticks over, so the update reads as
+            // motion rather than a jump cut.
+            ClipRect(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                transitionBuilder: (child, animation) => ClipRect(
+                  child: SlideTransition(
+                    position: Tween<Offset>(begin: const Offset(0, -0.6), end: Offset.zero).animate(animation),
+                    child: FadeTransition(opacity: animation, child: child),
+                  ),
+                ),
+                child: Text(duration, key: ValueKey(duration), style: goldBold),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
@@ -1123,87 +1276,123 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
     }
     final String locationText = "$localizedCity, $localizedCountry";
 
-    final bool isRtl = lang != 'en';
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 6),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(
-            0xFF0D2D22,
-          ), // Deep premium emerald solid color matching app theme
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.12),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            // Top row: Location & Hijri Date
-            Row(
-              children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  size: 15,
-                  color: AppColors.gold,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    locationText,
-                    style: AppTheme.sans(
-                      11.5,
-                      weight: FontWeight.w700,
-                      color: const Color(0xFFE5D5BA),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  _hijriDate,
-                  style: AppTheme.sans(
-                    11.5,
-                    weight: FontWeight.w600,
-                    color: const Color(0xFF9FBBA9),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
-              child: Text(
-                _countdownText(_nextPrayer, _timings, lang),
-                style: AppTheme.serif(
-                  15.5,
-                  color: AppColors.gold,
-                  weight: FontWeight.bold,
-                ),
+      child: GestureDetector(
+        onTap: () => setState(() => _expanded = !_expanded),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(
+              0xFF0D2D22,
+            ), // Deep premium emerald solid color matching app theme
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0F3729).withOpacity(0.12),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Divider(color: Color(0xFF194637), height: 1),
-            ),
-            // Bottom row: Timings row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: _timings.entries.map((e) {
-                final isNext = e.key == _nextPrayer;
-                return _PrayerTimeCol(
-                  name: _prayerName(e.key, lang),
-                  time: _format12Hour(e.value, lang),
-                  isNext: isNext,
-                );
-              }).toList(),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            children: [
+              // Header: icon always here; the "next prayer" text sits beside
+              // it by default and drops below it once expanded, rather than
+              // being shown a second time in the expanded detail below.
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.dark_mode_rounded, color: AppColors.gold, size: 17),
+                  ),
+                  if (!_expanded) ...[
+                    const SizedBox(width: 12),
+                    Expanded(child: _nextPrayerText(lang)),
+                  ] else
+                    const Spacer(),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _nowTimeText(lang),
+                        style: AppTheme.sans(13.5, weight: FontWeight.w700, color: Colors.white),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        localizedCity,
+                        style: AppTheme.sans(10.5, weight: FontWeight.w600, color: const Color(0xFF9FBBA9)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 6),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.gold, size: 22),
+                  ),
+                ],
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                alignment: Alignment.topCenter,
+                child: _expanded
+                    ? Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: _nextPrayerText(lang),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on_outlined, size: 15, color: AppColors.gold),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  locationText,
+                                  style: AppTheme.sans(11.5, weight: FontWeight.w700, color: const Color(0xFFE5D5BA)),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text(
+                                _hijriDate,
+                                style: AppTheme.sans(11.5, weight: FontWeight.w600, color: const Color(0xFF9FBBA9)),
+                              ),
+                            ],
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Divider(color: Color(0xFF194637), height: 1),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: _timings.entries.map((e) {
+                              final isNext = e.key == _nextPrayer;
+                              return _PrayerTimeCol(
+                                name: _prayerName(e.key, lang),
+                                time: _format12Hour(e.value, lang),
+                                isNext: isNext,
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
         ),
       ),
     );
