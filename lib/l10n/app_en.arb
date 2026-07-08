@@ -609,5 +609,22 @@
 
   "adminDeleteAdTitle": "Delete this ad?",
   "adminDeleteAdBody": "This ad will be permanently removed from the home carousel.",
-  "adminDeleteAdConfirm": "Delete"
+  "adminDeleteAdConfirm": "Delete",
+
+  "forgotPasswordLink": "Forgot password?",
+  "forgotPasswordTitle": "Reset Password",
+  "forgotPasswordSubtitle": "Enter your email address and we'll send you a verification code to reset your password.",
+  "forgotPasswordStep2Subtitle": "Enter the 6-digit code sent to your email and choose a new password.",
+  "forgotPasswordCodeLabel": "Verification Code",
+  "forgotPasswordNewPass": "New Password",
+  "forgotPasswordConfirmPass": "Confirm Password",
+  "forgotPasswordSendCode": "Send Reset Code",
+  "forgotPasswordResetBtn": "Reset Password",
+  "forgotPasswordResend": "Didn't receive the code? Resend",
+  "forgotPasswordCodeSent": "A verification code has been sent to your email.",
+  "forgotPasswordSuccess": "Password reset successfully! Redirecting to login...",
+  "forgotPasswordErrEmail": "Please enter your email address.",
+  "forgotPasswordErrCode": "Please enter the verification code.",
+  "forgotPasswordErrShort": "Password must be at least 6 characters.",
+  "forgotPasswordErrNoMatch": "Passwords do not match."
 }

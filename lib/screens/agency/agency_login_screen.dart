@@ -7,6 +7,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'agency_dashboard_screen.dart';
+import 'forgot_password_screen.dart';
 import '../admin/admin_screen.dart';
 
 class AgencyLoginScreen extends StatefulWidget {
@@ -192,6 +193,25 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                 ),
                 onSubmit: (_) => _submit(),
               ),
+
+              if (!_register) ...[  
+                const SizedBox(height: 10),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ForgotPasswordScreen(initialEmail: _emailCtrl.text.trim()),
+                      ),
+                    ),
+                    child: Text(
+                      t.forgotPasswordLink,
+                      style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary),
+                    ),
+                  ),
+                ),
+              ],
 
               if (_error != null) ...[
                 const SizedBox(height: 14),

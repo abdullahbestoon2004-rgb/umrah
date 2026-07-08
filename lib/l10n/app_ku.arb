@@ -534,5 +534,22 @@
 
   "adminDeleteAdTitle": "سڕینەوەی ئەم رێکلامە؟",
   "adminDeleteAdBody": "ئەم رێکلامە بەتەواوی لە پەڕەی سەرەکیەوە سڕێنەوە دەکرێت.",
-  "adminDeleteAdConfirm": "سڕینەوە"
+  "adminDeleteAdConfirm": "سڕینەوە",
+
+  "forgotPasswordLink": "وشەی نهێنیت لەبیرچووە؟",
+  "forgotPasswordTitle": "ڕیسێتکردنی وشەی نهێنی",
+  "forgotPasswordSubtitle": "ئیمەیلەکەت بنووسە و کۆدێکی پشتڕاستکردنەوە بۆت دەنێرین.",
+  "forgotPasswordStep2Subtitle": "کۆدی 6 ژمارەیی کە بۆ ئیمەیلەکەت نێردراوە بنووسە و وشەیەکی نوێ هەڵبژێرە.",
+  "forgotPasswordCodeLabel": "کۆدی پشتڕاستکردنەوە",
+  "forgotPasswordNewPass": "وشەی نهێنیی نوێ",
+  "forgotPasswordConfirmPass": "دڵنیاکردنەوەی وشەی نهێنی",
+  "forgotPasswordSendCode": "ناردنی کۆدی پشتڕاستکردنەوە",
+  "forgotPasswordResetBtn": "ڕیسێتکردنی وشەی نهێنی",
+  "forgotPasswordResend": "کۆدەکەت وەرنەگرت؟ دووبارە بینێرە",
+  "forgotPasswordCodeSent": "کۆدی پشتڕاستکردنەوە بۆ ئیمەیلەکەت نێردرا.",
+  "forgotPasswordSuccess": "وشەی نهێنی بە سەرکەوتی ڕیسێتکرا! گەڕانەوە...",
+  "forgotPasswordErrEmail": "تکایە ئیمەیلەکەت بنووسە.",
+  "forgotPasswordErrCode": "تکایە کۆدی پشتڕاستکردنەوە بنووسە.",
+  "forgotPasswordErrShort": "وشەی نهێنی دەبێت لانی کەم 6 پیت بێت.",
+  "forgotPasswordErrNoMatch": "وشەی نهێنیەکان وەک نین."
 }

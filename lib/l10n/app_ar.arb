@@ -534,5 +534,22 @@
 
   "adminDeleteAdTitle": "حذف هذا الإعلان؟",
   "adminDeleteAdBody": "سيتم حذف هذا الإعلان نهائيًا من الصفحة الرئيسية.",
-  "adminDeleteAdConfirm": "حذف"
+  "adminDeleteAdConfirm": "حذف",
+
+  "forgotPasswordLink": "نسيت کلمة المرور؟",
+  "forgotPasswordTitle": "إعادة تعيين کلمة المرور",
+  "forgotPasswordSubtitle": "أدخل بريدک الإلکتروني وسنرسل لک رمز تحقق لإعادة تعيين کلمة المرور.",
+  "forgotPasswordStep2Subtitle": "أدخل الرمز المکون من 6 أرقام المرسل إلى بريدک واختر کلمة مرور جديدة.",
+  "forgotPasswordCodeLabel": "رمز التحقق",
+  "forgotPasswordNewPass": "کلمة المرور الجديدة",
+  "forgotPasswordConfirmPass": "تأکيد کلمة المرور",
+  "forgotPasswordSendCode": "إرسال رمز التحقق",
+  "forgotPasswordResetBtn": "إعادة تعيين کلمة المرور",
+  "forgotPasswordResend": "لم تستلم الرمز؟ إعادة الإرسال",
+  "forgotPasswordCodeSent": "تم إرسال رمز التحقق إلى بريدک الإلکتروني.",
+  "forgotPasswordSuccess": "تم إعادة تعيين کلمة المرور بنجاح! جارٍ العودة...",
+  "forgotPasswordErrEmail": "يرجى إدخال بريدک الإلکتروني.",
+  "forgotPasswordErrCode": "يرجى إدخال رمز التحقق.",
+  "forgotPasswordErrShort": "کلمة المرور يجب أن تکون 6 أحرف على الأقل.",
+  "forgotPasswordErrNoMatch": "کلمتا المرور غير متطابقتين."
 }
