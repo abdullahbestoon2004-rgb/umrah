@@ -54,6 +54,18 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   Future<void> _save() async {
     if (_saving) return;
     final t = AppLocalizations.of(context);
+
+    // Validate required fields
+    if (_locationCtrl.text.trim().isEmpty) {
+      showAppSnack(context, t.editAgencyProfileLocationRequired, isError: true);
+      return;
+    }
+    final sinceYear = int.tryParse(_sinceCtrl.text.trim());
+    if (_sinceCtrl.text.trim().isNotEmpty && (sinceYear == null || sinceYear < 1900 || sinceYear > DateTime.now().year)) {
+      showAppSnack(context, t.editAgencyProfileYearInvalid, isError: true);
+      return;
+    }
+
     setState(() => _saving = true);
     final tags = _tagsCtrl.text
         .split(',')

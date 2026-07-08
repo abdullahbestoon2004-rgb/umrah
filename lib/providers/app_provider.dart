@@ -366,6 +366,14 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> declineCompany(String id) async {
+    final err = await _service.setCompanyVerified(id, false);
+    if (err != null) return false;
+    _pendingCompanies = _pendingCompanies.where((c) => c.id != id).toList();
+    notifyListeners();
+    return true;
+  }
+
   Future<bool> createHomeAd({required String title, String? packageId, Uint8List? imageBytes}) async {
     final offer = offerById(packageId);
     final ad = await _service.createHomeAd(

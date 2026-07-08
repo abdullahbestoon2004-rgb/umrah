@@ -196,11 +196,15 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
           ),
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 420,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+                minHeight: 200,
+              ),
               child: CommissionLedger(commissions: provider.commissions),
             ),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
         ),
       ),
@@ -245,16 +249,35 @@ class _AdminHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
-                          borderRadius: BorderRadius.circular(13)),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 18),
-                    ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 40, height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(13)),
+                          child: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 18),
+                        ),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          provider.signOut();
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 40, height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(13)),
+                          child: const Icon(Icons.logout_rounded,
+                              color: Colors.white, size: 18),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 18),
                   Row(
@@ -377,21 +400,65 @@ class _PendingCompanyCard extends StatelessWidget {
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              final ok = await provider.approveCompany(company.id);
-              messenger.showSnackBar(appSnack(
-                  ok ? t.adminApproved : t.adminActionFailed,
-                  isError: !ok));
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-              decoration: BoxDecoration(
-                  color: AppColors.primary, borderRadius: BorderRadius.circular(11)),
-              child: Text(t.adminApprove,
-                  style: AppTheme.sans(12.5, weight: FontWeight.w700, color: Colors.white)),
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final ok = await provider.approveCompany(company.id);
+                  messenger.showSnackBar(appSnack(
+                      ok ? t.adminApproved : t.adminActionFailed,
+                      isError: !ok));
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                  decoration: BoxDecoration(
+                      color: AppColors.primary, borderRadius: BorderRadius.circular(11)),
+                  child: Text(t.adminApprove,
+                      style: AppTheme.sans(12.5, weight: FontWeight.w700, color: Colors.white)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (dialogCtx) => AlertDialog(
+                      backgroundColor: AppColors.background,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      title: Text(t.adminDeclineTitle, style: AppTheme.serif(20)),
+                      content: Text(t.adminDeclineBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogCtx, false),
+                          child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogCtx, true),
+                          child: Text(t.adminDecline,
+                              style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed != true) return;
+                  final ok = await provider.declineCompany(company.id);
+                  messenger.showSnackBar(appSnack(
+                      ok ? t.adminDeclined : t.adminActionFailed,
+                      isError: !ok));
+                },
+                child: Container(
+                  width: 34, height: 34,
+                  decoration: BoxDecoration(
+                      color: AppColors.errorRed.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.close_rounded,
+                      color: AppColors.errorRed, size: 17),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -447,6 +514,27 @@ class _AdRow extends StatelessWidget {
           GestureDetector(
             onTap: () async {
               final messenger = ScaffoldMessenger.of(context);
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (dialogCtx) => AlertDialog(
+                  backgroundColor: AppColors.background,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  title: Text(t.adminDeleteAdTitle, style: AppTheme.serif(20)),
+                  content: Text(t.adminDeleteAdBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogCtx, false),
+                      child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogCtx, true),
+                      child: Text(t.adminDeleteAdConfirm,
+                          style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
               final ok = await provider.deleteHomeAd(ad.id);
               if (!ok) messenger.showSnackBar(appSnack(t.adminActionFailed, isError: true));
             },

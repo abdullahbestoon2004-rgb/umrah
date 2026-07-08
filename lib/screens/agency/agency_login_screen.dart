@@ -254,13 +254,16 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: const Color(0xFFEAF1EC), borderRadius: BorderRadius.circular(14)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Text(t.agencyLoginDemoCredentials, style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.primary)),
-                    const SizedBox(height: 6),
-                    Text(t.agencyLoginDemoEmail, style: AppTheme.sans(12, color: AppColors.inkLight)),
-                    Text(t.agencyLoginDemoPassword, style: AppTheme.sans(12, color: AppColors.inkLight)),
+                    const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        t.agencyLoginInfoNote,
+                        style: AppTheme.sans(12, color: AppColors.inkLight),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -139,6 +139,11 @@ class ProfileScreen extends StatelessWidget {
                       : provider.isAgencyLoggedIn
                           ? t.profileAgencyDashboardWithName(provider.agencyCompany?.name ?? '')
                           : t.profileAgencyPortal,
+                  subtitle: provider.isAdminUser
+                      ? t.profileAdminDashboardSub
+                      : provider.isAgencyLoggedIn
+                          ? t.profileAgencyDashboardSub
+                          : t.profileAgencyPortalSub,
                   tint: AppColors.primary,
                   onTap: () {
                     if (provider.isAdminUser) {
@@ -150,6 +155,15 @@ class ProfileScreen extends StatelessWidget {
                     }
                   },
                 ),
+                if (provider.isAgencyLoggedIn && !provider.isAdminUser) ...[
+                  const SizedBox(height: 10),
+                  _MenuCard(
+                    icon: Icons.logout_rounded,
+                    label: t.profileAgencyLogout,
+                    tint: AppColors.muted,
+                    onTap: () => _confirmAgencyLogout(context, provider),
+                  ),
+                ],
               ]),
             ),
           ),
@@ -160,6 +174,32 @@ class ProfileScreen extends StatelessWidget {
 
   void _openSaved(BuildContext context, AppProvider provider) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => const _SavedScreen()));
+  }
+
+  Future<void> _confirmAgencyLogout(BuildContext context, AppProvider provider) async {
+    final t = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(t.profileAgencyLogoutTitle, style: AppTheme.serif(20)),
+        content: Text(t.profileAgencyLogoutBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: Text(t.profileAgencyLogout,
+                style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    provider.agencyLogout();
   }
 
   Future<void> _confirmSignOut(BuildContext context, AppProvider provider) async {
@@ -559,11 +599,12 @@ class _SectionLabel extends StatelessWidget {
 class _MenuCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String? subtitle;
   final String? badge;
   final String? trailingLabel;
   final Color? tint;
   final VoidCallback onTap;
-  const _MenuCard({required this.icon, required this.label, this.badge, this.trailingLabel, this.tint, required this.onTap});
+  const _MenuCard({required this.icon, required this.label, this.subtitle, this.badge, this.trailingLabel, this.tint, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -586,7 +627,19 @@ class _MenuCard extends StatelessWidget {
               child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 13),
-            Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600, color: const Color(0xFF1F2D26)), overflow: TextOverflow.ellipsis)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(label, style: AppTheme.sans(14, weight: FontWeight.w600, color: const Color(0xFF1F2D26)), overflow: TextOverflow.ellipsis),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(subtitle!, style: AppTheme.sans(11.5, color: AppColors.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ],
+              ),
+            ),
             if (trailingLabel != null) ...[
               Text(trailingLabel!, style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.muted)),
               const SizedBox(width: 6),

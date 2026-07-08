@@ -586,5 +586,28 @@
   "offerFallbackIncludeMeals": "{meals} dining daily",
   "@offerFallbackIncludeMeals": {"placeholders": {"meals": {"type": "String"}}},
   "offerFallbackIncludeZiyarah": "Guided ziyarah tours",
-  "offerFallbackIncludeGuide": "24/7 multilingual group guide"
+  "offerFallbackIncludeGuide": "24/7 multilingual group guide",
+
+  "profileAdminDashboardSub": "Manage agencies, ads, and commissions",
+  "profileAgencyDashboardSub": "Manage your packages and bookings",
+  "profileAgencyPortalSub": "Login as an agency or admin",
+  "profileAgencyLogout": "Logout from Agency",
+  "profileAgencyLogoutTitle": "Logout from Agency?",
+  "profileAgencyLogoutBody": "You will be signed out of the agency portal. You can log back in anytime.",
+  "profileGuestBadge": "Guest",
+  "profileStatAlerts": "Alerts",
+
+  "adminDecline": "Decline",
+  "adminDeclineTitle": "Decline Agency?",
+  "adminDeclineBody": "This agency will not be approved and their packages will not appear on the platform.",
+  "adminDeclined": "Agency declined.",
+
+  "agencyLoginInfoNote": "Use the credentials provided by your agency administrator to sign in.",
+
+  "editAgencyProfileLocationRequired": "Location is required.",
+  "editAgencyProfileYearInvalid": "Please enter a valid year (1900–present).",
+
+  "adminDeleteAdTitle": "Delete this ad?",
+  "adminDeleteAdBody": "This ad will be permanently removed from the home carousel.",
+  "adminDeleteAdConfirm": "Delete"
 }

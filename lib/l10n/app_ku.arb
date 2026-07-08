@@ -511,5 +511,28 @@
   "offerFallbackIncludeHotel": "هۆتێلی {acc} ئەستێرە — {hotel}",
   "offerFallbackIncludeMeals": "خواردنی {meals} ڕۆژانە",
   "offerFallbackIncludeZiyarah": "گەشتی زیارەتی ڕابەرایەتیکراو",
-  "offerFallbackIncludeGuide": "ڕابەرایەتی فرەزمان ٢٤/٧"
+  "offerFallbackIncludeGuide": "ڕابەرایەتی فرەزمان ٢٤/٧",
+
+  "profileAdminDashboardSub": "بەڕێوەبردنی ئاژانسەکان و رێکلامەکان و کۆمیسیۆنەکان",
+  "profileAgencyDashboardSub": "بەڕێوەبردنی پاکێجەکانت و حجزەکانت",
+  "profileAgencyPortalSub": "چوونە ژوورەوە وەک ئاژانس یان ئەدمین",
+  "profileAgencyLogout": "دەرچوون لە ئاژانس",
+  "profileAgencyLogoutTitle": "دەرچوون لە ئاژانس؟",
+  "profileAgencyLogoutBody": "دەردەچیت لە دەروازەی ئاژانسەکە. دەتوانیت هەرکاتێک دووبارە بچیتە ژوورەوە.",
+  "profileGuestBadge": "مێوان",
+  "profileStatAlerts": "ئاگاداریەکان",
+
+  "adminDecline": "ڕەتکردنەوە",
+  "adminDeclineTitle": "ڕەتکردنەوەی ئاژانس؟",
+  "adminDeclineBody": "ئەم ئاژانسە پەسەند ناکرێت و پاکێجەکانی لە پلاتفۆرمەکە دەرناکەوێت.",
+  "adminDeclined": "ئاژانسەکە ڕەتکرایەوە.",
+
+  "agencyLoginInfoNote": "ئەو زانیاریانەی بەکاربێنە کە لەلایەن بەڕێوەبەری ئاژانسەکەت پێتدراون بۆ چوونە ژوورەوە.",
+
+  "editAgencyProfileLocationRequired": "شوێن پێویستە.",
+  "editAgencyProfileYearInvalid": "تکایە ساڵێکی دروست بنووسە (1900–ئێستا).",
+
+  "adminDeleteAdTitle": "سڕینەوەی ئەم رێکلامە؟",
+  "adminDeleteAdBody": "ئەم رێکلامە بەتەواوی لە پەڕەی سەرەکیەوە سڕێنەوە دەکرێت.",
+  "adminDeleteAdConfirm": "سڕینەوە"
 }

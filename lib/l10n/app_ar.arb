@@ -511,5 +511,28 @@
   "offerFallbackIncludeHotel": "فندق {acc} نجوم — {hotel}",
   "offerFallbackIncludeMeals": "وجبات {meals} يوميًا",
   "offerFallbackIncludeZiyarah": "جولات زيارة بإشراف مرشد",
-  "offerFallbackIncludeGuide": "مرشد متعدد اللغات على مدار الساعة"
+  "offerFallbackIncludeGuide": "مرشد متعدد اللغات على مدار الساعة",
+
+  "profileAdminDashboardSub": "إدارة الوكالات والإعلانات والعمولات",
+  "profileAgencyDashboardSub": "إدارة باقاتك وحجوزاتك",
+  "profileAgencyPortalSub": "تسجيل الدخول كوكالة أو مسؤول",
+  "profileAgencyLogout": "تسجيل الخروج من الوكالة",
+  "profileAgencyLogoutTitle": "تسجيل الخروج من الوكالة؟",
+  "profileAgencyLogoutBody": "سيتم تسجيل خروجك من بوابة الوكالة. يمكنك تسجيل الدخول مرة أخرى في أي وقت.",
+  "profileGuestBadge": "ضيف",
+  "profileStatAlerts": "تنبيهات",
+
+  "adminDecline": "رفض",
+  "adminDeclineTitle": "رفض الوكالة؟",
+  "adminDeclineBody": "لن تتم الموافقة على هذه الوكالة ولن تظهر باقاتها على المنصة.",
+  "adminDeclined": "تم رفض الوكالة.",
+
+  "agencyLoginInfoNote": "استخدم بيانات الاعتماد المقدمة من مسؤول وكالتك لتسجيل الدخول.",
+
+  "editAgencyProfileLocationRequired": "الموقع مطلوب.",
+  "editAgencyProfileYearInvalid": "يرجى إدخال سنة صالحة (1900–الحاضر).",
+
+  "adminDeleteAdTitle": "حذف هذا الإعلان؟",
+  "adminDeleteAdBody": "سيتم حذف هذا الإعلان نهائيًا من الصفحة الرئيسية.",
+  "adminDeleteAdConfirm": "حذف"
 }

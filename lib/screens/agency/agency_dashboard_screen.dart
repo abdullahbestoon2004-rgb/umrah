@@ -283,9 +283,31 @@ class _DashboardHeader extends StatelessWidget {
                   ],
                   const SizedBox(width: 10),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      final t2 = AppLocalizations.of(context);
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (dialogCtx) => AlertDialog(
+                          backgroundColor: AppColors.background,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          title: Text(t2.profileAgencyLogoutTitle, style: AppTheme.serif(20)),
+                          content: Text(t2.profileAgencyLogoutBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogCtx, false),
+                              child: Text(t2.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogCtx, true),
+                              child: Text(t2.profileAgencyLogout,
+                                  style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true) return;
                       provider.agencyLogout();
-                      Navigator.pop(context);
+                      if (context.mounted) Navigator.pop(context);
                     },
                     child: Container(
                       width: 40, height: 40,
