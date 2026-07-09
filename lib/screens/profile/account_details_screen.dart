@@ -16,11 +16,8 @@ class AccountDetailsScreen extends StatefulWidget {
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _phoneCtrl;
-  final _passCtrl = TextEditingController();
   bool _saving = false;
-  bool _changingPass = false;
   bool _deleting = false;
-  bool _obscure = true;
 
   @override
   void initState() {
@@ -34,7 +31,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   void dispose() {
     _nameCtrl.dispose();
     _phoneCtrl.dispose();
-    _passCtrl.dispose();
     super.dispose();
   }
 
@@ -56,21 +52,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     showAppSnack(context, err ?? t.accountUpdated, isError: err != null);
   }
 
-  Future<void> _changePassword() async {
-    if (_changingPass) return;
-    final t = AppLocalizations.of(context);
-    final pass = _passCtrl.text;
-    if (pass.length < 6) {
-      showAppSnack(context, t.accountPasswordTooShort, isError: true);
-      return;
-    }
-    setState(() => _changingPass = true);
-    final err = await context.read<AppProvider>().changePassword(pass);
-    if (!mounted) return;
-    setState(() => _changingPass = false);
-    if (err == null) _passCtrl.clear();
-    showAppSnack(context, err ?? t.accountPasswordUpdated, isError: err != null);
-  }
 
   Future<void> _confirmDelete() async {
     final t = AppLocalizations.of(context);
@@ -168,27 +149,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               onTap: _save,
             ),
             const SizedBox(height: 32),
-
-            Text(t.accountChangePassword, style: AppTheme.serif(19)),
-            const SizedBox(height: 12),
-            _Field(
-              label: t.accountNewPassword,
-              controller: _passCtrl,
-              hint: t.accountNewPasswordHint,
-              obscure: _obscure,
-              suffix: IconButton(
-                icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: AppColors.muted, size: 20),
-                onPressed: () => setState(() => _obscure = !_obscure),
-              ),
-            ),
-            const SizedBox(height: 14),
-            _PrimaryBtn(
-              label: t.accountChangePassword,
-              busy: _changingPass,
-              onTap: _changePassword,
-            ),
-            const SizedBox(height: 36),
 
             Text(t.accountDangerZone,
                 style: AppTheme.sans(13, weight: FontWeight.w800, color: AppColors.errorRed)),

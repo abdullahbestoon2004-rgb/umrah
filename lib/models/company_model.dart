@@ -15,6 +15,7 @@ class Company {
   final bool isVerified;
   final Color tint;
   String? logoUrl;
+  String? bannerUrl;
 
   Company({
     required this.id,
@@ -31,6 +32,7 @@ class Company {
     this.isVerified = false,
     this.tint = const Color(0xFF0F5C4D),
     this.logoUrl,
+    this.bannerUrl,
   });
 
   String nameFor(String lang) {
@@ -102,5 +104,6 @@ class Company {
         isVerified: (r['is_verified'] ?? false) as bool,
         tint: parseTint(r['tint'] as String?),
         logoUrl: r['logo_url'] as String?,
+        bannerUrl: r['banner_url'] as String?,
       );
 }

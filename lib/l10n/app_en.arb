@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Umrah",
+  "appTitle": "Tawaf",
   "@appTitle": {"description": "App name shown in OS task switcher"},
 
   "navHome": "Home",
@@ -431,6 +431,7 @@
   "editAgencyProfileTagsLabel": "Tags (comma-separated)",
   "editAgencyProfileTagsHint": "e.g. Govt. licensed, Family specialist",
   "editAgencyProfileTagsBadgeHint": "Tags appear on your agency profile as badges.",
+  "editAgencyProfileBannerLabel": "Background Image",
 
   "addEditOfferEditTitle": "Edit Package",
   "addEditOfferNewTitle": "New Package",
@@ -558,6 +559,8 @@
   "agencyLogoAdd": "Add logo",
   "agencyLogoChange": "Change logo",
   "agencyLogoOptional": "Optional — shown on the Agencies page",
+  "agencyBannerAdd": "Add banner",
+  "agencyBannerChange": "Change banner",
   "agencyNotAgencyAccount": "This account is not an agency account.",
   "addEditOfferSaveFailed": "Could not save the package. Check your connection and try again.",
 

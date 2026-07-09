@@ -599,7 +599,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<String?> updateCompanyProfile(String companyId, {
     String? location, String? about, List<String>? tags, int? since,
-    Uint8List? logoBytes,
+    Uint8List? logoBytes, Uint8List? bannerBytes,
   }) async {
     final err = await _service.updateCompany(companyId,
         location: location, about: about, tags: tags, since: since);
@@ -614,6 +614,10 @@ class AppProvider extends ChangeNotifier {
     if (logoBytes != null) {
       final url = await _service.uploadCompanyLogo(companyId, logoBytes);
       if (url != null) c?.logoUrl = url;
+    }
+    if (bannerBytes != null) {
+      final url = await _service.uploadCompanyBanner(companyId, bannerBytes);
+      if (url != null) c?.bannerUrl = url;
     }
     notifyListeners();
     return null;

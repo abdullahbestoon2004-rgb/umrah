@@ -78,14 +78,14 @@ void main() {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ));
-    runApp(const UmrahApp());
+    runApp(const TawafApp());
   }, (error, stack) => _logCrash(error, stack, context: 'runZonedGuarded'));
 }
 
-class UmrahApp extends StatelessWidget {
+class TawafApp extends StatelessWidget {
   /// Injectable for tests; defaults to the real backend-backed provider.
   final AppProvider Function()? createProvider;
-  const UmrahApp({super.key, this.createProvider});
+  const TawafApp({super.key, this.createProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +95,7 @@ class UmrahApp extends StatelessWidget {
         builder: (context, provider, _) {
           final isRtl = provider.locale.languageCode != 'en';
           return MaterialApp(
-            title: 'Umrah',
+            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.theme,
             locale: provider.locale,

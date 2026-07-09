@@ -24,6 +24,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   late final TextEditingController _tagsCtrl;
   late final TextEditingController _sinceCtrl;
   Uint8List? _logoBytes;
+  Uint8List? _bannerBytes;
   bool _saving = false;
 
   @override
@@ -49,6 +50,13 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     if (xfile == null) return;
     final bytes = await xfile.readAsBytes();
     setState(() => _logoBytes = bytes);
+  }
+
+  Future<void> _pickBanner() async {
+    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (xfile == null) return;
+    final bytes = await xfile.readAsBytes();
+    setState(() => _bannerBytes = bytes);
   }
 
   Future<void> _save() async {
@@ -80,6 +88,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
       tags:     tags,
       since:    int.tryParse(_sinceCtrl.text.trim()),
       logoBytes: _logoBytes,
+      bannerBytes: _bannerBytes,
     );
 
     if (!mounted) return;
@@ -170,6 +179,43 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                     const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 20),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Background Banner Picker
+            Text(t.editAgencyProfileBannerLabel, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _pickBanner,
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: _bannerBytes != null
+                    ? Image.memory(_bannerBytes!, fit: BoxFit.cover)
+                    : (widget.company.bannerUrl ?? '').isNotEmpty
+                        ? Image.network(widget.company.bannerUrl!, fit: BoxFit.cover)
+                        : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 28),
+                                const SizedBox(height: 6),
+                                Text(
+                                  (_bannerBytes != null || (widget.company.bannerUrl ?? '').isNotEmpty)
+                                      ? t.agencyBannerChange
+                                      : t.agencyBannerAdd,
+                                  style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.primary),
+                                ),
+                              ],
+                            ),
+                          ),
               ),
             ),
             const SizedBox(height: 24),

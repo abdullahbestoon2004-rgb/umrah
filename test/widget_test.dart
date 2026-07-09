@@ -11,7 +11,7 @@ void main() {
   setUpAll(() => SharedPreferences.setMockInitialValues({}));
 
   testWidgets('App launches without crashing', (WidgetTester tester) async {
-    await tester.pumpWidget(UmrahApp(
+    await tester.pumpWidget(TawafApp(
       createProvider: () => AppProvider(service: FakeService()),
     ));
     await tester.pumpAndSettle();

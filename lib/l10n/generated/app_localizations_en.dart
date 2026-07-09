@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Umrah';
+  String get appTitle => 'Tawaf';
 
   @override
   String get navHome => 'Home';
@@ -1240,6 +1240,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tags appear on your agency profile as badges.';
 
   @override
+  String get editAgencyProfileBannerLabel => 'Background Image';
+
+  @override
   String get addEditOfferEditTitle => 'Edit Package';
 
   @override
@@ -1463,7 +1466,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSectionSupport => 'Support';
 
   @override
-  String get profileGuestBadge => 'GUEST';
+  String get profileGuestBadge => 'Guest';
 
   @override
   String get profileStatAlerts => 'Alerts';
@@ -1633,6 +1636,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agencyLogoOptional => 'Optional — shown on the Agencies page';
 
   @override
+  String get agencyBannerAdd => 'Add banner';
+
+  @override
+  String get agencyBannerChange => 'Change banner';
+
+  @override
   String get agencyNotAgencyAccount => 'This account is not an agency account.';
 
   @override
@@ -1718,4 +1727,111 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offerFallbackIncludeGuide => '24/7 multilingual group guide';
+
+  @override
+  String get profileAdminDashboardSub =>
+      'Manage agencies, ads, and commissions';
+
+  @override
+  String get profileAgencyDashboardSub => 'Manage your packages and bookings';
+
+  @override
+  String get profileAgencyPortalSub => 'Login as an agency or admin';
+
+  @override
+  String get profileAgencyLogout => 'Logout from Agency';
+
+  @override
+  String get profileAgencyLogoutTitle => 'Logout from Agency?';
+
+  @override
+  String get profileAgencyLogoutBody =>
+      'You will be signed out of the agency portal. You can log back in anytime.';
+
+  @override
+  String get adminDecline => 'Decline';
+
+  @override
+  String get adminDeclineTitle => 'Decline Agency?';
+
+  @override
+  String get adminDeclineBody =>
+      'This agency will not be approved and their packages will not appear on the platform.';
+
+  @override
+  String get adminDeclined => 'Agency declined.';
+
+  @override
+  String get agencyLoginInfoNote =>
+      'Use the credentials provided by your agency administrator to sign in.';
+
+  @override
+  String get editAgencyProfileLocationRequired => 'Location is required.';
+
+  @override
+  String get editAgencyProfileYearInvalid =>
+      'Please enter a valid year (1900–present).';
+
+  @override
+  String get adminDeleteAdTitle => 'Delete this ad?';
+
+  @override
+  String get adminDeleteAdBody =>
+      'This ad will be permanently removed from the home carousel.';
+
+  @override
+  String get adminDeleteAdConfirm => 'Delete';
+
+  @override
+  String get forgotPasswordLink => 'Forgot password?';
+
+  @override
+  String get forgotPasswordTitle => 'Reset Password';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email address and we\'ll send you a verification code to reset your password.';
+
+  @override
+  String get forgotPasswordStep2Subtitle =>
+      'Enter the 6-digit code sent to your email and choose a new password.';
+
+  @override
+  String get forgotPasswordCodeLabel => 'Verification Code';
+
+  @override
+  String get forgotPasswordNewPass => 'New Password';
+
+  @override
+  String get forgotPasswordConfirmPass => 'Confirm Password';
+
+  @override
+  String get forgotPasswordSendCode => 'Send Reset Code';
+
+  @override
+  String get forgotPasswordResetBtn => 'Reset Password';
+
+  @override
+  String get forgotPasswordResend => 'Didn\'t receive the code? Resend';
+
+  @override
+  String get forgotPasswordCodeSent =>
+      'A verification code has been sent to your email.';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'Password reset successfully! Redirecting to login...';
+
+  @override
+  String get forgotPasswordErrEmail => 'Please enter your email address.';
+
+  @override
+  String get forgotPasswordErrCode => 'Please enter the verification code.';
+
+  @override
+  String get forgotPasswordErrShort =>
+      'Password must be at least 6 characters.';
+
+  @override
+  String get forgotPasswordErrNoMatch => 'Passwords do not match.';
 }

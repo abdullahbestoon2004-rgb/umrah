@@ -582,16 +582,35 @@ class _AgencyCard extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [company.tint, gradDark],
+                        if ((company.bannerUrl ?? '').isNotEmpty) ...[
+                          Image.network(
+                            company.bannerUrl!,
+                            fit: BoxFit.cover,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.2),
+                                  Colors.black.withOpacity(0.0),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const IslamicPattern(opacity: 0.10, cell: 40),
+                        ] else ...[
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [company.tint, gradDark],
+                              ),
+                            ),
+                          ),
+                          const IslamicPattern(opacity: 0.10, cell: 40),
+                        ],
                         Positioned(
                           top: 10,
                           right: 10,

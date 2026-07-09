@@ -61,6 +61,7 @@ abstract class DataService {
   Future<String?> updateCompany(String id,
       {String? location, String? about, List<String>? tags, int? since});
   Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes);
+  Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes);
 
   Future<Offer?> createPackage(Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company);
   Future<String?> updatePackage(String id, Map<String, dynamic> fields, List<ItineraryDay> itinerary);
@@ -454,8 +455,28 @@ class SupabaseService implements DataService {
           '${_c.storage.from('package-images').getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
       await _c.from('companies').update({'logo_url': url}).eq('id', companyId);
       return url;
-    } catch (_) {
+    } catch (e) {
+      print('uploadCompanyLogo error: $e');
       return null; // bucket not created yet (see supabase/patches.sql)
+    }
+  }
+
+  @override
+  Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes) async {
+    try {
+      final path = 'banners/$companyId.jpg';
+      await _c.storage.from('package-images').uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+          );
+      final url =
+          '${_c.storage.from('package-images').getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
+      await _c.from('companies').update({'banner_url': url}).eq('id', companyId);
+      return url;
+    } catch (e) {
+      print('uploadCompanyBanner error: $e');
+      return null;
     }
   }
 

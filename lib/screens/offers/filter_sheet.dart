@@ -37,7 +37,11 @@ class _FilterSheetState extends State<FilterSheet> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final screenHeight = MediaQuery.of(context).size.height;
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: screenHeight * 0.8,
+      ),
       decoration: const BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),

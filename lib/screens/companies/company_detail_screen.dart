@@ -97,6 +97,27 @@ class _CompanyHeader extends StatelessWidget {
         bottom: false,
         child: Stack(
           children: [
+            if ((company.bannerUrl ?? '').isNotEmpty)
+              Positioned.fill(
+                child: Image.network(
+                  company.bannerUrl!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      company.tint.withOpacity(0.4),
+                      const Color(0xFF0A3F35).withOpacity(0.9),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),

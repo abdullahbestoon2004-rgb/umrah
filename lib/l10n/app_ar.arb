@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appTitle": "عمرة",
+  "appTitle": "طواف",
 
   "navHome": "الرئيسية",
   "navAgencies": "الوكالات",
@@ -362,6 +362,7 @@
   "editAgencyProfileTagsLabel": "الوسوم (مفصولة بفواصل)",
   "editAgencyProfileTagsHint": "مثال: مرخّصة حكومياً، متخصصة في العائلات",
   "editAgencyProfileTagsBadgeHint": "تظهر الوسوم في ملف وكالتك كشارات.",
+  "editAgencyProfileBannerLabel": "صورة الخلفية",
 
   "addEditOfferEditTitle": "تعديل الباقة",
   "addEditOfferNewTitle": "باقة جديدة",
@@ -487,6 +488,8 @@
   "agencyLogoAdd": "إضافة شعار",
   "agencyLogoChange": "تغيير الشعار",
   "agencyLogoOptional": "اختياري — يظهر في صفحة الوكالات",
+  "agencyBannerAdd": "إضافة صورة الغلاف",
+  "agencyBannerChange": "تغيير صورة الغلاف",
   "agencyNotAgencyAccount": "هذا الحساب ليس حساب وكالة.",
   "addEditOfferSaveFailed": "تعذر حفظ الباقة. تحقق من الاتصال وحاول مرة أخرى.",
 

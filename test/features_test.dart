@@ -140,6 +140,9 @@ class FakeService implements DataService {
   Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes) async => null;
 
   @override
+  Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes) async => null;
+
+  @override
   Future<Offer?> createPackage(Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company) async {
     final o = Offer(
       id: 'o${offers.length + 1}',

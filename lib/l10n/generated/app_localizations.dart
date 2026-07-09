@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// App name shown in OS task switcher
   ///
   /// In en, this message translates to:
-  /// **'Umrah'**
+  /// **'Tawaf'**
   String get appTitle;
 
   /// No description provided for @navHome.
@@ -2136,6 +2136,12 @@ abstract class AppLocalizations {
   /// **'Tags appear on your agency profile as badges.'**
   String get editAgencyProfileTagsBadgeHint;
 
+  /// No description provided for @editAgencyProfileBannerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Background Image'**
+  String get editAgencyProfileBannerLabel;
+
   /// No description provided for @addEditOfferEditTitle.
   ///
   /// In en, this message translates to:
@@ -2565,7 +2571,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileGuestBadge.
   ///
   /// In en, this message translates to:
-  /// **'GUEST'**
+  /// **'Guest'**
   String get profileGuestBadge;
 
   /// No description provided for @profileStatAlerts.
@@ -2880,6 +2886,18 @@ abstract class AppLocalizations {
   /// **'Optional — shown on the Agencies page'**
   String get agencyLogoOptional;
 
+  /// No description provided for @agencyBannerAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add banner'**
+  String get agencyBannerAdd;
+
+  /// No description provided for @agencyBannerChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change banner'**
+  String get agencyBannerChange;
+
   /// No description provided for @agencyNotAgencyAccount.
   ///
   /// In en, this message translates to:
@@ -3023,6 +3041,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'24/7 multilingual group guide'**
   String get offerFallbackIncludeGuide;
+
+  /// No description provided for @profileAdminDashboardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage agencies, ads, and commissions'**
+  String get profileAdminDashboardSub;
+
+  /// No description provided for @profileAgencyDashboardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your packages and bookings'**
+  String get profileAgencyDashboardSub;
+
+  /// No description provided for @profileAgencyPortalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Login as an agency or admin'**
+  String get profileAgencyPortalSub;
+
+  /// No description provided for @profileAgencyLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from Agency'**
+  String get profileAgencyLogout;
+
+  /// No description provided for @profileAgencyLogoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from Agency?'**
+  String get profileAgencyLogoutTitle;
+
+  /// No description provided for @profileAgencyLogoutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be signed out of the agency portal. You can log back in anytime.'**
+  String get profileAgencyLogoutBody;
+
+  /// No description provided for @adminDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get adminDecline;
+
+  /// No description provided for @adminDeclineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline Agency?'**
+  String get adminDeclineTitle;
+
+  /// No description provided for @adminDeclineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This agency will not be approved and their packages will not appear on the platform.'**
+  String get adminDeclineBody;
+
+  /// No description provided for @adminDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency declined.'**
+  String get adminDeclined;
+
+  /// No description provided for @agencyLoginInfoNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the credentials provided by your agency administrator to sign in.'**
+  String get agencyLoginInfoNote;
+
+  /// No description provided for @editAgencyProfileLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is required.'**
+  String get editAgencyProfileLocationRequired;
+
+  /// No description provided for @editAgencyProfileYearInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid year (1900–present).'**
+  String get editAgencyProfileYearInvalid;
+
+  /// No description provided for @adminDeleteAdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this ad?'**
+  String get adminDeleteAdTitle;
+
+  /// No description provided for @adminDeleteAdBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This ad will be permanently removed from the home carousel.'**
+  String get adminDeleteAdBody;
+
+  /// No description provided for @adminDeleteAdConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminDeleteAdConfirm;
+
+  /// No description provided for @forgotPasswordLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPasswordLink;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we\'ll send you a verification code to reset your password.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @forgotPasswordStep2Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code sent to your email and choose a new password.'**
+  String get forgotPasswordStep2Subtitle;
+
+  /// No description provided for @forgotPasswordCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get forgotPasswordCodeLabel;
+
+  /// No description provided for @forgotPasswordNewPass.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get forgotPasswordNewPass;
+
+  /// No description provided for @forgotPasswordConfirmPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get forgotPasswordConfirmPass;
+
+  /// No description provided for @forgotPasswordSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Code'**
+  String get forgotPasswordSendCode;
+
+  /// No description provided for @forgotPasswordResetBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get forgotPasswordResetBtn;
+
+  /// No description provided for @forgotPasswordResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive the code? Resend'**
+  String get forgotPasswordResend;
+
+  /// No description provided for @forgotPasswordCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code has been sent to your email.'**
+  String get forgotPasswordCodeSent;
+
+  /// No description provided for @forgotPasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully! Redirecting to login...'**
+  String get forgotPasswordSuccess;
+
+  /// No description provided for @forgotPasswordErrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address.'**
+  String get forgotPasswordErrEmail;
+
+  /// No description provided for @forgotPasswordErrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the verification code.'**
+  String get forgotPasswordErrCode;
+
+  /// No description provided for @forgotPasswordErrShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get forgotPasswordErrShort;
+
+  /// No description provided for @forgotPasswordErrNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get forgotPasswordErrNoMatch;
 }
 
 class _AppLocalizationsDelegate

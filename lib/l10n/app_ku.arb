@@ -1,6 +1,6 @@
 {
   "@@locale": "ku",
-  "appTitle": "عومرە",
+  "appTitle": "تەواف",
 
   "navHome": "ماڵەوە",
   "navAgencies": "کۆمپانیاکان",
@@ -362,6 +362,7 @@
   "editAgencyProfileTagsLabel": "تاگەکان (بە کۆما جیاکراوەتەوە)",
   "editAgencyProfileTagsHint": "بۆ نموونە: مۆڵەتدراو لەلایەن حکومەتەوە، پسپۆڕی خێزانی",
   "editAgencyProfileTagsBadgeHint": "تاگەکان وەک باج لەسەر پڕۆفایلی کۆمپانیاکەت دەردەکەون.",
+  "editAgencyProfileBannerLabel": "وێنەی پاشبنەما",
 
   "addEditOfferEditTitle": "دەستکاریکردنی گەشت",
   "addEditOfferNewTitle": "گەشتی نوێ",
@@ -487,6 +488,8 @@
   "agencyLogoAdd": "زیادکردنی لۆگۆ",
   "agencyLogoChange": "گۆڕینی لۆگۆ",
   "agencyLogoOptional": "ئارەزوومەندانەیە — لە پەڕەی کۆمپانیاکان دەردەکەوێت",
+  "agencyBannerAdd": "زیادکردنی وێنەی بەرگ",
+  "agencyBannerChange": "گۆڕینی وێنەی بەرگ",
   "agencyNotAgencyAccount": "ئەم هەژمارە هەژماری کۆمپانیا نییە.",
   "addEditOfferSaveFailed": "نەتوانرا گەشتەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.",
 

@@ -195,3 +195,6 @@ grant update (preferred_pay_method) on profiles to authenticated;
 --     never had a real TOTP/OTP implementation behind it, so the toggle
 --     was pure theatre. Removed rather than left half-built and misleading.
 alter table profiles drop column if exists two_factor_enabled;
+
+-- 12. Add banner_url column to companies table for background images
+alter table companies add column if not exists banner_url text;

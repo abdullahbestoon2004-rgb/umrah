@@ -9,7 +9,7 @@ class AppLocalizationsKu extends AppLocalizations {
   AppLocalizationsKu([String locale = 'ku']) : super(locale);
 
   @override
-  String get appTitle => 'عومرە';
+  String get appTitle => 'تەواف';
 
   @override
   String get navHome => 'ماڵەوە';
@@ -1248,6 +1248,9 @@ class AppLocalizationsKu extends AppLocalizations {
       'تاگەکان وەک باج لەسەر پڕۆفایلی کۆمپانیاکەت دەردەکەون.';
 
   @override
+  String get editAgencyProfileBannerLabel => 'وێنەی پاشبنەما';
+
+  @override
   String get addEditOfferEditTitle => 'دەستکاریکردنی گەشت';
 
   @override
@@ -1473,10 +1476,10 @@ class AppLocalizationsKu extends AppLocalizations {
   String get profileSectionSupport => 'پشتگیری';
 
   @override
-  String get profileGuestBadge => 'میوان';
+  String get profileGuestBadge => 'مێوان';
 
   @override
-  String get profileStatAlerts => 'ئاگادارییەکان';
+  String get profileStatAlerts => 'ئاگاداریەکان';
 
   @override
   String get profileAccountDetails => 'وردەکاری هەژمار';
@@ -1645,6 +1648,12 @@ class AppLocalizationsKu extends AppLocalizations {
       'ئارەزوومەندانەیە — لە پەڕەی کۆمپانیاکان دەردەکەوێت';
 
   @override
+  String get agencyBannerAdd => 'زیادکردنی وێنەی بەرگ';
+
+  @override
+  String get agencyBannerChange => 'گۆڕینی وێنەی بەرگ';
+
+  @override
   String get agencyNotAgencyAccount => 'ئەم هەژمارە هەژماری کۆمپانیا نییە.';
 
   @override
@@ -1730,4 +1739,110 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get offerFallbackIncludeGuide => 'ڕابەرایەتی فرەزمان ٢٤/٧';
+
+  @override
+  String get profileAdminDashboardSub =>
+      'بەڕێوەبردنی ئاژانسەکان و رێکلامەکان و کۆمیسیۆنەکان';
+
+  @override
+  String get profileAgencyDashboardSub => 'بەڕێوەبردنی پاکێجەکانت و حجزەکانت';
+
+  @override
+  String get profileAgencyPortalSub => 'چوونە ژوورەوە وەک ئاژانس یان ئەدمین';
+
+  @override
+  String get profileAgencyLogout => 'دەرچوون لە ئاژانس';
+
+  @override
+  String get profileAgencyLogoutTitle => 'دەرچوون لە ئاژانس؟';
+
+  @override
+  String get profileAgencyLogoutBody =>
+      'دەردەچیت لە دەروازەی ئاژانسەکە. دەتوانیت هەرکاتێک دووبارە بچیتە ژوورەوە.';
+
+  @override
+  String get adminDecline => 'ڕەتکردنەوە';
+
+  @override
+  String get adminDeclineTitle => 'ڕەتکردنەوەی ئاژانس؟';
+
+  @override
+  String get adminDeclineBody =>
+      'ئەم ئاژانسە پەسەند ناکرێت و پاکێجەکانی لە پلاتفۆرمەکە دەرناکەوێت.';
+
+  @override
+  String get adminDeclined => 'ئاژانسەکە ڕەتکرایەوە.';
+
+  @override
+  String get agencyLoginInfoNote =>
+      'ئەو زانیاریانەی بەکاربێنە کە لەلایەن بەڕێوەبەری ئاژانسەکەت پێتدراون بۆ چوونە ژوورەوە.';
+
+  @override
+  String get editAgencyProfileLocationRequired => 'شوێن پێویستە.';
+
+  @override
+  String get editAgencyProfileYearInvalid =>
+      'تکایە ساڵێکی دروست بنووسە (1900–ئێستا).';
+
+  @override
+  String get adminDeleteAdTitle => 'سڕینەوەی ئەم رێکلامە؟';
+
+  @override
+  String get adminDeleteAdBody =>
+      'ئەم رێکلامە بەتەواوی لە پەڕەی سەرەکیەوە سڕێنەوە دەکرێت.';
+
+  @override
+  String get adminDeleteAdConfirm => 'سڕینەوە';
+
+  @override
+  String get forgotPasswordLink => 'وشەی نهێنیت لەبیرچووە؟';
+
+  @override
+  String get forgotPasswordTitle => 'ڕیسێتکردنی وشەی نهێنی';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'ئیمەیلەکەت بنووسە و کۆدێکی پشتڕاستکردنەوە بۆت دەنێرین.';
+
+  @override
+  String get forgotPasswordStep2Subtitle =>
+      'کۆدی 6 ژمارەیی کە بۆ ئیمەیلەکەت نێردراوە بنووسە و وشەیەکی نوێ هەڵبژێرە.';
+
+  @override
+  String get forgotPasswordCodeLabel => 'کۆدی پشتڕاستکردنەوە';
+
+  @override
+  String get forgotPasswordNewPass => 'وشەی نهێنیی نوێ';
+
+  @override
+  String get forgotPasswordConfirmPass => 'دڵنیاکردنەوەی وشەی نهێنی';
+
+  @override
+  String get forgotPasswordSendCode => 'ناردنی کۆدی پشتڕاستکردنەوە';
+
+  @override
+  String get forgotPasswordResetBtn => 'ڕیسێتکردنی وشەی نهێنی';
+
+  @override
+  String get forgotPasswordResend => 'کۆدەکەت وەرنەگرت؟ دووبارە بینێرە';
+
+  @override
+  String get forgotPasswordCodeSent =>
+      'کۆدی پشتڕاستکردنەوە بۆ ئیمەیلەکەت نێردرا.';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'وشەی نهێنی بە سەرکەوتی ڕیسێتکرا! گەڕانەوە...';
+
+  @override
+  String get forgotPasswordErrEmail => 'تکایە ئیمەیلەکەت بنووسە.';
+
+  @override
+  String get forgotPasswordErrCode => 'تکایە کۆدی پشتڕاستکردنەوە بنووسە.';
+
+  @override
+  String get forgotPasswordErrShort => 'وشەی نهێنی دەبێت لانی کەم 6 پیت بێت.';
+
+  @override
+  String get forgotPasswordErrNoMatch => 'وشەی نهێنیەکان وەک نین.';
 }

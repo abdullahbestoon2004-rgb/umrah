@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'عمرة';
+  String get appTitle => 'طواف';
 
   @override
   String get navHome => 'الرئيسية';
@@ -1234,6 +1234,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'تظهر الوسوم في ملف وكالتك كشارات.';
 
   @override
+  String get editAgencyProfileBannerLabel => 'صورة الخلفية';
+
+  @override
   String get addEditOfferEditTitle => 'تعديل الباقة';
 
   @override
@@ -1455,7 +1458,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileSectionSupport => 'الدعم';
 
   @override
-  String get profileGuestBadge => 'زائر';
+  String get profileGuestBadge => 'ضيف';
 
   @override
   String get profileStatAlerts => 'تنبيهات';
@@ -1623,6 +1626,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get agencyLogoOptional => 'اختياري — يظهر في صفحة الوكالات';
 
   @override
+  String get agencyBannerAdd => 'إضافة صورة الغلاف';
+
+  @override
+  String get agencyBannerChange => 'تغيير صورة الغلاف';
+
+  @override
   String get agencyNotAgencyAccount => 'هذا الحساب ليس حساب وكالة.';
 
   @override
@@ -1708,4 +1717,110 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get offerFallbackIncludeGuide => 'مرشد متعدد اللغات على مدار الساعة';
+
+  @override
+  String get profileAdminDashboardSub => 'إدارة الوكالات والإعلانات والعمولات';
+
+  @override
+  String get profileAgencyDashboardSub => 'إدارة باقاتك وحجوزاتك';
+
+  @override
+  String get profileAgencyPortalSub => 'تسجيل الدخول كوكالة أو مسؤول';
+
+  @override
+  String get profileAgencyLogout => 'تسجيل الخروج من الوكالة';
+
+  @override
+  String get profileAgencyLogoutTitle => 'تسجيل الخروج من الوكالة؟';
+
+  @override
+  String get profileAgencyLogoutBody =>
+      'سيتم تسجيل خروجك من بوابة الوكالة. يمكنك تسجيل الدخول مرة أخرى في أي وقت.';
+
+  @override
+  String get adminDecline => 'رفض';
+
+  @override
+  String get adminDeclineTitle => 'رفض الوكالة؟';
+
+  @override
+  String get adminDeclineBody =>
+      'لن تتم الموافقة على هذه الوكالة ولن تظهر باقاتها على المنصة.';
+
+  @override
+  String get adminDeclined => 'تم رفض الوكالة.';
+
+  @override
+  String get agencyLoginInfoNote =>
+      'استخدم بيانات الاعتماد المقدمة من مسؤول وكالتك لتسجيل الدخول.';
+
+  @override
+  String get editAgencyProfileLocationRequired => 'الموقع مطلوب.';
+
+  @override
+  String get editAgencyProfileYearInvalid =>
+      'يرجى إدخال سنة صالحة (1900–الحاضر).';
+
+  @override
+  String get adminDeleteAdTitle => 'حذف هذا الإعلان؟';
+
+  @override
+  String get adminDeleteAdBody =>
+      'سيتم حذف هذا الإعلان نهائيًا من الصفحة الرئيسية.';
+
+  @override
+  String get adminDeleteAdConfirm => 'حذف';
+
+  @override
+  String get forgotPasswordLink => 'نسيت کلمة المرور؟';
+
+  @override
+  String get forgotPasswordTitle => 'إعادة تعيين کلمة المرور';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'أدخل بريدک الإلکتروني وسنرسل لک رمز تحقق لإعادة تعيين کلمة المرور.';
+
+  @override
+  String get forgotPasswordStep2Subtitle =>
+      'أدخل الرمز المکون من 6 أرقام المرسل إلى بريدک واختر کلمة مرور جديدة.';
+
+  @override
+  String get forgotPasswordCodeLabel => 'رمز التحقق';
+
+  @override
+  String get forgotPasswordNewPass => 'کلمة المرور الجديدة';
+
+  @override
+  String get forgotPasswordConfirmPass => 'تأکيد کلمة المرور';
+
+  @override
+  String get forgotPasswordSendCode => 'إرسال رمز التحقق';
+
+  @override
+  String get forgotPasswordResetBtn => 'إعادة تعيين کلمة المرور';
+
+  @override
+  String get forgotPasswordResend => 'لم تستلم الرمز؟ إعادة الإرسال';
+
+  @override
+  String get forgotPasswordCodeSent =>
+      'تم إرسال رمز التحقق إلى بريدک الإلکتروني.';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'تم إعادة تعيين کلمة المرور بنجاح! جارٍ العودة...';
+
+  @override
+  String get forgotPasswordErrEmail => 'يرجى إدخال بريدک الإلکتروني.';
+
+  @override
+  String get forgotPasswordErrCode => 'يرجى إدخال رمز التحقق.';
+
+  @override
+  String get forgotPasswordErrShort =>
+      'کلمة المرور يجب أن تکون 6 أحرف على الأقل.';
+
+  @override
+  String get forgotPasswordErrNoMatch => 'کلمتا المرور غير متطابقتين.';
 }

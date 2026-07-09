@@ -59,6 +59,7 @@ create table companies (
   name_en      text,
   location     text,
   logo_url     text,
+  banner_url   text,
   tint         text default '#0f5c4d',   -- brand colour for the avatar tile
   rating       numeric(2,1) default 0,
   since        int,                        -- year founded
