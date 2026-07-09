@@ -27,6 +27,8 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
   final _sinceCtrl = TextEditingController();
   Uint8List? _logoBytes;
   bool _register = false;
+  /// 0 = email, 1 = password/details
+  int _step = 0;
   bool _obscure = true;
   bool _loading = false;
   String? _error;
@@ -50,13 +52,26 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
     setState(() => _logoBytes = bytes);
   }
 
+  void _next() {
+    final t = AppLocalizations.of(context);
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() => _error = t.authErrInvalidEmail);
+      return;
+    }
+    setState(() {
+      _step = 1;
+      _error = null;
+    });
+  }
+
   Future<void> _submit() async {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
     final email = _emailCtrl.text.trim();
     final pass = _passCtrl.text;
-    if (email.isEmpty || pass.isEmpty ||
-        (_register && (_companyCtrl.text.trim().isEmpty || _nameCtrl.text.trim().isEmpty))) {
+    
+    if (pass.isEmpty || (_register && (_companyCtrl.text.trim().isEmpty || _nameCtrl.text.trim().isEmpty))) {
       setState(() => _error = t.authErrFillAll);
       return;
     }
@@ -130,87 +145,114 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                   style: AppTheme.sans(14, color: AppColors.muted)),
               const SizedBox(height: 32),
 
-              if (_register) ...[
-                _Label(t.authFullName),
-                const SizedBox(height: 8),
-                _Field(controller: _nameCtrl, hint: t.authFullNameHint, icon: Icons.person_outline_rounded),
-                const SizedBox(height: 18),
-                _Label(t.agencyCompanyName),
-                const SizedBox(height: 8),
-                _Field(controller: _companyCtrl, hint: t.agencyCompanyNameHint, icon: Icons.business_outlined),
-                const SizedBox(height: 18),
-                _Label(t.agencyCompanyLocation),
-                const SizedBox(height: 8),
-                _Field(controller: _locationCtrl, hint: t.agencyCompanyLocationHint, icon: Icons.location_on_outlined),
-                const SizedBox(height: 18),
-                _Label(t.agencyCompanySince),
+              if (_step == 0) ...[
+                _Label(t.agencyLoginEmail),
                 const SizedBox(height: 8),
                 _Field(
-                  controller: _sinceCtrl,
-                  hint: t.agencyCompanySinceHint,
-                  icon: Icons.calendar_today_outlined,
-                  keyboardType: TextInputType.number,
+                  controller: _emailCtrl,
+                  hint: 'admin@youragency.com',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  onSubmit: (_) => _next(),
                 ),
-                const SizedBox(height: 18),
-                _Label(t.agencyCompanyAbout),
-                const SizedBox(height: 8),
-                _Field(
-                  controller: _aboutCtrl,
-                  hint: t.agencyCompanyAboutHint,
-                  icon: Icons.notes_rounded,
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 18),
-                _Label(t.agencyCompanyLogo),
-                const SizedBox(height: 8),
-                _LogoPicker(bytes: _logoBytes, onPick: _pickLogo),
-                const SizedBox(height: 6),
-                Text(t.agencyLogoOptional, style: AppTheme.sans(11.5, color: AppColors.muted)),
-                const SizedBox(height: 18),
-              ],
-
-              _Label(t.agencyLoginEmail),
-              const SizedBox(height: 8),
-              _Field(
-                controller: _emailCtrl,
-                hint: 'admin@youragency.com',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 18),
-
-              _Label(t.agencyLoginPassword),
-              const SizedBox(height: 8),
-              _Field(
-                controller: _passCtrl,
-                hint: '••••••••',
-                icon: Icons.lock_outline_rounded,
-                obscure: _obscure,
-                suffix: IconButton(
-                  icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      color: AppColors.muted, size: 20),
-                  onPressed: () => setState(() => _obscure = !_obscure),
-                ),
-                onSubmit: (_) => _submit(),
-              ),
-
-              if (!_register) ...[  
-                const SizedBox(height: 10),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ForgotPasswordScreen(initialEmail: _emailCtrl.text.trim()),
-                      ),
+              ] else ...[
+                // Selected Email Display (Gmail style)
+                GestureDetector(
+                  onTap: () => setState(() { _step = 0; _error = null; }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.chipBg,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
                     ),
-                    child: Text(
-                      t.forgotPasswordLink,
-                      style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.account_circle_outlined, size: 18, color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        Text(_emailCtrl.text.trim(), style: AppTheme.sans(13, weight: FontWeight.w600)),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: AppColors.muted),
+                      ],
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+
+                if (_register) ...[
+                  _Label(t.authFullName),
+                  const SizedBox(height: 8),
+                  _Field(controller: _nameCtrl, hint: t.authFullNameHint, icon: Icons.person_outline_rounded),
+                  const SizedBox(height: 18),
+                  _Label(t.agencyCompanyName),
+                  const SizedBox(height: 8),
+                  _Field(controller: _companyCtrl, hint: t.agencyCompanyNameHint, icon: Icons.business_outlined),
+                  const SizedBox(height: 18),
+                  _Label(t.agencyCompanyLocation),
+                  const SizedBox(height: 8),
+                  _Field(controller: _locationCtrl, hint: t.agencyCompanyLocationHint, icon: Icons.location_on_outlined),
+                  const SizedBox(height: 18),
+                  _Label(t.agencyCompanySince),
+                  const SizedBox(height: 8),
+                  _Field(
+                    controller: _sinceCtrl,
+                    hint: t.agencyCompanySinceHint,
+                    icon: Icons.calendar_today_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 18),
+                  _Label(t.agencyCompanyAbout),
+                  const SizedBox(height: 8),
+                  _Field(
+                    controller: _aboutCtrl,
+                    hint: t.agencyCompanyAboutHint,
+                    icon: Icons.notes_rounded,
+                    maxLines: 4,
+                  ),
+                  const SizedBox(height: 18),
+                  _Label(t.agencyCompanyLogo),
+                  const SizedBox(height: 8),
+                  _LogoPicker(bytes: _logoBytes, onPick: _pickLogo),
+                  const SizedBox(height: 6),
+                  Text(t.agencyLogoOptional, style: AppTheme.sans(11.5, color: AppColors.muted)),
+                  const SizedBox(height: 18),
+                ],
+
+                _Label(t.agencyLoginPassword),
+                const SizedBox(height: 8),
+                _Field(
+                  controller: _passCtrl,
+                  hint: '••••••••',
+                  icon: Icons.lock_outline_rounded,
+                  obscure: _obscure,
+                  autofocus: true,
+                  suffix: IconButton(
+                    icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        color: AppColors.muted, size: 20),
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                  ),
+                  onSubmit: (_) => _submit(),
+                ),
+
+                if (!_register) ...[  
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ForgotPasswordScreen(initialEmail: _emailCtrl.text.trim()),
+                        ),
+                      ),
+                      child: Text(
+                        t.forgotPasswordLink,
+                        style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary),
+                      ),
+                    ),
+                  ),
+                ],
               ],
 
               if (_error != null) ...[
@@ -234,7 +276,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
 
               const SizedBox(height: 28),
               GestureDetector(
-                onTap: _loading ? null : _submit,
+                onTap: _loading ? null : (_step == 0 ? _next : _submit),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -246,7 +288,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                   alignment: Alignment.center,
                   child: _loading
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                      : Text(_register ? t.agencyRegisterBtn : t.agencyLoginSignIn,
+                      : Text(_step == 0 ? t.authNext : (_register ? t.agencyRegisterBtn : t.agencyLoginSignIn),
                           style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
                 ),
               ),
@@ -357,11 +399,13 @@ class _Field extends StatelessWidget {
   final Widget? suffix;
   final ValueChanged<String>? onSubmit;
   final int maxLines;
+  final bool autofocus;
 
   const _Field({
     required this.controller, required this.hint, required this.icon,
     this.obscure = false, this.keyboardType, this.suffix, this.onSubmit,
     this.maxLines = 1,
+    this.autofocus = false,
   });
 
   @override
@@ -378,6 +422,7 @@ class _Field extends StatelessWidget {
         keyboardType: keyboardType,
         onSubmitted: onSubmit,
         maxLines: maxLines,
+        autofocus: autofocus,
         style: AppTheme.sans(14),
         decoration: InputDecoration(
           hintText: hint,

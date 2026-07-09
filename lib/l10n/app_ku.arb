@@ -554,5 +554,12 @@
   "forgotPasswordErrEmail": "تکایە ئیمەیلەکەت بنووسە.",
   "forgotPasswordErrCode": "تکایە کۆدی پشتڕاستکردنەوە بنووسە.",
   "forgotPasswordErrShort": "وشەی نهێنی دەبێت لانی کەم 6 پیت بێت.",
-  "forgotPasswordErrNoMatch": "وشەی نهێنیەکان وەک نین."
+  "forgotPasswordErrNoMatch": "وشەی نهێنیەکان وەک نین.",
+  "authNext": "دواتر",
+  "authErrInvalidEmail": "تکایە ئیمەیلێکی دروست بنووسە.",
+  "accountChangeEmail": "گۆڕینی ئیمەیل",
+  "accountChangeEmailBody": "ئیمەیلە نوێیەکەت بنووسە. پێویستە لەڕێگەی ئیمەیلەوە گۆڕانکارییەکە پشتڕاست بکەیتەوە.",
+  "accountUpdate": "نوێکردنەوە",
+  "accountEmailConfirmationTitle": "پشتڕاستکردنەوە نێردرا",
+  "accountEmailConfirmationBody": "بەستەری پشتڕاستکردنەوە بۆ ئیمەیلە نوێیەکەت نێردرا. تکایە سندوقی نامەکانت بپشکنە بۆ تەواوکردنی گۆڕانکارییەکە."
 }

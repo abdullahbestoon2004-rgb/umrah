@@ -554,5 +554,12 @@
   "forgotPasswordErrEmail": "يرجى إدخال بريدک الإلکتروني.",
   "forgotPasswordErrCode": "يرجى إدخال رمز التحقق.",
   "forgotPasswordErrShort": "کلمة المرور يجب أن تکون 6 أحرف على الأقل.",
-  "forgotPasswordErrNoMatch": "کلمتا المرور غير متطابقتين."
+  "forgotPasswordErrNoMatch": "کلمتا المرور غير متطابقتين.",
+  "authNext": "التالي",
+  "authErrInvalidEmail": "يرجى إدخال بريد إلکتروني صالح.",
+  "accountChangeEmail": "تغيير البريد الإلکتروني",
+  "accountChangeEmailBody": "أدخل بريدک الإلکتروني الجديد. ستحتاج إلى تأکيد التغيير عبر البريد الإلکتروني.",
+  "accountUpdate": "تحديث",
+  "accountEmailConfirmationTitle": "تم إرسال التأکيد",
+  "accountEmailConfirmationBody": "تم إرسال رابط تأکيد إلى بريدک الإلکتروني الجديد. يرجى التحقق من بريدک لإتمام التغيير."
 }

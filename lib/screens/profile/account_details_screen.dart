@@ -52,6 +52,71 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     showAppSnack(context, err ?? t.accountUpdated, isError: err != null);
   }
 
+  Future<void> _changeEmail() async {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final ctrl = TextEditingController(text: provider.user?.email);
+    
+    final newEmail = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(t.accountChangeEmail, style: AppTheme.serif(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t.accountChangeEmailBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+            const SizedBox(height: 18),
+            _Field(label: t.agencyLoginEmail, controller: ctrl, hint: 'email@example.com'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: Text(t.accountUpdate, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+
+    if (newEmail == null || newEmail.isEmpty || newEmail == provider.user?.email) return;
+    if (!newEmail.contains('@')) {
+      if (mounted) showAppSnack(context, t.authErrInvalidEmail, isError: true);
+      return;
+    }
+
+    setState(() => _saving = true);
+    final err = await provider.updateEmail(newEmail);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    
+    if (err == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(t.accountEmailConfirmationTitle, style: AppTheme.serif(20)),
+          content: Text(t.accountEmailConfirmationBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(t.adminDeclineConfirm, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            ),
+          ],
+        ),
+      );
+    } else {
+      showAppSnack(context, err, isError: true);
+    }
+  }
+
 
   Future<void> _confirmDelete() async {
     final t = AppLocalizations.of(context);
@@ -112,24 +177,34 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Email (read-only — it's the account identifier)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border, width: 1.5),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(user?.email ?? '',
-                        style: AppTheme.sans(14, weight: FontWeight.w600),
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
+            // Email (Editable)
+            GestureDetector(
+              onTap: _saving ? null : _changeEmail,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(t.agencyLoginEmail, style: AppTheme.sans(11, color: AppColors.muted, weight: FontWeight.w600)),
+                          Text(user?.email ?? '',
+                              style: AppTheme.sans(14, weight: FontWeight.w600),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.edit_outlined, color: AppColors.muted, size: 18),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),

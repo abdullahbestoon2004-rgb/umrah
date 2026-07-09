@@ -40,6 +40,7 @@ abstract class DataService {
   });
   Future<void> signOut();
   Future<String?> updateProfile(String userId, {String? fullName, String? phone});
+  Future<String?> updateEmail(String newEmail);
   Future<String?> changePassword(String newPassword);
   /// Permanently deletes the auth user (and everything that cascades from it).
   Future<String?> deleteAccount();
@@ -237,6 +238,18 @@ class SupabaseService implements DataService {
       }).eq('id', userId);
       return null;
     } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> updateEmail(String newEmail) async {
+    try {
+      await _c.auth.updateUser(UserAttributes(email: newEmail));
+      return null;
+    } on AuthException catch (e) {
       return e.message;
     } catch (e) {
       return e.toString();

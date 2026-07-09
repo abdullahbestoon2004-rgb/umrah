@@ -328,6 +328,14 @@ class AppProvider extends ChangeNotifier {
     return null;
   }
 
+  Future<String?> updateEmail(String newEmail) async {
+    if (_user == null) return null;
+    final err = await _service.updateEmail(newEmail);
+    // Supabase will send a confirmation email. We don't update local state
+    // until the user confirms and the session is refreshed.
+    return err;
+  }
+
   Future<String?> changePassword(String newPassword) =>
       _service.changePassword(newPassword);
 

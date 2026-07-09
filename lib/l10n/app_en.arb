@@ -629,5 +629,12 @@
   "forgotPasswordErrEmail": "Please enter your email address.",
   "forgotPasswordErrCode": "Please enter the verification code.",
   "forgotPasswordErrShort": "Password must be at least 6 characters.",
-  "forgotPasswordErrNoMatch": "Passwords do not match."
+  "forgotPasswordErrNoMatch": "Passwords do not match.",
+  "authNext": "Next",
+  "authErrInvalidEmail": "Please enter a valid email address.",
+  "accountChangeEmail": "Change Email",
+  "accountChangeEmailBody": "Enter your new email address. You will need to confirm the change via email.",
+  "accountUpdate": "Update",
+  "accountEmailConfirmationTitle": "Confirmation Sent",
+  "accountEmailConfirmationBody": "A confirmation link has been sent to your new email address. Please check your inbox to complete the change."
 }
