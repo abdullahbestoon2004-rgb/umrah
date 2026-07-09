@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
+import '../../utils/validators.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'agency_dashboard_screen.dart';
 import 'forgot_password_screen.dart';
@@ -54,8 +55,8 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
 
   void _next() {
     final t = AppLocalizations.of(context);
-    final email = _emailCtrl.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
+    final emailResult = Validators.validateEmail(_emailCtrl.text);
+    if (emailResult != null) {
       setState(() => _error = t.authErrInvalidEmail);
       return;
     }
