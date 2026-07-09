@@ -112,6 +112,11 @@ class TawafApp extends StatelessWidget {
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
               child: child!,
             ),
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(
+                builder: (context) => provider.locked ? const LockScreen() : const MainScreen(),
+              );
+            },
             home: provider.locked ? const LockScreen() : const MainScreen(),
           );
         },

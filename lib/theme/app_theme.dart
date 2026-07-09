@@ -29,7 +29,7 @@ class AppTheme {
   static TextStyle serif(double size, {FontWeight weight = FontWeight.w700, Color color = AppColors.ink}) {
     return isArabicScript
         ? GoogleFonts.vazirmatn(fontSize: size, fontWeight: weight, color: color)
-        : GoogleFonts.playfairDisplay(fontSize: size, fontWeight: weight, color: color);
+        : GoogleFonts.lora(fontSize: size, fontWeight: weight, color: color);
   }
 
   static TextStyle sans(double size, {FontWeight weight = FontWeight.w500, Color color = AppColors.ink}) {

@@ -13,6 +13,7 @@ class Company {
   String about;
   List<String> tags;
   final bool isVerified;
+  final bool isPromoted;
   final Color tint;
   String? logoUrl;
   String? bannerUrl;
@@ -30,6 +31,7 @@ class Company {
     this.about = '',
     this.tags = const [],
     this.isVerified = false,
+    this.isPromoted = false,
     this.tint = const Color(0xFF0F5C4D),
     this.logoUrl,
     this.bannerUrl,
@@ -102,6 +104,7 @@ class Company {
         about: (r['about'] ?? '') as String,
         tags: ((r['tags'] ?? const []) as List).cast<String>(),
         isVerified: (r['is_verified'] ?? false) as bool,
+        isPromoted: (r['is_promoted'] ?? false) as bool,
         tint: parseTint(r['tint'] as String?),
         logoUrl: r['logo_url'] as String?,
         bannerUrl: r['banner_url'] as String?,

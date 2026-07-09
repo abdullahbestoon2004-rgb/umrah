@@ -300,6 +300,9 @@ class FakeService implements DataService {
   }) async =>
       code == _testResetCode ? null : 'invalid code';
 
+  @override
+  Future<String?> reauthenticate(String email, String password) async => null;
+
   // ── error logging ────────────────────────────────────────────────────────
   @override
   Future<void> logError({String? userId, required String message, String? stack, String? context}) async {}
@@ -401,6 +404,32 @@ class FakeService implements DataService {
 
   @override
   Future<String?> setCompanyVerified(String id, bool verified) async => null;
+
+  @override
+  Future<String?> setCompanyPromoted(String id, bool promoted) async {
+    final i = companies.indexWhere((c) => c.id == id);
+    if (i < 0) return 'not found';
+    final c = companies[i];
+    companies[i] = Company(
+      id: c.id,
+      ownerId: c.ownerId,
+      name: c.name,
+      nameEn: c.nameEn,
+      nameAr: c.nameAr,
+      location: c.location,
+      since: c.since,
+      rating: c.rating,
+      reviews: c.reviews,
+      about: c.about,
+      tags: c.tags,
+      isVerified: c.isVerified,
+      isPromoted: promoted,
+      tint: c.tint,
+      logoUrl: c.logoUrl,
+      bannerUrl: c.bannerUrl,
+    );
+    return null;
+  }
 
   @override
   Future<String?> setPackageFeatured(String id, bool featured) async {

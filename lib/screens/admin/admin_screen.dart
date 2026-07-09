@@ -13,6 +13,7 @@ import '../../widgets/islamic_pattern.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_bookings_screen.dart' show CommissionLedger;
+import 'promote_screen.dart';
 
 /// Owner-only control panel: approve agencies, manage the paid home-ads
 /// carousel, and pick which offers are featured on the home screen.
@@ -47,6 +48,67 @@ class _AdminScreenState extends State<AdminScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: _AdminHeader(provider: provider)),
+
+          // ── Promotions Manager ───────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+              child: GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PromoteScreen()),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, Color(0xFF16816B)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.2),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.campaign_rounded, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Promote Companies & Trips",
+                              style: AppTheme.serif(18, color: Colors.white),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              "Feature agencies and trips on the home page",
+                              style: AppTheme.sans(11.5, color: Colors.white.withOpacity(0.85)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
 
           // ── Pending agencies ────────────────────────────────────────────
           SliverToBoxAdapter(

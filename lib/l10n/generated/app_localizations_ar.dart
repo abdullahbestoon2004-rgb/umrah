@@ -1828,22 +1828,90 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authNext => 'التالي';
 
   @override
+  String get authEnterPassword => 'أدخل کلمة المرور للمتابعة';
+
+  @override
   String get authErrInvalidEmail => 'يرجى إدخال بريد إلکتروني صالح.';
 
   @override
-  String get accountChangeEmail => 'تغيير البريد الإلکتروني';
+  String get authErrEmailEmpty => 'يرجى إدخال البريد الإلکتروني.';
+
+  @override
+  String get authErrEmailSpaces =>
+      'البريد الإلکتروني لا يمکن أن يحتوي على مسافات.';
+
+  @override
+  String get authErrEmailNoAt => 'يجب أن يحتوي البريد على رمز @.';
+
+  @override
+  String get authErrEmailInvalidDomain =>
+      'يرجى إدخال نطاق بريد صالح (مثل: gmail.com).';
+
+  @override
+  String get authErrPhoneTooShort =>
+      'رقم الهاتف قصير جداً. يجب أن يکون 7 أرقام على الأقل.';
+
+  @override
+  String get authErrPhoneTooLong =>
+      'رقم الهاتف طويل جداً. الحد الأقصى 15 رقماً.';
+
+  @override
+  String get authErrPhoneInvalidChars => 'رقم الهاتف يحتوي على أحرف غير صالحة.';
+
+  @override
+  String get authErrPhoneInvalid => 'يرجى إدخال رقم هاتف صالح.';
+
+  @override
+  String get authErrPasswordEmpty => 'يرجى إدخال کلمة المرور.';
+
+  @override
+  String get authErrPasswordShort =>
+      'کلمة المرور يجب أن تکون 6 أحرف على الأقل.';
+
+  @override
+  String get authErrPasswordNoLetter =>
+      'کلمة المرور يجب أن تحتوي على حرف واحد على الأقل.';
+
+  @override
+  String get authErrPasswordNoDigit =>
+      'کلمة المرور يجب أن تحتوي على رقم واحد على الأقل.';
+
+  @override
+  String get authErrNameEmpty => 'يرجى إدخال الاسم الکامل.';
+
+  @override
+  String get authErrNameTooShort => 'الاسم يجب أن يکون حرفين على الأقل.';
+
+  @override
+  String get accountChangeEmail => 'تغيير';
 
   @override
   String get accountChangeEmailBody =>
-      'أدخل بريدک الإلکتروني الجديد. ستحتاج إلى تأکيد التغيير عبر البريد الإلکتروني.';
+      'أدخل بريدک الإلکتروني الجديد. سيتم إرسال رابط تأکيد للتحقق من التغيير.';
 
   @override
   String get accountUpdate => 'تحديث';
+
+  @override
+  String get accountVerifyIdentity => 'تحقق من هويتک';
+
+  @override
+  String get accountVerifyIdentityBody =>
+      'لأسباب أمنية، يرجى إدخال کلمة المرور الحالية للمتابعة.';
+
+  @override
+  String get accountVerify => 'تحقق';
+
+  @override
+  String get accountWrongPassword => 'کلمة المرور غير صحيحة. حاول مرة أخرى.';
+
+  @override
+  String get accountEmailSameAsCurrent => 'هذا هو بريدک الحالي بالفعل.';
 
   @override
   String get accountEmailConfirmationTitle => 'تم إرسال التأکيد';
 
   @override
   String get accountEmailConfirmationBody =>
-      'تم إرسال رابط تأکيد إلى بريدک الإلکتروني الجديد. يرجى التحقق من بريدک لإتمام التغيير.';
+      'تم إرسال رابط تأکيد إلى بريدک الجديد. تحقق من بريدک وانقر على الرابط لإتمام التغيير.';
 }

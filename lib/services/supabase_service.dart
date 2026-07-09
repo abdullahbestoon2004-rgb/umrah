@@ -108,6 +108,7 @@ abstract class DataService {
 
   Future<List<Company>> fetchPendingCompanies();
   Future<String?> setCompanyVerified(String id, bool verified);
+  Future<String?> setCompanyPromoted(String id, bool promoted);
   Future<String?> setPackageFeatured(String id, bool featured);
 
   // ── notifications ────────────────────────────────────────────────────────
@@ -742,6 +743,20 @@ class SupabaseService implements DataService {
   }
 
   @override
+  Future<String?> setCompanyPromoted(String id, bool promoted) async {
+    try {
+      final rows = await _c
+          .from('companies')
+          .update({'is_promoted': promoted})
+          .eq('id', id)
+          .select('id');
+      return rows.isEmpty ? 'rls' : null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
   Future<String?> setPackageFeatured(String id, bool featured) async {
     try {
       final rows = await _c
@@ -925,7 +940,10 @@ class SupabaseService implements DataService {
   @override
   Future<String?> sendPasswordResetCode(String email) async {
     try {
-      await _c.auth.resetPasswordForEmail(email);
+      await _c.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'umrahapp://reset-password',
+      );
       return null;
     } on AuthException catch (e) {
       return e.message;
