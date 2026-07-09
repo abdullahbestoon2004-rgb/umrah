@@ -336,6 +336,13 @@ class AppProvider extends ChangeNotifier {
     return err;
   }
 
+  /// Re-authenticates the user without changing local state.
+  /// Used before sensitive operations like email change.
+  Future<String?> reauthenticate(String password) async {
+    if (_user == null) return 'No user';
+    return _service.reauthenticate(_user!.email, password);
+  }
+
   Future<String?> changePassword(String newPassword) =>
       _service.changePassword(newPassword);
 

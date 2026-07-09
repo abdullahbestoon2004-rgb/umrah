@@ -4,6 +4,7 @@ import '../../theme/colors.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/app_snackbar.dart';
+import '../../utils/validators.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
@@ -38,10 +39,21 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     if (_saving) return;
     final t = AppLocalizations.of(context);
     final name = _nameCtrl.text.trim();
-    if (name.isEmpty) {
-      showAppSnack(context, t.authErrFillAll, isError: true);
+
+    // Validate name
+    final nameErr = Validators.validateFullName(name);
+    if (nameErr != null) {
+      showAppSnack(context, t.authErrNameEmpty, isError: true);
       return;
     }
+
+    // Validate phone if provided
+    final phoneErr = Validators.validatePhone(_phoneCtrl.text);
+    if (phoneErr != null) {
+      showAppSnack(context, t.authErrPhoneInvalid, isError: true);
+      return;
+    }
+
     setState(() => _saving = true);
     final err = await context.read<AppProvider>().updateAccountDetails(
           fullName: name,
@@ -52,57 +64,192 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     showAppSnack(context, err ?? t.accountUpdated, isError: err != null);
   }
 
+  /// Professional email change flow:
+  /// 1. Ask for current password (re-authentication)
+  /// 2. Validate new email format
+  /// 3. Send confirmation to new email via Supabase
   Future<void> _changeEmail() async {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
-    final ctrl = TextEditingController(text: provider.user?.email);
-    
-    final newEmail = await showDialog<String>(
+    final currentEmail = provider.user?.email ?? '';
+
+    // Step 1: Re-authenticate with current password
+    final passwordCtrl = TextEditingController();
+    bool obscure = true;
+
+    final password = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(t.accountChangeEmail, style: AppTheme.serif(20)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(t.accountChangeEmailBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
-            const SizedBox(height: 18),
-            _Field(label: t.agencyLoginEmail, controller: ctrl, hint: 'email@example.com'),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(t.accountVerifyIdentity, style: AppTheme.serif(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.accountVerifyIdentityBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+              const SizedBox(height: 6),
+              Text(currentEmail, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+              const SizedBox(height: 18),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+                child: TextField(
+                  controller: passwordCtrl,
+                  obscureText: obscure,
+                  style: AppTheme.sans(14),
+                  decoration: InputDecoration(
+                    hintText: '••••••••',
+                    hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
+                    suffixIcon: IconButton(
+                      icon: Icon(obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          color: AppColors.muted, size: 20),
+                      onPressed: () => setDialogState(() => obscure = !obscure),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, passwordCtrl.text),
+              child: Text(t.accountVerify, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: Text(t.accountUpdate, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
-          ),
-        ],
       ),
     );
 
-    if (newEmail == null || newEmail.isEmpty || newEmail == provider.user?.email) return;
-    if (!newEmail.contains('@')) {
-      if (mounted) showAppSnack(context, t.authErrInvalidEmail, isError: true);
+    if (password == null || password.isEmpty) return;
+
+    // Verify password via reauthentication (doesn't change session state)
+    setState(() => _saving = true);
+    final authErr = await provider.reauthenticate(password);
+    if (!mounted) return;
+
+    if (authErr != null) {
+      setState(() => _saving = false);
+      showAppSnack(context, t.accountWrongPassword, isError: true);
       return;
     }
+    setState(() => _saving = false);
 
+    // Step 2: Ask for new email
+    final newEmailCtrl = TextEditingController();
+    String? emailFieldError;
+
+    final newEmail = await showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(t.accountChangeEmail, style: AppTheme.serif(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.accountChangeEmailBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+              const SizedBox(height: 18),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: emailFieldError != null ? AppColors.errorRed : AppColors.border,
+                    width: emailFieldError != null ? 2 : 1.5,
+                  ),
+                ),
+                child: TextField(
+                  controller: newEmailCtrl,
+                  keyboardType: TextInputType.emailAddress,
+                  style: AppTheme.sans(14),
+                  decoration: InputDecoration(
+                    hintText: 'newemail@example.com',
+                    hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              if (emailFieldError != null) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded, size: 14, color: AppColors.errorRed),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(emailFieldError!, style: AppTheme.sans(12, color: AppColors.errorRed))),
+                  ],
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            ),
+            TextButton(
+              onPressed: () {
+                final result = Validators.validateEmail(newEmailCtrl.text);
+                if (result != null) {
+                  setDialogState(() => emailFieldError = t.authErrInvalidEmail);
+                  return;
+                }
+                if (newEmailCtrl.text.trim() == currentEmail) {
+                  setDialogState(() => emailFieldError = t.accountEmailSameAsCurrent);
+                  return;
+                }
+                Navigator.pop(ctx, newEmailCtrl.text.trim());
+              },
+              child: Text(t.accountUpdate, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (newEmail == null || newEmail.isEmpty) return;
+
+    // Step 3: Send email change request via Supabase
     setState(() => _saving = true);
     final err = await provider.updateEmail(newEmail);
     if (!mounted) return;
     setState(() => _saving = false);
-    
+
     if (err == null) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.background,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(t.accountEmailConfirmationTitle, style: AppTheme.serif(20)),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF34C759).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.mark_email_read_outlined, color: Color(0xFF34C759), size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(t.accountEmailConfirmationTitle, style: AppTheme.serif(18))),
+            ],
+          ),
           content: Text(t.accountEmailConfirmationBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
           actions: [
             TextButton(
@@ -177,7 +324,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Email (Editable)
+            // Email (Editable with re-authentication)
             GestureDetector(
               onTap: _saving ? null : _changeEmail,
               child: Container(
@@ -189,20 +336,35 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(t.agencyLoginEmail, style: AppTheme.sans(11, color: AppColors.muted, weight: FontWeight.w600)),
+                          const SizedBox(height: 2),
                           Text(user?.email ?? '',
                               style: AppTheme.sans(14, weight: FontWeight.w600),
                               maxLines: 1, overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
-                    const Icon(Icons.edit_outlined, color: AppColors.muted, size: 18),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(t.accountChangeEmail, style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.primary)),
+                    ),
                   ],
                 ),
               ),
@@ -214,7 +376,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             _Field(
               label: t.authPhone,
               controller: _phoneCtrl,
-              hint: t.accountPhoneHint,
+              hint: '+964 750 000 0000',
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 22),
