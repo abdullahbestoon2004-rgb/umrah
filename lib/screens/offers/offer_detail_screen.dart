@@ -197,7 +197,7 @@ class _KeyFacts extends StatelessWidget {
         _FactCard(
           icon: offer.isByAir ? Icons.flight_rounded : Icons.directions_bus_rounded,
           value: offer.transportLabelFor(t),
-          sub: offer.carrier,
+          sub: offer.carrierName,
         ),
         const SizedBox(width: 9),
         _FactCard(
@@ -278,6 +278,10 @@ class _AccommodationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final makkah = offer.hotelMakkah;
+    final madinah = offer.hotelMadinah;
+    final hasTwoHotels = madinah.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -293,30 +297,53 @@ class _AccommodationSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(offer.hotel, style: AppTheme.sans(15, weight: FontWeight.w700)),
-                        const SizedBox(height: 3),
-                        Text(offer.starGlyph, style: const TextStyle(color: AppColors.gold, fontSize: 13, letterSpacing: 1)),
-                      ],
+              if (hasTwoHotels) ...[
+                _buildHotelRow(
+                  context,
+                  title: t.offerDetailHotelMakkah,
+                  hotelName: makkah,
+                  distance: offer.distance,
+                  starGlyph: offer.starGlyph,
+                  icon: Icons.hotel_rounded,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1, color: Color(0xFFEAF1EC)),
+                ),
+                _buildHotelRow(
+                  context,
+                  title: t.offerDetailHotelMadinah,
+                  hotelName: madinah,
+                  distance: '',
+                  starGlyph: offer.starGlyph,
+                  icon: Icons.hotel_rounded,
+                ),
+              ] else ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(offer.hotel, style: AppTheme.sans(15, weight: FontWeight.w700)),
+                          const SizedBox(height: 3),
+                          Text(offer.starGlyph, style: const TextStyle(color: AppColors.gold, fontSize: 13, letterSpacing: 1)),
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAF1EC),
-                      borderRadius: BorderRadius.circular(8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF1EC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(t.offerDetailDistanceToHaram(offer.distance),
+                          style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.primary)),
                     ),
-                    child: Text(t.offerDetailDistanceToHaram(offer.distance),
-                        style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.primary)),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 14),
               Row(
                 children: [
@@ -351,6 +378,61 @@ class _AccommodationSection extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildHotelRow(
+    BuildContext context, {
+    required String title,
+    required String hotelName,
+    required String distance,
+    required String starGlyph,
+    required IconData icon,
+  }) {
+    final t = AppLocalizations.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: Icon(icon, color: AppColors.primary, size: 18),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTheme.sans(11, color: AppColors.muted, weight: FontWeight.w600),
+              ),
+              const SizedBox(height: 2),
+              Text(hotelName, style: AppTheme.sans(15, weight: FontWeight.w700)),
+              const SizedBox(height: 3),
+              Row(
+                children: [
+                  Text(starGlyph, style: const TextStyle(color: AppColors.gold, fontSize: 12, letterSpacing: 1)),
+                  if (distance.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    Text('•', style: TextStyle(color: AppColors.muted.withOpacity(0.5))),
+                    const SizedBox(width: 8),
+                    Text(
+                      t.offerDetailDistanceToHaram(distance),
+                      style: AppTheme.sans(11, color: AppColors.primary, weight: FontWeight.w600),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _TransportSection extends StatelessWidget {
@@ -360,6 +442,8 @@ class _TransportSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final place = offer.transportPlace;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -372,29 +456,64 @@ class _TransportSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
           ),
-          child: Row(
+          child: Column(
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(color: const Color(0xFFEAF1EC), borderRadius: BorderRadius.circular(14)),
-                alignment: Alignment.center,
-                child: Icon(offer.isByAir ? Icons.flight_rounded : Icons.directions_bus_rounded, color: AppColors.primary, size: 24),
+              Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(color: const Color(0xFFEAF1EC), borderRadius: BorderRadius.circular(14)),
+                    alignment: Alignment.center,
+                    child: Icon(offer.isByAir ? Icons.flight_rounded : Icons.directions_bus_rounded, color: AppColors.primary, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(offer.transportLongFor(t), style: AppTheme.sans(14, weight: FontWeight.w700)),
+                        const SizedBox(height: 2),
+                        Text(
+                          t.offerDetailCarrierTransfersIncluded(offer.carrierName),
+                          style: AppTheme.sans(12, color: const Color(0xFF7D8A82)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (place.isNotEmpty) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1, color: Color(0xFFEAF1EC)),
+                ),
+                Row(
                   children: [
-                    Text(offer.transportLongFor(t), style: AppTheme.sans(14, weight: FontWeight.w700)),
-                    const SizedBox(height: 2),
-                    Text(
-                      t.offerDetailCarrierTransfersIncluded(offer.carrier),
-                      style: AppTheme.sans(12, color: const Color(0xFF7D8A82)),
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(color: const Color(0xFFF9F7F2), borderRadius: BorderRadius.circular(14)),
+                      alignment: Alignment.center,
+                      child: Icon(offer.isByAir ? Icons.local_airport_rounded : Icons.pin_drop_rounded, color: AppColors.gold, size: 22),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            offer.isByAir ? t.airportDeparture : t.busStationPickup,
+                            style: AppTheme.sans(11, color: AppColors.muted, weight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(place, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ],
           ),
         ),

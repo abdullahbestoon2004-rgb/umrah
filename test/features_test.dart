@@ -108,6 +108,9 @@ class FakeService implements DataService {
   }
 
   @override
+  Future<String?> reauthenticate(String email, String password) async => null;
+
+  @override
   Future<String?> changePassword(String newPassword) async => null;
 
   @override

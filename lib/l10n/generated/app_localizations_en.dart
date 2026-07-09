@@ -1318,6 +1318,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addEditOfferHotelNameHint => 'e.g. Conrad Makkah Suites';
 
   @override
+  String get addEditOfferHotelMakkah => 'Hotel in Makkah';
+
+  @override
+  String get addEditOfferHotelMakkahHint => 'e.g. Conrad Makkah Suites';
+
+  @override
+  String get addEditOfferHotelMadinah => 'Hotel in Madinah';
+
+  @override
+  String get addEditOfferHotelMadinahHint => 'e.g. Anwar Al Madinah Mövenpick';
+
+  @override
+  String get addEditOfferAirport => 'Departure Airport';
+
+  @override
+  String get addEditOfferAirportHint => 'e.g. Erbil International Airport';
+
+  @override
+  String get addEditOfferBusStation => 'Departure Bus Station';
+
+  @override
+  String get addEditOfferBusStationHint => 'e.g. Sulaymaniyah Bus Terminal';
+
+  @override
+  String get offerDetailHotelMakkah => 'Hotel in Makkah';
+
+  @override
+  String get offerDetailHotelMadinah => 'Hotel in Madinah';
+
+  @override
+  String get airportDeparture => 'Departure Airport';
+
+  @override
+  String get busStationPickup => 'Departure Station';
+
+  @override
   String get addEditOfferDistanceToHaram => 'Distance to Haram';
 
   @override
@@ -1839,22 +1875,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authNext => 'Next';
 
   @override
+  String get authEnterPassword => 'Enter your password to continue';
+
+  @override
   String get authErrInvalidEmail => 'Please enter a valid email address.';
 
   @override
-  String get accountChangeEmail => 'Change Email';
+  String get authErrEmailEmpty => 'Please enter your email address.';
+
+  @override
+  String get authErrEmailSpaces => 'Email address cannot contain spaces.';
+
+  @override
+  String get authErrEmailNoAt => 'Email must include an @ symbol.';
+
+  @override
+  String get authErrEmailInvalidDomain =>
+      'Please enter a valid email domain (e.g., gmail.com).';
+
+  @override
+  String get authErrPhoneTooShort =>
+      'Phone number is too short. Must be at least 7 digits.';
+
+  @override
+  String get authErrPhoneTooLong =>
+      'Phone number is too long. Maximum 15 digits.';
+
+  @override
+  String get authErrPhoneInvalidChars =>
+      'Phone number contains invalid characters.';
+
+  @override
+  String get authErrPhoneInvalid => 'Please enter a valid phone number.';
+
+  @override
+  String get authErrPasswordEmpty => 'Please enter your password.';
+
+  @override
+  String get authErrPasswordShort => 'Password must be at least 6 characters.';
+
+  @override
+  String get authErrPasswordNoLetter =>
+      'Password must contain at least one letter.';
+
+  @override
+  String get authErrPasswordNoDigit =>
+      'Password must contain at least one number.';
+
+  @override
+  String get authErrNameEmpty => 'Please enter your full name.';
+
+  @override
+  String get authErrNameTooShort => 'Name must be at least 2 characters.';
+
+  @override
+  String get accountChangeEmail => 'Change';
 
   @override
   String get accountChangeEmailBody =>
-      'Enter your new email address. You will need to confirm the change via email.';
+      'Enter your new email address. A confirmation link will be sent to verify the change.';
 
   @override
   String get accountUpdate => 'Update';
+
+  @override
+  String get accountVerifyIdentity => 'Verify Your Identity';
+
+  @override
+  String get accountVerifyIdentityBody =>
+      'For security, please enter your current password to continue.';
+
+  @override
+  String get accountVerify => 'Verify';
+
+  @override
+  String get accountWrongPassword => 'Incorrect password. Please try again.';
+
+  @override
+  String get accountEmailSameAsCurrent => 'This is already your current email.';
 
   @override
   String get accountEmailConfirmationTitle => 'Confirmation Sent';
 
   @override
   String get accountEmailConfirmationBody =>
-      'A confirmation link has been sent to your new email address. Please check your inbox to complete the change.';
+      'A confirmation link has been sent to your new email address. Please check your inbox and click the link to complete the change.';
 }

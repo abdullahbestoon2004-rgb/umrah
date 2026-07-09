@@ -2292,6 +2292,78 @@ abstract class AppLocalizations {
   /// **'e.g. Conrad Makkah Suites'**
   String get addEditOfferHotelNameHint;
 
+  /// No description provided for @addEditOfferHotelMakkah.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel in Makkah'**
+  String get addEditOfferHotelMakkah;
+
+  /// No description provided for @addEditOfferHotelMakkahHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Conrad Makkah Suites'**
+  String get addEditOfferHotelMakkahHint;
+
+  /// No description provided for @addEditOfferHotelMadinah.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel in Madinah'**
+  String get addEditOfferHotelMadinah;
+
+  /// No description provided for @addEditOfferHotelMadinahHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Anwar Al Madinah Mövenpick'**
+  String get addEditOfferHotelMadinahHint;
+
+  /// No description provided for @addEditOfferAirport.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure Airport'**
+  String get addEditOfferAirport;
+
+  /// No description provided for @addEditOfferAirportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Erbil International Airport'**
+  String get addEditOfferAirportHint;
+
+  /// No description provided for @addEditOfferBusStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure Bus Station'**
+  String get addEditOfferBusStation;
+
+  /// No description provided for @addEditOfferBusStationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Sulaymaniyah Bus Terminal'**
+  String get addEditOfferBusStationHint;
+
+  /// No description provided for @offerDetailHotelMakkah.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel in Makkah'**
+  String get offerDetailHotelMakkah;
+
+  /// No description provided for @offerDetailHotelMadinah.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel in Madinah'**
+  String get offerDetailHotelMadinah;
+
+  /// No description provided for @airportDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure Airport'**
+  String get airportDeparture;
+
+  /// No description provided for @busStationPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure Station'**
+  String get busStationPickup;
+
   /// No description provided for @addEditOfferDistanceToHaram.
   ///
   /// In en, this message translates to:
@@ -3240,22 +3312,112 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get authNext;
 
+  /// No description provided for @authEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password to continue'**
+  String get authEnterPassword;
+
   /// No description provided for @authErrInvalidEmail.
   ///
   /// In en, this message translates to:
   /// **'Please enter a valid email address.'**
   String get authErrInvalidEmail;
 
+  /// No description provided for @authErrEmailEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address.'**
+  String get authErrEmailEmpty;
+
+  /// No description provided for @authErrEmailSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address cannot contain spaces.'**
+  String get authErrEmailSpaces;
+
+  /// No description provided for @authErrEmailNoAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Email must include an @ symbol.'**
+  String get authErrEmailNoAt;
+
+  /// No description provided for @authErrEmailInvalidDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email domain (e.g., gmail.com).'**
+  String get authErrEmailInvalidDomain;
+
+  /// No description provided for @authErrPhoneTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is too short. Must be at least 7 digits.'**
+  String get authErrPhoneTooShort;
+
+  /// No description provided for @authErrPhoneTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is too long. Maximum 15 digits.'**
+  String get authErrPhoneTooLong;
+
+  /// No description provided for @authErrPhoneInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number contains invalid characters.'**
+  String get authErrPhoneInvalidChars;
+
+  /// No description provided for @authErrPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number.'**
+  String get authErrPhoneInvalid;
+
+  /// No description provided for @authErrPasswordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password.'**
+  String get authErrPasswordEmpty;
+
+  /// No description provided for @authErrPasswordShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get authErrPasswordShort;
+
+  /// No description provided for @authErrPasswordNoLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one letter.'**
+  String get authErrPasswordNoLetter;
+
+  /// No description provided for @authErrPasswordNoDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one number.'**
+  String get authErrPasswordNoDigit;
+
+  /// No description provided for @authErrNameEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your full name.'**
+  String get authErrNameEmpty;
+
+  /// No description provided for @authErrNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters.'**
+  String get authErrNameTooShort;
+
   /// No description provided for @accountChangeEmail.
   ///
   /// In en, this message translates to:
-  /// **'Change Email'**
+  /// **'Change'**
   String get accountChangeEmail;
 
   /// No description provided for @accountChangeEmailBody.
   ///
   /// In en, this message translates to:
-  /// **'Enter your new email address. You will need to confirm the change via email.'**
+  /// **'Enter your new email address. A confirmation link will be sent to verify the change.'**
   String get accountChangeEmailBody;
 
   /// No description provided for @accountUpdate.
@@ -3263,6 +3425,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get accountUpdate;
+
+  /// No description provided for @accountVerifyIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Your Identity'**
+  String get accountVerifyIdentity;
+
+  /// No description provided for @accountVerifyIdentityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'For security, please enter your current password to continue.'**
+  String get accountVerifyIdentityBody;
+
+  /// No description provided for @accountVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get accountVerify;
+
+  /// No description provided for @accountWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect password. Please try again.'**
+  String get accountWrongPassword;
+
+  /// No description provided for @accountEmailSameAsCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'This is already your current email.'**
+  String get accountEmailSameAsCurrent;
 
   /// No description provided for @accountEmailConfirmationTitle.
   ///
@@ -3273,7 +3465,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountEmailConfirmationBody.
   ///
   /// In en, this message translates to:
-  /// **'A confirmation link has been sent to your new email address. Please check your inbox to complete the change.'**
+  /// **'A confirmation link has been sent to your new email address. Please check your inbox and click the link to complete the change.'**
   String get accountEmailConfirmationBody;
 }
 

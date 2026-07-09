@@ -43,14 +43,16 @@ class AddEditOfferScreen extends StatefulWidget {
 
 class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   // ── basic fields ─────────────────────────────────────────────────────────
-  final _titleCtrl    = TextEditingController();
-  final _hotelCtrl    = TextEditingController();
-  final _distCtrl     = TextEditingController();
-  final _roomCtrl     = TextEditingController();
-  final _carrierCtrl  = TextEditingController();
-  final _priceCtrl    = TextEditingController();
-  final _originalCtrl = TextEditingController();
-  final _badgeCtrl    = TextEditingController();
+  final _titleCtrl           = TextEditingController();
+  final _hotelMakkahCtrl     = TextEditingController();
+  final _hotelMadinahCtrl    = TextEditingController();
+  final _distCtrl            = TextEditingController();
+  final _roomCtrl            = TextEditingController();
+  final _carrierCtrl         = TextEditingController();
+  final _transportPlaceCtrl  = TextEditingController();
+  final _priceCtrl           = TextEditingController();
+  final _originalCtrl        = TextEditingController();
+  final _badgeCtrl           = TextEditingController();
 
   String     _transport = 'plane';
   int        _acc       = 4;
@@ -58,6 +60,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   String     _meals     = 'Breakfast';
   bool       _saving    = false;
   Uint8List? _imageBytes;
+  bool       _initialized = false;
 
   // ── itinerary ─────────────────────────────────────────────────────────────
   final List<_ItineraryEntry> _itinerary = [];
@@ -73,33 +76,47 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   void initState() {
     super.initState();
     final o = widget.existing;
-    final t = AppLocalizations.of(context);
     if (o != null) {
-      _titleCtrl.text    = o.title;
-      _hotelCtrl.text    = o.hotel;
-      _distCtrl.text     = o.distance;
-      _roomCtrl.text     = o.room;
-      _carrierCtrl.text  = o.carrier;
-      _priceCtrl.text    = o.price.toStringAsFixed(0);
-      _originalCtrl.text = o.original > 0 ? o.original.toStringAsFixed(0) : '';
-      _badgeCtrl.text    = o.badge;
+      _titleCtrl.text          = o.title;
+      _hotelMakkahCtrl.text    = o.hotelMakkah;
+      _hotelMadinahCtrl.text   = o.hotelMadinah;
+      _distCtrl.text           = o.distance;
+      _roomCtrl.text           = o.room;
+      _carrierCtrl.text        = o.carrierName;
+      _transportPlaceCtrl.text = o.transportPlace;
+      _priceCtrl.text          = o.price.toStringAsFixed(0);
+      _originalCtrl.text       = o.original > 0 ? o.original.toStringAsFixed(0) : '';
+      _badgeCtrl.text          = o.badge;
       _transport         = o.transport;
       _acc               = o.acc;
       _days              = o.days;
       _meals             = o.meals;
       _imageBytes        = context.read<AppProvider>().getOfferImage(o.id);
+    }
+  }
 
-      // load existing itinerary
-      for (final it in o.buildItinerary(t)) {
-        _itinerary.add(_ItineraryEntry(d: it.day, t: it.title, s: it.summary));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final o = widget.existing;
+      final t = AppLocalizations.of(context);
+      if (o != null) {
+        _itinerary.clear();
+        for (final it in o.buildItinerary(t)) {
+          _itinerary.add(_ItineraryEntry(d: it.day, t: it.title, s: it.summary));
+        }
+        _includes.clear();
+        for (final inc in o.buildIncludes(t)) {
+          _includes.add(_IncludeEntry(text: inc));
+        }
+      } else {
+        _itinerary.clear();
+        _includes.clear();
+        _seedDefaultItinerary(t);
+        _seedDefaultIncludes(t);
       }
-      // load existing includes
-      for (final inc in o.buildIncludes(t)) {
-        _includes.add(_IncludeEntry(text: inc));
-      }
-    } else {
-      _seedDefaultItinerary(t);
-      _seedDefaultIncludes(t);
+      _initialized = true;
     }
   }
 
@@ -125,8 +142,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
 
   @override
   void dispose() {
-    for (final c in [_titleCtrl, _hotelCtrl, _distCtrl, _roomCtrl,
-                     _carrierCtrl, _priceCtrl, _originalCtrl, _badgeCtrl]) {
+    for (final c in [_titleCtrl, _hotelMakkahCtrl, _hotelMadinahCtrl, _distCtrl, _roomCtrl,
+                     _carrierCtrl, _transportPlaceCtrl, _priceCtrl, _originalCtrl, _badgeCtrl]) {
       c.dispose();
     }
     for (final e in _itinerary) e.dispose();
@@ -193,11 +210,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       price:      price,
       original:   double.tryParse(_originalCtrl.text.trim().replaceAll(',', '')) ?? 0,
       rating:     company?.rating ?? 0,
-      hotel:      _hotelCtrl.text.trim(),
+      hotel:      '${_hotelMakkahCtrl.text.trim()} | ${_hotelMadinahCtrl.text.trim()}',
       distance:   _distCtrl.text.trim(),
       room:       _roomCtrl.text.trim(),
       meals:      _meals,
-      carrier:    _carrierCtrl.text.trim(),
+      carrier:    '${_carrierCtrl.text.trim()} | ${_transportPlaceCtrl.text.trim()}',
       badge:      _badgeCtrl.text.trim(),
       gradColors: [
         company?.tint ?? AppColors.primary,
@@ -309,7 +326,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             // ── Hotel ────────────────────────────────────────────────────
             const SizedBox(height: 28),
             _SectionHeader(t.addEditOfferHotel),
-            _Field(label: t.addEditOfferHotelName, controller: _hotelCtrl, hint: t.addEditOfferHotelNameHint),
+            Row(children: [
+              Expanded(child: _Field(label: t.addEditOfferHotelMakkah, controller: _hotelMakkahCtrl, hint: t.addEditOfferHotelMakkahHint)),
+              const SizedBox(width: 14),
+              Expanded(child: _Field(label: t.addEditOfferHotelMadinah, controller: _hotelMadinahCtrl, hint: t.addEditOfferHotelMadinahHint)),
+            ]),
             const SizedBox(height: 14),
             Row(children: [
               Expanded(child: _Field(label: t.addEditOfferDistanceToHaram, controller: _distCtrl, hint: t.addEditOfferDistanceHint)),
@@ -317,7 +338,17 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
               Expanded(child: _Field(label: t.addEditOfferRoomType, controller: _roomCtrl, hint: t.addEditOfferRoomTypeHint)),
             ]),
             const SizedBox(height: 14),
-            _Field(label: t.addEditOfferCarrierCoach, controller: _carrierCtrl, hint: t.addEditOfferCarrierHint),
+            Row(children: [
+              Expanded(child: _Field(label: t.addEditOfferCarrierCoach, controller: _carrierCtrl, hint: t.addEditOfferCarrierHint)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _Field(
+                  label: _transport == 'plane' ? t.addEditOfferAirport : t.addEditOfferBusStation,
+                  controller: _transportPlaceCtrl,
+                  hint: _transport == 'plane' ? t.addEditOfferAirportHint : t.addEditOfferBusStationHint,
+                ),
+              ),
+            ]),
 
             // ── Pricing ──────────────────────────────────────────────────
             const SizedBox(height: 28),
@@ -803,6 +834,10 @@ class _DropdownField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final list = List<String>.from(items);
+    if (value.isNotEmpty && !list.contains(value)) {
+      list.add(value);
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.inkLight)),
       const SizedBox(height: 6),
@@ -811,8 +846,10 @@ class _DropdownField extends StatelessWidget {
         decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border, width: 1.5)),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
-            value: value, isExpanded: true, style: AppTheme.sans(14),
-            items: items.map((e) => DropdownMenuItem(value: e, child: Text(labelBuilder?.call(e) ?? e))).toList(),
+            value: value.isEmpty ? null : (list.contains(value) ? value : null),
+            isExpanded: true,
+            style: AppTheme.sans(14),
+            items: list.map((e) => DropdownMenuItem(value: e, child: Text(labelBuilder?.call(e) ?? e))).toList(),
             onChanged: onChanged,
           ),
         ),

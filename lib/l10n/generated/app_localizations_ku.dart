@@ -1326,6 +1326,42 @@ class AppLocalizationsKu extends AppLocalizations {
   String get addEditOfferHotelNameHint => 'نموونە: کۆنراد مەککە سویتس';
 
   @override
+  String get addEditOfferHotelMakkah => 'هۆتێل لە مەککە';
+
+  @override
+  String get addEditOfferHotelMakkahHint => 'نموونە: کۆنراد مەککە سویتس';
+
+  @override
+  String get addEditOfferHotelMadinah => 'هۆتێل لە مەدینە';
+
+  @override
+  String get addEditOfferHotelMadinahHint => 'نموونە: ئەنوار مەدینە مۆڤنبیک';
+
+  @override
+  String get addEditOfferAirport => 'فڕۆکەخانەی گەشت';
+
+  @override
+  String get addEditOfferAirportHint => 'نموونە: فڕۆکەخانەی نێودەوڵەتی هەولێر';
+
+  @override
+  String get addEditOfferBusStation => 'وێستگەی پاسی گەشت';
+
+  @override
+  String get addEditOfferBusStationHint => 'نموونە: وێستگەی پاسی سلێمانی';
+
+  @override
+  String get offerDetailHotelMakkah => 'هۆتێل لە مەککە';
+
+  @override
+  String get offerDetailHotelMadinah => 'هۆتێل لە مەدینە';
+
+  @override
+  String get airportDeparture => 'فڕۆکەخانەی گەشت';
+
+  @override
+  String get busStationPickup => 'وێستگەی گەشت';
+
+  @override
   String get addEditOfferDistanceToHaram => 'دووری لە حەرەم';
 
   @override
@@ -1850,22 +1886,87 @@ class AppLocalizationsKu extends AppLocalizations {
   String get authNext => 'دواتر';
 
   @override
+  String get authEnterPassword => 'وشەی نهێنییەکەت بنووسە بۆ بەردەوامبوون';
+
+  @override
   String get authErrInvalidEmail => 'تکایە ئیمەیلێکی دروست بنووسە.';
 
   @override
-  String get accountChangeEmail => 'گۆڕینی ئیمەیل';
+  String get authErrEmailEmpty => 'تکایە ئیمەیلەکەت بنووسە.';
+
+  @override
+  String get authErrEmailSpaces => 'ئیمەیل نابێت بۆشایی تێدا هەبێت.';
+
+  @override
+  String get authErrEmailNoAt => 'ئیمەیل دەبێت نیشانەی @ تێدابێت.';
+
+  @override
+  String get authErrEmailInvalidDomain =>
+      'تکایە دۆمەینێکی دروست بنووسە (وەک: gmail.com).';
+
+  @override
+  String get authErrPhoneTooShort =>
+      'ژمارەی مۆبایل کورتە. لانی کەم 7 ژمارە دەبێت.';
+
+  @override
+  String get authErrPhoneTooLong => 'ژمارەی مۆبایل درێژە. زۆرترین 15 ژمارە.';
+
+  @override
+  String get authErrPhoneInvalidChars => 'ژمارەی مۆبایل پیتی نادروستی تێدایە.';
+
+  @override
+  String get authErrPhoneInvalid => 'تکایە ژمارەیەکی دروست بنووسە.';
+
+  @override
+  String get authErrPasswordEmpty => 'تکایە وشەی نهێنییەکەت بنووسە.';
+
+  @override
+  String get authErrPasswordShort => 'وشەی نهێنی دەبێت لانی کەم 6 پیت بێت.';
+
+  @override
+  String get authErrPasswordNoLetter =>
+      'وشەی نهێنی دەبێت لانی کەم یەک پیت تێدابێت.';
+
+  @override
+  String get authErrPasswordNoDigit =>
+      'وشەی نهێنی دەبێت لانی کەم یەک ژمارە تێدابێت.';
+
+  @override
+  String get authErrNameEmpty => 'تکایە ناوی تەواوەکەت بنووسە.';
+
+  @override
+  String get authErrNameTooShort => 'ناو دەبێت لانی کەم 2 پیت بێت.';
+
+  @override
+  String get accountChangeEmail => 'گۆڕین';
 
   @override
   String get accountChangeEmailBody =>
-      'ئیمەیلە نوێیەکەت بنووسە. پێویستە لەڕێگەی ئیمەیلەوە گۆڕانکارییەکە پشتڕاست بکەیتەوە.';
+      'ئیمەیلە نوێیەکەت بنووسە. بەستەری پشتڕاستکردنەوە دەنێردرێت بۆ پشتڕاستکردنەوەی گۆڕانکارییەکە.';
 
   @override
   String get accountUpdate => 'نوێکردنەوە';
+
+  @override
+  String get accountVerifyIdentity => 'ناسنامەکەت پشتڕاست بکەرەوە';
+
+  @override
+  String get accountVerifyIdentityBody =>
+      'بۆ مەبەستی ئاسایشی، تکایە وشەی نهێنییە ئێستایەکەت بنووسە بۆ بەردەوامبوون.';
+
+  @override
+  String get accountVerify => 'پشتڕاستکردنەوە';
+
+  @override
+  String get accountWrongPassword => 'وشەی نهێنی هەڵەیە. دوبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get accountEmailSameAsCurrent => 'ئەمە ئیمەیلە ئێستاکەتە.';
 
   @override
   String get accountEmailConfirmationTitle => 'پشتڕاستکردنەوە نێردرا';
 
   @override
   String get accountEmailConfirmationBody =>
-      'بەستەری پشتڕاستکردنەوە بۆ ئیمەیلە نوێیەکەت نێردرا. تکایە سندوقی نامەکانت بپشکنە بۆ تەواوکردنی گۆڕانکارییەکە.';
+      'بەستەری پشتڕاستکردنەوە بۆ ئیمەیلە نوێیەکەت نێردرا. سندوقی نامەکانت بپشکنە و کلیک لەسەر بەستەرەکە بکە بۆ تەواوکردنی گۆڕانکارییەکە.';
 }

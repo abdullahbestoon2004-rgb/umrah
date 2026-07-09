@@ -1312,6 +1312,42 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addEditOfferHotelNameHint => 'مثال: كونراد مكة سويتس';
 
   @override
+  String get addEditOfferHotelMakkah => 'الفندق في مكة';
+
+  @override
+  String get addEditOfferHotelMakkahHint => 'مثال: كونراد مكة سويتس';
+
+  @override
+  String get addEditOfferHotelMadinah => 'الفندق في المدينة المنورة';
+
+  @override
+  String get addEditOfferHotelMadinahHint => 'مثال: أنوار المدينة موفنبيك';
+
+  @override
+  String get addEditOfferAirport => 'مطار المغادرة';
+
+  @override
+  String get addEditOfferAirportHint => 'مثال: مطار أربيل الدولي';
+
+  @override
+  String get addEditOfferBusStation => 'محطة الحافلات للمغادرة';
+
+  @override
+  String get addEditOfferBusStationHint => 'مثال: محطة حافلات السليمانية';
+
+  @override
+  String get offerDetailHotelMakkah => 'فندق مكة';
+
+  @override
+  String get offerDetailHotelMadinah => 'فندق المدينة المنورة';
+
+  @override
+  String get airportDeparture => 'مطار المغادرة';
+
+  @override
+  String get busStationPickup => 'محطة المغادرة';
+
+  @override
   String get addEditOfferDistanceToHaram => 'المسافة إلى الحرم';
 
   @override
@@ -1828,22 +1864,90 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authNext => 'التالي';
 
   @override
+  String get authEnterPassword => 'أدخل کلمة المرور للمتابعة';
+
+  @override
   String get authErrInvalidEmail => 'يرجى إدخال بريد إلکتروني صالح.';
 
   @override
-  String get accountChangeEmail => 'تغيير البريد الإلکتروني';
+  String get authErrEmailEmpty => 'يرجى إدخال البريد الإلکتروني.';
+
+  @override
+  String get authErrEmailSpaces =>
+      'البريد الإلکتروني لا يمکن أن يحتوي على مسافات.';
+
+  @override
+  String get authErrEmailNoAt => 'يجب أن يحتوي البريد على رمز @.';
+
+  @override
+  String get authErrEmailInvalidDomain =>
+      'يرجى إدخال نطاق بريد صالح (مثل: gmail.com).';
+
+  @override
+  String get authErrPhoneTooShort =>
+      'رقم الهاتف قصير جداً. يجب أن يکون 7 أرقام على الأقل.';
+
+  @override
+  String get authErrPhoneTooLong =>
+      'رقم الهاتف طويل جداً. الحد الأقصى 15 رقماً.';
+
+  @override
+  String get authErrPhoneInvalidChars => 'رقم الهاتف يحتوي على أحرف غير صالحة.';
+
+  @override
+  String get authErrPhoneInvalid => 'يرجى إدخال رقم هاتف صالح.';
+
+  @override
+  String get authErrPasswordEmpty => 'يرجى إدخال کلمة المرور.';
+
+  @override
+  String get authErrPasswordShort =>
+      'کلمة المرور يجب أن تکون 6 أحرف على الأقل.';
+
+  @override
+  String get authErrPasswordNoLetter =>
+      'کلمة المرور يجب أن تحتوي على حرف واحد على الأقل.';
+
+  @override
+  String get authErrPasswordNoDigit =>
+      'کلمة المرور يجب أن تحتوي على رقم واحد على الأقل.';
+
+  @override
+  String get authErrNameEmpty => 'يرجى إدخال الاسم الکامل.';
+
+  @override
+  String get authErrNameTooShort => 'الاسم يجب أن يکون حرفين على الأقل.';
+
+  @override
+  String get accountChangeEmail => 'تغيير';
 
   @override
   String get accountChangeEmailBody =>
-      'أدخل بريدک الإلکتروني الجديد. ستحتاج إلى تأکيد التغيير عبر البريد الإلکتروني.';
+      'أدخل بريدک الإلکتروني الجديد. سيتم إرسال رابط تأکيد للتحقق من التغيير.';
 
   @override
   String get accountUpdate => 'تحديث';
+
+  @override
+  String get accountVerifyIdentity => 'تحقق من هويتک';
+
+  @override
+  String get accountVerifyIdentityBody =>
+      'لأسباب أمنية، يرجى إدخال کلمة المرور الحالية للمتابعة.';
+
+  @override
+  String get accountVerify => 'تحقق';
+
+  @override
+  String get accountWrongPassword => 'کلمة المرور غير صحيحة. حاول مرة أخرى.';
+
+  @override
+  String get accountEmailSameAsCurrent => 'هذا هو بريدک الحالي بالفعل.';
 
   @override
   String get accountEmailConfirmationTitle => 'تم إرسال التأکيد';
 
   @override
   String get accountEmailConfirmationBody =>
-      'تم إرسال رابط تأکيد إلى بريدک الإلکتروني الجديد. يرجى التحقق من بريدک لإتمام التغيير.';
+      'تم إرسال رابط تأکيد إلى بريدک الجديد. تحقق من بريدک وانقر على الرابط لإتمام التغيير.';
 }

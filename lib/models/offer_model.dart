@@ -81,6 +81,26 @@ class Offer {
   bool get hasDiscount => original > 0;
   bool get isByAir => transport == 'plane';
 
+  String get hotelMakkah {
+    final parts = hotel.split('|');
+    return parts.isNotEmpty ? parts[0].trim() : '';
+  }
+
+  String get hotelMadinah {
+    final parts = hotel.split('|');
+    return parts.length > 1 ? parts[1].trim() : '';
+  }
+
+  String get carrierName {
+    final parts = carrier.split('|');
+    return parts.isNotEmpty ? parts[0].trim() : '';
+  }
+
+  String get transportPlace {
+    final parts = carrier.split('|');
+    return parts.length > 1 ? parts[1].trim() : '';
+  }
+
   String transportLabelFor(AppLocalizations t) => isByAir ? t.offersByAir : t.offersByCoach;
   String transportLongFor(AppLocalizations t) =>
       isByAir ? t.offerDetailReturnFlightsEconomy : t.offerDetailLuxuryCoach;
