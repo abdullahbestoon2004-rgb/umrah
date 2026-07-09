@@ -1,6 +1,6 @@
 {
-    "name": "umrah_app",
-    "short_name": "umrah_app",
+    "name": "Tawaf",
+    "short_name": "Tawaf",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
