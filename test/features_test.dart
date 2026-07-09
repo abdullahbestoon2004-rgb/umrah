@@ -94,6 +94,20 @@ class FakeService implements DataService {
   }
 
   @override
+  Future<String?> updateEmail(String newEmail) async {
+    if (user != null) {
+      user = UserProfile(
+        id: user!.id,
+        email: newEmail,
+        role: user!.role,
+        fullName: user!.fullName,
+        phone: user!.phone,
+      );
+    }
+    return null;
+  }
+
+  @override
   Future<String?> changePassword(String newPassword) async => null;
 
   @override

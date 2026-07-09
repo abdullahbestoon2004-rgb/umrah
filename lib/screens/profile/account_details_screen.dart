@@ -107,7 +107,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t.adminDeclineConfirm, style: AppTheme.sans(13, weight: FontWeight.w700)),
+              child: Text(t.agencyBookingsConfirm, style: AppTheme.sans(13, weight: FontWeight.w700)),
             ),
           ],
         ),

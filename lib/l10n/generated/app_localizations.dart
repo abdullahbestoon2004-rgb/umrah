@@ -3233,6 +3233,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match.'**
   String get forgotPasswordErrNoMatch;
+
+  /// No description provided for @authNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get authNext;
+
+  /// No description provided for @authErrInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get authErrInvalidEmail;
+
+  /// No description provided for @accountChangeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get accountChangeEmail;
+
+  /// No description provided for @accountChangeEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new email address. You will need to confirm the change via email.'**
+  String get accountChangeEmailBody;
+
+  /// No description provided for @accountUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get accountUpdate;
+
+  /// No description provided for @accountEmailConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation Sent'**
+  String get accountEmailConfirmationTitle;
+
+  /// No description provided for @accountEmailConfirmationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A confirmation link has been sent to your new email address. Please check your inbox to complete the change.'**
+  String get accountEmailConfirmationBody;
 }
 
 class _AppLocalizationsDelegate

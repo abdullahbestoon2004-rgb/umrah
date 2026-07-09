@@ -1823,4 +1823,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get forgotPasswordErrNoMatch => 'کلمتا المرور غير متطابقتين.';
+
+  @override
+  String get authNext => 'التالي';
+
+  @override
+  String get authErrInvalidEmail => 'يرجى إدخال بريد إلکتروني صالح.';
+
+  @override
+  String get accountChangeEmail => 'تغيير البريد الإلکتروني';
+
+  @override
+  String get accountChangeEmailBody =>
+      'أدخل بريدک الإلکتروني الجديد. ستحتاج إلى تأکيد التغيير عبر البريد الإلکتروني.';
+
+  @override
+  String get accountUpdate => 'تحديث';
+
+  @override
+  String get accountEmailConfirmationTitle => 'تم إرسال التأکيد';
+
+  @override
+  String get accountEmailConfirmationBody =>
+      'تم إرسال رابط تأکيد إلى بريدک الإلکتروني الجديد. يرجى التحقق من بريدک لإتمام التغيير.';
 }

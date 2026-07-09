@@ -1845,4 +1845,27 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get forgotPasswordErrNoMatch => 'وشەی نهێنیەکان وەک نین.';
+
+  @override
+  String get authNext => 'دواتر';
+
+  @override
+  String get authErrInvalidEmail => 'تکایە ئیمەیلێکی دروست بنووسە.';
+
+  @override
+  String get accountChangeEmail => 'گۆڕینی ئیمەیل';
+
+  @override
+  String get accountChangeEmailBody =>
+      'ئیمەیلە نوێیەکەت بنووسە. پێویستە لەڕێگەی ئیمەیلەوە گۆڕانکارییەکە پشتڕاست بکەیتەوە.';
+
+  @override
+  String get accountUpdate => 'نوێکردنەوە';
+
+  @override
+  String get accountEmailConfirmationTitle => 'پشتڕاستکردنەوە نێردرا';
+
+  @override
+  String get accountEmailConfirmationBody =>
+      'بەستەری پشتڕاستکردنەوە بۆ ئیمەیلە نوێیەکەت نێردرا. تکایە سندوقی نامەکانت بپشکنە بۆ تەواوکردنی گۆڕانکارییەکە.';
 }

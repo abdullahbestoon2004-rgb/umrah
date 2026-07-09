@@ -1834,4 +1834,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgotPasswordErrNoMatch => 'Passwords do not match.';
+
+  @override
+  String get authNext => 'Next';
+
+  @override
+  String get authErrInvalidEmail => 'Please enter a valid email address.';
+
+  @override
+  String get accountChangeEmail => 'Change Email';
+
+  @override
+  String get accountChangeEmailBody =>
+      'Enter your new email address. You will need to confirm the change via email.';
+
+  @override
+  String get accountUpdate => 'Update';
+
+  @override
+  String get accountEmailConfirmationTitle => 'Confirmation Sent';
+
+  @override
+  String get accountEmailConfirmationBody =>
+      'A confirmation link has been sent to your new email address. Please check your inbox to complete the change.';
 }
