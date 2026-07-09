@@ -92,7 +92,12 @@ class HomeScreen extends StatelessWidget {
     final ads = provider.homeAds;
     final hero = ranked.first;
     final homeOffers = (ads.isEmpty ? ranked.skip(1) : ranked).take(4).toList();
-    final companies = provider.companies.take(4).toList();
+    final companies = List<Company>.from(provider.companies)
+      ..sort((a, b) {
+        if (a.isPromoted != b.isPromoted) return a.isPromoted ? -1 : 1;
+        return b.rating.compareTo(a.rating);
+      });
+    final homeCompanies = companies.take(4).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -114,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 SliverToBoxAdapter(child: _QuickCategories()),
                 SliverToBoxAdapter(
-                  child: _AgenciesSection(companies: companies),
+                  child: _AgenciesSection(companies: homeCompanies),
                 ),
                 if (homeOffers.isNotEmpty)
                   SliverToBoxAdapter(

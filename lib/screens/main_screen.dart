@@ -9,6 +9,7 @@ import 'companies/companies_screen.dart';
 import 'offers/offers_screen.dart';
 import 'bookings/bookings_screen.dart';
 import 'profile/profile_screen.dart';
+import 'profile/reset_password_overlay.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -61,7 +62,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tab = context.watch<AppProvider>().currentTab;
+    final provider = context.watch<AppProvider>();
+    if (provider.needsPasswordReset) {
+      return const ResetPasswordOverlay();
+    }
+    final tab = provider.currentTab;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: PageView(

@@ -10,6 +10,7 @@ import '../models/user_profile.dart';
 import '../models/commission_model.dart';
 import '../models/support_message_model.dart';
 import '../services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
 
@@ -70,10 +71,25 @@ class AppProvider extends ChangeNotifier {
   final DataService _service;
   SharedPreferences? _prefs;
 
+  bool _needsPasswordReset = false;
+  bool get needsPasswordReset => _needsPasswordReset;
+  set needsPasswordReset(bool value) {
+    _needsPasswordReset = value;
+    notifyListeners();
+  }
+
   Future<void> init() async {
     await _loadPrefs();
     await loadData();
     await restoreAuth();
+    try {
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        if (data.event == AuthChangeEvent.passwordRecovery) {
+          _needsPasswordReset = true;
+          notifyListeners();
+        }
+      });
+    } catch (_) {}
   }
 
   // ── persisted settings ───────────────────────────────────────────────────
@@ -428,6 +444,13 @@ class AppProvider extends ChangeNotifier {
 
   Future<bool> setOfferFeatured(String id, bool featured) async {
     final err = await _service.setPackageFeatured(id, featured);
+    if (err != null) return false;
+    await loadData();
+    return true;
+  }
+
+  Future<bool> setCompanyPromoted(String id, bool promoted) async {
+    final err = await _service.setCompanyPromoted(id, promoted);
     if (err != null) return false;
     await loadData();
     return true;
