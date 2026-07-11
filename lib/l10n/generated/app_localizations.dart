@@ -1842,6 +1842,228 @@ abstract class AppLocalizations {
   /// **'Admin Dashboard'**
   String get adminTitle;
 
+  /// No description provided for @adminOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform overview'**
+  String get adminOverview;
+
+  /// No description provided for @adminQuickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get adminQuickActions;
+
+  /// No description provided for @adminMetricAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Agencies'**
+  String get adminMetricAgencies;
+
+  /// No description provided for @adminMetricPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get adminMetricPackages;
+
+  /// No description provided for @adminMetricFeatured.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get adminMetricFeatured;
+
+  /// No description provided for @adminMetricLiveAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Live ads'**
+  String get adminMetricLiveAds;
+
+  /// No description provided for @adminActionPromote.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote'**
+  String get adminActionPromote;
+
+  /// No description provided for @adminActionFinance.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance'**
+  String get adminActionFinance;
+
+  /// No description provided for @adminActionAd.
+  ///
+  /// In en, this message translates to:
+  /// **'New ad'**
+  String get adminActionAd;
+
+  /// No description provided for @adminAllCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up — there are no items requiring your attention.'**
+  String get adminAllCaughtUp;
+
+  /// No description provided for @adminAttentionAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {count, plural, =1{agency is} other{agencies are}} waiting for approval.'**
+  String adminAttentionAgencies(int count);
+
+  /// No description provided for @adminAttentionMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} support {count, plural, =1{message needs} other{messages need}} a response.'**
+  String adminAttentionMessages(int count);
+
+  /// No description provided for @adminAttentionAgenciesAndMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'{agencies} {agencies, plural, =1{agency} other{agencies}} and {messages} support {messages, plural, =1{message} other{messages}} require attention.'**
+  String adminAttentionAgenciesAndMessages(int agencies, int messages);
+
+  /// No description provided for @tabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get tabOverview;
+
+  /// No description provided for @tabContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get tabContent;
+
+  /// No description provided for @tabMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get tabMore;
+
+  /// No description provided for @profilePreviewCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview my public card'**
+  String get profilePreviewCard;
+
+  /// No description provided for @adminRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get adminRecentActivity;
+
+  /// No description provided for @adminNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get adminNeedsAttention;
+
+  /// No description provided for @adminFilterActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminFilterActive;
+
+  /// No description provided for @adminInfoTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get adminInfoTab;
+
+  /// No description provided for @adminSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get adminSignOut;
+
+  /// No description provided for @packagesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} packages'**
+  String packagesCount(int count);
+
+  /// No description provided for @financeRecordsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records'**
+  String financeRecordsCount(int count);
+
+  /// No description provided for @contentPreviewHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview home screen'**
+  String get contentPreviewHome;
+
+  /// No description provided for @moreGroupPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get moreGroupPeople;
+
+  /// No description provided for @moreGroupSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get moreGroupSystem;
+
+  /// No description provided for @moreSupportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages from app users'**
+  String get moreSupportSubtitle;
+
+  /// No description provided for @morePreviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See the home screen exactly as clients do'**
+  String get morePreviewSubtitle;
+
+  /// No description provided for @agencyNextDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Next departure'**
+  String get agencyNextDeparture;
+
+  /// No description provided for @agencyInDaysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} days'**
+  String agencyInDaysCount(int count);
+
+  /// No description provided for @agencyKpiRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get agencyKpiRevenue;
+
+  /// No description provided for @agencyKpiRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending requests'**
+  String get agencyKpiRequests;
+
+  /// No description provided for @agencyMoneyYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe the platform'**
+  String get agencyMoneyYouOwe;
+
+  /// No description provided for @agencyMoneySettled.
+  ///
+  /// In en, this message translates to:
+  /// **'All settled — nothing owed right now.'**
+  String get agencyMoneySettled;
+
+  /// No description provided for @stepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String stepOf(int current, int total);
+
+  /// No description provided for @commonBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
   /// No description provided for @adminPendingAgencies.
   ///
   /// In en, this message translates to:

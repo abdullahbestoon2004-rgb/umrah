@@ -1071,6 +1071,134 @@ class AppLocalizationsKu extends AppLocalizations {
   String get adminTitle => 'داشبۆردی بەڕێوەبەر';
 
   @override
+  String get adminOverview => 'گەشتی گشتی پلاتفۆرم';
+
+  @override
+  String get adminQuickActions => 'کردارە خێراکان';
+
+  @override
+  String get adminMetricAgencies => 'کۆمپانیاکان';
+
+  @override
+  String get adminMetricPackages => 'گەشتەکان';
+
+  @override
+  String get adminMetricFeatured => 'تایبەتکراوەکان';
+
+  @override
+  String get adminMetricLiveAds => 'ڕیکلامە چالاکەکان';
+
+  @override
+  String get adminActionPromote => 'تایبەتکردن';
+
+  @override
+  String get adminActionFinance => 'دارایی';
+
+  @override
+  String get adminActionAd => 'ڕیکلامی نوێ';
+
+  @override
+  String get adminAllCaughtUp =>
+      'هەموو شتێک بەدوایە — هیچ شتێک پێویستی بە سەرنجی تۆ نییە.';
+
+  @override
+  String adminAttentionAgencies(int count) {
+    return '$count کۆمپانیا چاوەڕێی پەسەندکردنن.';
+  }
+
+  @override
+  String adminAttentionMessages(int count) {
+    return '$count نامەی پشتگیری پێویستی بە وەڵام هەیە.';
+  }
+
+  @override
+  String adminAttentionAgenciesAndMessages(int agencies, int messages) {
+    return '$agencies کۆمپانیا و $messages نامەی پشتگیری پێویستیان بە سەرنجە.';
+  }
+
+  @override
+  String get tabOverview => 'گشتی';
+
+  @override
+  String get tabContent => 'ناوەڕۆک';
+
+  @override
+  String get tabMore => 'زیاتر';
+
+  @override
+  String get profilePreviewCard => 'پێشبینینی کارتی گشتیم';
+
+  @override
+  String get adminRecentActivity => 'چالاکییە دواییەکان';
+
+  @override
+  String get adminNeedsAttention => 'پێویستی بە سەرنجە';
+
+  @override
+  String get adminFilterActive => 'چالاک';
+
+  @override
+  String get adminInfoTab => 'زانیاری';
+
+  @override
+  String get adminSignOut => 'چوونەدەرەوە';
+
+  @override
+  String packagesCount(int count) {
+    return '$count گەشت';
+  }
+
+  @override
+  String financeRecordsCount(int count) {
+    return '$count تۆمار';
+  }
+
+  @override
+  String get contentPreviewHome => 'پێشبینینی پەڕەی سەرەکی';
+
+  @override
+  String get moreGroupPeople => 'کەسەکان';
+
+  @override
+  String get moreGroupSystem => 'سیستەم';
+
+  @override
+  String get moreSupportSubtitle => 'نامەکانی بەکارهێنەرانی ئەپەکە';
+
+  @override
+  String get morePreviewSubtitle =>
+      'پەڕەی سەرەکی ببینە وەک ئەوەی کڕیاران دەیبینن';
+
+  @override
+  String get agencyNextDeparture => 'گەشتی داهاتوو';
+
+  @override
+  String agencyInDaysCount(int count) {
+    return 'لە $count ڕۆژدا';
+  }
+
+  @override
+  String get agencyKpiRevenue => 'داهات';
+
+  @override
+  String get agencyKpiRequests => 'داواکاری چاوەڕوان';
+
+  @override
+  String get agencyMoneyYouOwe => 'قەرزی تۆ بۆ پلاتفۆرمەکە';
+
+  @override
+  String get agencyMoneySettled =>
+      'هەموو یەکلایی کرایەوە — ئێستا هیچ قەرز نییە.';
+
+  @override
+  String stepOf(int current, int total) {
+    return 'هەنگاوی $current لە $total';
+  }
+
+  @override
+  String get commonBack => 'گەڕانەوە';
+
+  @override
   String get adminPendingAgencies => 'کۆمپانیا چاوەڕوانەکان';
 
   @override

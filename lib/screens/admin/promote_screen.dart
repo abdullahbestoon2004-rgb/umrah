@@ -12,7 +12,9 @@ import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PromoteScreen extends StatefulWidget {
-  const PromoteScreen({super.key});
+  /// 0 = trips tab, 1 = agencies tab.
+  final int initialTab;
+  const PromoteScreen({super.key, this.initialTab = 0});
 
   @override
   State<PromoteScreen> createState() => _PromoteScreenState();
@@ -27,7 +29,8 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController =
+        TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
     _tabController.addListener(() {
       setState(() {
         _searchCtrl.clear();

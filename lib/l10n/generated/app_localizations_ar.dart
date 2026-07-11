@@ -1059,6 +1059,132 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminTitle => 'لوحة المشرف';
 
   @override
+  String get adminOverview => 'نظرة عامة على المنصة';
+
+  @override
+  String get adminQuickActions => 'إجراءات سريعة';
+
+  @override
+  String get adminMetricAgencies => 'الوكالات';
+
+  @override
+  String get adminMetricPackages => 'الباقات';
+
+  @override
+  String get adminMetricFeatured => 'المميزة';
+
+  @override
+  String get adminMetricLiveAds => 'الإعلانات النشطة';
+
+  @override
+  String get adminActionPromote => 'ترويج';
+
+  @override
+  String get adminActionFinance => 'المالية';
+
+  @override
+  String get adminActionAd => 'إعلان جديد';
+
+  @override
+  String get adminAllCaughtUp =>
+      'تمت المتابعة — لا توجد عناصر تحتاج إلى اهتمامك.';
+
+  @override
+  String adminAttentionAgencies(int count) {
+    return 'هناك $count وكالة بانتظار الموافقة.';
+  }
+
+  @override
+  String adminAttentionMessages(int count) {
+    return 'توجد $count رسالة دعم تحتاج إلى رد.';
+  }
+
+  @override
+  String adminAttentionAgenciesAndMessages(int agencies, int messages) {
+    return 'تحتاج $agencies وكالات و$messages رسائل دعم إلى اهتمامك.';
+  }
+
+  @override
+  String get tabOverview => 'نظرة عامة';
+
+  @override
+  String get tabContent => 'المحتوى';
+
+  @override
+  String get tabMore => 'المزيد';
+
+  @override
+  String get profilePreviewCard => 'معاينة بطاقتي العامة';
+
+  @override
+  String get adminRecentActivity => 'النشاط الأخير';
+
+  @override
+  String get adminNeedsAttention => 'بحاجة إلى انتباه';
+
+  @override
+  String get adminFilterActive => 'نشطة';
+
+  @override
+  String get adminInfoTab => 'معلومات';
+
+  @override
+  String get adminSignOut => 'تسجيل الخروج';
+
+  @override
+  String packagesCount(int count) {
+    return '$count باقة';
+  }
+
+  @override
+  String financeRecordsCount(int count) {
+    return '$count سجل';
+  }
+
+  @override
+  String get contentPreviewHome => 'معاينة الصفحة الرئيسية';
+
+  @override
+  String get moreGroupPeople => 'الأشخاص';
+
+  @override
+  String get moreGroupSystem => 'النظام';
+
+  @override
+  String get moreSupportSubtitle => 'رسائل من مستخدمي التطبيق';
+
+  @override
+  String get morePreviewSubtitle => 'شاهد الصفحة الرئيسية كما يراها العملاء';
+
+  @override
+  String get agencyNextDeparture => 'المغادرة القادمة';
+
+  @override
+  String agencyInDaysCount(int count) {
+    return 'بعد $count يوم';
+  }
+
+  @override
+  String get agencyKpiRevenue => 'الإيرادات';
+
+  @override
+  String get agencyKpiRequests => 'طلبات معلقة';
+
+  @override
+  String get agencyMoneyYouOwe => 'المستحق عليك للمنصة';
+
+  @override
+  String get agencyMoneySettled => 'تمت التسوية — لا مستحقات حالياً.';
+
+  @override
+  String stepOf(int current, int total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get commonBack => 'رجوع';
+
+  @override
   String get adminPendingAgencies => 'وكالات بانتظار الموافقة';
 
   @override

@@ -382,6 +382,11 @@ class AppProvider extends ChangeNotifier {
     try {
       _pendingCompanies = await _service.fetchPendingCompanies();
       _homeAds = await _service.fetchHomeAds();
+      // Refresh the catalog too so the overview metrics (agencies, packages,
+      // featured) stay accurate on pull-to-refresh, without flipping the
+      // global _loading flag the way loadData() would.
+      _companies = await _service.fetchCompanies();
+      _offers = await _service.fetchOffers(_companies);
     } catch (_) {}
     await loadCommissions();
     await loadSupportMessages();

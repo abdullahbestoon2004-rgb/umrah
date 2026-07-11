@@ -61,6 +61,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   bool       _saving    = false;
   Uint8List? _imageBytes;
   bool       _initialized = false;
+  int        _step      = 0;
+
+  static const _totalSteps = 6;
 
   // ── itinerary ─────────────────────────────────────────────────────────────
   final List<_ItineraryEntry> _itinerary = [];
@@ -274,198 +277,377 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 8, 22, 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      // Numbered stepper: same fields as the old single-scroll form, one
+      // section per step, with a persistent progress header and per-step
+      // validation. Controllers live on the State so values survive moving
+      // between steps; the AppBar save still publishes from any step.
+      body: Column(
+        children: [
+          _StepHeader(
+            current: _step,
+            total: _totalSteps,
+            title: _stepTitle(t),
+            stepLabel: t.stepOf(_step + 1, _totalSteps),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsetsDirectional.fromSTEB(22, 8, 22, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _stepContent(t),
+              ),
+            ),
+          ),
+          _stepNavBar(t),
+        ],
+      ),
+    );
+  }
+
+  String _stepTitle(AppLocalizations t) {
+    switch (_step) {
+      case 0: return t.addEditOfferPackageDetails;
+      case 1: return t.addEditOfferTransportStay;
+      case 2: return t.addEditOfferHotel;
+      case 3: return t.addEditOfferPricing;
+      case 4: return t.addEditOfferItinerary;
+      default: return t.addEditOfferWhatsIncluded;
+    }
+  }
+
+  /// Mirrors the validation _save applies, but at the step that owns the
+  /// field, so mistakes surface before the reviewer reaches the end.
+  void _nextStep() {
+    final t = AppLocalizations.of(context);
+    if (_step == 0 && _titleCtrl.text.trim().isEmpty) {
+      showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
+      return;
+    }
+    if (_step == 3) {
+      final price = double.tryParse(_priceCtrl.text.trim().replaceAll(',', '')) ?? 0;
+      if (price <= 0) {
+        showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
+        return;
+      }
+    }
+    setState(() => _step++);
+  }
+
+  Widget _stepNavBar(AppLocalizations t) {
+    final isLast = _step == _totalSteps - 1;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(22, 10, 22, 12),
+        child: Row(
           children: [
-            // ── Cover image ──────────────────────────────────────────────
-            _CoverImagePicker(
-              imageBytes: _imageBytes,
-              gradColors: () {
-                final tint = context.read<AppProvider>().companyById(widget.companyId)?.tint ?? AppColors.primary;
-                return [tint, Color.alphaBlend(Colors.black.withOpacity(0.55), tint)];
-              }(),
-              onPick: _pickImage,
-              onRemove: () => setState(() => _imageBytes = null),
-            ),
-            const SizedBox(height: 28),
-
-            // ── Basic details ────────────────────────────────────────────
-            _SectionHeader(t.addEditOfferPackageDetails),
-            _Field(label: t.addEditOfferTitleField, controller: _titleCtrl, hint: t.addEditOfferTitleHint),
-            const SizedBox(height: 14),
-            _Field(label: t.addEditOfferBadgeOptional, controller: _badgeCtrl, hint: t.addEditOfferBadgeHint),
-
-            // ── Transport & dates ────────────────────────────────────────
-            const SizedBox(height: 28),
-            _SectionHeader(t.addEditOfferTransportStay),
-            _SegmentRow(
-              label: t.addEditOfferTransport,
-              options: [t.addEditOfferByAir, t.addEditOfferByCoach],
-              icons: const [Icons.flight_rounded, Icons.directions_bus_rounded],
-              values: const ['plane', 'bus'],
-              selected: _transport,
-              onSelect: (v) => setState(() => _transport = v),
-            ),
-            const SizedBox(height: 16),
-            Row(children: [
-              Expanded(child: _Stepper(label: t.addEditOfferDays, value: _days, min: 3, max: 30, onChanged: (v) => setState(() => _days = v))),
-              const SizedBox(width: 14),
-              Expanded(child: _Stepper(label: t.addEditOfferStars, value: _acc, min: 1, max: 5, onChanged: (v) => setState(() => _acc = v))),
-            ]),
-            const SizedBox(height: 16),
-            _DropdownField(
-              label: t.addEditOfferMeals,
-              value: _meals,
-              items: _mealOptions,
-              labelBuilder: (v) => Offer.mealsLabel(v, t),
-              onChanged: (v) => setState(() => _meals = v!),
-            ),
-
-            // ── Hotel ────────────────────────────────────────────────────
-            const SizedBox(height: 28),
-            _SectionHeader(t.addEditOfferHotel),
-            Row(children: [
-              Expanded(child: _Field(label: t.addEditOfferHotelMakkah, controller: _hotelMakkahCtrl, hint: t.addEditOfferHotelMakkahHint)),
-              const SizedBox(width: 14),
-              Expanded(child: _Field(label: t.addEditOfferHotelMadinah, controller: _hotelMadinahCtrl, hint: t.addEditOfferHotelMadinahHint)),
-            ]),
-            const SizedBox(height: 14),
-            Row(children: [
-              Expanded(child: _Field(label: t.addEditOfferDistanceToHaram, controller: _distCtrl, hint: t.addEditOfferDistanceHint)),
-              const SizedBox(width: 14),
-              Expanded(child: _Field(label: t.addEditOfferRoomType, controller: _roomCtrl, hint: t.addEditOfferRoomTypeHint)),
-            ]),
-            const SizedBox(height: 14),
-            Row(children: [
-              Expanded(child: _Field(label: t.addEditOfferCarrierCoach, controller: _carrierCtrl, hint: t.addEditOfferCarrierHint)),
-              const SizedBox(width: 14),
+            if (_step > 0) ...[
               Expanded(
-                child: _Field(
-                  label: _transport == 'plane' ? t.addEditOfferAirport : t.addEditOfferBusStation,
-                  controller: _transportPlaceCtrl,
-                  hint: _transport == 'plane' ? t.addEditOfferAirportHint : t.addEditOfferBusStationHint,
-                ),
-              ),
-            ]),
-
-            // ── Pricing ──────────────────────────────────────────────────
-            const SizedBox(height: 28),
-            _SectionHeader(t.addEditOfferPricing),
-            Row(children: [
-              Expanded(child: _Field(label: t.addEditOfferPriceUsd, controller: _priceCtrl, hint: '0', numeric: true)),
-              const SizedBox(width: 14),
-              Expanded(child: _Field(label: t.addEditOfferOriginalPrice, controller: _originalCtrl, hint: t.addEditOfferOriginalPriceHint, numeric: true)),
-            ]),
-
-            // ── Itinerary ────────────────────────────────────────────────
-            const SizedBox(height: 28),
-            _SectionHeader(t.addEditOfferItinerary),
-            Text(t.addEditOfferItineraryHelper,
-                style: AppTheme.sans(12.5, color: AppColors.muted)),
-            const SizedBox(height: 16),
-
-            ..._itinerary.asMap().entries.map((e) => _ItineraryRow(
-              index: e.key,
-              entry: e.value,
-              isLast: e.key == _itinerary.length - 1,
-              onRemove: () => _removeItineraryDay(e.key),
-              onChanged: () => setState(() {}),
-            )),
-
-            // Add day button
-            GestureDetector(
-              onTap: _addItineraryDay,
-              child: Container(
-                margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.07),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Text(t.addEditOfferAddItineraryDay, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
-                  ],
-                ),
-              ),
-            ),
-
-            // ── What's included ──────────────────────────────────────────
-            const SizedBox(height: 28),
-            _SectionHeader(t.addEditOfferWhatsIncluded),
-            Text(t.addEditOfferWhatsIncludedHelper,
-                style: AppTheme.sans(12.5, color: AppColors.muted)),
-            const SizedBox(height: 16),
-
-            ..._includes.asMap().entries.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  const Icon(Icons.check_circle_outline_rounded, color: AppColors.primary, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border, width: 1.5),
-                      ),
-                      child: TextField(
-                        controller: e.value.ctrl,
-                        style: AppTheme.sans(13.5),
-                        decoration: InputDecoration(
-                          hintText: t.addEditOfferIncludeItemHint,
-                          hintStyle: AppTheme.sans(13.5, color: AppColors.mutedLight),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                        ),
-                      ),
+                child: GestureDetector(
+                  onTap: () => setState(() => _step--),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(color: AppColors.border, width: 1.5),
                     ),
+                    alignment: Alignment.center,
+                    child: Text(t.commonBack,
+                        style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.ink)),
                   ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => _removeInclude(e.key),
-                    child: Container(
-                      width: 32, height: 32,
-                      decoration: BoxDecoration(
-                        color: AppColors.errorRed.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      child: Icon(Icons.remove_rounded, color: AppColors.errorRed, size: 18),
-                    ),
-                  ),
-                ],
-              ),
-            )),
-
-            GestureDetector(
-              onTap: _addInclude,
-              child: Container(
-                margin: const EdgeInsets.only(top: 4),
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.07),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Text(t.addEditOfferAddIncludedItem, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
-                  ],
+              ),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              flex: 2,
+              child: GestureDetector(
+                onTap: isLast ? (_saving ? null : _save) : _nextStep,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  alignment: Alignment.center,
+                  child: _saving && isLast
+                      ? const SizedBox(
+                          width: 18, height: 18,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(isLast ? t.addEditOfferSave : t.authNext,
+                          style: AppTheme.sans(13, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Each step reuses the exact fields of the old single-scroll form; only
+  // the container changed.
+  List<Widget> _stepContent(AppLocalizations t) {
+    switch (_step) {
+      // ── Basics: cover image, title, badge ──────────────────────────────
+      case 0:
+        return [
+          _CoverImagePicker(
+            imageBytes: _imageBytes,
+            gradColors: () {
+              final tint = context.read<AppProvider>().companyById(widget.companyId)?.tint ?? AppColors.primary;
+              return [tint, Color.alphaBlend(Colors.black.withOpacity(0.55), tint)];
+            }(),
+            onPick: _pickImage,
+            onRemove: () => setState(() => _imageBytes = null),
+          ),
+          const SizedBox(height: 20),
+          _Field(label: t.addEditOfferTitleField, controller: _titleCtrl, hint: t.addEditOfferTitleHint),
+          const SizedBox(height: 14),
+          _Field(label: t.addEditOfferBadgeOptional, controller: _badgeCtrl, hint: t.addEditOfferBadgeHint),
+        ];
+
+      // ── Transport & stay ────────────────────────────────────────────────
+      case 1:
+        return [
+          _SegmentRow(
+            label: t.addEditOfferTransport,
+            options: [t.addEditOfferByAir, t.addEditOfferByCoach],
+            icons: const [Icons.flight_rounded, Icons.directions_bus_rounded],
+            values: const ['plane', 'bus'],
+            selected: _transport,
+            onSelect: (v) => setState(() => _transport = v),
+          ),
+          const SizedBox(height: 16),
+          Row(children: [
+            Expanded(child: _Stepper(label: t.addEditOfferDays, value: _days, min: 3, max: 30, onChanged: (v) => setState(() => _days = v))),
+            const SizedBox(width: 14),
+            Expanded(child: _Stepper(label: t.addEditOfferStars, value: _acc, min: 1, max: 5, onChanged: (v) => setState(() => _acc = v))),
+          ]),
+          const SizedBox(height: 16),
+          _DropdownField(
+            label: t.addEditOfferMeals,
+            value: _meals,
+            items: _mealOptions,
+            labelBuilder: (v) => Offer.mealsLabel(v, t),
+            onChanged: (v) => setState(() => _meals = v!),
+          ),
+        ];
+
+      // ── Hotels & transport details ──────────────────────────────────────
+      case 2:
+        return [
+          Row(children: [
+            Expanded(child: _Field(label: t.addEditOfferHotelMakkah, controller: _hotelMakkahCtrl, hint: t.addEditOfferHotelMakkahHint)),
+            const SizedBox(width: 14),
+            Expanded(child: _Field(label: t.addEditOfferHotelMadinah, controller: _hotelMadinahCtrl, hint: t.addEditOfferHotelMadinahHint)),
+          ]),
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(child: _Field(label: t.addEditOfferDistanceToHaram, controller: _distCtrl, hint: t.addEditOfferDistanceHint)),
+            const SizedBox(width: 14),
+            Expanded(child: _Field(label: t.addEditOfferRoomType, controller: _roomCtrl, hint: t.addEditOfferRoomTypeHint)),
+          ]),
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(child: _Field(label: t.addEditOfferCarrierCoach, controller: _carrierCtrl, hint: t.addEditOfferCarrierHint)),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _Field(
+                label: _transport == 'plane' ? t.addEditOfferAirport : t.addEditOfferBusStation,
+                controller: _transportPlaceCtrl,
+                hint: _transport == 'plane' ? t.addEditOfferAirportHint : t.addEditOfferBusStationHint,
+              ),
+            ),
+          ]),
+        ];
+
+      // ── Pricing ─────────────────────────────────────────────────────────
+      case 3:
+        return [
+          Row(children: [
+            Expanded(child: _Field(label: t.addEditOfferPriceUsd, controller: _priceCtrl, hint: '0', numeric: true)),
+            const SizedBox(width: 14),
+            Expanded(child: _Field(label: t.addEditOfferOriginalPrice, controller: _originalCtrl, hint: t.addEditOfferOriginalPriceHint, numeric: true)),
+          ]),
+        ];
+
+      // ── Itinerary ───────────────────────────────────────────────────────
+      case 4:
+        return [
+          Text(t.addEditOfferItineraryHelper,
+              style: AppTheme.sans(12.5, color: AppColors.muted)),
+          const SizedBox(height: 16),
+          ..._itinerary.asMap().entries.map((e) => _ItineraryRow(
+            index: e.key,
+            entry: e.value,
+            isLast: e.key == _itinerary.length - 1,
+            onRemove: () => _removeItineraryDay(e.key),
+            onChanged: () => setState(() {}),
+          )),
+          GestureDetector(
+            onTap: _addItineraryDay,
+            child: Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Text(t.addEditOfferAddItineraryDay, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                ],
+              ),
+            ),
+          ),
+        ];
+
+      // ── What's included ─────────────────────────────────────────────────
+      default:
+        return [
+          Text(t.addEditOfferWhatsIncludedHelper,
+              style: AppTheme.sans(12.5, color: AppColors.muted)),
+          const SizedBox(height: 16),
+          ..._includes.asMap().entries.map((e) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle_outline_rounded, color: AppColors.primary, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border, width: 1.5),
+                    ),
+                    child: TextField(
+                      controller: e.value.ctrl,
+                      style: AppTheme.sans(13.5),
+                      decoration: InputDecoration(
+                        hintText: t.addEditOfferIncludeItemHint,
+                        hintStyle: AppTheme.sans(13.5, color: AppColors.mutedLight),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _removeInclude(e.key),
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: AppColors.errorRed.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: Icon(Icons.remove_rounded, color: AppColors.errorRed, size: 18),
+                  ),
+                ),
+              ],
+            ),
+          )),
+          GestureDetector(
+            onTap: _addInclude,
+            child: Container(
+              margin: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Text(t.addEditOfferAddIncludedItem, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                ],
+              ),
+            ),
+          ),
+        ];
+    }
+  }
+}
+
+/// Persistent stepper progress header: numbered dots with connectors,
+/// the current step's title and a "Step x of y" counter.
+class _StepHeader extends StatelessWidget {
+  final int current;
+  final int total;
+  final String title;
+  final String stepLabel;
+  const _StepHeader({
+    required this.current,
+    required this.total,
+    required this.title,
+    required this.stepLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(22, 8, 22, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              for (var i = 0; i < total; i++) ...[
+                Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: i <= current ? AppColors.primary : AppColors.surface,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: i <= current ? AppColors.primary : AppColors.border,
+                      width: 1.5,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: i < current
+                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
+                      : Text('${i + 1}',
+                          style: AppTheme.sans(11,
+                              weight: FontWeight.w800,
+                              color: i <= current ? Colors.white : AppColors.muted)),
+                ),
+                if (i < total - 1)
+                  Expanded(
+                    child: Container(
+                      height: 2,
+                      color: i < current
+                          ? AppColors.primary.withOpacity(0.45)
+                          : AppColors.border,
+                    ),
+                  ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Text(title,
+                    style: AppTheme.serif(18),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ),
+              Text(stepLabel,
+                  style: AppTheme.sans(11.5, color: AppColors.muted)),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -711,16 +893,6 @@ class _CoverImagePicker extends StatelessWidget {
 }
 
 // ── Shared form widgets ────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  final String text;
-  const _SectionHeader(this.text);
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: Text(text, style: AppTheme.serif(20)),
-  );
-}
 
 class _Field extends StatelessWidget {
   final String label;

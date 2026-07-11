@@ -1064,6 +1064,156 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminTitle => 'Admin Dashboard';
 
   @override
+  String get adminOverview => 'Platform overview';
+
+  @override
+  String get adminQuickActions => 'Quick actions';
+
+  @override
+  String get adminMetricAgencies => 'Agencies';
+
+  @override
+  String get adminMetricPackages => 'Packages';
+
+  @override
+  String get adminMetricFeatured => 'Featured';
+
+  @override
+  String get adminMetricLiveAds => 'Live ads';
+
+  @override
+  String get adminActionPromote => 'Promote';
+
+  @override
+  String get adminActionFinance => 'Finance';
+
+  @override
+  String get adminActionAd => 'New ad';
+
+  @override
+  String get adminAllCaughtUp =>
+      'All caught up — there are no items requiring your attention.';
+
+  @override
+  String adminAttentionAgencies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'agencies are',
+      one: 'agency is',
+    );
+    return '$count $_temp0 waiting for approval.';
+  }
+
+  @override
+  String adminAttentionMessages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'messages need',
+      one: 'message needs',
+    );
+    return '$count support $_temp0 a response.';
+  }
+
+  @override
+  String adminAttentionAgenciesAndMessages(int agencies, int messages) {
+    String _temp0 = intl.Intl.pluralLogic(
+      agencies,
+      locale: localeName,
+      other: 'agencies',
+      one: 'agency',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      messages,
+      locale: localeName,
+      other: 'messages',
+      one: 'message',
+    );
+    return '$agencies $_temp0 and $messages support $_temp1 require attention.';
+  }
+
+  @override
+  String get tabOverview => 'Overview';
+
+  @override
+  String get tabContent => 'Content';
+
+  @override
+  String get tabMore => 'More';
+
+  @override
+  String get profilePreviewCard => 'Preview my public card';
+
+  @override
+  String get adminRecentActivity => 'Recent activity';
+
+  @override
+  String get adminNeedsAttention => 'Needs attention';
+
+  @override
+  String get adminFilterActive => 'Active';
+
+  @override
+  String get adminInfoTab => 'Info';
+
+  @override
+  String get adminSignOut => 'Sign out';
+
+  @override
+  String packagesCount(int count) {
+    return '$count packages';
+  }
+
+  @override
+  String financeRecordsCount(int count) {
+    return '$count records';
+  }
+
+  @override
+  String get contentPreviewHome => 'Preview home screen';
+
+  @override
+  String get moreGroupPeople => 'People';
+
+  @override
+  String get moreGroupSystem => 'System';
+
+  @override
+  String get moreSupportSubtitle => 'Messages from app users';
+
+  @override
+  String get morePreviewSubtitle => 'See the home screen exactly as clients do';
+
+  @override
+  String get agencyNextDeparture => 'Next departure';
+
+  @override
+  String agencyInDaysCount(int count) {
+    return 'In $count days';
+  }
+
+  @override
+  String get agencyKpiRevenue => 'Revenue';
+
+  @override
+  String get agencyKpiRequests => 'Pending requests';
+
+  @override
+  String get agencyMoneyYouOwe => 'You owe the platform';
+
+  @override
+  String get agencyMoneySettled => 'All settled — nothing owed right now.';
+
+  @override
+  String stepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
   String get adminPendingAgencies => 'Pending agencies';
 
   @override
