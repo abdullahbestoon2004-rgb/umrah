@@ -1107,6 +1107,9 @@ class AppLocalizationsKu extends AppLocalizations {
   String get adminLinkPackage => 'بەستنەوە بە گەشتێک (ئارەزوومەندانە)';
 
   @override
+  String get adminLinkCompany => 'بەستنەوە بە کۆمپانیایەک (ئارەزوومەندانە)';
+
+  @override
   String get adminNoLink => 'بێ بەستنەوە';
 
   @override
@@ -1117,16 +1120,6 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get adminAdCreated => 'ڕیکلامەکە لە پەڕەی سەرەکی بڵاوکرایەوە!';
-
-  @override
-  String get adminFeaturedOffers => 'گەشتە تایبەتەکانی پەڕەی سەرەکی';
-
-  @override
-  String get adminFeaturedHint =>
-      'گەشتە ئەستێرەدارەکان یەکەمجار لە پەڕەی سەرەکی دەردەکەون.';
-
-  @override
-  String get adminNoOffers => 'هێشتا هیچ گەشتێک بڵاو نەکراوەتەوە.';
 
   @override
   String get adminStatPending => 'چاوەڕوان';
@@ -1145,6 +1138,50 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get adminSupportAnonymous => 'میوان';
+
+  @override
+  String get adminSectionManage => 'بەڕێوەبردن';
+
+  @override
+  String get adminFilterAll => 'هەموو';
+
+  @override
+  String get adminSupportResolved => 'نامەکە چارەسەر کرا و سڕایەوە.';
+
+  @override
+  String get emailCopied => 'ئیمەیڵەکە کۆپی کرا';
+
+  @override
+  String get adminCommissionsCardSubtitle =>
+      'قەرز و کۆکراوەکانی هەموو کۆمپانیاکان';
+
+  @override
+  String get adminPromoteTitle => 'پەرەپێدانی کۆمپانیا و گەشتەکان';
+
+  @override
+  String get adminPromoteSubtitle =>
+      'کۆمپانیا و گەشتەکان لە پەڕەی سەرەکی دەربخە';
+
+  @override
+  String get promoteScreenTitle => 'پەرەپێدانەکانی پەڕەی سەرەکی';
+
+  @override
+  String get promoteSearchTrips => 'گەڕان بۆ گەشتەکان…';
+
+  @override
+  String get promoteSearchAgencies => 'گەڕان بۆ کۆمپانیاکان…';
+
+  @override
+  String get promoteTabTrips => 'گەشتەکان';
+
+  @override
+  String get promoteTabAgencies => 'کۆمپانیاکان';
+
+  @override
+  String get promoteNoTrips => 'هیچ گەشتێک نەدۆزرایەوە';
+
+  @override
+  String get promoteNoAgencies => 'هیچ کۆمپانیایەک نەدۆزرایەوە';
 
   @override
   String agencyDashboardYourPackages(int count) {
@@ -1969,4 +2006,140 @@ class AppLocalizationsKu extends AppLocalizations {
   @override
   String get accountEmailConfirmationBody =>
       'بەستەری پشتڕاستکردنەوە بۆ ئیمەیلە نوێیەکەت نێردرا. سندوقی نامەکانت بپشکنە و کلیک لەسەر بەستەرەکە بکە بۆ تەواوکردنی گۆڕانکارییەکە.';
+
+  @override
+  String get bookingStepRoom => 'ژوور و حاجیان';
+
+  @override
+  String get bookingStepPilgrims => 'زانیاری حاجیان';
+
+  @override
+  String get bookingStepPay => 'پارەدان';
+
+  @override
+  String get bookingChooseRoom => 'جۆری ژوور هەڵبژێرە';
+
+  @override
+  String get bookingRoomDouble => 'ژووری دوو کەسی';
+
+  @override
+  String get bookingRoomTriple => 'ژووری سێ کەسی';
+
+  @override
+  String get bookingRoomQuad => 'ژووری چوار کەسی';
+
+  @override
+  String bookingRoomPax(int count) {
+    return '$count کەس لە ژوورێک';
+  }
+
+  @override
+  String get bookingMostPopular => 'باوترین';
+
+  @override
+  String get bookingPilgrimCountTitle => 'ژمارەی حاجیان';
+
+  @override
+  String get bookingPilgrimAge => 'تەمەن +١٢ ساڵ';
+
+  @override
+  String bookingTotalLine(int count, String price) {
+    return '$count × $price';
+  }
+
+  @override
+  String get bookingContinue => 'بەردەوامبوون';
+
+  @override
+  String get bookingContinueToPay => 'بەردەوامبوون بۆ پارەدان';
+
+  @override
+  String bookingPilgrimN(int n) {
+    return 'حاجی $n';
+  }
+
+  @override
+  String get bookingStatusComplete => 'تەواو';
+
+  @override
+  String get bookingStatusIncomplete => 'ناتەواو';
+
+  @override
+  String get bookingFullName => 'ناوی تەواو (وەک پاسپۆرت)';
+
+  @override
+  String get bookingFullNameHint => 'بۆ نموونە کاروان عومەر ئەحمەد';
+
+  @override
+  String get bookingPassportNo => 'ژمارەی پاسپۆرت';
+
+  @override
+  String get bookingDob => 'بەرواری لەدایکبوون';
+
+  @override
+  String get bookingDobHint => 'بەروار هەڵبژێرە';
+
+  @override
+  String get bookingPhoneLabel => 'ژمارەی مۆبایل';
+
+  @override
+  String get bookingReviewTitle => 'پێداچوونەوە و پارەدان';
+
+  @override
+  String get bookingReviewSub => 'هەنگاوی کۆتایی';
+
+  @override
+  String get bookingSummaryTitle => 'پوختەی حجز';
+
+  @override
+  String get bookingSummaryTrip => 'گەشت';
+
+  @override
+  String get bookingSummaryCompany => 'کۆمپانیا';
+
+  @override
+  String get bookingSummaryDeparture => 'بەرواری گەشت';
+
+  @override
+  String get bookingSummaryPilgrims => 'حاجیان';
+
+  @override
+  String get bookingSummaryRoom => 'ژوور';
+
+  @override
+  String get payFibSub => 'پارەدانی ڕاستەوخۆ لە ئەپی FIB';
+
+  @override
+  String get payCardSub => 'Visa · Mastercard';
+
+  @override
+  String get payCashSub => 'پارەدان لە ئۆفیسی کۆمپانیا';
+
+  @override
+  String get bookingConfirmBtn => 'پشتڕاستکردنەوەی حجز';
+
+  @override
+  String get bookingRegisteredTitle => 'حجزەکەت تۆمارکرا';
+
+  @override
+  String bookingRegisteredBody(String company) {
+    return 'داواکاریەکەت گەیشتە $company. کاتێک پشتڕاست کرایەوە ئاگادارت دەکەینەوە — بەزۆری لە ماوەی ٢٤ کاتژمێردا.';
+  }
+
+  @override
+  String get bookingRefTitle => 'ژمارەی حجز';
+
+  @override
+  String get bookingAwaitingConfirmation => 'چاوەڕوانی پشتڕاستکردنەوە';
+
+  @override
+  String get bookingBackHome => 'گەڕانەوە بۆ سەرەکی';
+
+  @override
+  String get bookingViewMyBookings => 'بینینی حجزەکانم';
+
+  @override
+  String bookingPilgrimsSummary(int count, String room) {
+    return '$count حاجی · $room';
+  }
 }

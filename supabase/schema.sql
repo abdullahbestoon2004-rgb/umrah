@@ -188,7 +188,7 @@ begin
   if new.status = 'confirmed' and (old.status is distinct from 'confirmed') then
     insert into commissions (booking_id, company_id, amount_iqd, status)
     values (new.id, new.company_id, new.commission_iqd,
-            case when new.pay_method = 'cash' then 'owed' else 'collected' end);
+            (case when new.pay_method = 'cash' then 'owed' else 'collected' end)::commission_status);
   end if;
   return new;
 end; $$;

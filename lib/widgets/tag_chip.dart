@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/app_theme.dart';
+import 'interactive_scale.dart';
 
 class TagChip extends StatelessWidget {
   final String label;
@@ -21,7 +22,7 @@ class TagChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = active ? const Color(0xFFF6F2E9) : AppColors.ink;
-    return GestureDetector(
+    return InteractiveScale(
       onTap: onTap,
       child: Container(
         padding: padding,

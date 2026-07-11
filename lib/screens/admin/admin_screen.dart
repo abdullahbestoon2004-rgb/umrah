@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
@@ -7,10 +8,10 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/company_model.dart';
 import '../../models/home_ad_model.dart';
-import '../../models/offer_model.dart';
 import '../../models/support_message_model.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/app_snackbar.dart';
+import '../../widgets/tag_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../agency/agency_bookings_screen.dart' show CommissionLedger;
 import 'promote_screen.dart';
@@ -37,7 +38,6 @@ class _AdminScreenState extends State<AdminScreen> {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     if (!provider.isAdminUser) return const SizedBox.shrink();
-    final lang = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -49,10 +49,41 @@ class _AdminScreenState extends State<AdminScreen> {
         slivers: [
           SliverToBoxAdapter(child: _AdminHeader(provider: provider)),
 
-          // ── Promotions Manager ───────────────────────────────────────────
+          // ── Pending agencies (time-sensitive, so first) ─────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+              padding: const EdgeInsets.fromLTRB(22, 22, 22, 10),
+              child: Text(t.adminPendingAgencies, style: AppTheme.serif(20)),
+            ),
+          ),
+          if (provider.pendingCompanies.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(t.adminNoPending, style: AppTheme.sans(13, color: AppColors.muted)),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, i) => Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
+                  child: _PendingCompanyCard(company: provider.pendingCompanies[i]),
+                ),
+                childCount: provider.pendingCompanies.length,
+              ),
+            ),
+
+          // ── Manage: promotions + commissions ────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 26, 22, 10),
+              child: Text(t.adminSectionManage, style: AppTheme.serif(20)),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
               child: GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -91,12 +122,12 @@ class _AdminScreenState extends State<AdminScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Promote Companies & Trips",
+                              t.adminPromoteTitle,
                               style: AppTheme.serif(18, color: Colors.white),
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              "Feature agencies and trips on the home page",
+                              t.adminPromoteSubtitle,
                               style: AppTheme.sans(11.5, color: Colors.white.withOpacity(0.85)),
                             ),
                           ],
@@ -109,31 +140,54 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ),
           ),
-
-          // ── Pending agencies ────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 22, 22, 10),
-              child: Text(t.adminPendingAgencies, style: AppTheme.serif(20)),
+              padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
+              child: GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminCommissionsScreen()),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.border, width: 1.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.receipt_long_rounded,
+                            color: AppColors.primary, size: 24),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(t.adminCommissionsTitle, style: AppTheme.serif(18)),
+                            const SizedBox(height: 3),
+                            Text(
+                              t.adminCommissionsCardSubtitle,
+                              style: AppTheme.sans(11.5, color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded,
+                          color: AppColors.muted, size: 16),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-          if (provider.pendingCompanies.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: Text(t.adminNoPending, style: AppTheme.sans(13, color: AppColors.muted)),
-              ),
-            )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, i) => Padding(
-                  padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
-                  child: _PendingCompanyCard(company: provider.pendingCompanies[i]),
-                ),
-                childCount: provider.pendingCompanies.length,
-              ),
-            ),
 
           // ── Home ads ────────────────────────────────────────────────────
           SliverToBoxAdapter(
@@ -178,41 +232,6 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ),
 
-          // ── Featured offers ─────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 26, 22, 4),
-              child: Text(t.adminFeaturedOffers, style: AppTheme.serif(20)),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
-              child: Text(t.adminFeaturedHint, style: AppTheme.sans(12, color: AppColors.muted)),
-            ),
-          ),
-          if (provider.allOffers.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: Text(t.adminNoOffers, style: AppTheme.sans(13, color: AppColors.muted)),
-              ),
-            )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, i) {
-                  final offer = provider.allOffers[i];
-                  final company = provider.companyById(offer.companyId);
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 10),
-                    child: _FeaturedRow(offer: offer, companyName: company?.nameFor(lang) ?? ''),
-                  );
-                },
-                childCount: provider.allOffers.length,
-              ),
-            ),
-
           // ── Support messages inbox ──────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
@@ -250,22 +269,6 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ),
 
-          // ── Commission ledger (every agency) ───────────────────────────
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 26, 22, 4),
-              child: Text(t.adminCommissionsTitle, style: AppTheme.serif(20)),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.5,
-                minHeight: 200,
-              ),
-              child: CommissionLedger(commissions: provider.commissions),
-            ),
-          ),
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
         ),
@@ -281,6 +284,100 @@ class _AdminScreenState extends State<AdminScreen> {
       builder: (_) => ChangeNotifierProvider.value(
         value: context.read<AppProvider>(),
         child: const _AddAdSheet(),
+      ),
+    );
+  }
+}
+
+/// Full-height commission ledger for every agency, pushed from the admin
+/// dashboard so the list scrolls on its own instead of inside the page scroll.
+class AdminCommissionsScreen extends StatefulWidget {
+  const AdminCommissionsScreen({super.key});
+
+  @override
+  State<AdminCommissionsScreen> createState() => _AdminCommissionsScreenState();
+}
+
+class _AdminCommissionsScreenState extends State<AdminCommissionsScreen> {
+  String _filter = 'all'; // 'all' | 'owed' | 'collected'
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.watch<AppProvider>();
+    final commissions = _filter == 'all'
+        ? provider.commissions
+        : provider.commissions.where((c) => c.status == _filter).toList();
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 42, height: 42,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(13),
+                        border: Border.all(color: AppColors.border, width: 1.5),
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 18, color: AppColors.ink),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(t.adminCommissionsTitle, style: AppTheme.serif(24)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  TagChip(
+                    label: t.adminFilterAll,
+                    active: _filter == 'all',
+                    onTap: () => setState(() => _filter = 'all'),
+                  ),
+                  const SizedBox(width: 8),
+                  TagChip(
+                    label: t.adminCommissionsOwed,
+                    active: _filter == 'owed',
+                    onTap: () => setState(() => _filter = 'owed'),
+                  ),
+                  const SizedBox(width: 8),
+                  TagChip(
+                    label: t.adminCommissionsCollected,
+                    active: _filter == 'collected',
+                    onTap: () => setState(() => _filter = 'collected'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            Expanded(
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () => context.read<AppProvider>().loadCommissions(),
+                child: CommissionLedger(
+                  commissions: commissions,
+                  // The "total owed" banner only makes sense over the full list.
+                  showSummary: _filter == 'all',
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -380,11 +477,13 @@ class _AdminHeader extends StatelessWidget {
                         _AdminStatDivider(),
                         _AdminStat(
                             value: _compactIqd(provider.commissionsOwed),
-                            label: t.adminStatOwed),
+                            label: t.adminStatOwed,
+                            onTap: () => _openCommissions(context)),
                         _AdminStatDivider(),
                         _AdminStat(
                             value: _compactIqd(provider.commissionsCollected),
-                            label: t.adminStatCollected),
+                            label: t.adminStatCollected,
+                            onTap: () => _openCommissions(context)),
                       ],
                     ),
                   ),
@@ -408,20 +507,28 @@ String _compactIqd(double n) {
   return n.toStringAsFixed(0);
 }
 
+void _openCommissions(BuildContext context) => Navigator.push(
+    context, MaterialPageRoute(builder: (_) => const AdminCommissionsScreen()));
+
 class _AdminStat extends StatelessWidget {
   final String value, label;
-  const _AdminStat({required this.value, required this.label});
+  final VoidCallback? onTap;
+  const _AdminStat({required this.value, required this.label, this.onTap});
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          child: Column(children: [
-            Text(value, style: AppTheme.serif(21, color: Colors.white)),
-            const SizedBox(height: 2),
-            Text(label,
-                style: AppTheme.sans(10.5, color: Colors.white.withOpacity(0.7)),
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-          ]),
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            child: Column(children: [
+              Text(value, style: AppTheme.serif(21, color: Colors.white)),
+              const SizedBox(height: 2),
+              Text(label,
+                  style: AppTheme.sans(10.5, color: Colors.white.withOpacity(0.7)),
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
+            ]),
+          ),
         ),
       );
 }
@@ -615,53 +722,6 @@ class _AdRow extends StatelessWidget {
   }
 }
 
-class _FeaturedRow extends StatelessWidget {
-  final Offer offer;
-  final String companyName;
-  const _FeaturedRow({required this.offer, required this.companyName});
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.read<AppProvider>();
-    final lang = Localizations.localeOf(context).languageCode;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-            color: offer.isFeatured ? AppColors.gold : AppColors.border, width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(offer.titleFor(lang),
-                    style: AppTheme.sans(13.5, weight: FontWeight.w700),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 2),
-                Text('$companyName · ${offer.priceFmt}',
-                    style: AppTheme.sans(11.5, color: AppColors.muted),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => provider.setOfferFeatured(offer.id, !offer.isFeatured),
-            child: Icon(
-              offer.isFeatured ? Icons.star_rounded : Icons.star_border_rounded,
-              color: offer.isFeatured ? AppColors.gold : AppColors.mutedLight,
-              size: 26,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _SupportRow extends StatelessWidget {
   final SupportMessage message;
   const _SupportRow({required this.message});
@@ -677,7 +737,8 @@ class _SupportRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final sender = (message.email ?? '').isNotEmpty ? message.email! : t.adminSupportAnonymous;
+    final email = message.email ?? '';
+    final sender = email.isNotEmpty ? email : t.adminSupportAnonymous;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -693,12 +754,42 @@ class _SupportRow extends StatelessWidget {
               const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 16),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(sender,
-                    style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.primary),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                // The sender's address is the only way to reply, so make it
+                // grabbable: tap copies it to the clipboard.
+                child: GestureDetector(
+                  onTap: email.isEmpty
+                      ? null
+                      : () {
+                          Clipboard.setData(ClipboardData(text: email));
+                          showAppSnack(context, t.emailCopied);
+                        },
+                  child: Text(sender,
+                      style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.primary),
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
               ),
               const SizedBox(width: 8),
               Text(_timeAgo(t), style: AppTheme.sans(11, color: AppColors.mutedLight)),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final ok = await context
+                      .read<AppProvider>()
+                      .deleteSupportMessage(message.id);
+                  messenger.showSnackBar(appSnack(
+                      ok ? t.adminSupportResolved : t.adminActionFailed,
+                      isError: !ok));
+                },
+                child: Container(
+                  width: 30, height: 30,
+                  decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(9)),
+                  child: const Icon(Icons.check_rounded,
+                      color: AppColors.primary, size: 16),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -721,6 +812,7 @@ class _AddAdSheet extends StatefulWidget {
 class _AddAdSheetState extends State<_AddAdSheet> {
   final _titleCtrl = TextEditingController();
   String? _packageId;
+  String? _companyId;
   Uint8List? _imageBytes;
   bool _saving = false;
 
@@ -750,6 +842,7 @@ class _AddAdSheetState extends State<_AddAdSheet> {
     final ok = await provider.createHomeAd(
       title: _titleCtrl.text.trim(),
       packageId: _packageId,
+      companyId: _companyId,
       imageBytes: _imageBytes,
     );
     if (!mounted) return;
@@ -842,7 +935,48 @@ class _AddAdSheetState extends State<_AddAdSheet> {
                             style: AppTheme.sans(14), overflow: TextOverflow.ellipsis),
                       ),
                   ],
-                  onChanged: (v) => setState(() => _packageId = v),
+                  // An ad leads to one place, so picking a trip clears any
+                  // chosen company and vice versa.
+                  onChanged: (v) => setState(() {
+                    _packageId = v;
+                    if (v != null) _companyId = null;
+                  }),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Text(t.adminLinkCompany, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, width: 1.5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _companyId,
+                  isExpanded: true,
+                  style: AppTheme.sans(14),
+                  dropdownColor: AppColors.background,
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(t.adminNoLink, style: AppTheme.sans(14, color: AppColors.muted)),
+                    ),
+                    for (final c in provider.companies)
+                      DropdownMenuItem<String?>(
+                        value: c.id,
+                        child: Text(c.nameFor(lang),
+                            style: AppTheme.sans(14), overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() {
+                    _companyId = v;
+                    if (v != null) _packageId = null;
+                  }),
                 ),
               ),
             ),

@@ -83,7 +83,9 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    // Live data: admin-featured packages first, then best-rated.
+    // Home is curated from the admin dashboard (Promotions screen): only
+    // starred trips and agencies appear here. Until the admin stars anything,
+    // fall back to the best-rated so the page never launches empty.
     final ranked = List<Offer>.from(provider.allOffers)
       ..sort((a, b) {
         if (a.isFeatured != b.isFeatured) return a.isFeatured ? -1 : 1;
@@ -91,13 +93,19 @@ class HomeScreen extends StatelessWidget {
       });
     final ads = provider.homeAds;
     final hero = ranked.first;
-    final homeOffers = (ads.isEmpty ? ranked.skip(1) : ranked).take(4).toList();
-    final companies = List<Company>.from(provider.companies)
-      ..sort((a, b) {
-        if (a.isPromoted != b.isPromoted) return a.isPromoted ? -1 : 1;
-        return b.rating.compareTo(a.rating);
-      });
-    final homeCompanies = companies.take(4).toList();
+    // Without ads the hero card already fills the top slot — don't repeat it.
+    final visibleRanked = ads.isEmpty ? ranked.skip(1).toList() : ranked;
+    final featured = visibleRanked.where((o) => o.isFeatured).toList();
+    final homeOffers = featured.isNotEmpty ? featured : visibleRanked.take(4).toList();
+
+    final promoted = provider.companies.where((c) => c.isPromoted).toList()
+      ..sort((a, b) => b.rating.compareTo(a.rating));
+    final homeCompanies = promoted.isNotEmpty
+        ? promoted
+        : (List<Company>.from(provider.companies)
+              ..sort((a, b) => b.rating.compareTo(a.rating)))
+            .take(4)
+            .toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -159,7 +167,7 @@ class _AdsCarouselState extends State<_AdsCarousel> {
   void _startTimer() {
     _timer?.cancel();
     if (widget.ads.length < 2) return;
-    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted || !_controller.hasClients) return;
       final next = (_page + 1) % widget.ads.length;
       _controller.animateToPage(
@@ -234,15 +242,25 @@ class _AdCard extends StatelessWidget {
     );
 
     final tag = offer != null ? 'offer-ad-${offer.id}' : null;
-    return InteractiveScale(
-      onTap: offer == null
-          ? null
-          : () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag),
-              ),
+    // A linked trip wins the tap-through; otherwise a company ad opens the
+    // company's profile so a paid placement always leads somewhere.
+    final VoidCallback? onTap = offer != null
+        ? () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag),
             ),
+          )
+        : company != null
+            ? () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CompanyDetailScreen(company: company),
+                ),
+              )
+            : null;
+    return InteractiveScale(
+      onTap: onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(26),
         child: Stack(

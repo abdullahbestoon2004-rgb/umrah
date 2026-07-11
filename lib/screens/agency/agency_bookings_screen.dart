@@ -150,16 +150,18 @@ class _RequestCard extends StatelessWidget {
 
     Future<void> respond(bool confirm) async {
       final messenger = ScaffoldMessenger.of(context);
-      final ok = await provider.respondToBooking(booking.id, confirm: confirm);
-      messenger.showSnackBar(appSnack(
-          ok ? (confirm ? t.agencyBookingsConfirmedSnack : t.agencyBookingsDeclinedSnack) : t.actionFailedGeneric,
-          isError: !ok));
+      final err = await provider.respondToBooking(booking.id, confirm: confirm);
+      final msg = err == null
+          ? (confirm ? t.agencyBookingsConfirmedSnack : t.agencyBookingsDeclinedSnack)
+          : err;
+      messenger.showSnackBar(appSnack(msg, isError: err != null));
     }
 
     Future<void> complete() async {
       final messenger = ScaffoldMessenger.of(context);
-      final ok = await provider.markBookingCompleted(booking.id);
-      messenger.showSnackBar(appSnack(ok ? t.agencyBookingsCompletedSnack : t.actionFailedGeneric, isError: !ok));
+      final err = await provider.markBookingCompleted(booking.id);
+      final msg = err == null ? t.agencyBookingsCompletedSnack : err;
+      messenger.showSnackBar(appSnack(msg, isError: err != null));
     }
 
     return Container(
@@ -268,7 +270,9 @@ class _EmptyState extends StatelessWidget {
 class CommissionLedger extends StatelessWidget {
   final List<Commission> commissions;
   final bool showCompanyName;
-  const CommissionLedger({super.key, required this.commissions, this.showCompanyName = true});
+  final bool showSummary;
+  const CommissionLedger(
+      {super.key, required this.commissions, this.showCompanyName = true, this.showSummary = true});
 
   @override
   Widget build(BuildContext context) {
@@ -286,29 +290,31 @@ class CommissionLedger extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(t.adminCommissionsOwedLabel, style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8))),
-                    const SizedBox(height: 4),
-                    Text(fmtIqd(owed), style: AppTheme.serif(24, color: Colors.white)),
-                  ],
+        if (showSummary) ...[
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t.adminCommissionsOwedLabel, style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8))),
+                      const SizedBox(height: 4),
+                      Text(fmtIqd(owed), style: AppTheme.serif(24, color: Colors.white)),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.account_balance_wallet_outlined, color: Colors.white, size: 32),
-            ],
+                const Icon(Icons.account_balance_wallet_outlined, color: Colors.white, size: 32),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 14),
+          const SizedBox(height: 14),
+        ],
         for (final c in commissions) _CommissionRow(commission: c, showCompanyName: showCompanyName),
       ],
     );

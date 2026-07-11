@@ -11,6 +11,7 @@ import 'offer_detail_screen.dart';
 import 'filter_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/interactive_scale.dart';
 
 class OffersScreen extends StatelessWidget {
   const OffersScreen({super.key});
@@ -261,7 +262,7 @@ class OfferCard extends StatelessWidget {
     final company = provider.companyById(offer.companyId);
     final t = AppLocalizations.of(context);
 
-    return GestureDetector(
+    return InteractiveScale(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
       child: Container(
         decoration: BoxDecoration(

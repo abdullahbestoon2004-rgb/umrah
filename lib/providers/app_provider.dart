@@ -405,10 +405,11 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> createHomeAd({required String title, String? packageId, Uint8List? imageBytes}) async {
+  Future<bool> createHomeAd(
+      {required String title, String? packageId, String? companyId, Uint8List? imageBytes}) async {
     final offer = offerById(packageId);
     final ad = await _service.createHomeAd(
-        title: title, packageId: packageId, companyId: offer?.companyId);
+        title: title, packageId: packageId, companyId: companyId ?? offer?.companyId);
     if (ad == null) return false;
     if (imageBytes != null) {
       await _service.uploadAdImage(ad.id, imageBytes);
@@ -678,8 +679,17 @@ class AppProvider extends ChangeNotifier {
     int travelers, {
     String payMethod = 'cash',
     DateTime? departureDate,
+    String? roomLabel,
+    List<PilgrimInfo>? pilgrims,
   }) async {
     if (_user == null) return 'auth';
+    // Room preference + per-pilgrim details travel in the booking note,
+    // one line each, so the agency sees them with the request.
+    final noteLines = <String>[
+      if ((roomLabel ?? '').isNotEmpty) 'room:$roomLabel',
+      if (pilgrims != null)
+        for (var i = 0; i < pilgrims.length; i++) pilgrims[i].toNoteLine(i + 1),
+    ];
     final err = await _service.createBooking(
       packageId: offer.id,
       clientId: _user!.id,
@@ -687,6 +697,7 @@ class AppProvider extends ChangeNotifier {
       payMethod: payMethod,
       departureDate: departureDate,
       contactPhone: _user!.phone,
+      note: noteLines.isEmpty ? null : noteLines.join('\n'),
     );
     if (err != null) return err;
     await refreshBookings();
@@ -740,29 +751,29 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> respondToBooking(String bookingId, {required bool confirm}) async {
+  Future<String?> respondToBooking(String bookingId, {required bool confirm}) async {
     final err = await _service.setBookingStatus(bookingId, confirm ? 'confirmed' : 'cancelled');
-    if (err != null) return false;
+    if (err != null) return err;
     final i = _agencyBookings.indexWhere((b) => b.id == bookingId);
     if (i >= 0) {
       _agencyBookings = List.from(_agencyBookings);
       _agencyBookings[i] = _agencyBookings[i].copyWith(status: confirm ? 'Confirmed' : 'Cancelled');
     }
     notifyListeners();
-    return true;
+    return null;
   }
 
   /// Closes the loop so a completed trip becomes reviewable by the pilgrim.
-  Future<bool> markBookingCompleted(String bookingId) async {
+  Future<String?> markBookingCompleted(String bookingId) async {
     final err = await _service.setBookingStatus(bookingId, 'completed');
-    if (err != null) return false;
+    if (err != null) return err;
     final i = _agencyBookings.indexWhere((b) => b.id == bookingId);
     if (i >= 0) {
       _agencyBookings = List.from(_agencyBookings);
       _agencyBookings[i] = _agencyBookings[i].copyWith(status: 'Completed');
     }
     notifyListeners();
-    return true;
+    return null;
   }
 
   // ── commissions (what an agency owes the platform) ───────────────────────
@@ -817,6 +828,15 @@ class AppProvider extends ChangeNotifier {
       userId: _user?.id, email: _user?.email, message: message,
     );
     return err == null;
+  }
+
+  /// Admin resolves a support message — removes it from the inbox for good.
+  Future<bool> deleteSupportMessage(String id) async {
+    final err = await _service.deleteSupportMessage(id);
+    if (err != null) return false;
+    _supportMessages = _supportMessages.where((m) => m.id != id).toList();
+    notifyListeners();
+    return true;
   }
 
   // ── password reset (OTP-code, works without deep linking) ────────────────

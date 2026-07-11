@@ -9,6 +9,7 @@ import '../../widgets/islamic_pattern.dart';
 import '../../widgets/company_avatar.dart';
 import 'company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/interactive_scale.dart';
 
 class CompaniesScreen extends StatelessWidget {
   const CompaniesScreen({super.key});
@@ -75,7 +76,7 @@ class _CompanyListCard extends StatelessWidget {
 
     final gradDark = Color.alphaBlend(Colors.black.withOpacity(0.35), company.tint);
 
-    return GestureDetector(
+    return InteractiveScale(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CompanyDetailScreen(company: company))),
       child: Container(
         decoration: BoxDecoration(

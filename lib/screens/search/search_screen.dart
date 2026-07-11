@@ -125,7 +125,7 @@ class _Suggestions extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: suggestions.map((s) => GestureDetector(
+            children: suggestions.map((s) => InteractiveScale(
               onTap: () => onTap(s),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),

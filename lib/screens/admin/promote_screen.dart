@@ -8,6 +8,7 @@ import '../../models/company_model.dart';
 import '../../widgets/company_avatar.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/interactive_scale.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PromoteScreen extends StatefulWidget {
@@ -53,10 +54,16 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
     setState(() => _loadingIds.add(id));
 
     final provider = context.read<AppProvider>();
-    await provider.setOfferFeatured(id, !offer.isFeatured);
+    final ok = await provider.setOfferFeatured(id, !offer.isFeatured);
 
     if (mounted) {
       setState(() => _loadingIds.remove(id));
+      // A failed save (missing DB patch, RLS, network) must never look like
+      // a successful tap that just didn't stick.
+      if (!ok) {
+        showAppSnack(context, AppLocalizations.of(context).adminActionFailed,
+            isError: true);
+      }
     }
   }
 
@@ -66,15 +73,20 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
     setState(() => _loadingIds.add(id));
 
     final provider = context.read<AppProvider>();
-    await provider.setCompanyPromoted(id, !company.isPromoted);
+    final ok = await provider.setCompanyPromoted(id, !company.isPromoted);
 
     if (mounted) {
       setState(() => _loadingIds.remove(id));
+      if (!ok) {
+        showAppSnack(context, AppLocalizations.of(context).adminActionFailed,
+            isError: true);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final lang = Localizations.localeOf(context).languageCode;
 
@@ -122,7 +134,7 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                       const SizedBox(width: 14),
                       Expanded(
                         child: Text(
-                          "Homepage Promotions",
+                          t.promoteScreenTitle,
                           style: AppTheme.serif(24),
                         ),
                       ),
@@ -145,7 +157,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                       controller: _searchCtrl,
                       style: AppTheme.sans(14.5),
                       decoration: InputDecoration(
-                        hintText: _tabController.index == 0 ? "Search trips..." : "Search agencies...",
+                        hintText: _tabController.index == 0
+                            ? t.promoteSearchTrips
+                            : t.promoteSearchAgencies,
                         hintStyle: AppTheme.sans(14.5, color: AppColors.mutedLight),
                         prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
                         suffixIcon: _searchCtrl.text.isNotEmpty
@@ -185,9 +199,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                       unselectedLabelColor: AppColors.muted,
                       labelStyle: AppTheme.sans(13.5, weight: FontWeight.w700),
                       unselectedLabelStyle: AppTheme.sans(13.5, weight: FontWeight.w600),
-                      tabs: const [
-                        Tab(text: "Trips"),
-                        Tab(text: "Agencies"),
+                      tabs: [
+                        Tab(text: t.promoteTabTrips),
+                        Tab(text: t.promoteTabAgencies),
                       ],
                     ),
                   ),
@@ -219,7 +233,8 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
   Widget _buildOffersTab(List<Offer> offers, String lang, AppProvider provider) {
     if (offers.isEmpty) {
       return Center(
-        child: Text("No trips found", style: AppTheme.sans(14, color: AppColors.muted)),
+        child: Text(AppLocalizations.of(context).promoteNoTrips,
+            style: AppTheme.sans(14, color: AppColors.muted)),
       );
     }
     return ListView.builder(
@@ -227,7 +242,7 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
       itemCount: offers.length,
       itemBuilder: (context, i) {
         final offer = offers[i];
-        final company = provider.companyById(offer.companyId);
+        final companyName = provider.companyById(offer.companyId)?.nameFor(lang) ?? '';
         final isLoading = _loadingIds.contains(offer.id);
 
         return Padding(
@@ -256,7 +271,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${company?.nameFor(lang) ?? ''} · ${offer.priceFmt}',
+                        companyName.isEmpty
+                            ? offer.priceFmt
+                            : '$companyName · ${offer.priceFmt}',
                         style: AppTheme.sans(11.5, color: AppColors.muted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -295,7 +312,8 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
   Widget _buildCompaniesTab(List<Company> companies, String lang) {
     if (companies.isEmpty) {
       return Center(
-        child: Text("No agencies found", style: AppTheme.sans(14, color: AppColors.muted)),
+        child: Text(AppLocalizations.of(context).promoteNoAgencies,
+            style: AppTheme.sans(14, color: AppColors.muted)),
       );
     }
     return ListView.builder(

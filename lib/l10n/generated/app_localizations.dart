@@ -1908,6 +1908,12 @@ abstract class AppLocalizations {
   /// **'Link to a package (optional)'**
   String get adminLinkPackage;
 
+  /// No description provided for @adminLinkCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a company (optional)'**
+  String get adminLinkCompany;
+
   /// No description provided for @adminNoLink.
   ///
   /// In en, this message translates to:
@@ -1931,24 +1937,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ad published to the home screen!'**
   String get adminAdCreated;
-
-  /// No description provided for @adminFeaturedOffers.
-  ///
-  /// In en, this message translates to:
-  /// **'Featured home offers'**
-  String get adminFeaturedOffers;
-
-  /// No description provided for @adminFeaturedHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Starred packages appear first in the home screen list.'**
-  String get adminFeaturedHint;
-
-  /// No description provided for @adminNoOffers.
-  ///
-  /// In en, this message translates to:
-  /// **'No packages published yet.'**
-  String get adminNoOffers;
 
   /// No description provided for @adminStatPending.
   ///
@@ -1985,6 +1973,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest'**
   String get adminSupportAnonymous;
+
+  /// No description provided for @adminSectionManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get adminSectionManage;
+
+  /// No description provided for @adminFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminFilterAll;
+
+  /// No description provided for @adminSupportResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Message resolved and removed.'**
+  String get adminSupportResolved;
+
+  /// No description provided for @emailCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Email copied'**
+  String get emailCopied;
+
+  /// No description provided for @adminCommissionsCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Owed and collected across all agencies'**
+  String get adminCommissionsCardSubtitle;
+
+  /// No description provided for @adminPromoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote Companies & Trips'**
+  String get adminPromoteTitle;
+
+  /// No description provided for @adminPromoteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature agencies and trips on the home page'**
+  String get adminPromoteSubtitle;
+
+  /// No description provided for @promoteScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Homepage Promotions'**
+  String get promoteScreenTitle;
+
+  /// No description provided for @promoteSearchTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Search trips…'**
+  String get promoteSearchTrips;
+
+  /// No description provided for @promoteSearchAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Search agencies…'**
+  String get promoteSearchAgencies;
+
+  /// No description provided for @promoteTabTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get promoteTabTrips;
+
+  /// No description provided for @promoteTabAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Agencies'**
+  String get promoteTabAgencies;
+
+  /// No description provided for @promoteNoTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips found'**
+  String get promoteNoTrips;
+
+  /// No description provided for @promoteNoAgencies.
+  ///
+  /// In en, this message translates to:
+  /// **'No agencies found'**
+  String get promoteNoAgencies;
 
   /// No description provided for @agencyDashboardYourPackages.
   ///
@@ -3467,6 +3539,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A confirmation link has been sent to your new email address. Please check your inbox and click the link to complete the change.'**
   String get accountEmailConfirmationBody;
+
+  /// No description provided for @bookingStepRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Room & pilgrims'**
+  String get bookingStepRoom;
+
+  /// No description provided for @bookingStepPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim info'**
+  String get bookingStepPilgrims;
+
+  /// No description provided for @bookingStepPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get bookingStepPay;
+
+  /// No description provided for @bookingChooseRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose room type'**
+  String get bookingChooseRoom;
+
+  /// No description provided for @bookingRoomDouble.
+  ///
+  /// In en, this message translates to:
+  /// **'Double room'**
+  String get bookingRoomDouble;
+
+  /// No description provided for @bookingRoomTriple.
+  ///
+  /// In en, this message translates to:
+  /// **'Triple room'**
+  String get bookingRoomTriple;
+
+  /// No description provided for @bookingRoomQuad.
+  ///
+  /// In en, this message translates to:
+  /// **'Quad room'**
+  String get bookingRoomQuad;
+
+  /// No description provided for @bookingRoomPax.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to a room'**
+  String bookingRoomPax(int count);
+
+  /// No description provided for @bookingMostPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get bookingMostPopular;
+
+  /// No description provided for @bookingPilgrimCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of pilgrims'**
+  String get bookingPilgrimCountTitle;
+
+  /// No description provided for @bookingPilgrimAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age 12+'**
+  String get bookingPilgrimAge;
+
+  /// No description provided for @bookingTotalLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} × {price}'**
+  String bookingTotalLine(int count, String price);
+
+  /// No description provided for @bookingContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get bookingContinue;
+
+  /// No description provided for @bookingContinueToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to payment'**
+  String get bookingContinueToPay;
+
+  /// No description provided for @bookingPilgrimN.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim {n}'**
+  String bookingPilgrimN(int n);
+
+  /// No description provided for @bookingStatusComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get bookingStatusComplete;
+
+  /// No description provided for @bookingStatusIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Incomplete'**
+  String get bookingStatusIncomplete;
+
+  /// No description provided for @bookingFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name (as in passport)'**
+  String get bookingFullName;
+
+  /// No description provided for @bookingFullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Karwan Omar Ahmed'**
+  String get bookingFullNameHint;
+
+  /// No description provided for @bookingPassportNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport number'**
+  String get bookingPassportNo;
+
+  /// No description provided for @bookingDob.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get bookingDob;
+
+  /// No description provided for @bookingDobHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get bookingDobHint;
+
+  /// No description provided for @bookingPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get bookingPhoneLabel;
+
+  /// No description provided for @bookingReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review & payment'**
+  String get bookingReviewTitle;
+
+  /// No description provided for @bookingReviewSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Final step'**
+  String get bookingReviewSub;
+
+  /// No description provided for @bookingSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking summary'**
+  String get bookingSummaryTitle;
+
+  /// No description provided for @bookingSummaryTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get bookingSummaryTrip;
+
+  /// No description provided for @bookingSummaryCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get bookingSummaryCompany;
+
+  /// No description provided for @bookingSummaryDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get bookingSummaryDeparture;
+
+  /// No description provided for @bookingSummaryPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims'**
+  String get bookingSummaryPilgrims;
+
+  /// No description provided for @bookingSummaryRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get bookingSummaryRoom;
+
+  /// No description provided for @payFibSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay directly in the FIB app'**
+  String get payFibSub;
+
+  /// No description provided for @payCardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa · Mastercard'**
+  String get payCardSub;
+
+  /// No description provided for @payCashSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay at the agency office'**
+  String get payCashSub;
+
+  /// No description provided for @bookingConfirmBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get bookingConfirmBtn;
+
+  /// No description provided for @bookingRegisteredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking registered'**
+  String get bookingRegisteredTitle;
+
+  /// No description provided for @bookingRegisteredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request was sent to {company}. You\'ll be notified as soon as it responds — usually within 24 hours.'**
+  String bookingRegisteredBody(String company);
+
+  /// No description provided for @bookingRefTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking reference'**
+  String get bookingRefTitle;
+
+  /// No description provided for @bookingAwaitingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation'**
+  String get bookingAwaitingConfirmation;
+
+  /// No description provided for @bookingBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get bookingBackHome;
+
+  /// No description provided for @bookingViewMyBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'View my bookings'**
+  String get bookingViewMyBookings;
+
+  /// No description provided for @bookingPilgrimsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pilgrims · {room}'**
+  String bookingPilgrimsSummary(int count, String room);
 }
 
 class _AppLocalizationsDelegate

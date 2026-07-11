@@ -1099,6 +1099,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminLinkPackage => 'Link to a package (optional)';
 
   @override
+  String get adminLinkCompany => 'Link to a company (optional)';
+
+  @override
   String get adminNoLink => 'No link';
 
   @override
@@ -1109,16 +1112,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminAdCreated => 'Ad published to the home screen!';
-
-  @override
-  String get adminFeaturedOffers => 'Featured home offers';
-
-  @override
-  String get adminFeaturedHint =>
-      'Starred packages appear first in the home screen list.';
-
-  @override
-  String get adminNoOffers => 'No packages published yet.';
 
   @override
   String get adminStatPending => 'Pending';
@@ -1137,6 +1130,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminSupportAnonymous => 'Guest';
+
+  @override
+  String get adminSectionManage => 'Manage';
+
+  @override
+  String get adminFilterAll => 'All';
+
+  @override
+  String get adminSupportResolved => 'Message resolved and removed.';
+
+  @override
+  String get emailCopied => 'Email copied';
+
+  @override
+  String get adminCommissionsCardSubtitle =>
+      'Owed and collected across all agencies';
+
+  @override
+  String get adminPromoteTitle => 'Promote Companies & Trips';
+
+  @override
+  String get adminPromoteSubtitle =>
+      'Feature agencies and trips on the home page';
+
+  @override
+  String get promoteScreenTitle => 'Homepage Promotions';
+
+  @override
+  String get promoteSearchTrips => 'Search trips…';
+
+  @override
+  String get promoteSearchAgencies => 'Search agencies…';
+
+  @override
+  String get promoteTabTrips => 'Trips';
+
+  @override
+  String get promoteTabAgencies => 'Agencies';
+
+  @override
+  String get promoteNoTrips => 'No trips found';
+
+  @override
+  String get promoteNoAgencies => 'No agencies found';
 
   @override
   String agencyDashboardYourPackages(int count) {
@@ -1960,4 +1997,140 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountEmailConfirmationBody =>
       'A confirmation link has been sent to your new email address. Please check your inbox and click the link to complete the change.';
+
+  @override
+  String get bookingStepRoom => 'Room & pilgrims';
+
+  @override
+  String get bookingStepPilgrims => 'Pilgrim info';
+
+  @override
+  String get bookingStepPay => 'Payment';
+
+  @override
+  String get bookingChooseRoom => 'Choose room type';
+
+  @override
+  String get bookingRoomDouble => 'Double room';
+
+  @override
+  String get bookingRoomTriple => 'Triple room';
+
+  @override
+  String get bookingRoomQuad => 'Quad room';
+
+  @override
+  String bookingRoomPax(int count) {
+    return '$count to a room';
+  }
+
+  @override
+  String get bookingMostPopular => 'Most popular';
+
+  @override
+  String get bookingPilgrimCountTitle => 'Number of pilgrims';
+
+  @override
+  String get bookingPilgrimAge => 'Age 12+';
+
+  @override
+  String bookingTotalLine(int count, String price) {
+    return '$count × $price';
+  }
+
+  @override
+  String get bookingContinue => 'Continue';
+
+  @override
+  String get bookingContinueToPay => 'Continue to payment';
+
+  @override
+  String bookingPilgrimN(int n) {
+    return 'Pilgrim $n';
+  }
+
+  @override
+  String get bookingStatusComplete => 'Complete';
+
+  @override
+  String get bookingStatusIncomplete => 'Incomplete';
+
+  @override
+  String get bookingFullName => 'Full name (as in passport)';
+
+  @override
+  String get bookingFullNameHint => 'e.g. Karwan Omar Ahmed';
+
+  @override
+  String get bookingPassportNo => 'Passport number';
+
+  @override
+  String get bookingDob => 'Date of birth';
+
+  @override
+  String get bookingDobHint => 'Select date';
+
+  @override
+  String get bookingPhoneLabel => 'Mobile number';
+
+  @override
+  String get bookingReviewTitle => 'Review & payment';
+
+  @override
+  String get bookingReviewSub => 'Final step';
+
+  @override
+  String get bookingSummaryTitle => 'Booking summary';
+
+  @override
+  String get bookingSummaryTrip => 'Trip';
+
+  @override
+  String get bookingSummaryCompany => 'Company';
+
+  @override
+  String get bookingSummaryDeparture => 'Departure';
+
+  @override
+  String get bookingSummaryPilgrims => 'Pilgrims';
+
+  @override
+  String get bookingSummaryRoom => 'Room';
+
+  @override
+  String get payFibSub => 'Pay directly in the FIB app';
+
+  @override
+  String get payCardSub => 'Visa · Mastercard';
+
+  @override
+  String get payCashSub => 'Pay at the agency office';
+
+  @override
+  String get bookingConfirmBtn => 'Confirm booking';
+
+  @override
+  String get bookingRegisteredTitle => 'Booking registered';
+
+  @override
+  String bookingRegisteredBody(String company) {
+    return 'Your request was sent to $company. You\'ll be notified as soon as it responds — usually within 24 hours.';
+  }
+
+  @override
+  String get bookingRefTitle => 'Booking reference';
+
+  @override
+  String get bookingAwaitingConfirmation => 'Awaiting confirmation';
+
+  @override
+  String get bookingBackHome => 'Back to home';
+
+  @override
+  String get bookingViewMyBookings => 'View my bookings';
+
+  @override
+  String bookingPilgrimsSummary(int count, String room) {
+    return '$count pilgrims · $room';
+  }
 }

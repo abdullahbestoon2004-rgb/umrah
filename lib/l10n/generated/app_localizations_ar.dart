@@ -1094,6 +1094,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminLinkPackage => 'ربط بباقة (اختياري)';
 
   @override
+  String get adminLinkCompany => 'ربط بوكالة (اختياري)';
+
+  @override
   String get adminNoLink => 'بدون ربط';
 
   @override
@@ -1104,16 +1107,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminAdCreated => 'تم نشر الإعلان في الصفحة الرئيسية!';
-
-  @override
-  String get adminFeaturedOffers => 'الباقات المميزة في الرئيسية';
-
-  @override
-  String get adminFeaturedHint =>
-      'الباقات المميزة بنجمة تظهر أولًا في الصفحة الرئيسية.';
-
-  @override
-  String get adminNoOffers => 'لا توجد باقات منشورة بعد.';
 
   @override
   String get adminStatPending => 'قيد الانتظار';
@@ -1132,6 +1125,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminSupportAnonymous => 'زائر';
+
+  @override
+  String get adminSectionManage => 'الإدارة';
+
+  @override
+  String get adminFilterAll => 'الكل';
+
+  @override
+  String get adminSupportResolved => 'تمت معالجة الرسالة وحذفها.';
+
+  @override
+  String get emailCopied => 'تم نسخ البريد الإلكتروني';
+
+  @override
+  String get adminCommissionsCardSubtitle => 'المستحق والمحصّل لجميع الوكالات';
+
+  @override
+  String get adminPromoteTitle => 'الترويج للوكالات والباقات';
+
+  @override
+  String get adminPromoteSubtitle =>
+      'أبرز الوكالات والباقات في الصفحة الرئيسية';
+
+  @override
+  String get promoteScreenTitle => 'ترويجات الصفحة الرئيسية';
+
+  @override
+  String get promoteSearchTrips => 'ابحث عن الباقات…';
+
+  @override
+  String get promoteSearchAgencies => 'ابحث عن الوكالات…';
+
+  @override
+  String get promoteTabTrips => 'الباقات';
+
+  @override
+  String get promoteTabAgencies => 'الوكالات';
+
+  @override
+  String get promoteNoTrips => 'لم يتم العثور على باقات';
+
+  @override
+  String get promoteNoAgencies => 'لم يتم العثور على وكالات';
 
   @override
   String agencyDashboardYourPackages(int count) {
@@ -1950,4 +1986,140 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get accountEmailConfirmationBody =>
       'تم إرسال رابط تأکيد إلى بريدک الجديد. تحقق من بريدک وانقر على الرابط لإتمام التغيير.';
+
+  @override
+  String get bookingStepRoom => 'الغرفة والحجاج';
+
+  @override
+  String get bookingStepPilgrims => 'معلومات الحجاج';
+
+  @override
+  String get bookingStepPay => 'الدفع';
+
+  @override
+  String get bookingChooseRoom => 'اختر نوع الغرفة';
+
+  @override
+  String get bookingRoomDouble => 'غرفة ثنائية';
+
+  @override
+  String get bookingRoomTriple => 'غرفة ثلاثية';
+
+  @override
+  String get bookingRoomQuad => 'غرفة رباعية';
+
+  @override
+  String bookingRoomPax(int count) {
+    return '$count أشخاص في الغرفة';
+  }
+
+  @override
+  String get bookingMostPopular => 'الأكثر طلباً';
+
+  @override
+  String get bookingPilgrimCountTitle => 'عدد الحجاج';
+
+  @override
+  String get bookingPilgrimAge => 'العمر +12 سنة';
+
+  @override
+  String bookingTotalLine(int count, String price) {
+    return '$count × $price';
+  }
+
+  @override
+  String get bookingContinue => 'متابعة';
+
+  @override
+  String get bookingContinueToPay => 'المتابعة إلى الدفع';
+
+  @override
+  String bookingPilgrimN(int n) {
+    return 'الحاج $n';
+  }
+
+  @override
+  String get bookingStatusComplete => 'مكتمل';
+
+  @override
+  String get bookingStatusIncomplete => 'غير مكتمل';
+
+  @override
+  String get bookingFullName => 'الاسم الكامل (كما في الجواز)';
+
+  @override
+  String get bookingFullNameHint => 'مثال: كاروان عمر أحمد';
+
+  @override
+  String get bookingPassportNo => 'رقم جواز السفر';
+
+  @override
+  String get bookingDob => 'تاريخ الميلاد';
+
+  @override
+  String get bookingDobHint => 'اختر التاريخ';
+
+  @override
+  String get bookingPhoneLabel => 'رقم الهاتف';
+
+  @override
+  String get bookingReviewTitle => 'المراجعة والدفع';
+
+  @override
+  String get bookingReviewSub => 'الخطوة الأخيرة';
+
+  @override
+  String get bookingSummaryTitle => 'ملخص الحجز';
+
+  @override
+  String get bookingSummaryTrip => 'الرحلة';
+
+  @override
+  String get bookingSummaryCompany => 'الشركة';
+
+  @override
+  String get bookingSummaryDeparture => 'تاريخ المغادرة';
+
+  @override
+  String get bookingSummaryPilgrims => 'الحجاج';
+
+  @override
+  String get bookingSummaryRoom => 'الغرفة';
+
+  @override
+  String get payFibSub => 'ادفع مباشرة عبر تطبيق FIB';
+
+  @override
+  String get payCardSub => 'Visa · Mastercard';
+
+  @override
+  String get payCashSub => 'الدفع في مكتب الشركة';
+
+  @override
+  String get bookingConfirmBtn => 'تأكيد الحجز';
+
+  @override
+  String get bookingRegisteredTitle => 'تم تسجيل حجزك';
+
+  @override
+  String bookingRegisteredBody(String company) {
+    return 'تم إرسال طلبك إلى $company. سنعلمك فور تأكيده — عادةً خلال 24 ساعة.';
+  }
+
+  @override
+  String get bookingRefTitle => 'رقم الحجز';
+
+  @override
+  String get bookingAwaitingConfirmation => 'بانتظار التأكيد';
+
+  @override
+  String get bookingBackHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get bookingViewMyBookings => 'عرض حجوزاتي';
+
+  @override
+  String bookingPilgrimsSummary(int count, String room) {
+    return '$count حجاج · $room';
+  }
 }

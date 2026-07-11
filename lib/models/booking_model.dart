@@ -2,6 +2,31 @@ import 'package:flutter/material.dart';
 import 'company_model.dart';
 import 'offer_model.dart';
 
+/// Details for one traveler collected by the booking flow. Stored as plain
+/// lines inside the booking's `note` column (there is no dedicated table),
+/// so agencies can read them straight off the booking row.
+class PilgrimInfo {
+  final String fullName;
+  final String passportNo;
+  final DateTime? dateOfBirth;
+  final String phone; // lead pilgrim only
+
+  const PilgrimInfo({
+    required this.fullName,
+    required this.passportNo,
+    this.dateOfBirth,
+    this.phone = '',
+  });
+
+  String toNoteLine(int index) {
+    final dob = dateOfBirth == null
+        ? ''
+        : dateOfBirth!.toIso8601String().substring(0, 10);
+    final parts = [fullName, passportNo, dob, if (phone.isNotEmpty) phone];
+    return 'p$index:${parts.join(' | ')}';
+  }
+}
+
 class Booking {
   final String id;
   final String offerId;

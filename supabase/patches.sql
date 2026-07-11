@@ -114,6 +114,9 @@ create policy "send support message" on support_messages for insert
 drop policy if exists "admin read support messages" on support_messages;
 create policy "admin read support messages" on support_messages for select
   using (is_admin());
+drop policy if exists "admin delete support messages" on support_messages;
+create policy "admin delete support messages" on support_messages for delete
+  using (is_admin());
 
 -- 7. Reviews — a pilgrim can rate a completed trip; the company's rating/
 --    review count (already-existing columns, shown everywhere in the app)

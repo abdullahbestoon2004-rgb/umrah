@@ -34,7 +34,8 @@ void _logCrash(Object error, StackTrace? stack, {String? context}) {
 // translations. Without a fallback, widgets that read MaterialLocalizations
 // (e.g. AppBar back-button tooltips) throw for the 'ku' locale. Route 'ku'
 // to the Arabic translations instead (same RTL direction, closest available).
-class _KuMaterialLocalizationsDelegate extends LocalizationsDelegate<MaterialLocalizations> {
+class _KuMaterialLocalizationsDelegate
+    extends LocalizationsDelegate<MaterialLocalizations> {
   const _KuMaterialLocalizationsDelegate();
   @override
   bool isSupported(Locale locale) => locale.languageCode == 'ku';
@@ -45,7 +46,8 @@ class _KuMaterialLocalizationsDelegate extends LocalizationsDelegate<MaterialLoc
   bool shouldReload(_KuMaterialLocalizationsDelegate old) => false;
 }
 
-class _KuCupertinoLocalizationsDelegate extends LocalizationsDelegate<CupertinoLocalizations> {
+class _KuCupertinoLocalizationsDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
   const _KuCupertinoLocalizationsDelegate();
   @override
   bool isSupported(Locale locale) => locale.languageCode == 'ku';
@@ -74,10 +76,12 @@ void main() {
       return true;
     };
 
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     runApp(const TawafApp());
   }, (error, stack) => _logCrash(error, stack, context: 'runZonedGuarded'));
 }
@@ -114,7 +118,8 @@ class TawafApp extends StatelessWidget {
             ),
             onGenerateRoute: (settings) {
               return MaterialPageRoute(
-                builder: (context) => provider.locked ? const LockScreen() : const MainScreen(),
+                builder: (context) =>
+                    provider.locked ? const LockScreen() : const MainScreen(),
               );
             },
             home: provider.locked ? const LockScreen() : const MainScreen(),

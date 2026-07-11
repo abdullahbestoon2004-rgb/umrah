@@ -80,6 +80,7 @@ abstract class DataService {
     required String payMethod,
     DateTime? departureDate,
     String? contactPhone,
+    String? note,
   });
   Future<String?> cancelBooking(String id);
 
@@ -129,6 +130,7 @@ abstract class DataService {
   // ── support ───────────────────────────────────────────────────────────────
   Future<String?> sendSupportMessage({String? userId, String? email, required String message});
   Future<List<SupportMessage>> fetchSupportMessages();
+  Future<String?> deleteSupportMessage(String id);
 
   // ── reviews ───────────────────────────────────────────────────────────────
   Future<String?> createReview({
@@ -532,18 +534,25 @@ class SupabaseService implements DataService {
     required String payMethod,
     DateTime? departureDate,
     String? contactPhone,
+    String? note,
   }) async {
     try {
-      final note = departureDate == null
+      // The departure date rides in the same free-text note column (parsed
+      // back out by Booking.fromRow); extra lines (room preference, pilgrim
+      // details) are appended after it so agencies can read them in place.
+      final depLine = departureDate == null
           ? null
           : 'dep:${departureDate.toIso8601String().substring(0, 10)}';
+      final noteText = [depLine, note]
+          .where((s) => s != null && s.isNotEmpty)
+          .join('\n');
       await _c.from('bookings').insert({
         'package_id': packageId,
         'client_id': clientId,
         'travellers': travellers,
         'pay_method': payMethod,
         if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
-        if (note != null) 'note': note,
+        if (noteText.isNotEmpty) 'note': noteText,
         // company_id / prices / commission are filled by the DB trigger
         'company_id': '00000000-0000-0000-0000-000000000000',
         'unit_price_iqd': 0,
@@ -896,6 +905,16 @@ class SupabaseService implements DataService {
       return rows.map((r) => SupportMessage.fromRow(r)).toList();
     } catch (_) {
       return [];
+    }
+  }
+
+  @override
+  Future<String?> deleteSupportMessage(String id) async {
+    try {
+      await _c.from('support_messages').delete().eq('id', id);
+      return null;
+    } catch (e) {
+      return e.toString();
     }
   }
 

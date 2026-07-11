@@ -194,7 +194,7 @@ class FakeService implements DataService {
   @override
   Future<String?> createBooking({required String packageId, required String clientId,
       required int travellers, required String payMethod, DateTime? departureDate,
-      String? contactPhone}) async {
+      String? contactPhone, String? note}) async {
     final offer = offers.firstWhere((o) => o.id == packageId);
     bookings.insert(0, Booking(
       id: 'b${bookings.length + 1}-abcdef',
@@ -276,6 +276,12 @@ class FakeService implements DataService {
   @override
   Future<List<SupportMessage>> fetchSupportMessages() async => List.from(supportMessages);
 
+  @override
+  Future<String?> deleteSupportMessage(String id) async {
+    supportMessages.removeWhere((m) => m.id == id);
+    return null;
+  }
+
   // ── reviews ───────────────────────────────────────────────────────────────
   final Set<String> _reviewedBookingIds = {};
 
@@ -303,8 +309,7 @@ class FakeService implements DataService {
   }) async =>
       code == _testResetCode ? null : 'invalid code';
 
-  @override
-  Future<String?> reauthenticate(String email, String password) async => null;
+
 
   // ── error logging ────────────────────────────────────────────────────────
   @override
@@ -538,8 +543,8 @@ void main() {
       await agency.signIn('agency@test.com', 'pass');
       await agency.loadAgencyBookings();
       expect(agency.agencyBookings.map((b) => b.id), contains(bookingId));
-      final ok = await agency.respondToBooking(bookingId, confirm: true);
-      expect(ok, true);
+      final err = await agency.respondToBooking(bookingId, confirm: true);
+      expect(err, isNull);
       expect(agency.agencyBookings.firstWhere((b) => b.id == bookingId).status, 'Confirmed');
 
       await agency.loadCommissions();
@@ -550,8 +555,8 @@ void main() {
       expect(agency.commissions.first.status, 'collected');
 
       // Trip happens; agency marks it completed.
-      final completedOk = await agency.markBookingCompleted(bookingId);
-      expect(completedOk, true);
+      final completedErr = await agency.markBookingCompleted(bookingId);
+      expect(completedErr, isNull);
       expect(agency.agencyBookings.firstWhere((b) => b.id == bookingId).status, 'Completed');
 
       // Client can now leave a review, and only now.
@@ -692,6 +697,25 @@ void main() {
       expect(p.allHomeAds, isEmpty);
     });
 
+    test('admin: an ad linked to a company (no package) carries the company id', () async {
+      final p = await makeProvider();
+      await p.signIn('admin@test.com', 'pass');
+      final companyId = p.companies.first.id;
+      expect(await p.createHomeAd(title: 'Visit our agency', companyId: companyId), true);
+      expect(p.homeAds, hasLength(1));
+      expect(p.homeAds.first.companyId, companyId);
+      expect(p.homeAds.first.packageId, isNull);
+    });
+
+    test('admin: promoting a company flags it for the home top-agencies list', () async {
+      final p = await makeProvider();
+      await p.signIn('admin@test.com', 'pass');
+      final companyId = p.companies.last.id;
+      expect(await p.setCompanyPromoted(companyId, true), true);
+      final promoted = p.companies.firstWhere((c) => c.id == companyId);
+      expect(promoted.isPromoted, true);
+    });
+
     test('admin: featuring an offer reorders it to the front of home', () async {
       final p = await makeProvider();
       await p.signIn('admin@test.com', 'pass');
@@ -797,6 +821,27 @@ void main() {
 
       expect(find.text('Support messages'), findsOneWidget);
       expect(find.textContaining('My flight time changed'), findsOneWidget);
+    });
+
+    test('admin: resolving a support message removes it from the inbox', () async {
+      final shared = FakeService();
+      final client = AppProvider(service: shared, autoLoad: false);
+      await client.init();
+      await client.signIn('client@test.com', 'pass');
+      expect(await client.sendSupportMessage('Please call me back'), true);
+
+      final admin = AppProvider(service: shared, autoLoad: false);
+      await admin.init();
+      await admin.signIn('admin@test.com', 'pass');
+      await admin.loadSupportMessages();
+      expect(admin.supportMessages, hasLength(1));
+
+      expect(await admin.deleteSupportMessage(admin.supportMessages.first.id), true);
+      expect(admin.supportMessages, isEmpty);
+
+      // Gone from the backend too, not just the local list.
+      await admin.loadSupportMessages();
+      expect(admin.supportMessages, isEmpty);
     });
   });
 }

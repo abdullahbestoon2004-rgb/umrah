@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/notification_model.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/interactive_scale.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -138,7 +139,7 @@ class _NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    return GestureDetector(
+    return InteractiveScale(
       onTap: () => context.read<AppProvider>().markNotificationRead(item.id),
       child: Container(
         padding: const EdgeInsets.all(14),
