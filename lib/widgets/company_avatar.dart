@@ -29,10 +29,7 @@ class CompanyAvatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       alignment: Alignment.center,
-      child: Text(
-        mono,
-        style: AppTheme.serif(fontSize, color: Colors.white),
-      ),
+      child: Text(mono, style: AppTheme.serif(fontSize, color: Colors.white)),
     );
 
     if ((logoUrl ?? '').isEmpty) return fallback;

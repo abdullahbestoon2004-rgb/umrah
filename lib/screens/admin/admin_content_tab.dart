@@ -27,17 +27,20 @@ class AdminContentTab extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final lang = Localizations.localeOf(context).languageCode;
-    final promoted =
-        provider.companies.where((c) => c.isPromoted).toList();
-    final featured =
-        provider.allOffers.where((o) => o.isFeatured).toList();
+    final promoted = provider.companies.where((c) => c.isPromoted).toList();
+    final featured = provider.allOffers.where((o) => o.isFeatured).toList();
+    final pendingReview = provider.allOffers
+        .where((o) => o.lifecycleStatus == 'pending_review')
+        .toList();
 
     return DashboardScaffold(
       title: t.tabContent,
       onRefresh: () => context.read<AppProvider>().loadAdminData(),
       floatingAction: GestureDetector(
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const HomePreviewScreen())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePreviewScreen()),
+        ),
         child: Container(
           padding: const EdgeInsetsDirectional.fromSTEB(18, 13, 18, 13),
           decoration: BoxDecoration(
@@ -54,23 +57,94 @@ class AdminContentTab extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.remove_red_eye_outlined,
-                  color: Colors.white, size: 18),
+              const Icon(
+                Icons.remove_red_eye_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
               const SizedBox(width: 8),
-              Text(t.contentPreviewHome,
-                  style: AppTheme.sans(13,
-                      weight: FontWeight.w700, color: Colors.white)),
+              Text(
+                t.contentPreviewHome,
+                style: AppTheme.sans(
+                  13,
+                  weight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
         ),
       ),
       slivers: [
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: t.workflowPackagesToReview,
+            count: pendingReview.length,
+            accent: AppColors.gold,
+            firstSection: true,
+          ),
+        ),
+        if (pendingReview.isEmpty)
+          SliverToBoxAdapter(
+            child: EmptyState(
+              icon: Icons.fact_check_outlined,
+              title: t.workflowNoPackagesToReview,
+              compact: true,
+            ),
+          )
+        else
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, i) {
+              final offer = pendingReview[i];
+              final company = provider.companyById(offer.companyId);
+              return Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
+                child: EntityListCard(
+                  title: offer.titleFor(lang),
+                  subtitle:
+                      '${company?.nameFor(lang) ?? ''} · ${offer.priceFmt}',
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: t.adminApprove,
+                        icon: const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.primary,
+                        ),
+                        onPressed: () =>
+                            _reviewPackage(context, offer.id, 'published'),
+                      ),
+                      IconButton(
+                        tooltip: t.adminDecline,
+                        icon: const Icon(
+                          Icons.cancel_rounded,
+                          color: AppColors.errorRed,
+                        ),
+                        onPressed: () => _reviewPackage(
+                          context,
+                          offer.id,
+                          'needs_changes',
+                          requireReason: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }, childCount: pendingReview.length),
+          ),
         // ── Carousel ads ──
         SliverToBoxAdapter(
           child: SectionHeader(
             title: t.adminHomeAds,
             count: provider.allHomeAds.length,
-            firstSection: true,
+            firstSection: false,
             trailing: GestureDetector(
               onTap: () => _openAddAd(context),
               child: Container(
@@ -81,12 +155,20 @@ class AdminContentTab extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.add_rounded,
-                        color: Colors.white, size: 18),
+                    const Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                     const SizedBox(width: 6),
-                    Text(t.adminAddAd,
-                        style: AppTheme.sans(13,
-                            weight: FontWeight.w700, color: Colors.white)),
+                    Text(
+                      t.adminAddAd,
+                      style: AppTheme.sans(
+                        13,
+                        weight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -96,16 +178,21 @@ class AdminContentTab extends StatelessWidget {
         if (provider.allHomeAds.isEmpty)
           SliverToBoxAdapter(
             child: EmptyState(
-                icon: Icons.campaign_rounded,
-                title: t.adminNoAds,
-                compact: true),
+              icon: Icons.campaign_rounded,
+              title: t.adminNoAds,
+              compact: true,
+            ),
           )
         else
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, 0, kDashPagePad, kDashCardGap),
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
                 child: AdRow(ad: provider.allHomeAds[i]),
               ),
               childCount: provider.allHomeAds.length,
@@ -118,44 +205,51 @@ class AdminContentTab extends StatelessWidget {
             title: t.homeTopAgencies,
             count: promoted.length,
             onViewAll: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const PromoteScreen(initialTab: 1))),
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PromoteScreen(initialTab: 1),
+              ),
+            ),
           ),
         ),
         if (promoted.isEmpty)
           SliverToBoxAdapter(
             child: EmptyState(
-                icon: Icons.domain_rounded,
-                title: t.promoteNoAgencies,
-                compact: true),
+              icon: Icons.domain_rounded,
+              title: t.promoteNoAgencies,
+              compact: true,
+            ),
           )
         else
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, i) {
-                final company = promoted[i];
-                return Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                      kDashPagePad, 0, kDashPagePad, kDashCardGap),
-                  child: EntityListCard(
-                    leading: CompanyAvatar(
-                      mono: company.mono,
-                      tint: company.tint,
-                      logoUrl: company.logoUrl,
-                      size: 40,
-                      fontSize: 15,
-                      borderRadius: 10,
-                    ),
-                    title: company.nameFor(lang),
-                    subtitle: company.location,
-                    trailing: const Icon(Icons.star_rounded,
-                        color: AppColors.primary, size: 22),
+            delegate: SliverChildBuilderDelegate((context, i) {
+              final company = promoted[i];
+              return Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
+                child: EntityListCard(
+                  leading: CompanyAvatar(
+                    mono: company.mono,
+                    tint: company.tint,
+                    logoUrl: company.logoUrl,
+                    size: 40,
+                    fontSize: 15,
+                    borderRadius: 10,
                   ),
-                );
-              },
-              childCount: promoted.length,
-            ),
+                  title: company.nameFor(lang),
+                  subtitle: company.location,
+                  trailing: const Icon(
+                    Icons.star_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                ),
+              );
+            }, childCount: promoted.length),
           ),
 
         // ── Featured trips (home featured strip) ──
@@ -165,40 +259,47 @@ class AdminContentTab extends StatelessWidget {
             count: featured.length,
             accent: AppColors.gold,
             onViewAll: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const PromoteScreen(initialTab: 0))),
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PromoteScreen(initialTab: 0),
+              ),
+            ),
           ),
         ),
         if (featured.isEmpty)
           SliverToBoxAdapter(
             child: EmptyState(
-                icon: Icons.auto_awesome_rounded,
-                title: t.promoteNoTrips,
-                compact: true),
+              icon: Icons.auto_awesome_rounded,
+              title: t.promoteNoTrips,
+              compact: true,
+            ),
           )
         else
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, i) {
-                final offer = featured[i];
-                final companyName =
-                    provider.companyById(offer.companyId)?.nameFor(lang) ?? '';
-                return Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                      kDashPagePad, 0, kDashPagePad, kDashCardGap),
-                  child: EntityListCard(
-                    title: offer.titleFor(lang),
-                    subtitle: companyName.isEmpty
-                        ? offer.priceFmt
-                        : '$companyName · ${offer.priceFmt}',
-                    trailing: const Icon(Icons.star_rounded,
-                        color: AppColors.gold, size: 22),
+            delegate: SliverChildBuilderDelegate((context, i) {
+              final offer = featured[i];
+              final companyName =
+                  provider.companyById(offer.companyId)?.nameFor(lang) ?? '';
+              return Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
+                child: EntityListCard(
+                  title: offer.titleFor(lang),
+                  subtitle: companyName.isEmpty
+                      ? offer.priceFmt
+                      : '$companyName · ${offer.priceFmt}',
+                  trailing: const Icon(
+                    Icons.star_rounded,
+                    color: AppColors.gold,
+                    size: 22,
                   ),
-                );
-              },
-              childCount: featured.length,
-            ),
+                ),
+              );
+            }, childCount: featured.length),
           ),
       ],
     );
@@ -212,6 +313,60 @@ class AdminContentTab extends StatelessWidget {
       builder: (_) => ChangeNotifierProvider.value(
         value: context.read<AppProvider>(),
         child: const AddAdSheet(),
+      ),
+    );
+  }
+
+  Future<void> _reviewPackage(
+    BuildContext context,
+    String id,
+    String decision, {
+    bool requireReason = false,
+  }) async {
+    String? reason;
+    if (requireReason) {
+      final ctrl = TextEditingController();
+      reason = await showDialog<String>(
+        context: context,
+        builder: (dialogCtx) => AlertDialog(
+          title: Text(AppLocalizations.of(context).workflowReasonRequired),
+          content: TextField(
+            controller: ctrl,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context).workflowReasonHint,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(AppLocalizations.of(context).agencyDashboardCancel),
+            ),
+            TextButton(
+              onPressed: () {
+                if (ctrl.text.trim().isNotEmpty) {
+                  Navigator.pop(dialogCtx, ctrl.text.trim());
+                }
+              },
+              child: Text(AppLocalizations.of(context).workflowSendDecision),
+            ),
+          ],
+        ),
+      );
+      ctrl.dispose();
+      if (reason == null) return;
+    }
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final err = await context.read<AppProvider>().reviewOffer(
+      id,
+      decision,
+      reason: reason,
+    );
+    messenger.showSnackBar(
+      appSnack(
+        err == null ? AppLocalizations.of(context).workflowDecisionSaved : err,
+        isError: err != null,
       ),
     );
   }
@@ -250,8 +405,11 @@ class AdRow extends StatelessWidget {
                     )
                   : Container(
                       color: AppColors.primary.withOpacity(0.12),
-                      child: const Icon(Icons.campaign_rounded,
-                          color: AppColors.primary, size: 22),
+                      child: const Icon(
+                        Icons.campaign_rounded,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
                     ),
             ),
           ),
@@ -286,22 +444,31 @@ class AdRow extends StatelessWidget {
                 builder: (dialogCtx) => AlertDialog(
                   backgroundColor: AppColors.background,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   title: Text(t.adminDeleteAdTitle, style: AppTheme.serif(20)),
-                  content: Text(t.adminDeleteAdBody,
-                      style: AppTheme.sans(13, color: AppColors.inkLight)),
+                  content: Text(
+                    t.adminDeleteAdBody,
+                    style: AppTheme.sans(13, color: AppColors.inkLight),
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(dialogCtx, false),
-                      child: Text(t.agencyDashboardCancel,
-                          style: AppTheme.sans(13, color: AppColors.muted)),
+                      child: Text(
+                        t.agencyDashboardCancel,
+                        style: AppTheme.sans(13, color: AppColors.muted),
+                      ),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(dialogCtx, true),
-                      child: Text(t.adminDeleteAdConfirm,
-                          style: AppTheme.sans(13,
-                              weight: FontWeight.w700,
-                              color: AppColors.errorRed)),
+                      child: Text(
+                        t.adminDeleteAdConfirm,
+                        style: AppTheme.sans(
+                          13,
+                          weight: FontWeight.w700,
+                          color: AppColors.errorRed,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -321,8 +488,11 @@ class AdRow extends StatelessWidget {
                 color: AppColors.errorRed.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.delete_outline_rounded,
-                  color: AppColors.errorRed, size: 17),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: AppColors.errorRed,
+                size: 17,
+              ),
             ),
           ),
         ],
@@ -423,8 +593,10 @@ class _AddAdSheetState extends State<AddAdSheet> {
             Text(t.adminAddAd, style: AppTheme.serif(24)),
             const SizedBox(height: 18),
 
-            Text(t.adminAdTitle,
-                style: AppTheme.sans(13, weight: FontWeight.w700)),
+            Text(
+              t.adminAdTitle,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
@@ -438,8 +610,11 @@ class _AddAdSheetState extends State<AddAdSheet> {
                 decoration: InputDecoration(
                   hintText: t.adminAdTitleHint,
                   hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-                  prefixIcon: const Icon(Icons.campaign_rounded,
-                      color: AppColors.primary, size: 20),
+                  prefixIcon: const Icon(
+                    Icons.campaign_rounded,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -447,12 +622,13 @@ class _AddAdSheetState extends State<AddAdSheet> {
             ),
 
             const SizedBox(height: 16),
-            Text(t.adminLinkPackage,
-                style: AppTheme.sans(13, weight: FontWeight.w700)),
+            Text(
+              t.adminLinkPackage,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             Container(
-              padding:
-                  const EdgeInsetsDirectional.symmetric(horizontal: 14),
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
@@ -467,15 +643,19 @@ class _AddAdSheetState extends State<AddAdSheet> {
                   items: [
                     DropdownMenuItem<String?>(
                       value: null,
-                      child: Text(t.adminNoLink,
-                          style: AppTheme.sans(14, color: AppColors.muted)),
+                      child: Text(
+                        t.adminNoLink,
+                        style: AppTheme.sans(14, color: AppColors.muted),
+                      ),
                     ),
                     for (final o in provider.allOffers)
                       DropdownMenuItem<String?>(
                         value: o.id,
-                        child: Text(o.titleFor(lang),
-                            style: AppTheme.sans(14),
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          o.titleFor(lang),
+                          style: AppTheme.sans(14),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                   // An ad leads to one place, so picking a trip clears any
@@ -489,12 +669,13 @@ class _AddAdSheetState extends State<AddAdSheet> {
             ),
 
             const SizedBox(height: 16),
-            Text(t.adminLinkCompany,
-                style: AppTheme.sans(13, weight: FontWeight.w700)),
+            Text(
+              t.adminLinkCompany,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             Container(
-              padding:
-                  const EdgeInsetsDirectional.symmetric(horizontal: 14),
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
@@ -509,15 +690,19 @@ class _AddAdSheetState extends State<AddAdSheet> {
                   items: [
                     DropdownMenuItem<String?>(
                       value: null,
-                      child: Text(t.adminNoLink,
-                          style: AppTheme.sans(14, color: AppColors.muted)),
+                      child: Text(
+                        t.adminNoLink,
+                        style: AppTheme.sans(14, color: AppColors.muted),
+                      ),
                     ),
                     for (final c in provider.companies)
                       DropdownMenuItem<String?>(
                         value: c.id,
-                        child: Text(c.nameFor(lang),
-                            style: AppTheme.sans(14),
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          c.nameFor(lang),
+                          style: AppTheme.sans(14),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                   onChanged: (v) => setState(() {
@@ -529,8 +714,10 @@ class _AddAdSheetState extends State<AddAdSheet> {
             ),
 
             const SizedBox(height: 16),
-            Text(t.adminAdImage,
-                style: AppTheme.sans(13, weight: FontWeight.w700)),
+            Text(
+              t.adminAdImage,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: _pickImage,
@@ -548,12 +735,16 @@ class _AddAdSheetState extends State<AddAdSheet> {
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.add_photo_alternate_outlined,
-                              color: AppColors.primary, size: 28),
+                          const Icon(
+                            Icons.add_photo_alternate_outlined,
+                            color: AppColors.primary,
+                            size: 28,
+                          ),
                           const SizedBox(height: 6),
-                          Text(t.adminPickImage,
-                              style: AppTheme.sans(12,
-                                  color: AppColors.muted)),
+                          Text(
+                            t.adminPickImage,
+                            style: AppTheme.sans(12, color: AppColors.muted),
+                          ),
                         ],
                       ),
               ),
@@ -575,12 +766,18 @@ class _AddAdSheetState extends State<AddAdSheet> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2.5),
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
-                    : Text(t.adminAddAd,
-                        style: AppTheme.sans(14,
-                            weight: FontWeight.w800,
-                            color: const Color(0xFFF6F2E9))),
+                    : Text(
+                        t.adminAddAd,
+                        style: AppTheme.sans(
+                          14,
+                          weight: FontWeight.w800,
+                          color: const Color(0xFFF6F2E9),
+                        ),
+                      ),
               ),
             ),
           ],

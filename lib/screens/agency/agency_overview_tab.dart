@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../providers/app_provider.dart';
 import '../../models/booking_model.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../widgets/dashboard/dashboard_scaffold.dart';
 import '../../widgets/dashboard/kpi.dart';
 import '../../widgets/dashboard/section_header.dart';
@@ -30,8 +31,7 @@ class AgencyOverviewTab extends StatelessWidget {
 
     final bookings = provider.agencyBookings;
     final pending = provider.pendingBookingCount;
-    final confirmed =
-        bookings.where((b) => b.status == 'Confirmed').length;
+    final confirmed = bookings.where((b) => b.status == 'Confirmed').length;
     final revenue = bookings
         .where((b) => b.status == 'Confirmed' || b.status == 'Completed')
         .fold(0.0, (s, b) => s + b.total);
@@ -58,10 +58,40 @@ class AgencyOverviewTab extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
-                  kDashPagePad, 0, kDashPagePad, kDashCardGap),
+                kDashPagePad,
+                0,
+                kDashPagePad,
+                kDashCardGap,
+              ),
               child: _VerificationBanner(
-                title: t.agencyDashboardVerificationPending,
-                body: t.agencyDashboardVerificationPendingBody,
+                title: company.verificationStatus == 'needs_changes'
+                    ? t.workflowChangesRequired
+                    : t.agencyDashboardVerificationPending,
+                body:
+                    company.verificationReason ??
+                    (company.verificationStatus == 'draft'
+                        ? t.workflowSubmitCompanyBody
+                        : t.agencyDashboardVerificationPendingBody),
+                actionLabel:
+                    [
+                      'draft',
+                      'needs_changes',
+                      'rejected',
+                    ].contains(company.verificationStatus)
+                    ? t.workflowSubmitForReview
+                    : null,
+                onAction: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final err = await context
+                      .read<AppProvider>()
+                      .submitCompanyForReview();
+                  messenger.showSnackBar(
+                    appSnack(
+                      err == null ? t.workflowSubmitted : err,
+                      isError: err != null,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -69,7 +99,11 @@ class AgencyOverviewTab extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
-                  kDashPagePad, kDashCardGap, kDashPagePad, 0),
+                kDashPagePad,
+                kDashCardGap,
+                kDashPagePad,
+                0,
+              ),
               child: _NextDepartureCard(
                 booking: next,
                 onTap: () => onGoToTab(2),
@@ -79,36 +113,38 @@ class AgencyOverviewTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.only(top: kDashSectionGap),
-            child: KpiRow(cards: [
-              KpiCard(
-                value: '$pending',
-                label: t.agencyKpiRequests,
-                icon: Icons.mark_email_unread_rounded,
-                color: AppColors.gold,
-                onTap: () => onGoToTab(2),
-              ),
-              KpiCard(
-                value: '$confirmed',
-                label: t.bookingsStatusConfirmed,
-                icon: Icons.event_available_rounded,
-                color: AppColors.primary,
-                onTap: () => onGoToTab(2),
-              ),
-              KpiCard(
-                value: compactIqd(revenue),
-                label: t.agencyKpiRevenue,
-                icon: Icons.payments_rounded,
-                color: const Color(0xFF397C74),
-                onTap: () => onGoToTab(3),
-              ),
-              KpiCard(
-                value: compactIqd(owed),
-                label: t.adminStatOwed,
-                icon: Icons.receipt_long_rounded,
-                color: const Color(0xFF8B5F38),
-                onTap: () => onGoToTab(3),
-              ),
-            ]),
+            child: KpiRow(
+              cards: [
+                KpiCard(
+                  value: '$pending',
+                  label: t.agencyKpiRequests,
+                  icon: Icons.mark_email_unread_rounded,
+                  color: AppColors.gold,
+                  onTap: () => onGoToTab(2),
+                ),
+                KpiCard(
+                  value: '$confirmed',
+                  label: t.bookingsStatusConfirmed,
+                  icon: Icons.event_available_rounded,
+                  color: AppColors.primary,
+                  onTap: () => onGoToTab(2),
+                ),
+                KpiCard(
+                  value: compactIqd(revenue),
+                  label: t.agencyKpiRevenue,
+                  icon: Icons.payments_rounded,
+                  color: const Color(0xFF397C74),
+                  onTap: () => onGoToTab(3),
+                ),
+                KpiCard(
+                  value: compactIqd(owed),
+                  label: t.adminStatOwed,
+                  icon: Icons.receipt_long_rounded,
+                  color: const Color(0xFF8B5F38),
+                  onTap: () => onGoToTab(3),
+                ),
+              ],
+            ),
           ),
         ),
         if (pending > 0 || owed > 0) ...[
@@ -116,26 +152,28 @@ class AgencyOverviewTab extends StatelessWidget {
             child: SectionHeader(title: t.adminNeedsAttention),
           ),
           SliverToBoxAdapter(
-            child: AttentionRow(cards: [
-              if (pending > 0)
-                AttentionCard(
-                  icon: Icons.mark_email_unread_rounded,
-                  label: t.agencyKpiRequests,
-                  count: pending,
-                  color: AppColors.gold,
-                  onTap: () => onGoToTab(2),
-                ),
-              if (owed > 0)
-                AttentionCard(
-                  icon: Icons.receipt_long_rounded,
-                  label: t.adminCommissionsOwedLabel,
-                  count: provider.commissions
-                      .where((c) => c.status == 'owed')
-                      .length,
-                  color: const Color(0xFF8B5F38),
-                  onTap: () => onGoToTab(3),
-                ),
-            ]),
+            child: AttentionRow(
+              cards: [
+                if (pending > 0)
+                  AttentionCard(
+                    icon: Icons.mark_email_unread_rounded,
+                    label: t.agencyKpiRequests,
+                    count: pending,
+                    color: AppColors.gold,
+                    onTap: () => onGoToTab(2),
+                  ),
+                if (owed > 0)
+                  AttentionCard(
+                    icon: Icons.receipt_long_rounded,
+                    label: t.adminCommissionsOwedLabel,
+                    count: provider.commissions
+                        .where((c) => c.status == 'owed')
+                        .length,
+                    color: const Color(0xFF8B5F38),
+                    onTap: () => onGoToTab(3),
+                  ),
+              ],
+            ),
           ),
         ],
         SliverToBoxAdapter(
@@ -157,7 +195,11 @@ class AgencyOverviewTab extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, 0, kDashPagePad, 12),
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  12,
+                ),
                 child: BookingRequestCard(booking: recent[i]),
               ),
               childCount: recent.length,
@@ -186,7 +228,7 @@ class AgencyOverviewTab extends StatelessWidget {
           'Pending': 0,
           'Confirmed': 1,
           'Completed': 2,
-          'Cancelled': 3
+          'Cancelled': 3,
         };
         return (order[a.status] ?? 9).compareTo(order[b.status] ?? 9);
       });
@@ -219,15 +261,17 @@ class _NextDepartureCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-                color: booking.gradColors.first.withOpacity(0.25),
-                blurRadius: 14,
-                offset: const Offset(0, 7)),
+              color: booking.gradColors.first.withOpacity(0.25),
+              blurRadius: 14,
+              offset: const Offset(0, 7),
+            ),
           ],
         ),
         child: Stack(
           children: [
             const Positioned.fill(
-                child: IslamicPattern(opacity: 0.07, cell: 64)),
+              child: IslamicPattern(opacity: 0.07, cell: 64),
+            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -237,47 +281,69 @@ class _NextDepartureCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsetsDirectional.fromSTEB(
-                            9, 4, 9, 4),
+                          9,
+                          4,
+                          9,
+                          4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.18),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(t.agencyNextDeparture,
-                            style: AppTheme.sans(10.5,
-                                weight: FontWeight.w800,
-                                color: Colors.white)),
+                        child: Text(
+                          t.agencyNextDeparture,
+                          style: AppTheme.sans(
+                            10.5,
+                            weight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsetsDirectional.fromSTEB(
-                            9, 4, 9, 4),
+                          9,
+                          4,
+                          9,
+                          4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.gold,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                            t.agencyInDaysCount(days < 1 ? 1 : days),
-                            style: AppTheme.sans(10.5,
-                                weight: FontWeight.w800,
-                                color: const Color(0xFF1C2317))),
+                          t.agencyInDaysCount(days < 1 ? 1 : days),
+                          style: AppTheme.sans(
+                            10.5,
+                            weight: FontWeight.w800,
+                            color: const Color(0xFF1C2317),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Text(booking.titleFor(lang),
-                      style: AppTheme.serif(20, color: Colors.white),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    booking.titleFor(lang),
+                    style: AppTheme.serif(20, color: Colors.white),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 5),
                   Row(
                     children: [
-                      const Icon(Icons.event_rounded,
-                          color: Colors.white, size: 14),
+                      const Icon(
+                        Icons.event_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      ),
                       const SizedBox(width: 5),
                       Text(
                         '${dep.year}/${dep.month}/${dep.day} · ${t.bookingsPaxCount(booking.travelers)}',
-                        style: AppTheme.sans(12,
-                            color: Colors.white.withOpacity(0.85)),
+                        style: AppTheme.sans(
+                          12,
+                          color: Colors.white.withOpacity(0.85),
+                        ),
                       ),
                     ],
                   ),
@@ -294,37 +360,62 @@ class _NextDepartureCard extends StatelessWidget {
 class _VerificationBanner extends StatelessWidget {
   final String title;
   final String body;
-  const _VerificationBanner({required this.title, required this.body});
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  const _VerificationBanner({
+    required this.title,
+    required this.body,
+    this.actionLabel,
+    this.onAction,
+  });
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFF8E8),
-          borderRadius: BorderRadius.circular(16),
-          border:
-              Border.all(color: AppColors.gold.withOpacity(0.4), width: 1.5),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.schedule_rounded,
-                color: AppColors.gold, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: AppTheme.sans(13,
-                          weight: FontWeight.w700, color: AppColors.gold)),
-                  const SizedBox(height: 3),
-                  Text(body,
-                      style: AppTheme.sans(12,
-                          color: const Color(0xFF8A7040))),
-                ],
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFFFF8E8),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppColors.gold.withOpacity(0.4), width: 1.5),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.schedule_rounded, color: AppColors.gold, size: 22),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTheme.sans(
+                  13,
+                  weight: FontWeight.w700,
+                  color: AppColors.gold,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 3),
+              Text(
+                body,
+                style: AppTheme.sans(12, color: const Color(0xFF8A7040)),
+              ),
+              if (actionLabel != null) ...[
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: onAction,
+                  child: Text(
+                    actionLabel!,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }

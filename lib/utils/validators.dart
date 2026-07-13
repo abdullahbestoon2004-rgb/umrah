@@ -55,7 +55,10 @@ class Validators {
     }
     final trimmed = phone.trim();
     // Extract only digits
-    final digits = _phoneDigitsRegex.allMatches(trimmed).map((m) => m.group(0)).join();
+    final digits = _phoneDigitsRegex
+        .allMatches(trimmed)
+        .map((m) => m.group(0))
+        .join();
     if (digits.length < 7) {
       return 'phone_too_short';
     }
@@ -120,7 +123,9 @@ class Validators {
     int score = 0;
     if (password.length >= 6) score++;
     if (password.length >= 8) score++;
-    if (password.contains(RegExp(r'[A-Z]')) && password.contains(RegExp(r'[a-z]'))) score++;
+    if (password.contains(RegExp(r'[A-Z]')) &&
+        password.contains(RegExp(r'[a-z]')))
+      score++;
     if (password.contains(RegExp(r'[0-9]'))) score++;
     if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) score++;
     return score.clamp(0, 4);
@@ -128,12 +133,18 @@ class Validators {
 
   static String strengthLabel(int score) {
     switch (score) {
-      case 0: return '';
-      case 1: return 'Weak';
-      case 2: return 'Fair';
-      case 3: return 'Good';
-      case 4: return 'Strong';
-      default: return '';
+      case 0:
+        return '';
+      case 1:
+        return 'Weak';
+      case 2:
+        return 'Fair';
+      case 3:
+        return 'Good';
+      case 4:
+        return 'Strong';
+      default:
+        return '';
     }
   }
 }

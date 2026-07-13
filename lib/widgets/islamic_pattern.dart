@@ -81,7 +81,8 @@ class _GirihPainter extends CustomPainter {
         // 2. Draw 8 overlapping rosette circles (double outline)
         for (int i = 0; i < 8; i++) {
           final double angle = i * math.pi / 4;
-          final Offset circleCenter = c + Offset(math.cos(angle), math.sin(angle)) * dCircle;
+          final Offset circleCenter =
+              c + Offset(math.cos(angle), math.sin(angle)) * dCircle;
           canvas.drawCircle(circleCenter, rCircle, stroke);
           canvas.drawCircle(circleCenter, rCircle * 0.92, stroke);
         }

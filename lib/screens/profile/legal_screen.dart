@@ -12,8 +12,12 @@ class LegalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final title = kind == LegalKind.privacy ? t.aboutPrivacyPolicy : t.aboutTermsOfUse;
-    final body = kind == LegalKind.privacy ? t.legalPrivacyBody : t.legalTermsBody;
+    final title = kind == LegalKind.privacy
+        ? t.aboutPrivacyPolicy
+        : t.aboutTermsOfUse;
+    final body = kind == LegalKind.privacy
+        ? t.legalPrivacyBody
+        : t.legalTermsBody;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -28,13 +32,18 @@ class LegalScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 42, height: 42,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(13),
                         border: Border.all(color: AppColors.border, width: 1.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -55,7 +64,10 @@ class LegalScreen extends StatelessWidget {
                   ),
                   child: Text(
                     body,
-                    style: AppTheme.sans(13.5, color: AppColors.inkLight).copyWith(height: 1.7),
+                    style: AppTheme.sans(
+                      13.5,
+                      color: AppColors.inkLight,
+                    ).copyWith(height: 1.7),
                   ),
                 ),
               ),

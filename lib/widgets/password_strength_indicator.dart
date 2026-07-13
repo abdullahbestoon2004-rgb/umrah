@@ -42,7 +42,10 @@ class PasswordStrengthIndicator extends StatelessWidget {
             }),
           ),
           const SizedBox(height: 4),
-          Text(label, style: AppTheme.sans(11, color: color, weight: FontWeight.w600)),
+          Text(
+            label,
+            style: AppTheme.sans(11, color: color, weight: FontWeight.w600),
+          ),
         ],
       ),
     );

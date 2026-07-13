@@ -34,8 +34,13 @@ class CompaniesScreen extends StatelessWidget {
                         Text(t.companiesTitle, style: AppTheme.serif(30)),
                         const SizedBox(height: 3),
                         Text(
-                          t.companiesSubtitle(context.watch<AppProvider>().companies.length),
-                          style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
+                          t.companiesSubtitle(
+                            context.watch<AppProvider>().companies.length,
+                          ),
+                          style: AppTheme.sans(
+                            13,
+                            color: const Color(0xFF7D8A82),
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -43,16 +48,18 @@ class CompaniesScreen extends StatelessWidget {
                   ),
                 ),
                 SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, i) {
-                      final list = context.watch<AppProvider>().companies;
-                      return Padding(
-                        padding: EdgeInsets.fromLTRB(22, 0, 22, i < list.length - 1 ? 13 : 24),
-                        child: _CompanyListCard(company: list[i]),
-                      );
-                    },
-                    childCount: context.watch<AppProvider>().companies.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, i) {
+                    final list = context.watch<AppProvider>().companies;
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        22,
+                        0,
+                        22,
+                        i < list.length - 1 ? 13 : 24,
+                      ),
+                      child: _CompanyListCard(company: list[i]),
+                    );
+                  }, childCount: context.watch<AppProvider>().companies.length),
                 ),
               ],
             ),
@@ -72,19 +79,36 @@ class _CompanyListCard extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final offers = context.watch<AppProvider>().getCompanyOffers(company.id);
     final offerCount = offers.length;
-    final fromPrice = offers.isEmpty ? 0.0 : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
+    final fromPrice = offers.isEmpty
+        ? 0.0
+        : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
 
-    final gradDark = Color.alphaBlend(Colors.black.withOpacity(0.35), company.tint);
+    final gradDark = Color.alphaBlend(
+      Colors.black.withOpacity(0.35),
+      company.tint,
+    );
 
     return InteractiveScale(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CompanyDetailScreen(company: company))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CompanyDetailScreen(company: company),
+        ),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.1),
+            width: 1.5,
+          ),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF0F3729).withOpacity(0.07), blurRadius: 30, offset: const Offset(0, 14)),
+            BoxShadow(
+              color: const Color(0xFF0F3729).withOpacity(0.07),
+              blurRadius: 30,
+              offset: const Offset(0, 14),
+            ),
           ],
         ),
         child: Column(
@@ -92,7 +116,9 @@ class _CompanyListCard extends StatelessWidget {
           children: [
             // ── gradient header ──────────────────────────────────────────
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(21),
+              ),
               child: SizedBox(
                 height: 140,
                 child: Stack(
@@ -115,7 +141,10 @@ class _CompanyListCard extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Colors.black.withOpacity(0.52)],
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.52),
+                          ],
                           stops: const [0.4, 1.0],
                         ),
                       ),
@@ -126,7 +155,10 @@ class _CompanyListCard extends StatelessWidget {
                         left: 14,
                         top: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.gold,
                             borderRadius: BorderRadius.circular(7),
@@ -134,12 +166,19 @@ class _CompanyListCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.verified_rounded, size: 10, color: Color(0xFF1C2317)),
+                              const Icon(
+                                Icons.verified_rounded,
+                                size: 10,
+                                color: Color(0xFF1C2317),
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 t.companiesVerifiedBadge,
-                                style: AppTheme.sans(9, weight: FontWeight.w800, color: const Color(0xFF1C2317))
-                                    .copyWith(letterSpacing: 0.5),
+                                style: AppTheme.sans(
+                                  9,
+                                  weight: FontWeight.w800,
+                                  color: const Color(0xFF1C2317),
+                                ).copyWith(letterSpacing: 0.5),
                               ),
                             ],
                           ),
@@ -168,7 +207,11 @@ class _CompanyListCard extends StatelessWidget {
                               child: Center(
                                 child: Text(
                                   company.mono,
-                                  style: AppTheme.sans(20, weight: FontWeight.w800, color: company.tint),
+                                  style: AppTheme.sans(
+                                    20,
+                                    weight: FontWeight.w800,
+                                    color: company.tint,
+                                  ),
                                 ),
                               ),
                             ),
@@ -182,15 +225,24 @@ class _CompanyListCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            company.nameFor(Localizations.localeOf(context).languageCode),
+                            company.nameFor(
+                              Localizations.localeOf(context).languageCode,
+                            ),
                             style: AppTheme.serif(21, color: Colors.white),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 1),
                           Text(
-                            t.companiesLocationEst(company.location, company.since),
-                            style: AppTheme.sans(10.5, weight: FontWeight.w600, color: Colors.white.withOpacity(0.78)),
+                            t.companiesLocationEst(
+                              company.location,
+                              company.since,
+                            ),
+                            style: AppTheme.sans(
+                              10.5,
+                              weight: FontWeight.w600,
+                              color: Colors.white.withOpacity(0.78),
+                            ),
                           ),
                         ],
                       ),
@@ -207,18 +259,38 @@ class _CompanyListCard extends StatelessWidget {
                 children: [
                   Icon(Icons.star_rounded, color: AppColors.gold, size: 14),
                   const SizedBox(width: 4),
-                  Text('${company.rating}', style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.ink)),
+                  Text(
+                    '${company.rating}',
+                    style: AppTheme.sans(
+                      12.5,
+                      weight: FontWeight.w700,
+                      color: AppColors.ink,
+                    ),
+                  ),
                   const SizedBox(width: 6),
-                  Text('·', style: AppTheme.sans(13, color: AppColors.mutedLight)),
+                  Text(
+                    '·',
+                    style: AppTheme.sans(13, color: AppColors.mutedLight),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     t.companiesPackageCount(offerCount),
-                    style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.inkLight),
+                    style: AppTheme.sans(
+                      12.5,
+                      weight: FontWeight.w600,
+                      color: AppColors.inkLight,
+                    ),
                   ),
                   const Spacer(),
                   if (fromPrice > 0) ...[
-                    Text(t.companiesFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
-                    Text(fmtIqd(fromPrice), style: AppTheme.serif(17, color: AppColors.primary)),
+                    Text(
+                      t.companiesFromPrefix,
+                      style: AppTheme.sans(11, color: AppColors.muted),
+                    ),
+                    Text(
+                      fmtIqd(fromPrice),
+                      style: AppTheme.serif(17, color: AppColors.primary),
+                    ),
                   ],
                 ],
               ),

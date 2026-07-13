@@ -52,14 +52,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _error = t.forgotPasswordErrEmail);
       return;
     }
-    setState(() { _loading = true; _error = null; _success = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+      _success = null;
+    });
 
     final provider = context.read<AppProvider>();
     final err = await provider.sendPasswordResetCode(email);
 
     if (!mounted) return;
     if (err != null) {
-      setState(() { _loading = false; _error = err; });
+      setState(() {
+        _loading = false;
+        _error = err;
+      });
     } else {
       setState(() {
         _loading = false;
@@ -89,7 +96,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    setState(() { _loading = true; _error = null; _success = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+      _success = null;
+    });
 
     final provider = context.read<AppProvider>();
     final err = await provider.resetPasswordWithCode(
@@ -100,9 +111,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     if (!mounted) return;
     if (err != null) {
-      setState(() { _loading = false; _error = err; });
+      setState(() {
+        _loading = false;
+        _error = err;
+      });
     } else {
-      setState(() { _loading = false; _success = t.forgotPasswordSuccess; });
+      setState(() {
+        _loading = false;
+        _success = t.forgotPasswordSuccess;
+      });
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) Navigator.pop(context);
     }
@@ -123,25 +140,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 42, height: 42,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(color: AppColors.border, width: 1.5),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 18,
+                    color: AppColors.ink,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
 
               // ── Icon ──
               Container(
-                width: 60, height: 60,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Icon(Icons.lock_reset_rounded, color: Colors.white, size: 30),
+                child: const Icon(
+                  Icons.lock_reset_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -149,7 +176,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text(t.forgotPasswordTitle, style: AppTheme.serif(32)),
               const SizedBox(height: 6),
               Text(
-                _step == 0 ? t.forgotPasswordSubtitle : t.forgotPasswordStep2Subtitle,
+                _step == 0
+                    ? t.forgotPasswordSubtitle
+                    : t.forgotPasswordStep2Subtitle,
                 style: AppTheme.sans(14, color: AppColors.muted),
               ),
               const SizedBox(height: 32),
@@ -178,9 +207,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.email_outlined, color: AppColors.primary, size: 18),
+                      const Icon(
+                        Icons.email_outlined,
+                        color: AppColors.primary,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
-                      Text(_emailCtrl.text.trim(), style: AppTheme.sans(13.5, color: AppColors.ink)),
+                      Text(
+                        _emailCtrl.text.trim(),
+                        style: AppTheme.sans(13.5, color: AppColors.ink),
+                      ),
                     ],
                   ),
                 ),
@@ -205,8 +241,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   obscure: _obscureNew,
                   suffix: IconButton(
                     icon: Icon(
-                      _obscureNew ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      color: AppColors.muted, size: 20,
+                      _obscureNew
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: AppColors.muted,
+                      size: 20,
                     ),
                     onPressed: () => setState(() => _obscureNew = !_obscureNew),
                   ),
@@ -222,10 +261,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   obscure: _obscureConfirm,
                   suffix: IconButton(
                     icon: Icon(
-                      _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      color: AppColors.muted, size: 20,
+                      _obscureConfirm
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: AppColors.muted,
+                      size: 20,
                     ),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
                   onSubmit: (_) => _resetPassword(),
                 ),
@@ -239,13 +282,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF0EE),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.errorRed.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, color: AppColors.errorRed, size: 18),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: AppColors.errorRed,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(_error!, style: AppTheme.sans(12.5, color: AppColors.errorRed))),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: AppTheme.sans(12.5, color: AppColors.errorRed),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -259,13 +313,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFE8F5E9),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.primary.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle_outline_rounded, color: AppColors.primary, size: 18),
+                      const Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: AppColors.primary,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(_success!, style: AppTheme.sans(12.5, color: AppColors.primary))),
+                      Expanded(
+                        child: Text(
+                          _success!,
+                          style: AppTheme.sans(12.5, color: AppColors.primary),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -275,21 +340,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
               // ── Action button ──
               GestureDetector(
-                onTap: _loading ? null : (_step == 0 ? _sendResetCode : _resetPassword),
+                onTap: _loading
+                    ? null
+                    : (_step == 0 ? _sendResetCode : _resetPassword),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 24, offset: const Offset(0, 12))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
                   ),
                   alignment: Alignment.center,
                   child: _loading
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : Text(
-                          _step == 0 ? t.forgotPasswordSendCode : t.forgotPasswordResetBtn,
-                          style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
+                          _step == 0
+                              ? t.forgotPasswordSendCode
+                              : t.forgotPasswordResetBtn,
+                          style: AppTheme.sans(
+                            15,
+                            weight: FontWeight.w800,
+                            color: const Color(0xFFF6F2E9),
+                          ),
                         ),
                 ),
               ),
@@ -302,7 +388,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onTap: _loading ? null : _sendResetCode,
                     child: Text(
                       t.forgotPasswordResend,
-                      style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary),
+                      style: AppTheme.sans(
+                        13,
+                        weight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -335,8 +425,13 @@ class _InputField extends StatelessWidget {
   final ValueChanged<String>? onSubmit;
 
   const _InputField({
-    required this.controller, required this.hint, required this.icon,
-    this.obscure = false, this.keyboardType, this.suffix, this.onSubmit,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    this.obscure = false,
+    this.keyboardType,
+    this.suffix,
+    this.onSubmit,
   });
 
   @override

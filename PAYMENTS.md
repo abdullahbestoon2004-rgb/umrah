@@ -45,8 +45,10 @@ Amounts are **snapshotted at booking time** by the `fill_booking_amounts`
 trigger and never recomputed from live prices: `unit_price_iqd`, `total_iqd`,
 `commission_rate`, `commission_iqd`, `payout_iqd`. The rate resolves as
 **package override → company rate → 0.05 default** (`resolve_commission_rate`).
-Per-agency rates live in `companies.commission_rate`; a nullable
-`packages.commission_rate` overrides it per trip.
+After `patches_marketplace_update.sql`, effective rates live in the
+RLS-protected `agency_commercial_settings` and `offer_commercial_settings`
+tables. The legacy public columns contain compatibility placeholders and are
+no longer read by the resolver, so clients cannot discover negotiated rates.
 
 `pay_status` lifecycle: `unpaid → partially_paid → paid`, plus `refunded` and
 `failed`. `amount_paid_iqd` tracks money received net of refunds.

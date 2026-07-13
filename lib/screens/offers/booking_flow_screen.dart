@@ -16,7 +16,11 @@ import '../../l10n/generated/app_localizations.dart';
 class BookingFlowScreen extends StatefulWidget {
   final Offer offer;
   final Company company;
-  const BookingFlowScreen({super.key, required this.offer, required this.company});
+  const BookingFlowScreen({
+    super.key,
+    required this.offer,
+    required this.company,
+  });
 
   @override
   State<BookingFlowScreen> createState() => _BookingFlowScreenState();
@@ -25,32 +29,29 @@ class BookingFlowScreen extends StatefulWidget {
 /// Controllers for one pilgrim's details card.
 class _PilgrimFields {
   final name = TextEditingController();
-  final passport = TextEditingController();
   final phone = TextEditingController();
   DateTime? dob;
 
   void dispose() {
     name.dispose();
-    passport.dispose();
     phone.dispose();
   }
 
-  bool get complete =>
-      name.text.trim().isNotEmpty && passport.text.trim().isNotEmpty && dob != null;
+  bool get complete => name.text.trim().isNotEmpty && dob != null;
 
   PilgrimInfo toInfo() => PilgrimInfo(
-        fullName: name.text.trim(),
-        passportNo: passport.text.trim(),
-        dateOfBirth: dob,
-        phone: phone.text.trim(),
-      );
+    fullName: name.text.trim(),
+    dateOfBirth: dob,
+    phone: phone.text.trim(),
+  );
 }
 
 class _BookingFlowScreenState extends State<BookingFlowScreen> {
   int _step = 0;
-  String _room = 'triple'; // 'double' | 'triple' | 'quad'
+  late int _roomOccupancy;
   int _travelers = 1;
   DateTime? _departureDate;
+  String _mealPreference = 'Breakfast';
   late String _payMethod;
   bool _submitting = false;
 
@@ -63,11 +64,21 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   void initState() {
     super.initState();
     final provider = context.read<AppProvider>();
-    _payMethod = provider.preferredPayMethod;
-    // Preselect the room type the package itself advertises, when parsable.
+    _payMethod = provider.preferredPayMethod == 'fib' ? 'fib' : 'cash';
+    final availableRooms = widget.offer.availableRoomOccupancies;
+    _roomOccupancy = availableRooms.first;
+    // Preserve the legacy package preference when it is still available.
     final room = widget.offer.room.toLowerCase();
-    if (room.contains('double') || room.contains('2')) _room = 'double';
-    if (room.contains('quad') || room.contains('4')) _room = 'quad';
+    if ((room.contains('triple') || room.contains('3')) &&
+        availableRooms.contains(3)) {
+      _roomOccupancy = 3;
+    } else if ((room.contains('double') || room.contains('2')) &&
+        availableRooms.contains(2)) {
+      _roomOccupancy = 2;
+    } else if ((room.contains('quad') || room.contains('4')) &&
+        availableRooms.contains(4)) {
+      _roomOccupancy = 4;
+    }
     _syncPilgrims();
   }
 
@@ -83,7 +94,6 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     while (_pilgrims.length < _travelers) {
       final entry = _PilgrimFields();
       entry.name.addListener(_onFieldChanged);
-      entry.passport.addListener(_onFieldChanged);
       // The lead pilgrim's phone starts from the account's phone number.
       if (_pilgrims.isEmpty) {
         entry.phone.text = context.read<AppProvider>().user?.phone ?? '';
@@ -101,16 +111,22 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
 
   bool get _allPilgrimsComplete => _pilgrims.every((p) => p.complete);
 
-  String _roomLabel(AppLocalizations t) {
-    switch (_room) {
-      case 'double':
+  String _roomOptionLabel(AppLocalizations t, int occupancy) {
+    switch (occupancy) {
+      case 2:
         return t.bookingRoomDouble;
-      case 'quad':
+      case 3:
+        return t.bookingRoomTriple;
+      case 4:
         return t.bookingRoomQuad;
       default:
-        return t.bookingRoomTriple;
+        return t.bookingRoomOccupancy(occupancy);
     }
   }
+
+  String _roomLabel(AppLocalizations t) => _roomOptionLabel(t, _roomOccupancy);
+
+  String _mealLabel(AppLocalizations t) => Offer.mealsLabel(_mealPreference, t);
 
   String _fmtDate(DateTime d) => '${d.day}/${d.month}/${d.year}';
 
@@ -164,7 +180,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
 
     if (!provider.isSignedIn) {
       final ok = await Navigator.push<bool>(
-          context, MaterialPageRoute(builder: (_) => const AuthScreen()));
+        context,
+        MaterialPageRoute(builder: (_) => const AuthScreen()),
+      );
       if (ok != true || !mounted) return;
     }
 
@@ -175,12 +193,16 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       payMethod: _payMethod,
       departureDate: _departureDate,
       roomLabel: _roomLabel(t),
+      roomOccupancy: _roomOccupancy,
+      mealPreference: _mealPreference,
       pilgrims: _pilgrims.map((p) => p.toInfo()).toList(),
     );
     if (!mounted) return;
     if (err == null) {
       // The freshest booking carries the real reference for the ticket.
-      final booking = provider.bookings.isNotEmpty ? provider.bookings.first : null;
+      final booking = provider.bookings.isNotEmpty
+          ? provider.bookings.first
+          : null;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -198,7 +220,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       );
     } else {
       setState(() => _submitting = false);
-      messenger.showSnackBar(appSnack(t.bookingFailed, isError: true));
+      messenger.showSnackBar(
+        appSnack('${t.bookingFailed} ($err)', isError: true),
+      );
     }
   }
 
@@ -242,10 +266,16 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(13),
-                            border: Border.all(color: AppColors.border, width: 1.5),
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded,
-                              size: 18, color: AppColors.ink),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: AppColors.ink,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -255,10 +285,12 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                           children: [
                             Text(title, style: AppTheme.serif(24)),
                             const SizedBox(height: 1),
-                            Text(subtitle,
-                                style: AppTheme.sans(12, color: AppColors.muted),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis),
+                            Text(
+                              subtitle,
+                              style: AppTheme.sans(12, color: AppColors.muted),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                       ),
@@ -298,39 +330,64 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(t.bookingChooseRoom, style: AppTheme.sans(14, weight: FontWeight.w700)),
-        const SizedBox(height: 12),
-        _RoomCard(
-          label: t.bookingRoomDouble,
-          sub: t.bookingRoomPax(2),
-          selected: _room == 'double',
-          onTap: () => setState(() => _room = 'double'),
+        Text(
+          t.bookingChooseRoom,
+          style: AppTheme.sans(14, weight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
-        _RoomCard(
-          label: t.bookingRoomTriple,
-          sub: t.bookingRoomPax(3),
-          badge: t.bookingMostPopular,
-          selected: _room == 'triple',
-          onTap: () => setState(() => _room = 'triple'),
-        ),
-        const SizedBox(height: 10),
-        _RoomCard(
-          label: t.bookingRoomQuad,
-          sub: t.bookingRoomPax(4),
-          selected: _room == 'quad',
-          onTap: () => setState(() => _room = 'quad'),
-        ),
+        for (
+          var i = 0;
+          i < widget.offer.availableRoomOccupancies.length;
+          i++
+        ) ...[
+          _RoomCard(
+            label: _roomOptionLabel(
+              t,
+              widget.offer.availableRoomOccupancies[i],
+            ),
+            sub: t.bookingRoomPax(widget.offer.availableRoomOccupancies[i]),
+            badge: widget.offer.availableRoomOccupancies[i] == 3
+                ? t.bookingMostPopular
+                : null,
+            selected:
+                _roomOccupancy == widget.offer.availableRoomOccupancies[i],
+            onTap: () => setState(
+              () => _roomOccupancy = widget.offer.availableRoomOccupancies[i],
+            ),
+          ),
+          if (i < widget.offer.availableRoomOccupancies.length - 1)
+            const SizedBox(height: 12),
+        ],
         const SizedBox(height: 22),
-        Text(t.bookingPilgrimCountTitle,
-            style: AppTheme.sans(14, weight: FontWeight.w700)),
+        Text(
+          t.bookingChooseMeal,
+          style: AppTheme.sans(14, weight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
+        for (final meal in const ['Breakfast', 'Half board', 'Full board']) ...[
+          _RoomCard(
+            label: Offer.mealsLabel(meal, t),
+            sub: t.bookingMealPreference,
+            selected: _mealPreference == meal,
+            onTap: () => setState(() => _mealPreference = meal),
+          ),
+          if (meal != 'Full board') const SizedBox(height: 12),
+        ],
+        const SizedBox(height: 22),
+        Text(
+          t.bookingPilgrimCountTitle,
+          style: AppTheme.sans(14, weight: FontWeight.w700),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.1),
+              width: 1.5,
+            ),
           ),
           child: Row(
             children: [
@@ -338,10 +395,14 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(t.offerDetailTravelers,
-                        style: AppTheme.sans(14, weight: FontWeight.w700)),
-                    Text(t.bookingPilgrimAge,
-                        style: AppTheme.sans(11.5, color: AppColors.muted)),
+                    Text(
+                      t.offerDetailTravelers,
+                      style: AppTheme.sans(14, weight: FontWeight.w700),
+                    ),
+                    Text(
+                      t.bookingPilgrimAge,
+                      style: AppTheme.sans(11.5, color: AppColors.muted),
+                    ),
                   ],
                 ),
               ),
@@ -383,8 +444,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(15),
-              border:
-                  Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+              border: Border.all(
+                color: AppColors.primary.withOpacity(0.1),
+                width: 1.5,
+              ),
             ),
             child: Row(
               children: [
@@ -395,30 +458,40 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(11),
                   ),
-                  child: const Icon(Icons.event_rounded,
-                      color: AppColors.primary, size: 20),
+                  child: const Icon(
+                    Icons.event_rounded,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 13),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(t.offerDetailDepartureDate,
-                          style: AppTheme.sans(14, weight: FontWeight.w700)),
+                      Text(
+                        t.offerDetailDepartureDate,
+                        style: AppTheme.sans(14, weight: FontWeight.w700),
+                      ),
                       Text(
                         _departureDate == null
                             ? t.dateToBeScheduled
                             : _fmtDate(_departureDate!),
-                        style: AppTheme.sans(11.5,
-                            color: _departureDate == null
-                                ? AppColors.muted
-                                : AppColors.primary),
+                        style: AppTheme.sans(
+                          11.5,
+                          color: _departureDate == null
+                              ? AppColors.muted
+                              : AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.edit_calendar_rounded,
-                    color: AppColors.primary, size: 18),
+                const Icon(
+                  Icons.edit_calendar_rounded,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
               ],
             ),
           ),
@@ -438,12 +511,19 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   Expanded(
                     child: Text(
                       t.bookingTotalLine(_travelers, widget.offer.priceFmt),
-                      style: AppTheme.sans(12, color: Colors.white.withOpacity(0.72)),
+                      style: AppTheme.sans(
+                        12,
+                        color: Colors.white.withOpacity(0.72),
+                      ),
                     ),
                   ),
-                  Text(_totalFmt,
-                      style:
-                          AppTheme.sans(12, color: Colors.white.withOpacity(0.72))),
+                  Text(
+                    _totalFmt,
+                    style: AppTheme.sans(
+                      12,
+                      color: Colors.white.withOpacity(0.72),
+                    ),
+                  ),
                 ],
               ),
               const Padding(
@@ -452,12 +532,19 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               ),
               Row(
                 children: [
-                  Text(t.offerDetailTotal,
-                      style: AppTheme.sans(14,
-                          weight: FontWeight.w700, color: Colors.white)),
+                  Text(
+                    t.offerDetailTotal,
+                    style: AppTheme.sans(
+                      14,
+                      weight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
                   const Spacer(),
-                  Text(_totalFmt,
-                      style: AppTheme.serif(22, color: const Color(0xFFF3E6C4))),
+                  Text(
+                    _totalFmt,
+                    style: AppTheme.serif(22, color: const Color(0xFFF3E6C4)),
+                  ),
                 ],
               ),
             ],
@@ -500,17 +587,24 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.1),
+              width: 1.5,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(t.bookingSummaryTitle, style: AppTheme.serif(18)),
               const SizedBox(height: 12),
-              _SummaryRow(label: t.bookingSummaryTrip, value: widget.offer.titleFor(lang)),
               _SummaryRow(
-                  label: t.bookingSummaryCompany,
-                  value: widget.company.nameFor(lang)),
+                label: t.bookingSummaryTrip,
+                value: widget.offer.titleFor(lang),
+              ),
+              _SummaryRow(
+                label: t.bookingSummaryCompany,
+                value: widget.company.nameFor(lang),
+              ),
               _SummaryRow(
                 label: t.bookingSummaryDeparture,
                 value: _departureDate == null
@@ -520,23 +614,32 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               if (names.isNotEmpty)
                 _SummaryRow(label: t.bookingSummaryPilgrims, value: names),
               _SummaryRow(label: t.bookingSummaryRoom, value: _roomLabel(t)),
+              _SummaryRow(label: t.bookingSummaryMeal, value: _mealLabel(t)),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: _DashedLine(),
               ),
               Row(
                 children: [
-                  Text(t.offerDetailTotal,
-                      style: AppTheme.sans(14, weight: FontWeight.w700)),
+                  Text(
+                    t.offerDetailTotal,
+                    style: AppTheme.sans(14, weight: FontWeight.w700),
+                  ),
                   const Spacer(),
-                  Text(_totalFmt, style: AppTheme.serif(22, color: AppColors.primary)),
+                  Text(
+                    _totalFmt,
+                    style: AppTheme.serif(22, color: AppColors.primary),
+                  ),
                 ],
               ),
             ],
           ),
         ),
         const SizedBox(height: 22),
-        Text(t.bookingPayMethod, style: AppTheme.sans(14, weight: FontWeight.w700)),
+        Text(
+          t.bookingPayMethod,
+          style: AppTheme.sans(14, weight: FontWeight.w700),
+        ),
         const SizedBox(height: 12),
         _PayCard(
           label: t.payFib,
@@ -551,17 +654,15 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               borderRadius: BorderRadius.circular(11),
             ),
             alignment: Alignment.center,
-            child: Text('FIB',
-                style: AppTheme.sans(11, weight: FontWeight.w800, color: Colors.white)),
+            child: Text(
+              'FIB',
+              style: AppTheme.sans(
+                11,
+                weight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        _PayCard(
-          label: t.payCard,
-          sub: t.payCardSub,
-          selected: _payMethod == 'card',
-          onTap: () => setState(() => _payMethod = 'card'),
-          leading: _PayIconTile(icon: Icons.credit_card_rounded),
         ),
         const SizedBox(height: 10),
         _PayCard(
@@ -597,8 +698,14 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(t.offerDetailTotal, style: AppTheme.sans(11, color: AppColors.muted)),
-              Text(_totalFmt, style: AppTheme.serif(21, color: AppColors.primary)),
+              Text(
+                t.offerDetailTotal,
+                style: AppTheme.sans(11, color: AppColors.muted),
+              ),
+              Text(
+                _totalFmt,
+                style: AppTheme.serif(21, color: AppColors.primary),
+              ),
             ],
           ),
           const SizedBox(width: 14),
@@ -615,7 +722,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background.withOpacity(0.96),
-        border: const Border(top: BorderSide(color: Color(0x1E0F5C4D), width: 1.5)),
+        border: const Border(
+          top: BorderSide(color: Color(0x1E0F5C4D), width: 1.5),
+        ),
       ),
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
       child: bar,
@@ -665,7 +774,9 @@ class _Stepper extends StatelessWidget {
                 style: AppTheme.sans(
                   10.5,
                   weight: i == current ? FontWeight.w800 : FontWeight.w600,
-                  color: i <= current ? AppColors.primary : AppColors.mutedLight,
+                  color: i <= current
+                      ? AppColors.primary
+                      : AppColors.mutedLight,
                 ),
               ),
           ],
@@ -761,7 +872,9 @@ class _RoomCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: selected ? AppColors.primary : AppColors.mutedLight,
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.mutedLight,
                       width: selected ? 6.5 : 2,
                     ),
                   ),
@@ -771,9 +884,15 @@ class _RoomCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(label, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                      Text(
+                        label,
+                        style: AppTheme.sans(14, weight: FontWeight.w700),
+                      ),
                       const SizedBox(height: 2),
-                      Text(sub, style: AppTheme.sans(11.5, color: AppColors.muted)),
+                      Text(
+                        sub,
+                        style: AppTheme.sans(11.5, color: AppColors.muted),
+                      ),
                     ],
                   ),
                 ),
@@ -785,15 +904,21 @@ class _RoomCard extends StatelessWidget {
               top: -9,
               start: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 3.5,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.gold,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Text(
                   badge!,
-                  style: AppTheme.sans(9.5,
-                      weight: FontWeight.w800, color: const Color(0xFF1C2317)),
+                  style: AppTheme.sans(
+                    9.5,
+                    weight: FontWeight.w800,
+                    color: const Color(0xFF1C2317),
+                  ),
                 ),
               ),
             ),
@@ -818,7 +943,10 @@ class _CounterBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(11),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1.5),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.2),
+            width: 1.5,
+          ),
         ),
         child: Icon(icon, color: AppColors.primary, size: 20),
       ),
@@ -847,7 +975,10 @@ class _PilgrimCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.1),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -864,82 +995,90 @@ class _PilgrimCard extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   '${index + 1}',
-                  style: AppTheme.sans(12,
-                      weight: FontWeight.w800,
-                      color: complete ? Colors.white : AppColors.muted),
+                  style: AppTheme.sans(
+                    12,
+                    weight: FontWeight.w800,
+                    color: complete ? Colors.white : AppColors.muted,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(t.bookingPilgrimN(index + 1),
-                    style: AppTheme.sans(14.5, weight: FontWeight.w700)),
+                child: Text(
+                  t.bookingPilgrimN(index + 1),
+                  style: AppTheme.sans(14.5, weight: FontWeight.w700),
+                ),
               ),
               if (complete) ...[
-                const Icon(Icons.check_rounded, color: AppColors.primary, size: 14),
+                const Icon(
+                  Icons.check_rounded,
+                  color: AppColors.primary,
+                  size: 14,
+                ),
                 const SizedBox(width: 4),
-                Text(t.bookingStatusComplete,
-                    style: AppTheme.sans(11.5,
-                        weight: FontWeight.w700, color: AppColors.primary)),
+                Text(
+                  t.bookingStatusComplete,
+                  style: AppTheme.sans(
+                    11.5,
+                    weight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
               ] else
-                Text(t.bookingStatusIncomplete,
-                    style: AppTheme.sans(11.5,
-                        weight: FontWeight.w700, color: AppColors.errorRed)),
+                Text(
+                  t.bookingStatusIncomplete,
+                  style: AppTheme.sans(
+                    11.5,
+                    weight: FontWeight.w700,
+                    color: AppColors.errorRed,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 14),
           _FieldLabel(t.bookingFullName),
           _InputBox(controller: entry.name, hint: t.bookingFullNameHint),
           const SizedBox(height: 12),
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _FieldLabel(t.bookingPassportNo),
-                    _InputBox(controller: entry.passport, hint: 'A1234567'),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _FieldLabel(t.bookingDob),
-                    GestureDetector(
-                      onTap: onPickDob,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 13, vertical: 13.5),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceAlt,
-                          borderRadius: BorderRadius.circular(13),
-                          border: Border.all(color: AppColors.border, width: 1.5),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                entry.dob == null
-                                    ? t.bookingDobHint
-                                    : '${entry.dob!.day}/${entry.dob!.month}/${entry.dob!.year}',
-                                style: AppTheme.sans(13,
-                                    color: entry.dob == null
-                                        ? AppColors.mutedLight
-                                        : AppColors.ink),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const Icon(Icons.event_rounded,
-                                color: AppColors.primary, size: 16),
-                          ],
+              _FieldLabel(t.bookingDob),
+              GestureDetector(
+                onTap: onPickDob,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 13.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceAlt,
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: AppColors.border, width: 1.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          entry.dob == null
+                              ? t.bookingDobHint
+                              : '${entry.dob!.day}/${entry.dob!.month}/${entry.dob!.year}',
+                          style: AppTheme.sans(
+                            13,
+                            color: entry.dob == null
+                                ? AppColors.mutedLight
+                                : AppColors.ink,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
+                      const Icon(
+                        Icons.event_rounded,
+                        color: AppColors.primary,
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -967,8 +1106,14 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 7),
-      child: Text(text,
-          style: AppTheme.sans(12, weight: FontWeight.w600, color: AppColors.muted)),
+      child: Text(
+        text,
+        style: AppTheme.sans(
+          12,
+          weight: FontWeight.w600,
+          color: AppColors.muted,
+        ),
+      ),
     );
   }
 }
@@ -977,7 +1122,11 @@ class _InputBox extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final TextInputType? keyboardType;
-  const _InputBox({required this.controller, required this.hint, this.keyboardType});
+  const _InputBox({
+    required this.controller,
+    required this.hint,
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -996,8 +1145,10 @@ class _InputBox extends StatelessWidget {
           hintStyle: AppTheme.sans(13, color: AppColors.mutedLight),
           border: InputBorder.none,
           isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 13, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 13,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -1123,7 +1274,10 @@ class _PayCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                  Text(
+                    label,
+                    style: AppTheme.sans(14, weight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 2),
                   Text(sub, style: AppTheme.sans(11.5, color: AppColors.muted)),
                 ],
@@ -1174,13 +1328,18 @@ class _PrimaryButton extends StatelessWidget {
             ? const SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
               )
             : Text(
                 label,
-                style: AppTheme.sans(15,
-                    weight: FontWeight.w800,
-                    color: enabled ? const Color(0xFFF6F2E9) : AppColors.muted),
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: enabled ? const Color(0xFFF6F2E9) : AppColors.muted,
+                ),
               ),
       ),
     );
@@ -1265,19 +1424,26 @@ class BookingConfirmationScreen extends StatelessWidget {
                         color: AppColors.gold,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.check_rounded,
-                          color: Color(0xFF1C2317), size: 40),
+                      child: const Icon(
+                        Icons.check_rounded,
+                        color: Color(0xFF1C2317),
+                        size: 40,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 22),
-                  Text(t.bookingRegisteredTitle,
-                      style: AppTheme.serif(26, color: Colors.white),
-                      textAlign: TextAlign.center),
+                  Text(
+                    t.bookingRegisteredTitle,
+                    style: AppTheme.serif(26, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     t.bookingRegisteredBody(company.nameFor(lang)),
-                    style: AppTheme.sans(13, color: Colors.white.withOpacity(0.72))
-                        .copyWith(height: 1.6),
+                    style: AppTheme.sans(
+                      13,
+                      color: Colors.white.withOpacity(0.72),
+                    ).copyWith(height: 1.6),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 26),
@@ -1299,38 +1465,56 @@ class BookingConfirmationScreen extends StatelessWidget {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFFFF8E8),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                          color: AppColors.gold.withOpacity(0.4)),
+                                        color: AppColors.gold.withOpacity(0.4),
+                                      ),
                                     ),
                                     child: Text(
                                       t.bookingAwaitingConfirmation,
-                                      style: AppTheme.sans(10.5,
-                                          weight: FontWeight.w700,
-                                          color: const Color(0xFF8A7040)),
+                                      style: AppTheme.sans(
+                                        10.5,
+                                        weight: FontWeight.w700,
+                                        color: const Color(0xFF8A7040),
+                                      ),
                                     ),
                                   ),
                                   const Spacer(),
-                                  Text(t.bookingRefTitle,
-                                      style: AppTheme.sans(11, color: AppColors.muted)),
+                                  Text(
+                                    t.bookingRefTitle,
+                                    style: AppTheme.sans(
+                                      11,
+                                      color: AppColors.muted,
+                                    ),
+                                  ),
                                 ],
                               ),
                               if (booking != null) ...[
                                 const SizedBox(height: 10),
                                 Text(
                                   booking!.ref,
-                                  style: AppTheme.serif(22).copyWith(letterSpacing: 1),
+                                  style: AppTheme.serif(
+                                    22,
+                                  ).copyWith(letterSpacing: 1),
                                 ),
                               ],
                               const SizedBox(height: 8),
-                              Text(offer.titleFor(lang), style: AppTheme.serif(17)),
+                              Text(
+                                offer.titleFor(lang),
+                                style: AppTheme.serif(17),
+                              ),
                               const SizedBox(height: 3),
                               Text(
                                 '$dateText · ${t.bookingPilgrimsSummary(travelers, roomLabel)}',
-                                style: AppTheme.sans(11.5, color: AppColors.muted),
+                                style: AppTheme.sans(
+                                  11.5,
+                                  color: AppColors.muted,
+                                ),
                               ),
                             ],
                           ),
@@ -1367,27 +1551,39 @@ class BookingConfirmationScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(t.offerDetailTotal,
-                                      style: AppTheme.sans(10.5,
-                                          color: AppColors.muted)),
-                                  Text(fmtIqd(total),
-                                      style: AppTheme.serif(18,
-                                          color: AppColors.primary)),
+                                  Text(
+                                    t.offerDetailTotal,
+                                    style: AppTheme.sans(
+                                      10.5,
+                                      color: AppColors.muted,
+                                    ),
+                                  ),
+                                  Text(
+                                    fmtIqd(total),
+                                    style: AppTheme.serif(
+                                      18,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const Spacer(),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 11, vertical: 6),
+                                  horizontal: 11,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColors.chipBg,
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 child: Text(
                                   _payLabel(t),
-                                  style: AppTheme.sans(11.5,
-                                      weight: FontWeight.w700,
-                                      color: AppColors.primary),
+                                  style: AppTheme.sans(
+                                    11.5,
+                                    weight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
                                 ),
                               ),
                             ],
@@ -1411,9 +1607,11 @@ class BookingConfirmationScreen extends StatelessWidget {
                             alignment: Alignment.center,
                             child: Text(
                               t.bookingBackHome,
-                              style: AppTheme.sans(13.5,
-                                  weight: FontWeight.w800,
-                                  color: const Color(0xFF1C2317)),
+                              style: AppTheme.sans(
+                                13.5,
+                                weight: FontWeight.w800,
+                                color: const Color(0xFF1C2317),
+                              ),
                             ),
                           ),
                         ),
@@ -1428,13 +1626,18 @@ class BookingConfirmationScreen extends StatelessWidget {
                               color: Colors.white.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(
-                                  color: Colors.white.withOpacity(0.28), width: 1.5),
+                                color: Colors.white.withOpacity(0.28),
+                                width: 1.5,
+                              ),
                             ),
                             alignment: Alignment.center,
                             child: Text(
                               t.bookingViewMyBookings,
-                              style: AppTheme.sans(13.5,
-                                  weight: FontWeight.w800, color: Colors.white),
+                              style: AppTheme.sans(
+                                13.5,
+                                weight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),

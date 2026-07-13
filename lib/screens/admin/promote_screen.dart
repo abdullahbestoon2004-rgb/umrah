@@ -20,7 +20,8 @@ class PromoteScreen extends StatefulWidget {
   State<PromoteScreen> createState() => _PromoteScreenState();
 }
 
-class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProviderStateMixin {
+class _PromoteScreenState extends State<PromoteScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
@@ -29,8 +30,11 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
     _tabController.addListener(() {
       setState(() {
         _searchCtrl.clear();
@@ -64,8 +68,11 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
       // A failed save (missing DB patch, RLS, network) must never look like
       // a successful tap that just didn't stick.
       if (!ok) {
-        showAppSnack(context, AppLocalizations.of(context).adminActionFailed,
-            isError: true);
+        showAppSnack(
+          context,
+          AppLocalizations.of(context).adminActionFailed,
+          isError: true,
+        );
       }
     }
   }
@@ -81,8 +88,11 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
     if (mounted) {
       setState(() => _loadingIds.remove(id));
       if (!ok) {
-        showAppSnack(context, AppLocalizations.of(context).adminActionFailed,
-            isError: true);
+        showAppSnack(
+          context,
+          AppLocalizations.of(context).adminActionFailed,
+          isError: true,
+        );
       }
     }
   }
@@ -96,7 +106,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
     // Filter Trips
     final filteredOffers = provider.allOffers.where((offer) {
       final title = offer.titleFor(lang).toLowerCase();
-      final company = provider.companyById(offer.companyId)?.nameFor(lang).toLowerCase() ?? '';
+      final company =
+          provider.companyById(offer.companyId)?.nameFor(lang).toLowerCase() ??
+          '';
       return title.contains(_searchQuery) || company.contains(_searchQuery);
     }).toList();
 
@@ -129,9 +141,16 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(13),
-                            border: Border.all(color: AppColors.border, width: 1.5),
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: AppColors.ink,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -163,16 +182,30 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                         hintText: _tabController.index == 0
                             ? t.promoteSearchTrips
                             : t.promoteSearchAgencies,
-                        hintStyle: AppTheme.sans(14.5, color: AppColors.mutedLight),
-                        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
+                        hintStyle: AppTheme.sans(
+                          14.5,
+                          color: AppColors.mutedLight,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
                         suffixIcon: _searchCtrl.text.isNotEmpty
                             ? GestureDetector(
                                 onTap: () => _searchCtrl.clear(),
-                                child: const Icon(Icons.clear_rounded, color: AppColors.muted, size: 20),
+                                child: const Icon(
+                                  Icons.clear_rounded,
+                                  color: AppColors.muted,
+                                  size: 20,
+                                ),
                               )
                             : null,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -201,7 +234,10 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                       labelColor: Colors.white,
                       unselectedLabelColor: AppColors.muted,
                       labelStyle: AppTheme.sans(13.5, weight: FontWeight.w700),
-                      unselectedLabelStyle: AppTheme.sans(13.5, weight: FontWeight.w600),
+                      unselectedLabelStyle: AppTheme.sans(
+                        13.5,
+                        weight: FontWeight.w600,
+                      ),
                       tabs: [
                         Tab(text: t.promoteTabTrips),
                         Tab(text: t.promoteTabAgencies),
@@ -233,11 +269,17 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildOffersTab(List<Offer> offers, String lang, AppProvider provider) {
+  Widget _buildOffersTab(
+    List<Offer> offers,
+    String lang,
+    AppProvider provider,
+  ) {
     if (offers.isEmpty) {
       return Center(
-        child: Text(AppLocalizations.of(context).promoteNoTrips,
-            style: AppTheme.sans(14, color: AppColors.muted)),
+        child: Text(
+          AppLocalizations.of(context).promoteNoTrips,
+          style: AppTheme.sans(14, color: AppColors.muted),
+        ),
       );
     }
     return ListView.builder(
@@ -245,7 +287,8 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
       itemCount: offers.length,
       itemBuilder: (context, i) {
         final offer = offers[i];
-        final companyName = provider.companyById(offer.companyId)?.nameFor(lang) ?? '';
+        final companyName =
+            provider.companyById(offer.companyId)?.nameFor(lang) ?? '';
         final isLoading = _loadingIds.contains(offer.id);
 
         return Padding(
@@ -295,11 +338,18 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(color: AppColors.gold, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: AppColors.gold,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Icon(
-                            offer.isFeatured ? Icons.star_rounded : Icons.star_border_rounded,
-                            color: offer.isFeatured ? AppColors.gold : AppColors.mutedLight,
+                            offer.isFeatured
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: offer.isFeatured
+                                ? AppColors.gold
+                                : AppColors.mutedLight,
                             size: 26,
                           ),
                   ),
@@ -315,8 +365,10 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
   Widget _buildCompaniesTab(List<Company> companies, String lang) {
     if (companies.isEmpty) {
       return Center(
-        child: Text(AppLocalizations.of(context).promoteNoAgencies,
-            style: AppTheme.sans(14, color: AppColors.muted)),
+        child: Text(
+          AppLocalizations.of(context).promoteNoAgencies,
+          style: AppTheme.sans(14, color: AppColors.muted),
+        ),
       );
     }
     return ListView.builder(
@@ -334,7 +386,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: company.isPromoted ? AppColors.primary : AppColors.border,
+                color: company.isPromoted
+                    ? AppColors.primary
+                    : AppColors.border,
                 width: 1.5,
               ),
             ),
@@ -371,7 +425,9 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                 ),
                 const SizedBox(width: 8),
                 InteractiveScale(
-                  onTap: isLoading ? null : () => _toggleCompanyPromoted(company),
+                  onTap: isLoading
+                      ? null
+                      : () => _toggleCompanyPromoted(company),
                   child: Container(
                     width: 42,
                     height: 42,
@@ -380,11 +436,18 @@ class _PromoteScreenState extends State<PromoteScreen> with SingleTickerProvider
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Icon(
-                            company.isPromoted ? Icons.star_rounded : Icons.star_border_rounded,
-                            color: company.isPromoted ? AppColors.primary : AppColors.mutedLight,
+                            company.isPromoted
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: company.isPromoted
+                                ? AppColors.primary
+                                : AppColors.mutedLight,
                             size: 26,
                           ),
                   ),

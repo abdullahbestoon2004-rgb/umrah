@@ -54,11 +54,15 @@ class _AdminFinanceTabState extends State<AdminFinanceTab> {
         ),
         child: Row(
           children: [
-            Text(t.financeRecordsCount(commissions.length),
-                style: AppTheme.sans(13, color: AppColors.muted)),
+            Text(
+              t.financeRecordsCount(commissions.length),
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
             const Spacer(),
-            Text(fmtIqd(total),
-                style: AppTheme.serif(18, color: AppColors.primary)),
+            Text(
+              fmtIqd(total),
+              style: AppTheme.serif(18, color: AppColors.primary),
+            ),
           ],
         ),
       ),
@@ -67,7 +71,11 @@ class _AdminFinanceTabState extends State<AdminFinanceTab> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
-                  kDashPagePad, kDashCardGap, kDashPagePad, kDashCardGap),
+                kDashPagePad,
+                kDashCardGap,
+                kDashPagePad,
+                kDashCardGap,
+              ),
               child: CommissionSummaryCard(
                 label: t.adminCommissionsOwedLabel,
                 amount: provider.commissionsOwed,
@@ -90,7 +98,11 @@ class _AdminFinanceTabState extends State<AdminFinanceTab> {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, 0, kDashPagePad, kDashCardGap),
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
                 child: CommissionRow(commission: commissions[i]),
               ),
               childCount: commissions.length,

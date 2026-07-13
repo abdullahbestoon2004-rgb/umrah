@@ -29,14 +29,14 @@ class HomeAd {
   }
 
   factory HomeAd.fromRow(Map<String, dynamic> r) => HomeAd(
-        id: r['id'] as String,
-        companyId: r['company_id'] as String?,
-        packageId: r['package_id'] as String?,
-        title: (r['title'] ?? '') as String,
-        titleAr: r['title_ar'] as String?,
-        titleEn: r['title_en'] as String?,
-        imageUrl: r['image_url'] as String?,
-        sortOrder: (r['sort_order'] ?? 0) as int,
-        isActive: (r['is_active'] ?? true) as bool,
-      );
+    id: r['id'] as String,
+    companyId: r['company_id'] as String?,
+    packageId: r['package_id'] as String?,
+    title: (r['title'] ?? '') as String,
+    titleAr: r['title_ar'] as String?,
+    titleEn: r['title_en'] as String?,
+    imageUrl: r['image_url'] as String?,
+    sortOrder: (r['sort_order'] ?? 0) as int,
+    isActive: (r['is_active'] ?? true) as bool,
+  );
 }

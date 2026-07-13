@@ -10,6 +10,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'admin_support_screen.dart';
 import 'promote_screen.dart';
 import 'home_preview_screen.dart';
+import 'admin_finance_tab.dart';
 
 /// Grouped menu of the secondary admin destinations, organized under
 /// People / Content / System headers.
@@ -31,30 +32,40 @@ class AdminMoreTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: _MenuIcon(
-                  icon: Icons.mail_outline_rounded, color: AppColors.primary),
+                icon: Icons.mail_outline_rounded,
+                color: AppColors.primary,
+              ),
               title: t.adminSupportInbox,
               subtitle: t.moreSupportSubtitle,
               trailing: supportCount > 0
                   ? Container(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(9, 3, 9, 3),
+                      padding: const EdgeInsetsDirectional.fromSTEB(9, 3, 9, 3),
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text('$supportCount',
-                          style: AppTheme.sans(11,
-                              weight: FontWeight.w700, color: Colors.white)),
+                      child: Text(
+                        '$supportCount',
+                        style: AppTheme.sans(
+                          11,
+                          weight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     )
                   : null,
               chevron: true,
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const AdminSupportScreen())),
+                context,
+                MaterialPageRoute(builder: (_) => const AdminSupportScreen()),
+              ),
             ),
           ),
         ),
@@ -62,33 +73,69 @@ class AdminMoreTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
-              leading: _MenuIcon(
-                  icon: Icons.auto_awesome_rounded, color: AppColors.gold),
-              title: t.adminPromoteTitle,
-              subtitle: t.adminPromoteSubtitle,
+              leading: const _MenuIcon(
+                icon: Icons.account_balance_wallet_outlined,
+                color: AppColors.primary,
+              ),
+              title: t.adminCommissionsTitle,
+              subtitle: t.adminCommissionsOwedLabel,
               chevron: true,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PromoteScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminFinanceTab()),
+              ),
             ),
           ),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
+            child: EntityListCard(
+              leading: _MenuIcon(
+                icon: Icons.auto_awesome_rounded,
+                color: AppColors.gold,
+              ),
+              title: t.adminPromoteTitle,
+              subtitle: t.adminPromoteSubtitle,
+              chevron: true,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PromoteScreen()),
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: const _MenuIcon(
-                  icon: Icons.remove_red_eye_outlined,
-                  color: Color(0xFF397C74)),
+                icon: Icons.remove_red_eye_outlined,
+                color: Color(0xFF397C74),
+              ),
               title: t.contentPreviewHome,
               subtitle: t.morePreviewSubtitle,
               chevron: true,
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const HomePreviewScreen())),
+                context,
+                MaterialPageRoute(builder: (_) => const HomePreviewScreen()),
+              ),
             ),
           ),
         ),
@@ -96,10 +143,16 @@ class AdminMoreTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: const _MenuIcon(
-                  icon: Icons.logout_rounded, color: AppColors.errorRed),
+                icon: Icons.logout_rounded,
+                color: AppColors.errorRed,
+              ),
               title: t.adminSignOut,
               onTap: () {
                 context.read<AppProvider>().signOut();
@@ -120,12 +173,12 @@ class _MenuIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: color, size: 20),
-      );
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Icon(icon, color: color, size: 20),
+  );
 }

@@ -3786,6 +3786,18 @@ abstract class AppLocalizations {
   /// **'Choose room type'**
   String get bookingChooseRoom;
 
+  /// No description provided for @bookingChooseMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose meal type'**
+  String get bookingChooseMeal;
+
+  /// No description provided for @bookingMealPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal preference for this booking'**
+  String get bookingMealPreference;
+
   /// No description provided for @bookingRoomDouble.
   ///
   /// In en, this message translates to:
@@ -3948,6 +3960,66 @@ abstract class AppLocalizations {
   /// **'Room'**
   String get bookingSummaryRoom;
 
+  /// No description provided for @bookingSummaryMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals'**
+  String get bookingSummaryMeal;
+
+  /// No description provided for @bookingPassportDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Traveller passports'**
+  String get bookingPassportDocuments;
+
+  /// No description provided for @bookingPassportDocumentsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport details required for all {count} travellers'**
+  String bookingPassportDocumentsBody(int count);
+
+  /// No description provided for @bookingPassportPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add passport details separately for each traveller. Images are stored privately for this booking only.'**
+  String get bookingPassportPrivacy;
+
+  /// No description provided for @bookingPassportRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the passport number and choose an image.'**
+  String get bookingPassportRequired;
+
+  /// No description provided for @bookingPassportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport details saved.'**
+  String get bookingPassportSaved;
+
+  /// No description provided for @bookingPassportChooseImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose passport image'**
+  String get bookingPassportChooseImage;
+
+  /// No description provided for @bookingPassportImageUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport image uploaded'**
+  String get bookingPassportImageUploaded;
+
+  /// No description provided for @bookingPhotoExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo examples'**
+  String get bookingPhotoExamples;
+
+  /// No description provided for @bookingTakeRequiredPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Take selfie and passport photos'**
+  String get bookingTakeRequiredPhotos;
+
   /// No description provided for @payFibSub.
   ///
   /// In en, this message translates to:
@@ -4013,6 +4085,1008 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} pilgrims · {room}'**
   String bookingPilgrimsSummary(int count, String room);
+
+  /// No description provided for @workflowSubmitForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get workflowSubmitForReview;
+
+  /// No description provided for @workflowSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted for review.'**
+  String get workflowSubmitted;
+
+  /// No description provided for @workflowSubmitCompanyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your company profile, then submit it for verification.'**
+  String get workflowSubmitCompanyBody;
+
+  /// No description provided for @workflowChangesRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes required'**
+  String get workflowChangesRequired;
+
+  /// No description provided for @workflowPackagesToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages to review'**
+  String get workflowPackagesToReview;
+
+  /// No description provided for @workflowNoPackagesToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages are waiting for review'**
+  String get workflowNoPackagesToReview;
+
+  /// No description provided for @workflowReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason required'**
+  String get workflowReasonRequired;
+
+  /// No description provided for @workflowReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain what must change'**
+  String get workflowReasonHint;
+
+  /// No description provided for @workflowSendDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Send decision'**
+  String get workflowSendDecision;
+
+  /// No description provided for @workflowDecisionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision saved.'**
+  String get workflowDecisionSaved;
+
+  /// No description provided for @workflowAwaitingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get workflowAwaitingPayment;
+
+  /// No description provided for @workflowReadyToTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for travel'**
+  String get workflowReadyToTravel;
+
+  /// No description provided for @workflowInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip in progress'**
+  String get workflowInProgress;
+
+  /// No description provided for @workflowRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get workflowRejected;
+
+  /// No description provided for @workflowExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get workflowExpired;
+
+  /// No description provided for @workflowMarkReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark ready'**
+  String get workflowMarkReady;
+
+  /// No description provided for @workflowStartTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Start trip'**
+  String get workflowStartTrip;
+
+  /// No description provided for @workflowStatusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status updated.'**
+  String get workflowStatusUpdated;
+
+  /// No description provided for @workflowCompanyReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company verification updated'**
+  String get workflowCompanyReviewTitle;
+
+  /// No description provided for @workflowCompanyReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company application is now: {status}'**
+  String workflowCompanyReviewBody(Object status);
+
+  /// No description provided for @workflowPackageReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Package review updated'**
+  String get workflowPackageReviewTitle;
+
+  /// No description provided for @workflowPackageReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your package is now: {status}'**
+  String workflowPackageReviewBody(Object status);
+
+  /// No description provided for @workflowConfirmCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm cash received'**
+  String get workflowConfirmCash;
+
+  /// No description provided for @workflowCashConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash payment confirmed.'**
+  String get workflowCashConfirmed;
+
+  /// No description provided for @workflowDraftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Package saved as a draft.'**
+  String get workflowDraftSaved;
+
+  /// No description provided for @workflowCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Traveller capacity'**
+  String get workflowCapacity;
+
+  /// No description provided for @workflowDepartureDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure date'**
+  String get workflowDepartureDate;
+
+  /// No description provided for @workflowReturnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Return date'**
+  String get workflowReturnDate;
+
+  /// No description provided for @workflowPayNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
+  String get workflowPayNow;
+
+  /// No description provided for @workflowPaymentStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the payment.'**
+  String get workflowPaymentStartFailed;
+
+  /// No description provided for @workflowFibPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with FIB'**
+  String get workflowFibPaymentTitle;
+
+  /// No description provided for @workflowFibPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open FIB and use this payment code. Your booking confirms automatically after FIB verifies the payment.'**
+  String get workflowFibPaymentBody;
+
+  /// No description provided for @workflowCopyPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy payment details'**
+  String get workflowCopyPayment;
+
+  /// No description provided for @addEditOfferHotelMakkahDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah hotel description'**
+  String get addEditOfferHotelMakkahDescription;
+
+  /// No description provided for @addEditOfferHotelMadinahDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah hotel description'**
+  String get addEditOfferHotelMadinahDescription;
+
+  /// No description provided for @addEditOfferHotelDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the location, facilities, service and nearby landmarks'**
+  String get addEditOfferHotelDescriptionHint;
+
+  /// No description provided for @addEditOfferAvailableRooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Available room types'**
+  String get addEditOfferAvailableRooms;
+
+  /// No description provided for @addEditOfferAvailableRoomsHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose every room occupancy clients can book for this package.'**
+  String get addEditOfferAvailableRoomsHelper;
+
+  /// No description provided for @addEditOfferChooseRoomType.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one available room type.'**
+  String get addEditOfferChooseRoomType;
+
+  /// No description provided for @bookingRoomOccupancy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}-person room'**
+  String bookingRoomOccupancy(int count);
+
+  /// No description provided for @offerFormCommercialPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Policy & payment'**
+  String get offerFormCommercialPolicy;
+
+  /// No description provided for @offerFormTitleKu.
+  ///
+  /// In en, this message translates to:
+  /// **'Package title (Kurdish)'**
+  String get offerFormTitleKu;
+
+  /// No description provided for @offerFormTitleAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Package title (Arabic)'**
+  String get offerFormTitleAr;
+
+  /// No description provided for @offerFormTitleEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Package title (English)'**
+  String get offerFormTitleEn;
+
+  /// No description provided for @offerFormOverviewKu.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview (Kurdish)'**
+  String get offerFormOverviewKu;
+
+  /// No description provided for @offerFormOverviewAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview (Arabic)'**
+  String get offerFormOverviewAr;
+
+  /// No description provided for @offerFormOverviewEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview (English)'**
+  String get offerFormOverviewEn;
+
+  /// No description provided for @offerFormOverviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what makes this package special'**
+  String get offerFormOverviewHint;
+
+  /// No description provided for @offerFormPackageTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Package tier'**
+  String get offerFormPackageTier;
+
+  /// No description provided for @offerTierEconomy.
+  ///
+  /// In en, this message translates to:
+  /// **'Economy'**
+  String get offerTierEconomy;
+
+  /// No description provided for @offerTierStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get offerTierStandard;
+
+  /// No description provided for @offerTierVip.
+  ///
+  /// In en, this message translates to:
+  /// **'VIP'**
+  String get offerTierVip;
+
+  /// No description provided for @offerFormGroupType.
+  ///
+  /// In en, this message translates to:
+  /// **'Group type'**
+  String get offerFormGroupType;
+
+  /// No description provided for @offerGroupFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get offerGroupFamily;
+
+  /// No description provided for @offerGroupIndividual.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get offerGroupIndividual;
+
+  /// No description provided for @offerGroupGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get offerGroupGroup;
+
+  /// No description provided for @offerFormSeason.
+  ///
+  /// In en, this message translates to:
+  /// **'Season'**
+  String get offerFormSeason;
+
+  /// No description provided for @offerSeasonRamadan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get offerSeasonRamadan;
+
+  /// No description provided for @offerSeasonRegular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get offerSeasonRegular;
+
+  /// No description provided for @offerSeasonShawwal.
+  ///
+  /// In en, this message translates to:
+  /// **'Shawwal'**
+  String get offerSeasonShawwal;
+
+  /// No description provided for @offerSeasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get offerSeasonOther;
+
+  /// No description provided for @offerFormDepartureAirport.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure airport'**
+  String get offerFormDepartureAirport;
+
+  /// No description provided for @offerFormFlightType.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight type'**
+  String get offerFormFlightType;
+
+  /// No description provided for @offerFlightDirect.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get offerFlightDirect;
+
+  /// No description provided for @offerFlightConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting'**
+  String get offerFlightConnecting;
+
+  /// No description provided for @offerFormBusBetweenCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Bus between Makkah and Madinah included'**
+  String get offerFormBusBetweenCities;
+
+  /// No description provided for @offerFormAirportTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport transfers included'**
+  String get offerFormAirportTransfers;
+
+  /// No description provided for @offerFormOccupancyPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per person by room occupancy'**
+  String get offerFormOccupancyPricing;
+
+  /// No description provided for @offerFormOccupancyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{room} price (IQD)'**
+  String offerFormOccupancyPrice(String room);
+
+  /// No description provided for @offerFormDepositAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit amount (IQD)'**
+  String get offerFormDepositAmount;
+
+  /// No description provided for @offerFormNonRefundableDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit is non-refundable'**
+  String get offerFormNonRefundableDeposit;
+
+  /// No description provided for @offerFormDepositTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit terms'**
+  String get offerFormDepositTerms;
+
+  /// No description provided for @offerFormDepositTermsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain when the balance is due'**
+  String get offerFormDepositTermsHint;
+
+  /// No description provided for @offerFormCancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation and refund policy'**
+  String get offerFormCancellationPolicy;
+
+  /// No description provided for @offerFormCancellationPolicyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain cancellation dates, fees and refund timing'**
+  String get offerFormCancellationPolicyHint;
+
+  /// No description provided for @offerFormAcceptedPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted payment methods'**
+  String get offerFormAcceptedPayments;
+
+  /// No description provided for @offerSoldOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold out'**
+  String get offerSoldOut;
+
+  /// No description provided for @offerFewSeatsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} seats left'**
+  String offerFewSeatsLeft(int count);
+
+  /// No description provided for @offerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get offerAvailable;
+
+  /// No description provided for @offerOccupancyPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Room pricing'**
+  String get offerOccupancyPricing;
+
+  /// No description provided for @offerTrustAndPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust, policy & payment'**
+  String get offerTrustAndPolicy;
+
+  /// No description provided for @offerDepositLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit: {amount}'**
+  String offerDepositLabel(String amount);
+
+  /// No description provided for @offerAcceptedPaymentsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted: {methods}'**
+  String offerAcceptedPaymentsLabel(String methods);
+
+  /// No description provided for @offerCapacitySoldOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold out'**
+  String get offerCapacitySoldOut;
+
+  /// No description provided for @offerCapacityFewLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} seats left'**
+  String offerCapacityFewLeft(int count);
+
+  /// No description provided for @offerCapacityAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get offerCapacityAvailable;
+
+  /// No description provided for @offerCapacityRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} seats remaining'**
+  String offerCapacityRemaining(int count);
+
+  /// No description provided for @offerHotelNights.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} nights'**
+  String offerHotelNights(int count);
+
+  /// No description provided for @offerDepositRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit required: {amount}'**
+  String offerDepositRequired(String amount);
+
+  /// No description provided for @offerDepositNonRefundable.
+  ///
+  /// In en, this message translates to:
+  /// **'The deposit is non-refundable'**
+  String get offerDepositNonRefundable;
+
+  /// No description provided for @offerAcceptedPaymentList.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted payment methods: {methods}'**
+  String offerAcceptedPaymentList(String methods);
+
+  /// No description provided for @agencyAccessUnderReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agency is under review'**
+  String get agencyAccessUnderReviewTitle;
+
+  /// No description provided for @agencyAccessUnderReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can sign in while the admin verifies your registration and documents. The dashboard will unlock after approval.'**
+  String get agencyAccessUnderReviewBody;
+
+  /// No description provided for @agencyAccessRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration needs attention'**
+  String get agencyAccessRejectedTitle;
+
+  /// No description provided for @agencyAccessRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your registration was not approved. Review the administrator feedback and resubmit your documents.'**
+  String get agencyAccessRejectedBody;
+
+  /// No description provided for @agencyAccessSuspendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency access suspended'**
+  String get agencyAccessSuspendedTitle;
+
+  /// No description provided for @agencyAccessSuspendedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your offers are hidden while this suspension is reviewed. Contact platform support for details.'**
+  String get agencyAccessSuspendedBody;
+
+  /// No description provided for @companyTrustSignals.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust & verification'**
+  String get companyTrustSignals;
+
+  /// No description provided for @companyLicenseNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'License: {number}'**
+  String companyLicenseNumber(String number);
+
+  /// No description provided for @companyPilgrimsServed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ pilgrims served'**
+  String companyPilgrimsServed(int count);
+
+  /// No description provided for @companyResponseTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually responds within {time}'**
+  String companyResponseTime(String time);
+
+  /// No description provided for @companyContactLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact & location'**
+  String get companyContactLocation;
+
+  /// No description provided for @companyAgencyReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Agency reply'**
+  String get companyAgencyReply;
+
+  /// No description provided for @companyReportAgency.
+  ///
+  /// In en, this message translates to:
+  /// **'Report this agency'**
+  String get companyReportAgency;
+
+  /// No description provided for @companyReportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get companyReportReason;
+
+  /// No description provided for @companyReportDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details (optional)'**
+  String get companyReportDetails;
+
+  /// No description provided for @companyReportSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get companyReportSubmit;
+
+  /// No description provided for @companyReportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted for review'**
+  String get companyReportSubmitted;
+
+  /// No description provided for @adminBookingsPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings & payments'**
+  String get adminBookingsPayments;
+
+  /// No description provided for @adminNoBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings found'**
+  String get adminNoBookings;
+
+  /// No description provided for @bookingStageRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get bookingStageRequested;
+
+  /// No description provided for @bookingStageConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get bookingStageConfirmed;
+
+  /// No description provided for @bookingStageCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bookingStageCompleted;
+
+  /// No description provided for @bookingStageCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingStageCancelled;
+
+  /// No description provided for @agencyMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get agencyMessages;
+
+  /// No description provided for @agencyMessagesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No inquiries yet'**
+  String get agencyMessagesEmpty;
+
+  /// No description provided for @agencyMessagesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Client questions will appear here in real time.'**
+  String get agencyMessagesEmptyBody;
+
+  /// No description provided for @agencyInquiryNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Inquiry #{number}'**
+  String agencyInquiryNumber(int number);
+
+  /// No description provided for @agencyInquiryNoMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages'**
+  String get agencyInquiryNoMessages;
+
+  /// No description provided for @agencyReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a reply…'**
+  String get agencyReplyHint;
+
+  /// No description provided for @adminAgencyBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual badges'**
+  String get adminAgencyBadges;
+
+  /// No description provided for @badgeVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get badgeVerified;
+
+  /// No description provided for @badgePremiumPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Partner'**
+  String get badgePremiumPartner;
+
+  /// No description provided for @agencyDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents & verification'**
+  String get agencyDocumentsTitle;
+
+  /// No description provided for @agencyDocumentsMenuSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload or renew license documents'**
+  String get agencyDocumentsMenuSubtitle;
+
+  /// No description provided for @agencyDocumentsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload clear images of current business documents. The administrator can preview them securely during review.'**
+  String get agencyDocumentsBody;
+
+  /// No description provided for @agencyDocumentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Document type'**
+  String get agencyDocumentType;
+
+  /// No description provided for @agencyDocumentLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel agency license'**
+  String get agencyDocumentLicense;
+
+  /// No description provided for @agencyDocumentRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Business registration'**
+  String get agencyDocumentRegistration;
+
+  /// No description provided for @agencyDocumentOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office verification'**
+  String get agencyDocumentOffice;
+
+  /// No description provided for @agencyDocumentChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose document image'**
+  String get agencyDocumentChoose;
+
+  /// No description provided for @agencyDocumentUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload document'**
+  String get agencyDocumentUpload;
+
+  /// No description provided for @agencyDocumentUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Document uploaded for review'**
+  String get agencyDocumentUploaded;
+
+  /// No description provided for @agencyDocumentsResubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload or resubmit documents'**
+  String get agencyDocumentsResubmit;
+
+  /// No description provided for @adminNoAgencyDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'No documents uploaded yet'**
+  String get adminNoAgencyDocuments;
+
+  /// No description provided for @agencyDocumentStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get agencyDocumentStatusPending;
+
+  /// No description provided for @agencyDocumentStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get agencyDocumentStatusApproved;
+
+  /// No description provided for @agencyDocumentStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get agencyDocumentStatusRejected;
+
+  /// No description provided for @adminRequestMoreInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Request more information'**
+  String get adminRequestMoreInfo;
+
+  /// No description provided for @adminMoreInfoRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Information request sent'**
+  String get adminMoreInfoRequested;
+
+  /// No description provided for @identityVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verification'**
+  String get identityVerification;
+
+  /// No description provided for @identityVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your identity'**
+  String get identityVerificationTitle;
+
+  /// No description provided for @identityVerificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear passport photo and a selfie. Your documents are stored securely and reviewed privately.'**
+  String get identityVerificationBody;
+
+  /// No description provided for @identityPassportPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport photo'**
+  String get identityPassportPhoto;
+
+  /// No description provided for @identityPassportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear image of your passport identification page'**
+  String get identityPassportBody;
+
+  /// No description provided for @identitySelfiePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie'**
+  String get identitySelfiePhoto;
+
+  /// No description provided for @identitySelfieBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear photo of you looking directly at the camera'**
+  String get identitySelfieBody;
+
+  /// No description provided for @identityExampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo example & instructions'**
+  String get identityExampleTitle;
+
+  /// No description provided for @identityPassportInstruction1.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the full identification page and all four corners.'**
+  String get identityPassportInstruction1;
+
+  /// No description provided for @identityPassportInstruction2.
+  ///
+  /// In en, this message translates to:
+  /// **'Use good lighting and avoid glare or shadows.'**
+  String get identityPassportInstruction2;
+
+  /// No description provided for @identityPassportInstruction3.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure every detail is sharp and readable.'**
+  String get identityPassportInstruction3;
+
+  /// No description provided for @identitySelfieInstruction1.
+  ///
+  /// In en, this message translates to:
+  /// **'Look directly at the camera in good lighting.'**
+  String get identitySelfieInstruction1;
+
+  /// No description provided for @identitySelfieInstruction2.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your full face visible and centered.'**
+  String get identitySelfieInstruction2;
+
+  /// No description provided for @identitySelfieInstruction3.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not wear a hat, sunglasses, or face covering.'**
+  String get identitySelfieInstruction3;
+
+  /// No description provided for @identityClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get identityClose;
+
+  /// No description provided for @identityContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get identityContinue;
+
+  /// No description provided for @identityChooseSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo source'**
+  String get identityChooseSource;
+
+  /// No description provided for @identityCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get identityCamera;
+
+  /// No description provided for @identityGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get identityGallery;
+
+  /// No description provided for @identityNoPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'No photo selected'**
+  String get identityNoPhoto;
+
+  /// No description provided for @identityViewExample.
+  ///
+  /// In en, this message translates to:
+  /// **'View example'**
+  String get identityViewExample;
+
+  /// No description provided for @identityUploadPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload photo'**
+  String get identityUploadPhoto;
+
+  /// No description provided for @identityChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get identityChangePhoto;
+
+  /// No description provided for @identitySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for verification'**
+  String get identitySubmit;
+
+  /// No description provided for @identitySubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity documents were submitted for review.'**
+  String get identitySubmitted;
+
+  /// No description provided for @identitySignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in before submitting identity documents.'**
+  String get identitySignInRequired;
+
+  /// No description provided for @identityUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The documents could not be uploaded. Please try again.'**
+  String get identityUploadFailed;
 }
 
 class _AppLocalizationsDelegate

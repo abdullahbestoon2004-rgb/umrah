@@ -26,8 +26,7 @@ class FilterChipBar<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding:
-          const EdgeInsetsDirectional.symmetric(horizontal: kDashPagePad),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: kDashPagePad),
       child: Row(
         children: [
           for (final option in options)

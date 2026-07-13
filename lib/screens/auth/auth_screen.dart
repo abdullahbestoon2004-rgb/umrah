@@ -25,6 +25,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _obscure = true;
   bool _loading = false;
   String? _error;
+
   /// Gmail-style multi-step: 0 = email, 1 = password/details
   int _step = 0;
 
@@ -85,32 +86,48 @@ class _AuthScreenState extends State<AuthScreen> {
 
   String _mapEmailError(String code, AppLocalizations t) {
     switch (code) {
-      case 'email_empty': return t.authErrEmailEmpty;
-      case 'email_spaces': return t.authErrEmailSpaces;
-      case 'email_no_at': return t.authErrEmailNoAt;
-      case 'email_invalid_format': return t.authErrInvalidEmail;
-      case 'email_invalid_domain': return t.authErrEmailInvalidDomain;
-      case 'email_invalid_tld': return t.authErrEmailInvalidDomain;
-      default: return t.authErrInvalidEmail;
+      case 'email_empty':
+        return t.authErrEmailEmpty;
+      case 'email_spaces':
+        return t.authErrEmailSpaces;
+      case 'email_no_at':
+        return t.authErrEmailNoAt;
+      case 'email_invalid_format':
+        return t.authErrInvalidEmail;
+      case 'email_invalid_domain':
+        return t.authErrEmailInvalidDomain;
+      case 'email_invalid_tld':
+        return t.authErrEmailInvalidDomain;
+      default:
+        return t.authErrInvalidEmail;
     }
   }
 
   String _mapPhoneError(String code, AppLocalizations t) {
     switch (code) {
-      case 'phone_too_short': return t.authErrPhoneTooShort;
-      case 'phone_too_long': return t.authErrPhoneTooLong;
-      case 'phone_invalid_chars': return t.authErrPhoneInvalidChars;
-      default: return t.authErrPhoneInvalid;
+      case 'phone_too_short':
+        return t.authErrPhoneTooShort;
+      case 'phone_too_long':
+        return t.authErrPhoneTooLong;
+      case 'phone_invalid_chars':
+        return t.authErrPhoneInvalidChars;
+      default:
+        return t.authErrPhoneInvalid;
     }
   }
 
   String _mapPasswordError(String code, AppLocalizations t) {
     switch (code) {
-      case 'password_empty': return t.authErrPasswordEmpty;
-      case 'password_too_short': return t.authErrPasswordShort;
-      case 'password_no_letter': return t.authErrPasswordNoLetter;
-      case 'password_no_digit': return t.authErrPasswordNoDigit;
-      default: return t.authErrPasswordShort;
+      case 'password_empty':
+        return t.authErrPasswordEmpty;
+      case 'password_too_short':
+        return t.authErrPasswordShort;
+      case 'password_no_letter':
+        return t.authErrPasswordNoLetter;
+      case 'password_no_digit':
+        return t.authErrPasswordNoDigit;
+      default:
+        return t.authErrPasswordShort;
     }
   }
 
@@ -147,9 +164,11 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_signUp) {
       final nameResult = Validators.validateFullName(_nameCtrl.text);
       if (nameResult != null) {
-        setState(() => _nameError = nameResult == 'name_empty'
-            ? t.authErrNameEmpty
-            : t.authErrNameTooShort);
+        setState(
+          () => _nameError = nameResult == 'name_empty'
+              ? t.authErrNameEmpty
+              : t.authErrNameTooShort,
+        );
         return;
       }
       final phoneResult = Validators.validatePhone(_phoneCtrl.text);
@@ -159,14 +178,20 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     }
 
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
     final email = _emailCtrl.text.trim();
     final pass = _passCtrl.text;
     final err = _signUp
         ? await provider.signUpClient(
-            email: email, password: pass,
-            fullName: _nameCtrl.text.trim(), phone: _phoneCtrl.text.trim())
+            email: email,
+            password: pass,
+            fullName: _nameCtrl.text.trim(),
+            phone: _phoneCtrl.text.trim(),
+          )
         : await provider.signIn(email, pass);
     if (!mounted) return;
     if (err == null) {
@@ -174,9 +199,15 @@ class _AuthScreenState extends State<AuthScreen> {
       Navigator.pop(context, true);
       messenger.showSnackBar(appSnack(t.authWelcomeSnack));
     } else if (err == 'confirm-email') {
-      setState(() { _loading = false; _error = t.authConfirmEmailSent; });
+      setState(() {
+        _loading = false;
+        _error = t.authConfirmEmailSent;
+      });
     } else {
-      setState(() { _loading = false; _error = err; });
+      setState(() {
+        _loading = false;
+        _error = err;
+      });
     }
   }
 
@@ -194,26 +225,43 @@ class _AuthScreenState extends State<AuthScreen> {
               GestureDetector(
                 onTap: () {
                   if (_step == 1) {
-                    setState(() { _step = 0; _error = null; _passwordError = null; });
+                    setState(() {
+                      _step = 0;
+                      _error = null;
+                      _passwordError = null;
+                    });
                   } else {
                     Navigator.pop(context);
                   }
                 },
                 child: Container(
-                  width: 42, height: 42,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(color: AppColors.border, width: 1.5),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 18,
+                    color: AppColors.ink,
+                  ),
                 ),
               ),
               const SizedBox(height: 28),
               Container(
-                width: 60, height: 60,
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(18)),
-                child: const Icon(Icons.person_rounded, color: Colors.white, size: 30),
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(
+                  Icons.person_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
               const SizedBox(height: 18),
               Text(
@@ -242,14 +290,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   onSubmit: (_) => _next(),
                 ),
               ]
-
               // ── STEP 1: Password + Details ───────────────────────────────
               else ...[
                 // Email chip (Gmail-style)
                 GestureDetector(
-                  onTap: () => setState(() { _step = 0; _error = null; }),
+                  onTap: () => setState(() {
+                    _step = 0;
+                    _error = null;
+                  }),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.chipBg,
                       borderRadius: BorderRadius.circular(20),
@@ -258,15 +311,25 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.account_circle_outlined, size: 18, color: AppColors.primary),
+                        const Icon(
+                          Icons.account_circle_outlined,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: Text(_emailCtrl.text.trim(),
-                              style: AppTheme.sans(13, weight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis),
+                          child: Text(
+                            _emailCtrl.text.trim(),
+                            style: AppTheme.sans(13, weight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         const SizedBox(width: 6),
-                        const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: AppColors.muted),
+                        const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 16,
+                          color: AppColors.muted,
+                        ),
                       ],
                     ),
                   ),
@@ -305,13 +368,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   error: _passwordError,
                   autofocus: true,
                   suffix: IconButton(
-                    icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                        color: AppColors.muted, size: 20),
+                    icon: Icon(
+                      _obscure
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: AppColors.muted,
+                      size: 20,
+                    ),
                     onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                   onSubmit: (_) => _submit(),
                 ),
-                if (_signUp) PasswordStrengthIndicator(password: _passCtrl.text),
+                if (_signUp)
+                  PasswordStrengthIndicator(password: _passCtrl.text),
               ],
 
               if (_error != null) ...[
@@ -321,13 +390,24 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF0EE),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.errorRed.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, color: AppColors.errorRed, size: 18),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: AppColors.errorRed,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(_error!, style: AppTheme.sans(12.5, color: AppColors.errorRed))),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: AppTheme.sans(12.5, color: AppColors.errorRed),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -342,33 +422,64 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 24, offset: const Offset(0, 12))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
                   ),
                   alignment: Alignment.center,
                   child: _loading
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : Text(
-                          _step == 0 ? t.authNext : (_signUp ? t.authSignUpBtn : t.agencyLoginSignIn),
-                          style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
+                          _step == 0
+                              ? t.authNext
+                              : (_signUp
+                                    ? t.authSignUpBtn
+                                    : t.agencyLoginSignIn),
+                          style: AppTheme.sans(
+                            15,
+                            weight: FontWeight.w800,
+                            color: const Color(0xFFF6F2E9),
+                          ),
                         ),
                 ),
               ),
               const SizedBox(height: 18),
               Center(
                 child: GestureDetector(
-                  onTap: () => setState(() { _signUp = !_signUp; _error = null; _step = 0; }),
+                  onTap: () => setState(() {
+                    _signUp = !_signUp;
+                    _error = null;
+                    _step = 0;
+                  }),
                   child: Text.rich(
-                    TextSpan(children: [
-                      TextSpan(
-                        text: _signUp ? t.authHaveAccount : t.authNoAccount,
-                        style: AppTheme.sans(13, color: AppColors.muted),
-                      ),
-                      const TextSpan(text: ' '),
-                      TextSpan(
-                        text: _signUp ? t.agencyLoginSignIn : t.authSignUpBtn,
-                        style: AppTheme.sans(13, weight: FontWeight.w800, color: AppColors.primary),
-                      ),
-                    ]),
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: _signUp ? t.authHaveAccount : t.authNoAccount,
+                          style: AppTheme.sans(13, color: AppColors.muted),
+                        ),
+                        const TextSpan(text: ' '),
+                        TextSpan(
+                          text: _signUp ? t.agencyLoginSignIn : t.authSignUpBtn,
+                          style: AppTheme.sans(
+                            13,
+                            weight: FontWeight.w800,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -401,9 +512,15 @@ class _ValidatedField extends StatelessWidget {
   final bool autofocus;
 
   const _ValidatedField({
-    required this.controller, required this.hint, required this.icon,
-    this.obscure = false, this.keyboardType, this.suffix, this.onSubmit,
-    this.error, this.autofocus = false,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    this.obscure = false,
+    this.keyboardType,
+    this.suffix,
+    this.onSubmit,
+    this.error,
+    this.autofocus = false,
   });
 
   @override
@@ -431,7 +548,11 @@ class _ValidatedField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-              prefixIcon: Icon(icon, color: hasError ? AppColors.errorRed : AppColors.primary, size: 20),
+              prefixIcon: Icon(
+                icon,
+                color: hasError ? AppColors.errorRed : AppColors.primary,
+                size: 20,
+              ),
               suffixIcon: suffix,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -442,10 +563,17 @@ class _ValidatedField extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded, size: 14, color: AppColors.errorRed),
+              const Icon(
+                Icons.info_outline_rounded,
+                size: 14,
+                color: AppColors.errorRed,
+              ),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(error!, style: AppTheme.sans(12, color: AppColors.errorRed)),
+                child: Text(
+                  error!,
+                  style: AppTheme.sans(12, color: AppColors.errorRed),
+                ),
               ),
             ],
           ),

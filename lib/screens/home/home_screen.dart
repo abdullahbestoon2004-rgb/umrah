@@ -96,16 +96,17 @@ class HomeScreen extends StatelessWidget {
     // Without ads the hero card already fills the top slot — don't repeat it.
     final visibleRanked = ads.isEmpty ? ranked.skip(1).toList() : ranked;
     final featured = visibleRanked.where((o) => o.isFeatured).toList();
-    final homeOffers = featured.isNotEmpty ? featured : visibleRanked.take(4).toList();
+    final homeOffers = featured.isNotEmpty
+        ? featured
+        : visibleRanked.take(4).toList();
 
     final promoted = provider.companies.where((c) => c.isPromoted).toList()
       ..sort((a, b) => b.rating.compareTo(a.rating));
     final homeCompanies = promoted.isNotEmpty
         ? promoted
-        : (List<Company>.from(provider.companies)
-              ..sort((a, b) => b.rating.compareTo(a.rating)))
-            .take(4)
-            .toList();
+        : (List<Company>.from(
+            provider.companies,
+          )..sort((a, b) => b.rating.compareTo(a.rating))).take(4).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -252,13 +253,13 @@ class _AdCard extends StatelessWidget {
             ),
           )
         : company != null
-            ? () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CompanyDetailScreen(company: company),
-                ),
-              )
-            : null;
+        ? () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CompanyDetailScreen(company: company),
+            ),
+          )
+        : null;
     return InteractiveScale(
       onTap: onTap,
       child: ClipRRect(
@@ -566,7 +567,10 @@ class _AgencyCard extends StatelessWidget {
     final fromPrice = offers.isEmpty
         ? 0.0
         : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
-    final gradDark = Color.alphaBlend(Colors.black.withOpacity(0.35), company.tint);
+    final gradDark = Color.alphaBlend(
+      Colors.black.withOpacity(0.35),
+      company.tint,
+    );
 
     return InteractiveScale(
       onTap: () => Navigator.push(
@@ -599,17 +603,16 @@ class _AgencyCard extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(21),
+                  ),
                   child: SizedBox(
                     height: 84,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
                         if ((company.bannerUrl ?? '').isNotEmpty) ...[
-                          Image.network(
-                            company.bannerUrl!,
-                            fit: BoxFit.cover,
-                          ),
+                          Image.network(company.bannerUrl!, fit: BoxFit.cover),
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -638,7 +641,10 @@ class _AgencyCard extends StatelessWidget {
                           top: 10,
                           right: 10,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.95),
                               borderRadius: BorderRadius.circular(10),
@@ -646,11 +652,19 @@ class _AgencyCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.star_rounded, color: AppColors.gold, size: 13),
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: AppColors.gold,
+                                  size: 13,
+                                ),
                                 const SizedBox(width: 3),
                                 Text(
                                   '${company.rating}',
-                                  style: AppTheme.sans(11.5, weight: FontWeight.w800, color: AppColors.ink),
+                                  style: AppTheme.sans(
+                                    11.5,
+                                    weight: FontWeight.w800,
+                                    color: AppColors.ink,
+                                  ),
                                 ),
                               ],
                             ),
@@ -669,7 +683,11 @@ class _AgencyCard extends StatelessWidget {
                       color: AppColors.surface,
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 3)),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
                       ],
                     ),
                     child: CompanyAvatar(
@@ -690,7 +708,9 @@ class _AgencyCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    company.nameFor(Localizations.localeOf(context).languageCode),
+                    company.nameFor(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                     style: AppTheme.sans(14, weight: FontWeight.w700),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -710,7 +730,11 @@ class _AgencyCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           t.companiesPackageCount(offerCount),
-                          style: AppTheme.sans(11, weight: FontWeight.w600, color: const Color(0xFF6B7770)),
+                          style: AppTheme.sans(
+                            11,
+                            weight: FontWeight.w600,
+                            color: const Color(0xFF6B7770),
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -718,10 +742,24 @@ class _AgencyCard extends StatelessWidget {
                       if (fromPrice > 0)
                         Flexible(
                           child: Text.rich(
-                            TextSpan(children: [
-                              TextSpan(text: t.companiesFromPrefix, style: AppTheme.sans(10.5, color: AppColors.muted)),
-                              TextSpan(text: fmtIqd(fromPrice), style: AppTheme.serif(13.5, color: AppColors.primary)),
-                            ]),
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: t.companiesFromPrefix,
+                                  style: AppTheme.sans(
+                                    10.5,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: fmtIqd(fromPrice),
+                                  style: AppTheme.serif(
+                                    13.5,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -1091,7 +1129,9 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
           if (lang == 'ar') {
             hijriMonth = hijri['month']['ar'];
           } else if (lang == 'ku') {
-            hijriMonth = _hijriMonthKu((hijri['month']['number'] as num).toInt());
+            hijriMonth = _hijriMonthKu(
+              (hijri['month']['number'] as num).toInt(),
+            );
           } else {
             hijriMonth = hijri['month']['en'];
           }
@@ -1121,7 +1161,9 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
 
     if (mounted) {
       final lang = Localizations.localeOf(context).languageCode;
-      final fallbackMonth = lang == 'ar' ? 'محرم' : (lang == 'ku' ? _hijriMonthKu(1) : 'Muharram');
+      final fallbackMonth = lang == 'ar'
+          ? 'محرم'
+          : (lang == 'ku' ? _hijriMonthKu(1) : 'Muharram');
       setState(() {
         _hijriDate = "19 $fallbackMonth 1448";
         _nextPrayer = _calculateNextPrayer(_timings);
@@ -1232,7 +1274,11 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
   // The one "next prayer" text — sits beside the icon when collapsed, and
   // is repositioned below it when expanded (see build()). Never shown twice.
   Widget _nextPrayerText(String lang) {
-    final goldBold = AppTheme.serif(15, color: AppColors.gold, weight: FontWeight.bold);
+    final goldBold = AppTheme.serif(
+      15,
+      color: AppColors.gold,
+      weight: FontWeight.bold,
+    );
     final duration = _durationShort(lang);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1259,7 +1305,10 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                 duration: const Duration(milliseconds: 400),
                 transitionBuilder: (child, animation) => ClipRect(
                   child: SlideTransition(
-                    position: Tween<Offset>(begin: const Offset(0, -0.6), end: Offset.zero).animate(animation),
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -0.6),
+                      end: Offset.zero,
+                    ).animate(animation),
                     child: FadeTransition(opacity: animation, child: child),
                   ),
                 ),
@@ -1353,7 +1402,11 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.dark_mode_rounded, color: AppColors.gold, size: 17),
+                    child: const Icon(
+                      Icons.dark_mode_rounded,
+                      color: AppColors.gold,
+                      size: 17,
+                    ),
                   ),
                   if (!_expanded) ...[
                     const SizedBox(width: 12),
@@ -1366,12 +1419,20 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                     children: [
                       Text(
                         _nowTimeText(lang),
-                        style: AppTheme.sans(13.5, weight: FontWeight.w700, color: Colors.white),
+                        style: AppTheme.sans(
+                          13.5,
+                          weight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         localizedCity,
-                        style: AppTheme.sans(10.5, weight: FontWeight.w600, color: const Color(0xFF9FBBA9)),
+                        style: AppTheme.sans(
+                          10.5,
+                          weight: FontWeight.w600,
+                          color: const Color(0xFF9FBBA9),
+                        ),
                       ),
                     ],
                   ),
@@ -1379,7 +1440,11 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 250),
-                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.gold, size: 22),
+                    child: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.gold,
+                      size: 22,
+                    ),
                   ),
                 ],
               ),
@@ -1398,19 +1463,31 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_outlined, size: 15, color: AppColors.gold),
+                              const Icon(
+                                Icons.location_on_outlined,
+                                size: 15,
+                                color: AppColors.gold,
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   locationText,
-                                  style: AppTheme.sans(11.5, weight: FontWeight.w700, color: const Color(0xFFE5D5BA)),
+                                  style: AppTheme.sans(
+                                    11.5,
+                                    weight: FontWeight.w700,
+                                    color: const Color(0xFFE5D5BA),
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Text(
                                 _hijriDate,
-                                style: AppTheme.sans(11.5, weight: FontWeight.w600, color: const Color(0xFF9FBBA9)),
+                                style: AppTheme.sans(
+                                  11.5,
+                                  weight: FontWeight.w600,
+                                  color: const Color(0xFF9FBBA9),
+                                ),
                               ),
                             ],
                           ),

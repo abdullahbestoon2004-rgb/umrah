@@ -85,7 +85,11 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Icon(Icons.lock_reset_rounded, color: Colors.white, size: 30),
+                child: const Icon(
+                  Icons.lock_reset_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -107,7 +111,9 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                 obscure: _obscureNew,
                 suffix: IconButton(
                   icon: Icon(
-                    _obscureNew ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscureNew
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: AppColors.muted,
                     size: 20,
                   ),
@@ -125,11 +131,14 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                 obscure: _obscureConfirm,
                 suffix: IconButton(
                   icon: Icon(
-                    _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscureConfirm
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: AppColors.muted,
                     size: 20,
                   ),
-                  onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
                 ),
                 onSubmit: (_) => _resetPassword(),
               ),
@@ -142,14 +151,23 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF0EE),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.errorRed.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, color: AppColors.errorRed, size: 18),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: AppColors.errorRed,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(_error!, style: AppTheme.sans(12.5, color: AppColors.errorRed)),
+                        child: Text(
+                          _error!,
+                          style: AppTheme.sans(12.5, color: AppColors.errorRed),
+                        ),
                       ),
                     ],
                   ),
@@ -172,11 +190,18 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
                         )
                       : Text(
                           t.forgotPasswordResetBtn,
-                          style: AppTheme.sans(15, weight: FontWeight.w700, color: const Color(0xFFF6F2E9)),
+                          style: AppTheme.sans(
+                            15,
+                            weight: FontWeight.w700,
+                            color: const Color(0xFFF6F2E9),
+                          ),
                         ),
                 ),
               ),
@@ -195,7 +220,11 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: AppTheme.sans(12.5, weight: FontWeight.w700, color: AppColors.muted),
+      style: AppTheme.sans(
+        12.5,
+        weight: FontWeight.w700,
+        color: AppColors.muted,
+      ),
     );
   }
 }
@@ -236,7 +265,10 @@ class _InputField extends StatelessWidget {
           prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
           suffixIcon: suffix,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 15,
+          ),
         ),
       ),
     );

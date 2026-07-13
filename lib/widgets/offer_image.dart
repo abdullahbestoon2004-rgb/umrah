@@ -30,13 +30,18 @@ class OfferImage extends StatelessWidget {
       width: width,
       borderRadius: borderRadius,
     );
-    
+
     Widget imageWidget;
     final bytes = context.watch<AppProvider>().getOfferImage(offer.id);
     if (bytes != null) {
       imageWidget = ClipRRect(
         borderRadius: borderRadius,
-        child: Image.memory(bytes, height: height, width: width, fit: BoxFit.cover),
+        child: Image.memory(
+          bytes,
+          height: height,
+          width: width,
+          fit: BoxFit.cover,
+        ),
       );
     } else if ((offer.imageUrl ?? '').isNotEmpty) {
       imageWidget = ClipRRect(
@@ -54,10 +59,7 @@ class OfferImage extends StatelessWidget {
     }
 
     if (heroTag != null) {
-      return Hero(
-        tag: heroTag!,
-        child: imageWidget,
-      );
+      return Hero(tag: heroTag!, child: imageWidget);
     }
     return imageWidget;
   }

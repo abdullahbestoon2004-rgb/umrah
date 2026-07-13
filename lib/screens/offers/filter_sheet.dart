@@ -32,21 +32,22 @@ class _FilterSheetState extends State<FilterSheet> {
     context.read<AppProvider>().resetFilters();
   }
 
-  int _countMatching() => context.read<AppProvider>().getFilteredOffers(_local).length;
+  int _countMatching() =>
+      context.read<AppProvider>().getFilteredOffers(_local).length;
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: screenHeight * 0.8,
-      ),
+      constraints: BoxConstraints(maxHeight: screenHeight * 0.8),
       decoration: const BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +73,14 @@ class _FilterSheetState extends State<FilterSheet> {
                   const Spacer(),
                   GestureDetector(
                     onTap: _reset,
-                    child: Text(t.filterSheetReset, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+                    child: Text(
+                      t.filterSheetReset,
+                      style: AppTheme.sans(
+                        13,
+                        weight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -83,22 +91,33 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 0),
               child: Row(
                 children: [
-                  Text(t.filterSheetMaxPricePerPerson, style: AppTheme.sans(14, weight: FontWeight.w700)),
+                  Text(
+                    t.filterSheetMaxPricePerPerson,
+                    style: AppTheme.sans(14, weight: FontWeight.w700),
+                  ),
                   const Spacer(),
-                  Text(fmtIqd(_local.priceMax), style: AppTheme.serif(17, color: AppColors.primary)),
+                  Text(
+                    fmtIqd(_local.priceMax),
+                    style: AppTheme.serif(17, color: AppColors.primary),
+                  ),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
               child: SliderTheme(
-                data: SliderTheme.of(context).copyWith(activeTrackColor: AppColors.primary, thumbColor: AppColors.primary, inactiveTrackColor: AppColors.primary.withOpacity(0.15)),
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: AppColors.primary,
+                  thumbColor: AppColors.primary,
+                  inactiveTrackColor: AppColors.primary.withOpacity(0.15),
+                ),
                 child: Slider(
                   min: 500000,
                   max: OfferFilters.priceCeiling,
                   divisions: 45,
                   value: _local.priceMax,
-                  onChanged: (v) => setState(() => _local = _local.copyWith(priceMax: v)),
+                  onChanged: (v) =>
+                      setState(() => _local = _local.copyWith(priceMax: v)),
                 ),
               ),
             ),
@@ -107,8 +126,14 @@ class _FilterSheetState extends State<FilterSheet> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('500,000', style: AppTheme.sans(11, color: AppColors.mutedLight)),
-                  Text('5,000,000+', style: AppTheme.sans(11, color: AppColors.mutedLight)),
+                  Text(
+                    '500,000',
+                    style: AppTheme.sans(11, color: AppColors.mutedLight),
+                  ),
+                  Text(
+                    '5,000,000+',
+                    style: AppTheme.sans(11, color: AppColors.mutedLight),
+                  ),
                 ],
               ),
             ),
@@ -118,11 +143,37 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: t.filterSheetAll, active: _local.transport == 'all', onTap: () => setState(() => _local = _local.copyWith(transport: 'all')))),
+                  Expanded(
+                    child: _Opt(
+                      label: t.filterSheetAll,
+                      active: _local.transport == 'all',
+                      onTap: () => setState(
+                        () => _local = _local.copyWith(transport: 'all'),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: t.filterSheetByAir, icon: Icons.flight_rounded, active: _local.transport == 'plane', onTap: () => setState(() => _local = _local.copyWith(transport: 'plane')))),
+                  Expanded(
+                    child: _Opt(
+                      label: t.filterSheetByAir,
+                      icon: Icons.flight_rounded,
+                      active: _local.transport == 'plane',
+                      onTap: () => setState(
+                        () => _local = _local.copyWith(transport: 'plane'),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: t.filterSheetByCoach, icon: Icons.directions_bus_rounded, active: _local.transport == 'bus', onTap: () => setState(() => _local = _local.copyWith(transport: 'bus')))),
+                  Expanded(
+                    child: _Opt(
+                      label: t.filterSheetByCoach,
+                      icon: Icons.directions_bus_rounded,
+                      active: _local.transport == 'bus',
+                      onTap: () => setState(
+                        () => _local = _local.copyWith(transport: 'bus'),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -132,13 +183,41 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: t.filterSheetAny, active: _local.acc == 'all', onTap: () => setState(() => _local = _local.copyWith(acc: 'all')))),
+                  Expanded(
+                    child: _Opt(
+                      label: t.filterSheetAny,
+                      active: _local.acc == 'all',
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(acc: 'all')),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: '5★', active: _local.acc == '5', onTap: () => setState(() => _local = _local.copyWith(acc: '5')))),
+                  Expanded(
+                    child: _Opt(
+                      label: '5★',
+                      active: _local.acc == '5',
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(acc: '5')),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: '4★', active: _local.acc == '4', onTap: () => setState(() => _local = _local.copyWith(acc: '4')))),
+                  Expanded(
+                    child: _Opt(
+                      label: '4★',
+                      active: _local.acc == '4',
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(acc: '4')),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: '3★', active: _local.acc == '3', onTap: () => setState(() => _local = _local.copyWith(acc: '3')))),
+                  Expanded(
+                    child: _Opt(
+                      label: '3★',
+                      active: _local.acc == '3',
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(acc: '3')),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -149,10 +228,30 @@ class _FilterSheetState extends State<FilterSheet> {
               child: Wrap(
                 spacing: 9,
                 children: [
-                  _Opt(label: t.filterSheetAny, active: _local.dur == 'all', onTap: () => setState(() => _local = _local.copyWith(dur: 'all'))),
-                  _Opt(label: t.filterSheetDuration7to9, active: _local.dur == 'short', onTap: () => setState(() => _local = _local.copyWith(dur: 'short'))),
-                  _Opt(label: t.filterSheetDuration10to14, active: _local.dur == 'mid', onTap: () => setState(() => _local = _local.copyWith(dur: 'mid'))),
-                  _Opt(label: t.filterSheetDuration15Plus, active: _local.dur == 'long', onTap: () => setState(() => _local = _local.copyWith(dur: 'long'))),
+                  _Opt(
+                    label: t.filterSheetAny,
+                    active: _local.dur == 'all',
+                    onTap: () =>
+                        setState(() => _local = _local.copyWith(dur: 'all')),
+                  ),
+                  _Opt(
+                    label: t.filterSheetDuration7to9,
+                    active: _local.dur == 'short',
+                    onTap: () =>
+                        setState(() => _local = _local.copyWith(dur: 'short')),
+                  ),
+                  _Opt(
+                    label: t.filterSheetDuration10to14,
+                    active: _local.dur == 'mid',
+                    onTap: () =>
+                        setState(() => _local = _local.copyWith(dur: 'mid')),
+                  ),
+                  _Opt(
+                    label: t.filterSheetDuration15Plus,
+                    active: _local.dur == 'long',
+                    onTap: () =>
+                        setState(() => _local = _local.copyWith(dur: 'long')),
+                  ),
                 ],
               ),
             ),
@@ -162,11 +261,32 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Opt(label: t.filterSheetAny, active: _local.rating == 0, onTap: () => setState(() => _local = _local.copyWith(rating: 0)))),
+                  Expanded(
+                    child: _Opt(
+                      label: t.filterSheetAny,
+                      active: _local.rating == 0,
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(rating: 0)),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: '★ 4.5+', active: _local.rating == 4.5, onTap: () => setState(() => _local = _local.copyWith(rating: 4.5)))),
+                  Expanded(
+                    child: _Opt(
+                      label: '★ 4.5+',
+                      active: _local.rating == 4.5,
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(rating: 4.5)),
+                    ),
+                  ),
                   const SizedBox(width: 9),
-                  Expanded(child: _Opt(label: '★ 4.8+', active: _local.rating == 4.8, onTap: () => setState(() => _local = _local.copyWith(rating: 4.8)))),
+                  Expanded(
+                    child: _Opt(
+                      label: '★ 4.8+',
+                      active: _local.rating == 4.8,
+                      onTap: () =>
+                          setState(() => _local = _local.copyWith(rating: 4.8)),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -182,13 +302,21 @@ class _FilterSheetState extends State<FilterSheet> {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
-                      BoxShadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 30, offset: const Offset(0, 14)),
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 30,
+                        offset: const Offset(0, 14),
+                      ),
                     ],
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     t.filterSheetShowPackages(_countMatching()),
-                    style: AppTheme.sans(15, weight: FontWeight.w800, color: const Color(0xFFF6F2E9)),
+                    style: AppTheme.sans(
+                      15,
+                      weight: FontWeight.w800,
+                      color: const Color(0xFFF6F2E9),
+                    ),
                   ),
                 ),
               ),
@@ -218,7 +346,12 @@ class _Opt extends StatelessWidget {
   final IconData? icon;
   final bool active;
   final VoidCallback onTap;
-  const _Opt({required this.label, this.icon, required this.active, required this.onTap});
+  const _Opt({
+    required this.label,
+    this.icon,
+    required this.active,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +364,9 @@ class _Opt extends StatelessWidget {
           color: active ? AppColors.primary : AppColors.surface,
           borderRadius: BorderRadius.circular(13),
           border: Border.all(
-            color: active ? AppColors.primary : AppColors.primary.withOpacity(0.16),
+            color: active
+                ? AppColors.primary
+                : AppColors.primary.withOpacity(0.16),
             width: 1.5,
           ),
         ),
@@ -239,7 +374,10 @@ class _Opt extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[Icon(icon, size: 13, color: color), const SizedBox(width: 5)],
+            if (icon != null) ...[
+              Icon(icon, size: 13, color: color),
+              const SizedBox(width: 5),
+            ],
             Text(
               label,
               style: AppTheme.sans(13, weight: FontWeight.w700, color: color),

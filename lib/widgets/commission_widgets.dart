@@ -15,8 +15,11 @@ import 'dashboard/status_chip.dart';
 class CommissionRow extends StatelessWidget {
   final Commission commission;
   final bool showCompanyName;
-  const CommissionRow(
-      {super.key, required this.commission, this.showCompanyName = true});
+  const CommissionRow({
+    super.key,
+    required this.commission,
+    this.showCompanyName = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +39,14 @@ class CommissionRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showCompanyName)
-                  Text(commission.companyName,
-                      style: AppTheme.sans(13, weight: FontWeight.w700)),
-                Text(fmtIqd(commission.amount),
-                    style: AppTheme.serif(16, color: AppColors.primary)),
+                  Text(
+                    commission.companyName,
+                    style: AppTheme.sans(13, weight: FontWeight.w700),
+                  ),
+                Text(
+                  fmtIqd(commission.amount),
+                  style: AppTheme.serif(16, color: AppColors.primary),
+                ),
               ],
             ),
           ),
@@ -56,17 +63,22 @@ class CommissionRow extends StatelessWidget {
                     .read<AppProvider>()
                     .markCommissionCollected(commission.id);
                 if (!ok) {
-                  messenger
-                      .showSnackBar(appSnack(t.actionFailedGeneric, isError: true));
+                  messenger.showSnackBar(
+                    appSnack(t.actionFailedGeneric, isError: true),
+                  );
                 }
               },
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(9)),
-                child: const Icon(Icons.check_rounded,
-                    color: AppColors.primary, size: 16),
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: AppColors.primary,
+                  size: 16,
+                ),
               ),
             ),
           ],
@@ -80,35 +92,45 @@ class CommissionRow extends StatelessWidget {
 class CommissionSummaryCard extends StatelessWidget {
   final String label;
   final double amount;
-  const CommissionSummaryCard(
-      {super.key, required this.label, required this.amount});
+  const CommissionSummaryCard({
+    super.key,
+    required this.label,
+    required this.amount,
+  });
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryDark]),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label,
-                      style: AppTheme.sans(12,
-                          color: Colors.white.withOpacity(0.8))),
-                  const SizedBox(height: 4),
-                  Text(fmtIqd(amount),
-                      style: AppTheme.serif(24, color: Colors.white)),
-                ],
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [AppColors.primary, AppColors.primaryDark],
+      ),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8)),
               ),
-            ),
-            const Icon(Icons.account_balance_wallet_outlined,
-                color: Colors.white, size: 32),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                fmtIqd(amount),
+                style: AppTheme.serif(24, color: Colors.white),
+              ),
+            ],
+          ),
         ),
-      );
+        const Icon(
+          Icons.account_balance_wallet_outlined,
+          color: Colors.white,
+          size: 32,
+        ),
+      ],
+    ),
+  );
 }

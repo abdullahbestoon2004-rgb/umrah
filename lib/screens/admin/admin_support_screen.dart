@@ -42,7 +42,11 @@ class AdminSupportScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, 0, kDashPagePad, kDashCardGap),
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  kDashCardGap,
+                ),
                 child: SupportMessageCard(message: messages[i]),
               ),
               childCount: messages.length,
@@ -82,8 +86,11 @@ class SupportMessageCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.person_outline_rounded,
-                  color: AppColors.primary, size: 16),
+              const Icon(
+                Icons.person_outline_rounded,
+                color: AppColors.primary,
+                size: 16,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 // The sender's address is the only way to reply, so make it
@@ -97,16 +104,21 @@ class SupportMessageCard extends StatelessWidget {
                         },
                   child: Text(
                     sender,
-                    style: AppTheme.sans(12.5,
-                        weight: FontWeight.w700, color: AppColors.primary),
+                    style: AppTheme.sans(
+                      12.5,
+                      weight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(_timeAgo(t),
-                  style: AppTheme.sans(11, color: AppColors.mutedLight)),
+              Text(
+                _timeAgo(t),
+                style: AppTheme.sans(11, color: AppColors.mutedLight),
+              ),
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: () async {
@@ -115,8 +127,10 @@ class SupportMessageCard extends StatelessWidget {
                       .read<AppProvider>()
                       .deleteSupportMessage(message.id);
                   messenger.showSnackBar(
-                    appSnack(ok ? t.adminSupportResolved : t.adminActionFailed,
-                        isError: !ok),
+                    appSnack(
+                      ok ? t.adminSupportResolved : t.adminActionFailed,
+                      isError: !ok,
+                    ),
                   );
                 },
                 child: Container(
@@ -126,15 +140,20 @@ class SupportMessageCard extends StatelessWidget {
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(9),
                   ),
-                  child: const Icon(Icons.check_rounded,
-                      color: AppColors.primary, size: 16),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: AppColors.primary,
+                    size: 16,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(message.message,
-              style: AppTheme.sans(13.5, color: AppColors.ink)),
+          Text(
+            message.message,
+            style: AppTheme.sans(13.5, color: AppColors.ink),
+          ),
         ],
       ),
     );

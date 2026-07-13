@@ -24,48 +24,56 @@ class AttentionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          width: 220,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.09),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withOpacity(0.24)),
+    onTap: onTap,
+    behavior: HitTestBehavior.opaque,
+    child: Container(
+      width: 220,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.09),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.24)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: Colors.white, size: 20),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(11),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$count', style: AppTheme.serif(18)),
+                Text(
+                  label,
+                  style: AppTheme.sans(
+                    11,
+                    weight: FontWeight.w700,
+                    color: AppColors.ink,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: Icon(icon, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('$count', style: AppTheme.serif(18)),
-                    Text(label,
-                        style: AppTheme.sans(11,
-                            weight: FontWeight.w700, color: AppColors.ink),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_ios_rounded,
-                  color: AppColors.muted, size: 13),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+          const Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: AppColors.muted,
+            size: 13,
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 /// Horizontal strip of attention cards.
@@ -75,14 +83,13 @@ class AttentionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 86,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: kDashPagePad),
-          itemCount: cards.length,
-          separatorBuilder: (_, _) => const SizedBox(width: kDashCardGap),
-          itemBuilder: (_, i) => cards[i],
-        ),
-      );
+    height: 86,
+    child: ListView.separated(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: kDashPagePad),
+      itemCount: cards.length,
+      separatorBuilder: (_, _) => const SizedBox(width: kDashCardGap),
+      itemBuilder: (_, i) => cards[i],
+    ),
+  );
 }

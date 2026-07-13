@@ -10,6 +10,8 @@ import 'offers/offers_screen.dart';
 import 'bookings/bookings_screen.dart';
 import 'profile/profile_screen.dart';
 import 'profile/reset_password_overlay.dart';
+import 'admin/admin_screen.dart';
+import 'agency/agency_dashboard_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -66,6 +68,10 @@ class _MainScreenState extends State<MainScreen> {
     if (provider.needsPasswordReset) {
       return const ResetPasswordOverlay();
     }
+    // The client shell (and its prayer-time header) stays exactly as-is.
+    // Signed-in operational roles enter their own isolated navigation shell.
+    if (provider.isAdminUser) return const AdminScreen();
+    if (provider.isAgencyUser) return const AgencyDashboardScreen();
     final tab = provider.currentTab;
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -114,7 +120,9 @@ class _BottomNav extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background.withOpacity(0.96),
-        border: const Border(top: BorderSide(color: Color(0x1A0F5C4D), width: 1.5)),
+        border: const Border(
+          top: BorderSide(color: Color(0x1A0F5C4D), width: 1.5),
+        ),
       ),
       child: SafeArea(
         top: false,
@@ -122,11 +130,36 @@ class _BottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
             children: [
-              _NavItem(icon: Icons.home_rounded,          label: t.navHome,     active: currentIndex == 0, onTap: () => provider.setTab(0)),
-              _NavItem(icon: Icons.business_rounded,      label: t.navAgencies, active: currentIndex == 1, onTap: () => provider.setTab(1)),
-              _NavItem(icon: Icons.local_offer_rounded,   label: t.navOffers,   active: currentIndex == 2, onTap: () => provider.setTab(2)),
-              _NavItem(icon: Icons.calendar_month_rounded,label: t.navBookings, active: currentIndex == 3, onTap: () => provider.setTab(3)),
-              _NavItem(icon: Icons.person_rounded,        label: t.navProfile,  active: currentIndex == 4, onTap: () => provider.setTab(4)),
+              _NavItem(
+                icon: Icons.home_rounded,
+                label: t.navHome,
+                active: currentIndex == 0,
+                onTap: () => provider.setTab(0),
+              ),
+              _NavItem(
+                icon: Icons.business_rounded,
+                label: t.navAgencies,
+                active: currentIndex == 1,
+                onTap: () => provider.setTab(1),
+              ),
+              _NavItem(
+                icon: Icons.local_offer_rounded,
+                label: t.navOffers,
+                active: currentIndex == 2,
+                onTap: () => provider.setTab(2),
+              ),
+              _NavItem(
+                icon: Icons.calendar_month_rounded,
+                label: t.navBookings,
+                active: currentIndex == 3,
+                onTap: () => provider.setTab(3),
+              ),
+              _NavItem(
+                icon: Icons.person_rounded,
+                label: t.navProfile,
+                active: currentIndex == 4,
+                onTap: () => provider.setTab(4),
+              ),
             ],
           ),
         ),
@@ -140,7 +173,12 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool active;
   final VoidCallback onTap;
-  const _NavItem({required this.icon, required this.label, required this.active, required this.onTap});
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -157,13 +195,18 @@ class _NavItem extends StatelessWidget {
               curve: Curves.easeOut,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
               decoration: BoxDecoration(
-                color: active ? AppColors.primary.withOpacity(0.12) : Colors.transparent,
+                color: active
+                    ? AppColors.primary.withOpacity(0.12)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 3),
-            Text(label, style: AppTheme.sans(10, weight: FontWeight.w700, color: color)),
+            Text(
+              label,
+              style: AppTheme.sans(10, weight: FontWeight.w700, color: color),
+            ),
           ],
         ),
       ),

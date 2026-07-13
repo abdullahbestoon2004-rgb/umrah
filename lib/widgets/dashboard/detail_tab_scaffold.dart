@@ -33,8 +33,7 @@ class DetailTabScaffold extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
                 child: Row(
                   children: [
                     DashIconButton(
@@ -43,10 +42,12 @@ class DetailTabScaffold extends StatelessWidget {
                     ),
                     const SizedBox(width: 14),
                     Expanded(
-                      child: Text(title,
-                          style: AppTheme.serif(24),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        title,
+                        style: AppTheme.serif(24),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     if (titleTrailing != null) titleTrailing!,
                   ],
@@ -55,12 +56,20 @@ class DetailTabScaffold extends StatelessWidget {
               if (header != null)
                 Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(
-                      kDashPagePad, 10, kDashPagePad, 0),
+                    kDashPagePad,
+                    10,
+                    kDashPagePad,
+                    0,
+                  ),
                   child: header!,
                 ),
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, 16, kDashPagePad, 0),
+                  kDashPagePad,
+                  16,
+                  kDashPagePad,
+                  0,
+                ),
                 child: Container(
                   height: 48,
                   decoration: BoxDecoration(
@@ -78,10 +87,11 @@ class DetailTabScaffold extends StatelessWidget {
                     dividerColor: Colors.transparent,
                     labelColor: Colors.white,
                     unselectedLabelColor: AppColors.muted,
-                    labelStyle:
-                        AppTheme.sans(13.5, weight: FontWeight.w700),
-                    unselectedLabelStyle:
-                        AppTheme.sans(13.5, weight: FontWeight.w600),
+                    labelStyle: AppTheme.sans(13.5, weight: FontWeight.w700),
+                    unselectedLabelStyle: AppTheme.sans(
+                      13.5,
+                      weight: FontWeight.w600,
+                    ),
                     tabs: [for (final label in tabs) Tab(text: label)],
                   ),
                 ),

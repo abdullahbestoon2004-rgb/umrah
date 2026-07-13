@@ -30,28 +30,37 @@ class SectionHeader extends StatelessWidget {
     final t = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsetsDirectional.fromSTEB(
-          kDashPagePad, firstSection ? kDashCardGap : kDashSectionGap,
-          kDashPagePad, kDashCardGap),
+        kDashPagePad,
+        firstSection ? kDashCardGap : kDashSectionGap,
+        kDashPagePad,
+        kDashCardGap,
+      ),
       child: Row(
         children: [
           Flexible(
-            child: Text(title,
-                style: AppTheme.serif(20),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
+            child: Text(
+              title,
+              style: AppTheme.serif(20),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           if ((count ?? 0) > 0) ...[
             const SizedBox(width: 8),
             Container(
-              padding:
-                  const EdgeInsetsDirectional.fromSTEB(9, 3, 9, 3),
+              padding: const EdgeInsetsDirectional.fromSTEB(9, 3, 9, 3),
               decoration: BoxDecoration(
                 color: accent.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text('$count',
-                  style: AppTheme.sans(11,
-                      weight: FontWeight.w800, color: accent)),
+              child: Text(
+                '$count',
+                style: AppTheme.sans(
+                  11,
+                  weight: FontWeight.w800,
+                  color: accent,
+                ),
+              ),
             ),
           ],
           const Spacer(),
@@ -61,9 +70,14 @@ class SectionHeader extends StatelessWidget {
             GestureDetector(
               onTap: onViewAll,
               behavior: HitTestBehavior.opaque,
-              child: Text(t.homeViewAll,
-                  style: AppTheme.sans(12.5,
-                      weight: FontWeight.w700, color: AppColors.primary)),
+              child: Text(
+                t.homeViewAll,
+                style: AppTheme.sans(
+                  12.5,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
         ],
       ),

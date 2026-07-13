@@ -2126,6 +2126,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bookingChooseRoom => 'اختر نوع الغرفة';
 
   @override
+  String get bookingChooseMeal => 'اختر نوع الوجبات';
+
+  @override
+  String get bookingMealPreference => 'تفضيل الوجبات لهذا الحجز';
+
+  @override
   String get bookingRoomDouble => 'غرفة ثنائية';
 
   @override
@@ -2213,6 +2219,39 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bookingSummaryRoom => 'الغرفة';
 
   @override
+  String get bookingSummaryMeal => 'الوجبات';
+
+  @override
+  String get bookingPassportDocuments => 'جوازات سفر المسافرين';
+
+  @override
+  String bookingPassportDocumentsBody(int count) {
+    return 'بيانات الجواز مطلوبة لجميع المسافرين وعددهم $count';
+  }
+
+  @override
+  String get bookingPassportPrivacy =>
+      'أضف بيانات الجواز لكل مسافر بشكل منفصل. تُحفظ الصور بشكل خاص لهذا الحجز فقط.';
+
+  @override
+  String get bookingPassportRequired => 'أدخل رقم الجواز واختر صورة.';
+
+  @override
+  String get bookingPassportSaved => 'تم حفظ بيانات الجواز.';
+
+  @override
+  String get bookingPassportChooseImage => 'اختر صورة الجواز';
+
+  @override
+  String get bookingPassportImageUploaded => 'تم رفع صورة الجواز';
+
+  @override
+  String get bookingPhotoExamples => 'أمثلة الصور';
+
+  @override
+  String get bookingTakeRequiredPhotos => 'التقط صورة شخصية وصورة الجواز';
+
+  @override
   String get payFibSub => 'ادفع مباشرة عبر تطبيق FIB';
 
   @override
@@ -2248,4 +2287,556 @@ class AppLocalizationsAr extends AppLocalizations {
   String bookingPilgrimsSummary(int count, String room) {
     return '$count حجاج · $room';
   }
+
+  @override
+  String get workflowSubmitForReview => 'إرسال للمراجعة';
+
+  @override
+  String get workflowSubmitted => 'تم الإرسال للمراجعة.';
+
+  @override
+  String get workflowSubmitCompanyBody => 'أكمل ملف الشركة ثم أرسله للتحقق.';
+
+  @override
+  String get workflowChangesRequired => 'التغييرات مطلوبة';
+
+  @override
+  String get workflowPackagesToReview => 'الباقات قيد المراجعة';
+
+  @override
+  String get workflowNoPackagesToReview => 'لا توجد باقات بانتظار المراجعة';
+
+  @override
+  String get workflowReasonRequired => 'السبب مطلوب';
+
+  @override
+  String get workflowReasonHint => 'اشرح ما الذي يجب تغييره';
+
+  @override
+  String get workflowSendDecision => 'إرسال القرار';
+
+  @override
+  String get workflowDecisionSaved => 'تم حفظ القرار.';
+
+  @override
+  String get workflowAwaitingPayment => 'بانتظار الدفع';
+
+  @override
+  String get workflowReadyToTravel => 'جاهز للسفر';
+
+  @override
+  String get workflowInProgress => 'الرحلة جارية';
+
+  @override
+  String get workflowRejected => 'مرفوض';
+
+  @override
+  String get workflowExpired => 'منتهي الصلاحية';
+
+  @override
+  String get workflowMarkReady => 'تحديد كجاهز';
+
+  @override
+  String get workflowStartTrip => 'بدء الرحلة';
+
+  @override
+  String get workflowStatusUpdated => 'تم تحديث حالة الحجز.';
+
+  @override
+  String get workflowCompanyReviewTitle => 'تم تحديث التحقق من الشركة';
+
+  @override
+  String workflowCompanyReviewBody(Object status) {
+    return 'حالة طلب شركتك الآن: $status';
+  }
+
+  @override
+  String get workflowPackageReviewTitle => 'تم تحديث مراجعة الباقة';
+
+  @override
+  String workflowPackageReviewBody(Object status) {
+    return 'حالة باقتك الآن: $status';
+  }
+
+  @override
+  String get workflowConfirmCash => 'تأكيد استلام النقد';
+
+  @override
+  String get workflowCashConfirmed => 'تم تأكيد الدفع النقدي.';
+
+  @override
+  String get workflowDraftSaved => 'تم حفظ الباقة كمسودة.';
+
+  @override
+  String get workflowCapacity => 'سعة المسافرين';
+
+  @override
+  String get workflowDepartureDate => 'تاريخ المغادرة';
+
+  @override
+  String get workflowReturnDate => 'تاريخ العودة';
+
+  @override
+  String get workflowPayNow => 'ادفع الآن';
+
+  @override
+  String get workflowPaymentStartFailed => 'تعذر بدء عملية الدفع.';
+
+  @override
+  String get workflowFibPaymentTitle => 'الدفع عبر FIB';
+
+  @override
+  String get workflowFibPaymentBody =>
+      'افتح تطبيق FIB واستخدم رمز الدفع. سيتم تأكيد الحجز تلقائياً بعد تحقق FIB من الدفع.';
+
+  @override
+  String get workflowCopyPayment => 'نسخ تفاصيل الدفع';
+
+  @override
+  String get addEditOfferHotelMakkahDescription => 'وصف فندق مكة';
+
+  @override
+  String get addEditOfferHotelMadinahDescription => 'وصف فندق المدينة';
+
+  @override
+  String get addEditOfferHotelDescriptionHint =>
+      'صف الموقع والمرافق والخدمة والمعالم القريبة';
+
+  @override
+  String get addEditOfferAvailableRooms => 'أنواع الغرف المتاحة';
+
+  @override
+  String get addEditOfferAvailableRoomsHelper =>
+      'اختر جميع أحجام الغرف التي يمكن للعملاء حجزها ضمن هذه الباقة.';
+
+  @override
+  String get addEditOfferChooseRoomType =>
+      'اختر نوع غرفة متاحاً واحداً على الأقل.';
+
+  @override
+  String bookingRoomOccupancy(int count) {
+    return 'غرفة لـ $count أشخاص';
+  }
+
+  @override
+  String get offerFormCommercialPolicy => 'السياسة والدفع';
+
+  @override
+  String get offerFormTitleKu => 'عنوان الباقة (كردي)';
+
+  @override
+  String get offerFormTitleAr => 'عنوان الباقة (عربي)';
+
+  @override
+  String get offerFormTitleEn => 'عنوان الباقة (إنجليزي)';
+
+  @override
+  String get offerFormOverviewKu => 'نبذة (كردي)';
+
+  @override
+  String get offerFormOverviewAr => 'نبذة (عربي)';
+
+  @override
+  String get offerFormOverviewEn => 'نبذة (إنجليزي)';
+
+  @override
+  String get offerFormOverviewHint => 'اشرح ما يميز هذه الباقة';
+
+  @override
+  String get offerFormPackageTier => 'فئة الباقة';
+
+  @override
+  String get offerTierEconomy => 'اقتصادية';
+
+  @override
+  String get offerTierStandard => 'قياسية';
+
+  @override
+  String get offerTierVip => 'VIP';
+
+  @override
+  String get offerFormGroupType => 'نوع المجموعة';
+
+  @override
+  String get offerGroupFamily => 'عائلية';
+
+  @override
+  String get offerGroupIndividual => 'فردية';
+
+  @override
+  String get offerGroupGroup => 'مجموعة';
+
+  @override
+  String get offerFormSeason => 'الموسم';
+
+  @override
+  String get offerSeasonRamadan => 'رمضان';
+
+  @override
+  String get offerSeasonRegular => 'اعتيادي';
+
+  @override
+  String get offerSeasonShawwal => 'شوال';
+
+  @override
+  String get offerSeasonOther => 'أخرى';
+
+  @override
+  String get offerFormDepartureAirport => 'مطار المغادرة';
+
+  @override
+  String get offerFormFlightType => 'نوع الرحلة';
+
+  @override
+  String get offerFlightDirect => 'مباشرة';
+
+  @override
+  String get offerFlightConnecting => 'ترانزيت';
+
+  @override
+  String get offerFormBusBetweenCities => 'يشمل النقل بين مكة والمدينة';
+
+  @override
+  String get offerFormAirportTransfers => 'يشمل النقل من وإلى المطار';
+
+  @override
+  String get offerFormOccupancyPricing => 'سعر الشخص حسب إشغال الغرفة';
+
+  @override
+  String offerFormOccupancyPrice(String room) {
+    return 'سعر $room (د.ع)';
+  }
+
+  @override
+  String get offerFormDepositAmount => 'مبلغ العربون (د.ع)';
+
+  @override
+  String get offerFormNonRefundableDeposit => 'العربون غير قابل للاسترداد';
+
+  @override
+  String get offerFormDepositTerms => 'شروط العربون';
+
+  @override
+  String get offerFormDepositTermsHint => 'وضح موعد دفع المبلغ المتبقي';
+
+  @override
+  String get offerFormCancellationPolicy => 'سياسة الإلغاء والاسترداد';
+
+  @override
+  String get offerFormCancellationPolicyHint =>
+      'وضح مواعيد الإلغاء والرسوم ومدة الاسترداد';
+
+  @override
+  String get offerFormAcceptedPayments => 'طرق الدفع المقبولة';
+
+  @override
+  String get offerSoldOut => 'نفدت المقاعد';
+
+  @override
+  String offerFewSeatsLeft(int count) {
+    return 'متبقي $count مقاعد فقط';
+  }
+
+  @override
+  String get offerAvailable => 'متاح';
+
+  @override
+  String get offerOccupancyPricing => 'أسعار الغرف';
+
+  @override
+  String get offerTrustAndPolicy => 'الثقة والسياسة والدفع';
+
+  @override
+  String offerDepositLabel(String amount) {
+    return 'العربون: $amount';
+  }
+
+  @override
+  String offerAcceptedPaymentsLabel(String methods) {
+    return 'المقبول: $methods';
+  }
+
+  @override
+  String get offerCapacitySoldOut => 'نفدت المقاعد';
+
+  @override
+  String offerCapacityFewLeft(int count) {
+    return 'متبقي $count مقاعد فقط';
+  }
+
+  @override
+  String get offerCapacityAvailable => 'متاح';
+
+  @override
+  String offerCapacityRemaining(int count) {
+    return 'متبقي $count مقعداً';
+  }
+
+  @override
+  String offerHotelNights(int count) {
+    return '$count ليالٍ';
+  }
+
+  @override
+  String offerDepositRequired(String amount) {
+    return 'العربون المطلوب: $amount';
+  }
+
+  @override
+  String get offerDepositNonRefundable => 'العربون غير قابل للاسترداد';
+
+  @override
+  String offerAcceptedPaymentList(String methods) {
+    return 'طرق الدفع المقبولة: $methods';
+  }
+
+  @override
+  String get agencyAccessUnderReviewTitle => 'وكالتك قيد المراجعة';
+
+  @override
+  String get agencyAccessUnderReviewBody =>
+      'يمكنك تسجيل الدخول أثناء تحقق الإدارة من التسجيل والمستندات. ستُفتح لوحة التحكم بعد الموافقة.';
+
+  @override
+  String get agencyAccessRejectedTitle => 'التسجيل يحتاج إلى مراجعة';
+
+  @override
+  String get agencyAccessRejectedBody =>
+      'لم تتم الموافقة على التسجيل. راجع ملاحظات الإدارة وأعد إرسال المستندات.';
+
+  @override
+  String get agencyAccessSuspendedTitle => 'تم تعليق وصول الوكالة';
+
+  @override
+  String get agencyAccessSuspendedBody =>
+      'تم إخفاء عروضك أثناء مراجعة التعليق. تواصل مع دعم المنصة للتفاصيل.';
+
+  @override
+  String get companyTrustSignals => 'الثقة والتحقق';
+
+  @override
+  String companyLicenseNumber(String number) {
+    return 'رقم الترخيص: $number';
+  }
+
+  @override
+  String companyPilgrimsServed(int count) {
+    return 'خدمت أكثر من $count حاج';
+  }
+
+  @override
+  String companyResponseTime(String time) {
+    return 'ترد عادة خلال $time';
+  }
+
+  @override
+  String get companyContactLocation => 'التواصل والموقع';
+
+  @override
+  String get companyAgencyReply => 'رد الوكالة';
+
+  @override
+  String get companyReportAgency => 'الإبلاغ عن هذه الوكالة';
+
+  @override
+  String get companyReportReason => 'السبب';
+
+  @override
+  String get companyReportDetails => 'التفاصيل (اختياري)';
+
+  @override
+  String get companyReportSubmit => 'إرسال البلاغ';
+
+  @override
+  String get companyReportSubmitted => 'تم إرسال البلاغ للمراجعة';
+
+  @override
+  String get adminBookingsPayments => 'الحجوزات والمدفوعات';
+
+  @override
+  String get adminNoBookings => 'لا توجد حجوزات';
+
+  @override
+  String get bookingStageRequested => 'مطلوب';
+
+  @override
+  String get bookingStageConfirmed => 'مؤكد';
+
+  @override
+  String get bookingStageCompleted => 'مكتمل';
+
+  @override
+  String get bookingStageCancelled => 'ملغى';
+
+  @override
+  String get agencyMessages => 'الرسائل';
+
+  @override
+  String get agencyMessagesEmpty => 'لا توجد استفسارات بعد';
+
+  @override
+  String get agencyMessagesEmptyBody => 'ستظهر أسئلة العملاء هنا فوراً.';
+
+  @override
+  String agencyInquiryNumber(int number) {
+    return 'استفسار رقم $number';
+  }
+
+  @override
+  String get agencyInquiryNoMessages => 'لا توجد رسائل';
+
+  @override
+  String get agencyReplyHint => 'اكتب رداً…';
+
+  @override
+  String get adminAgencyBadges => 'الشارات اليدوية';
+
+  @override
+  String get badgeVerified => 'موثّقة';
+
+  @override
+  String get badgePremiumPartner => 'شريك مميز';
+
+  @override
+  String get agencyDocumentsTitle => 'المستندات والتحقق';
+
+  @override
+  String get agencyDocumentsMenuSubtitle => 'رفع أو تجديد مستندات الترخيص';
+
+  @override
+  String get agencyDocumentsBody =>
+      'ارفع صوراً واضحة لمستندات العمل السارية. يمكن للإدارة معاينتها بأمان أثناء المراجعة.';
+
+  @override
+  String get agencyDocumentType => 'نوع المستند';
+
+  @override
+  String get agencyDocumentLicense => 'ترخيص وكالة السفر';
+
+  @override
+  String get agencyDocumentRegistration => 'تسجيل الشركة';
+
+  @override
+  String get agencyDocumentOffice => 'التحقق من المكتب';
+
+  @override
+  String get agencyDocumentChoose => 'اختر صورة المستند';
+
+  @override
+  String get agencyDocumentUpload => 'رفع المستند';
+
+  @override
+  String get agencyDocumentUploaded => 'تم رفع المستند للمراجعة';
+
+  @override
+  String get agencyDocumentsResubmit => 'رفع أو إعادة إرسال المستندات';
+
+  @override
+  String get adminNoAgencyDocuments => 'لم تُرفع مستندات بعد';
+
+  @override
+  String get agencyDocumentStatusPending => 'قيد المراجعة';
+
+  @override
+  String get agencyDocumentStatusApproved => 'مقبول';
+
+  @override
+  String get agencyDocumentStatusRejected => 'مرفوض';
+
+  @override
+  String get adminRequestMoreInfo => 'طلب معلومات إضافية';
+
+  @override
+  String get adminMoreInfoRequested => 'تم إرسال طلب المعلومات';
+
+  @override
+  String get identityVerification => 'التحقق من الهوية';
+
+  @override
+  String get identityVerificationTitle => 'تحقق من هويتك';
+
+  @override
+  String get identityVerificationBody =>
+      'ارفع صورة واضحة لجواز السفر وصورة شخصية. تُحفظ مستنداتك بأمان وتُراجع بشكل خاص.';
+
+  @override
+  String get identityPassportPhoto => 'صورة جواز السفر';
+
+  @override
+  String get identityPassportBody => 'صورة واضحة لصفحة البيانات في جواز سفرك';
+
+  @override
+  String get identitySelfiePhoto => 'صورة شخصية';
+
+  @override
+  String get identitySelfieBody =>
+      'صورة واضحة لك وأنت تنظر مباشرة إلى الكاميرا';
+
+  @override
+  String get identityExampleTitle => 'مثال للصورة والتعليمات';
+
+  @override
+  String get identityPassportInstruction1 =>
+      'أظهر صفحة البيانات كاملة مع الزوايا الأربع.';
+
+  @override
+  String get identityPassportInstruction2 =>
+      'استخدم إضاءة جيدة وتجنب الوهج والظلال.';
+
+  @override
+  String get identityPassportInstruction3 =>
+      'تأكد من أن جميع التفاصيل واضحة وقابلة للقراءة.';
+
+  @override
+  String get identitySelfieInstruction1 =>
+      'انظر مباشرة إلى الكاميرا في إضاءة جيدة.';
+
+  @override
+  String get identitySelfieInstruction2 =>
+      'اجعل وجهك كاملاً ظاهراً وفي منتصف الصورة.';
+
+  @override
+  String get identitySelfieInstruction3 =>
+      'لا ترتدِ قبعة أو نظارة شمسية أو غطاء للوجه.';
+
+  @override
+  String get identityClose => 'إغلاق';
+
+  @override
+  String get identityContinue => 'متابعة';
+
+  @override
+  String get identityChooseSource => 'اختر مصدر الصورة';
+
+  @override
+  String get identityCamera => 'التقط صورة';
+
+  @override
+  String get identityGallery => 'اختر من المعرض';
+
+  @override
+  String get identityNoPhoto => 'لم يتم اختيار صورة';
+
+  @override
+  String get identityViewExample => 'عرض المثال';
+
+  @override
+  String get identityUploadPhoto => 'رفع الصورة';
+
+  @override
+  String get identityChangePhoto => 'تغيير الصورة';
+
+  @override
+  String get identitySubmit => 'إرسال للتحقق';
+
+  @override
+  String get identitySubmitted => 'تم إرسال مستندات هويتك للمراجعة.';
+
+  @override
+  String get identitySignInRequired =>
+      'يرجى تسجيل الدخول قبل إرسال مستندات الهوية.';
+
+  @override
+  String get identityUploadFailed =>
+      'تعذر رفع المستندات. يرجى المحاولة مرة أخرى.';
 }

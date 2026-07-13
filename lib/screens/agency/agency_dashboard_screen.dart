@@ -8,8 +8,9 @@ import '../../l10n/generated/app_localizations.dart';
 import 'agency_overview_tab.dart';
 import 'agency_trips_tab.dart';
 import 'agency_bookings_tab.dart';
-import 'agency_money_tab.dart';
 import 'agency_profile_tab.dart';
+import 'agency_messages_tab.dart';
+import 'agency_documents_screen.dart';
 
 /// Agency control panel, restructured as a 5-tab shell:
 /// Overview · Trips · Bookings · Money · Profile.
@@ -30,6 +31,7 @@ class _AgencyDashboardScreenState extends State<AgencyDashboardScreen> {
       final p = context.read<AppProvider>();
       p.loadAgencyBookings();
       p.loadCommissions();
+      p.loadAgencyInquiries();
     });
   }
 
@@ -41,33 +43,136 @@ class _AgencyDashboardScreenState extends State<AgencyDashboardScreen> {
     final provider = context.watch<AppProvider>();
     final company = provider.agencyCompany;
     if (company == null) return _NoCompanyState(provider: provider);
+    if (!company.isActive) {
+      return _AgencyAccessState(companyStatus: company.status);
+    }
 
     return DashboardShell(
       index: _index,
       onSelect: _goToTab,
       destinations: [
         DashboardDestination(
-            icon: Icons.space_dashboard_rounded, label: t.tabOverview),
+          icon: Icons.space_dashboard_rounded,
+          label: t.tabOverview,
+        ),
         DashboardDestination(
-            icon: Icons.luggage_rounded, label: t.promoteTabTrips),
+          icon: Icons.luggage_rounded,
+          label: t.promoteTabTrips,
+        ),
         DashboardDestination(
           icon: Icons.receipt_long_outlined,
           label: t.navBookings,
           badge: provider.pendingBookingCount,
         ),
         DashboardDestination(
-            icon: Icons.account_balance_wallet_rounded,
-            label: t.adminActionFinance),
-        DashboardDestination(
-            icon: Icons.person_rounded, label: t.navProfile),
+          icon: Icons.forum_outlined,
+          label: t.agencyMessages,
+        ),
+        DashboardDestination(icon: Icons.more_horiz_rounded, label: t.tabMore),
       ],
       pages: [
         AgencyOverviewTab(onGoToTab: _goToTab),
         const AgencyTripsTab(),
         const AgencyBookingsTab(),
-        const AgencyMoneyTab(),
+        const AgencyMessagesTab(),
         const AgencyProfileTab(),
       ],
+    );
+  }
+}
+
+class _AgencyAccessState extends StatelessWidget {
+  final String companyStatus;
+  const _AgencyAccessState({required this.companyStatus});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final isRejected = companyStatus == 'rejected';
+    final isSuspended = companyStatus == 'suspended';
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color:
+                        (isRejected || isSuspended
+                                ? AppColors.errorRed
+                                : AppColors.gold)
+                            .withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuspended
+                        ? Icons.block_rounded
+                        : isRejected
+                        ? Icons.error_outline_rounded
+                        : Icons.hourglass_top_rounded,
+                    size: 34,
+                    color: isRejected || isSuspended
+                        ? AppColors.errorRed
+                        : AppColors.gold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  isSuspended
+                      ? t.agencyAccessSuspendedTitle
+                      : isRejected
+                      ? t.agencyAccessRejectedTitle
+                      : t.agencyAccessUnderReviewTitle,
+                  style: AppTheme.serif(24),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  isSuspended
+                      ? t.agencyAccessSuspendedBody
+                      : isRejected
+                      ? t.agencyAccessRejectedBody
+                      : t.agencyAccessUnderReviewBody,
+                  style: AppTheme.sans(
+                    13.5,
+                    color: AppColors.muted,
+                  ).copyWith(height: 1.55),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AgencyDocumentsScreen(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.upload_file_rounded),
+                  label: Text(t.agencyDocumentsResubmit),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: provider.retryAgencyCompany,
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(t.retry),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: provider.agencyLogout,
+                  child: Text(t.profileAgencyLogout),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -105,45 +210,67 @@ class _NoCompanyStateState extends State<_NoCompanyState> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.business_center_outlined,
-                    size: 48, color: AppColors.mutedLight),
+                const Icon(
+                  Icons.business_center_outlined,
+                  size: 48,
+                  color: AppColors.mutedLight,
+                ),
                 const SizedBox(height: 16),
-                Text(_title(lang),
-                    style: AppTheme.serif(20), textAlign: TextAlign.center),
+                Text(
+                  _title(lang),
+                  style: AppTheme.serif(20),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 6),
-                Text(_body(lang),
-                    style: AppTheme.sans(13, color: AppColors.muted),
-                    textAlign: TextAlign.center),
+                Text(
+                  _body(lang),
+                  style: AppTheme.sans(13, color: AppColors.muted),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: _retrying ? null : _retry,
                   child: Container(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(24, 13, 24, 13),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      24,
+                      13,
+                      24,
+                      13,
+                    ),
                     decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(13)),
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(13),
+                    ),
                     child: _retrying
                         ? const SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2.5))
-                        : Text(_retryLabel(lang),
-                            style: AppTheme.sans(13,
-                                weight: FontWeight.w700,
-                                color: const Color(0xFFF6F2E9))),
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Text(
+                            _retryLabel(lang),
+                            style: AppTheme.sans(
+                              13,
+                              weight: FontWeight.w700,
+                              color: const Color(0xFFF6F2E9),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 14),
                 GestureDetector(
-                  onTap: () {
-                    widget.provider.agencyLogout();
-                    Navigator.pop(context);
-                  },
-                  child: Text(_signOutLabel(lang),
-                      style: AppTheme.sans(13,
-                          weight: FontWeight.w700, color: AppColors.muted)),
+                  onTap: widget.provider.agencyLogout,
+                  child: Text(
+                    _signOutLabel(lang),
+                    style: AppTheme.sans(
+                      13,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -29,17 +29,27 @@ class PaymentMethodsScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 42, height: 42,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(13),
                         border: Border.all(color: AppColors.border, width: 1.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(t.preferredPaymentTitle, style: AppTheme.serif(26))),
+                  Expanded(
+                    child: Text(
+                      t.preferredPaymentTitle,
+                      style: AppTheme.serif(26),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -47,7 +57,13 @@ class PaymentMethodsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  Text(t.preferredPaymentBody, style: AppTheme.sans(13, color: AppColors.muted).copyWith(height: 1.5)),
+                  Text(
+                    t.preferredPaymentBody,
+                    style: AppTheme.sans(
+                      13,
+                      color: AppColors.muted,
+                    ).copyWith(height: 1.5),
+                  ),
                   const SizedBox(height: 18),
                   _MethodTile(
                     icon: Icons.payments_outlined,
@@ -94,8 +110,11 @@ class _MethodTile extends StatelessWidget {
   final String current;
   final VoidCallback onTap;
   const _MethodTile({
-    required this.icon, required this.label, required this.value,
-    required this.current, required this.onTap,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.current,
+    required this.onTap,
   });
 
   @override
@@ -106,14 +125,20 @@ class _MethodTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         decoration: BoxDecoration(
-          color: active ? AppColors.primary.withOpacity(0.06) : AppColors.surface,
+          color: active
+              ? AppColors.primary.withOpacity(0.06)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: active ? AppColors.primary : AppColors.border, width: 1.5),
+          border: Border.all(
+            color: active ? AppColors.primary : AppColors.border,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(11),
@@ -121,9 +146,16 @@ class _MethodTile extends StatelessWidget {
               child: Icon(icon, color: AppColors.primary, size: 20),
             ),
             const SizedBox(width: 13),
-            Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600))),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.sans(14, weight: FontWeight.w600),
+              ),
+            ),
             Icon(
-              active ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+              active
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_off_rounded,
               color: active ? AppColors.primary : AppColors.mutedLight,
               size: 22,
             ),

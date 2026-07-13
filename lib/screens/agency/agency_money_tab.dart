@@ -32,28 +32,42 @@ class AgencyMoneyTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, kDashCardGap, kDashPagePad, 0),
+              kDashPagePad,
+              kDashCardGap,
+              kDashPagePad,
+              0,
+            ),
             child: owed > 0
                 ? CommissionSummaryCard(
-                    label: t.agencyMoneyYouOwe, amount: owed)
+                    label: t.agencyMoneyYouOwe,
+                    amount: owed,
+                  )
                 : Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withOpacity(0.09),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: AppColors.primary.withOpacity(0.24)),
+                        color: AppColors.primary.withOpacity(0.24),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle_rounded,
-                            color: AppColors.primary, size: 22),
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
                         const SizedBox(width: 11),
                         Expanded(
-                          child: Text(t.agencyMoneySettled,
-                              style: AppTheme.sans(12.5,
-                                  weight: FontWeight.w700,
-                                  color: AppColors.ink)),
+                          child: Text(
+                            t.agencyMoneySettled,
+                            style: AppTheme.sans(
+                              12.5,
+                              weight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -74,7 +88,11 @@ class AgencyMoneyTab extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
-                    kDashPagePad, kDashCardGap, kDashPagePad, 0),
+                  kDashPagePad,
+                  kDashCardGap,
+                  kDashPagePad,
+                  0,
+                ),
                 child: _MonthGroup(
                   label: _monthLabel(groups[i].month),
                   commissions: groups[i].rows,
@@ -89,7 +107,8 @@ class AgencyMoneyTab extends StatelessWidget {
   }
 
   List<({DateTime month, List<Commission> rows})> _groupByMonth(
-      List<Commission> commissions) {
+    List<Commission> commissions,
+  ) {
     final map = <String, List<Commission>>{};
     for (final c in commissions) {
       final key =
@@ -101,7 +120,9 @@ class AgencyMoneyTab extends StatelessWidget {
       for (final k in keys)
         (
           month: DateTime(
-              int.parse(k.split('-')[0]), int.parse(k.split('-')[1])),
+            int.parse(k.split('-')[0]),
+            int.parse(k.split('-')[1]),
+          ),
           rows: map[k]!,
         ),
     ];
@@ -116,10 +137,11 @@ class _MonthGroup extends StatefulWidget {
   final String label;
   final List<Commission> commissions;
   final bool initiallyExpanded;
-  const _MonthGroup(
-      {required this.label,
-      required this.commissions,
-      this.initiallyExpanded = false});
+  const _MonthGroup({
+    required this.label,
+    required this.commissions,
+    this.initiallyExpanded = false,
+  });
 
   @override
   State<_MonthGroup> createState() => _MonthGroupState();
@@ -131,10 +153,10 @@ class _MonthGroupState extends State<_MonthGroup> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final subtotal =
-        widget.commissions.fold(0.0, (s, c) => s + c.amount);
-    final owedCount =
-        widget.commissions.where((c) => c.status == 'owed').length;
+    final subtotal = widget.commissions.fold(0.0, (s, c) => s + c.amount);
+    final owedCount = widget.commissions
+        .where((c) => c.status == 'owed')
+        .length;
 
     return Container(
       decoration: BoxDecoration(
@@ -151,16 +173,21 @@ class _MonthGroupState extends State<_MonthGroup> {
               padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
-                  Text(widget.label,
-                      style: AppTheme.sans(13.5, weight: FontWeight.w700)),
+                  Text(
+                    widget.label,
+                    style: AppTheme.sans(13.5, weight: FontWeight.w700),
+                  ),
                   const SizedBox(width: 8),
                   if (owedCount > 0)
                     StatusChip(
-                        kind: StatusKind.pending,
-                        label: '$owedCount ${t.adminCommissionsOwed}'),
+                      kind: StatusKind.pending,
+                      label: '$owedCount ${t.adminCommissionsOwed}',
+                    ),
                   const Spacer(),
-                  Text(fmtIqd(subtotal),
-                      style: AppTheme.serif(15, color: AppColors.primary)),
+                  Text(
+                    fmtIqd(subtotal),
+                    style: AppTheme.serif(15, color: AppColors.primary),
+                  ),
                   const SizedBox(width: 8),
                   Icon(
                     _open
@@ -181,8 +208,10 @@ class _MonthGroupState extends State<_MonthGroup> {
                   for (final c in widget.commissions)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child:
-                          CommissionRow(commission: c, showCompanyName: false),
+                      child: CommissionRow(
+                        commission: c,
+                        showCompanyName: false,
+                      ),
                     ),
                 ],
               ),

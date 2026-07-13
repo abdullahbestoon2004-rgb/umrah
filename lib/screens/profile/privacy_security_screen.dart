@@ -28,17 +28,24 @@ class PrivacySecurityScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 42, height: 42,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(13),
                         border: Border.all(color: AppColors.border, width: 1.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(t.privacyTitle, style: AppTheme.serif(26))),
+                  Expanded(
+                    child: Text(t.privacyTitle, style: AppTheme.serif(26)),
+                  ),
                 ],
               ),
             ),
@@ -46,8 +53,14 @@ class PrivacySecurityScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  Text(t.privacySectionSecurity,
-                      style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+                  Text(
+                    t.privacySectionSecurity,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   _ToggleTile(
                     icon: Icons.fingerprint_rounded,
@@ -64,19 +77,30 @@ class PrivacySecurityScreen extends StatelessWidget {
                       icon: Icons.password_rounded,
                       label: t.privacyChangePassword,
                       onTap: () => Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AccountDetailsScreen(),
+                        ),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 22),
-                  Text(t.privacySectionPrivacy,
-                      style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+                  Text(
+                    t.privacySectionPrivacy,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   _ToggleTile(
                     icon: Icons.mark_email_read_outlined,
                     label: t.privacyMarketing,
                     sub: t.privacyMarketingSub,
                     value: provider.marketingEmails,
-                    onChanged: (v) => provider.setSecuritySetting('marketing', v),
+                    onChanged: (v) =>
+                        provider.setSecuritySetting('marketing', v),
                   ),
                   const SizedBox(height: 10),
                   _ToggleTile(
@@ -84,7 +108,8 @@ class PrivacySecurityScreen extends StatelessWidget {
                     label: t.privacyActivity,
                     sub: t.privacyActivitySub,
                     value: provider.shareActivity,
-                    onChanged: (v) => provider.setSecuritySetting('activity', v),
+                    onChanged: (v) =>
+                        provider.setSecuritySetting('activity', v),
                   ),
                 ],
               ),
@@ -95,7 +120,11 @@ class PrivacySecurityScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _toggleBiometric(BuildContext context, AppProvider provider, bool enable) async {
+  Future<void> _toggleBiometric(
+    BuildContext context,
+    AppProvider provider,
+    bool enable,
+  ) async {
     final t = AppLocalizations.of(context);
     if (!enable) {
       provider.setSecuritySetting('biometric', false);
@@ -106,7 +135,8 @@ class PrivacySecurityScreen extends StatelessWidget {
       return;
     }
     if (!await BiometricService.canAuthenticate()) {
-      if (context.mounted) showAppSnack(context, t.privacyBiometricUnavailable, isError: true);
+      if (context.mounted)
+        showAppSnack(context, t.privacyBiometricUnavailable, isError: true);
       return;
     }
     // Prove the user can actually unlock before locking them out.
@@ -122,8 +152,11 @@ class _ToggleTile extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   const _ToggleTile({
-    required this.icon, required this.label, required this.sub,
-    required this.value, required this.onChanged,
+    required this.icon,
+    required this.label,
+    required this.sub,
+    required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -138,7 +171,8 @@ class _ToggleTile extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 38, height: 38,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(11),
@@ -173,7 +207,11 @@ class _ActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _ActionTile({required this.icon, required this.label, required this.onTap});
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +227,8 @@ class _ActionTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(11),
@@ -197,8 +236,17 @@ class _ActionTile extends StatelessWidget {
               child: Icon(icon, color: AppColors.primary, size: 20),
             ),
             const SizedBox(width: 13),
-            Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600))),
-            const Icon(Icons.chevron_right_rounded, color: Color(0xFFC1C8BF), size: 20),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.sans(14, weight: FontWeight.w600),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFFC1C8BF),
+              size: 20,
+            ),
           ],
         ),
       ),

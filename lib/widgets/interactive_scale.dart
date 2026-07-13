@@ -16,7 +16,8 @@ class InteractiveScale extends StatefulWidget {
   State<InteractiveScale> createState() => _InteractiveScaleState();
 }
 
-class _InteractiveScaleState extends State<InteractiveScale> with SingleTickerProviderStateMixin {
+class _InteractiveScaleState extends State<InteractiveScale>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -30,10 +31,7 @@ class _InteractiveScaleState extends State<InteractiveScale> with SingleTickerPr
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: widget.scaleFactor,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
   }
 
   @override
@@ -74,10 +72,7 @@ class _InteractiveScaleState extends State<InteractiveScale> with SingleTickerPr
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       behavior: HitTestBehavior.opaque,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: widget.child,
-      ),
+      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
     );
   }
 }

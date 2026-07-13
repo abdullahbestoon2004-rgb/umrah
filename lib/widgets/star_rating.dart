@@ -7,7 +7,12 @@ class StarRating extends StatelessWidget {
   final int? reviews;
   final double size;
 
-  const StarRating({super.key, required this.rating, this.reviews, this.size = 13});
+  const StarRating({
+    super.key,
+    required this.rating,
+    this.reviews,
+    this.size = 13,
+  });
 
   @override
   Widget build(BuildContext context) {

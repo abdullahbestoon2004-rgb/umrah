@@ -8,6 +8,9 @@ import '../models/home_ad_model.dart';
 import '../models/notification_model.dart';
 import '../models/commission_model.dart';
 import '../models/support_message_model.dart';
+import '../models/review_model.dart';
+import '../models/inquiry_model.dart';
+import '../models/agency_document_model.dart';
 
 /// Account-wide preferences that follow the user across devices
 /// (as opposed to the biometric lock, which is deliberately per-device).
@@ -39,17 +42,24 @@ abstract class DataService {
     int? companySince,
   });
   Future<void> signOut();
-  Future<String?> updateProfile(String userId, {String? fullName, String? phone});
+  Future<String?> updateProfile(
+    String userId, {
+    String? fullName,
+    String? phone,
+  });
   Future<String?> updateEmail(String newEmail);
+
   /// Re-authenticates the user by verifying their current password.
   /// Returns null on success, or an error message on failure.
   Future<String?> reauthenticate(String email, String password);
   Future<String?> changePassword(String newPassword);
+
   /// Permanently deletes the auth user (and everything that cascades from it).
   Future<String?> deleteAccount();
 
   Future<List<Company>> fetchCompanies();
   Future<List<Offer>> fetchOffers(List<Company> companies);
+  Future<List<Offer>> fetchAdminPackages(List<Company> companies);
   Future<Company?> fetchMyCompany(String ownerId);
   Future<Company?> createCompany({
     required String ownerId,
@@ -58,19 +68,52 @@ abstract class DataService {
     String about,
     int? since,
   });
+
   /// Fetches the agency's company, creating it from the sign-up metadata
   /// if it doesn't exist yet — covers the case where email confirmation
   /// delayed the first session past the original sign-up call.
   Future<Company?> ensureAgencyCompany(String ownerId);
-  Future<String?> updateCompany(String id,
-      {String? location, String? about, List<String>? tags, int? since});
+  Future<String?> updateCompany(
+    String id, {
+    String? location,
+    String? about,
+    List<String>? tags,
+    int? since,
+  });
   Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes);
   Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes);
+  Future<String?> uploadAgencyDocument({
+    required String companyId,
+    required String documentType,
+    required Uint8List bytes,
+    required String fileName,
+  });
+  Future<List<AgencyDocument>> fetchAgencyDocuments(String companyId);
+  Future<String?> submitCompanyApplication(String companyId);
+  Future<String?> reviewCompanyApplication(
+    String companyId,
+    String decision, {
+    String? reason,
+  });
 
-  Future<Offer?> createPackage(Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company);
-  Future<String?> updatePackage(String id, Map<String, dynamic> fields, List<ItineraryDay> itinerary);
+  Future<Offer?> createPackage(
+    Map<String, dynamic> fields,
+    List<ItineraryDay> itinerary,
+    Company company,
+  );
+  Future<String?> updatePackage(
+    String id,
+    Map<String, dynamic> fields,
+    List<ItineraryDay> itinerary,
+  );
   Future<String?> deletePackage(String id);
   Future<String?> uploadPackageImage(String packageId, Uint8List bytes);
+  Future<String?> submitPackage(String packageId);
+  Future<String?> reviewPackage(
+    String packageId,
+    String decision, {
+    String? reason,
+  });
 
   Future<List<Booking>> fetchMyBookings(String clientId);
   Future<String?> createBooking({
@@ -81,6 +124,18 @@ abstract class DataService {
     DateTime? departureDate,
     String? contactPhone,
     String? note,
+    String? roomLabel,
+    int? roomOccupancy,
+    String? mealPreference,
+    List<PilgrimInfo>? pilgrims,
+  });
+  Future<List<BookingTraveller>> fetchBookingTravellers(String bookingId);
+  Future<String?> saveTravellerPassport({
+    required String travellerId,
+    required String bookingId,
+    required String passportNo,
+    required Uint8List passportBytes,
+    required Uint8List selfieBytes,
   });
   Future<String?> cancelBooking(String id);
 
@@ -90,7 +145,8 @@ abstract class DataService {
   Future<void> unsaveOfferRemote(String clientId, String packageId);
 
   Future<AccountPrefs> fetchAccountPrefs(String clientId);
-  Future<void> updateAccountPrefs(String clientId, {
+  Future<void> updateAccountPrefs(
+    String clientId, {
     bool? marketingEmails,
     bool? shareActivity,
     String? preferredPayMethod,
@@ -111,16 +167,28 @@ abstract class DataService {
   Future<String?> setCompanyVerified(String id, bool verified);
   Future<String?> setCompanyPromoted(String id, bool promoted);
   Future<String?> setPackageFeatured(String id, bool featured);
+  Future<String?> setAgencyBadge(
+    String agencyId,
+    String badgeKey,
+    bool enabled,
+  );
 
   // ── notifications ────────────────────────────────────────────────────────
   Future<List<AppNotification>> fetchNotifications(String userId);
   Future<void> markNotificationRead(String id);
   Future<void> markAllNotificationsRead(String userId);
+  Future<void> deleteNotification(String id);
   Future<void> clearNotifications(String userId);
 
   // ── agency booking management ────────────────────────────────────────────
   Future<List<Booking>> fetchCompanyBookings(String companyId);
+  Future<List<Booking>> fetchAllBookings();
   Future<String?> setBookingStatus(String bookingId, String status);
+  Future<String?> confirmCashReceived(String bookingId);
+  Future<Map<String, dynamic>?> initiateFibPayment(
+    String bookingId,
+    int amountIqd,
+  );
 
   // ── commissions (what each agency owes the platform) ────────────────────
   /// Pass a companyId to scope to one agency; omit for the admin's full ledger.
@@ -128,7 +196,11 @@ abstract class DataService {
   Future<String?> setCommissionCollected(String id);
 
   // ── support ───────────────────────────────────────────────────────────────
-  Future<String?> sendSupportMessage({String? userId, String? email, required String message});
+  Future<String?> sendSupportMessage({
+    String? userId,
+    String? email,
+    required String message,
+  });
   Future<List<SupportMessage>> fetchSupportMessages();
   Future<String?> deleteSupportMessage(String id);
 
@@ -141,6 +213,20 @@ abstract class DataService {
     String comment,
   });
   Future<Set<String>> fetchReviewedBookingIds(String clientId);
+  Future<List<Review>> fetchCompanyReviews(String companyId);
+  Future<String?> replyToReview(String reviewId, String reply);
+  Future<String?> reportAgency({
+    required String reporterId,
+    required String agencyId,
+    required String reason,
+    String details,
+  });
+  Future<List<InquiryThread>> fetchAgencyInquiries(String agencyId);
+  Future<String?> sendInquiryReply({
+    required String inquiryId,
+    required String senderId,
+    required String body,
+  });
 
   // ── password reset (OTP-code, no deep-linking required) ─────────────────
   Future<String?> sendPasswordResetCode(String email);
@@ -151,11 +237,22 @@ abstract class DataService {
   });
 
   // ── error logging (best-effort, never throws) ────────────────────────────
-  Future<void> logError({String? userId, required String message, String? stack, String? context});
+  Future<void> logError({
+    String? userId,
+    required String message,
+    String? stack,
+    String? context,
+  });
 }
 
 class SupabaseService implements DataService {
   SupabaseClient get _c => Supabase.instance.client;
+
+  static const _companyRichSelect =
+      '*, agency_badges(assigned_at, badges(key,name_ku,name_ar,name_en,icon,type))';
+  static const _offerRichSelect =
+      '*, itinerary_days(*), offer_pricing(*), '
+      'offer_hotels(*, hotels(*)), offer_inclusions(*), offer_media(*)';
 
   @override
   bool get isSignedIn => _c.auth.currentSession != null;
@@ -164,7 +261,11 @@ class SupabaseService implements DataService {
 
   Future<UserProfile?> _profileFor(User user) async {
     try {
-      final row = await _c.from('profiles').select().eq('id', user.id).maybeSingle();
+      final row = await _c
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
       return UserProfile(
         id: user.id,
         email: user.email ?? '',
@@ -209,18 +310,22 @@ class SupabaseService implements DataService {
     int? companySince,
   }) async {
     try {
-      final res = await _c.auth.signUp(email: email, password: password, data: {
-        'role': role,
-        'full_name': fullName,
-        'phone': phone,
-        // stashed so the company can still be created once a session exists —
-        // e.g. after the user confirms their email and logs in later, when the
-        // original sign-up form's values are long gone.
-        if (companyName != null) 'company_name': companyName,
-        if (companyLocation != null) 'company_location': companyLocation,
-        if (companyAbout != null) 'company_about': companyAbout,
-        if (companySince != null) 'company_since': companySince,
-      });
+      final res = await _c.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'role': role,
+          'full_name': fullName,
+          'phone': phone,
+          // stashed so the company can still be created once a session exists —
+          // e.g. after the user confirms their email and logs in later, when the
+          // original sign-up form's values are long gone.
+          if (companyName != null) 'company_name': companyName,
+          if (companyLocation != null) 'company_location': companyLocation,
+          if (companyAbout != null) 'company_about': companyAbout,
+          if (companySince != null) 'company_since': companySince,
+        },
+      );
       if (res.session == null) {
         return 'confirm-email'; // project has email confirmation enabled
       }
@@ -236,12 +341,19 @@ class SupabaseService implements DataService {
   Future<void> signOut() => _c.auth.signOut();
 
   @override
-  Future<String?> updateProfile(String userId, {String? fullName, String? phone}) async {
+  Future<String?> updateProfile(
+    String userId, {
+    String? fullName,
+    String? phone,
+  }) async {
     try {
-      await _c.from('profiles').update({
-        if (fullName != null) 'full_name': fullName,
-        if (phone != null) 'phone': phone,
-      }).eq('id', userId);
+      await _c
+          .from('profiles')
+          .update({
+            if (fullName != null) 'full_name': fullName,
+            if (phone != null) 'phone': phone,
+          })
+          .eq('id', userId);
       return null;
     } on PostgrestException catch (e) {
       return e.message;
@@ -309,24 +421,93 @@ class SupabaseService implements DataService {
 
   @override
   Future<List<Company>> fetchCompanies() async {
-    final rows = await _c.from('companies').select().eq('is_active', true).order('rating', ascending: false);
-    return rows.map((r) => Company.fromRow(r)).where((c) => c.isVerified).toList();
+    List<dynamic> rows;
+    try {
+      rows = await _c
+          .from('companies')
+          .select(_companyRichSelect)
+          .eq('is_active', true)
+          .order('rating', ascending: false);
+    } on PostgrestException {
+      // Allows an app binary to keep working while the additive migration is
+      // being rolled out across environments.
+      rows = await _c
+          .from('companies')
+          .select()
+          .eq('is_active', true)
+          .order('rating', ascending: false);
+    }
+    return rows
+        .map((r) => Company.fromRow(r))
+        .where((c) => c.isVerified)
+        .toList();
   }
 
   @override
   Future<List<Offer>> fetchOffers(List<Company> companies) async {
-    final rows = await _c
-        .from('packages')
-        .select('*, itinerary_days(*)')
-        .eq('is_published', true)
-        .order('created_at', ascending: false);
+    List<dynamic> rows;
+    try {
+      rows = await _c
+          .from('packages')
+          .select(_offerRichSelect)
+          .eq('is_published', true)
+          .order('created_at', ascending: false);
+    } on PostgrestException {
+      rows = await _c
+          .from('packages')
+          .select('*, itinerary_days(*)')
+          .eq('is_published', true)
+          .order('created_at', ascending: false);
+    }
     final byId = {for (final c in companies) c.id: c};
-    return rows.map((r) => Offer.fromRow(r, company: byId[r['company_id']])).toList();
+    return rows
+        .map((r) => Offer.fromRow(r, company: byId[r['company_id']]))
+        .toList();
+  }
+
+  @override
+  Future<List<Offer>> fetchAdminPackages(List<Company> companies) async {
+    try {
+      final rows = await _c
+          .from('packages')
+          .select(_offerRichSelect)
+          .order('created_at', ascending: false);
+      final byId = {for (final c in companies) c.id: c};
+      return rows
+          .map((r) => Offer.fromRow(r, company: byId[r['company_id']]))
+          .toList();
+    } on PostgrestException {
+      try {
+        final rows = await _c
+            .from('packages')
+            .select('*, itinerary_days(*)')
+            .order('created_at', ascending: false);
+        final byId = {for (final c in companies) c.id: c};
+        return rows
+            .map((r) => Offer.fromRow(r, company: byId[r['company_id']]))
+            .toList();
+      } catch (_) {
+        return [];
+      }
+    }
   }
 
   @override
   Future<Company?> fetchMyCompany(String ownerId) async {
-    final row = await _c.from('companies').select().eq('owner_id', ownerId).maybeSingle();
+    dynamic row;
+    try {
+      row = await _c
+          .from('companies')
+          .select(_companyRichSelect)
+          .eq('owner_id', ownerId)
+          .maybeSingle();
+    } on PostgrestException {
+      row = await _c
+          .from('companies')
+          .select()
+          .eq('owner_id', ownerId)
+          .maybeSingle();
+    }
     return row == null ? null : Company.fromRow(row);
   }
 
@@ -355,7 +536,12 @@ class SupabaseService implements DataService {
     } on PostgrestException catch (e) {
       // 'about' column comes from patches.sql; retry without it
       if (e.code == 'PGRST204' && about.isNotEmpty) {
-        return createCompany(ownerId: ownerId, name: name, location: location, since: since);
+        return createCompany(
+          ownerId: ownerId,
+          name: name,
+          location: location,
+          since: since,
+        );
       }
       return null;
     } catch (_) {
@@ -374,25 +560,41 @@ class SupabaseService implements DataService {
     final about = (meta?['company_about'] as String?)?.trim() ?? '';
     final since = (meta?['company_since'] as num?)?.toInt();
     return createCompany(
-        ownerId: ownerId, name: name, location: location, about: about, since: since);
+      ownerId: ownerId,
+      name: name,
+      location: location,
+      about: about,
+      since: since,
+    );
   }
 
   @override
-  Future<String?> updateCompany(String id,
-      {String? location, String? about, List<String>? tags, int? since}) async {
+  Future<String?> updateCompany(
+    String id, {
+    String? location,
+    String? about,
+    List<String>? tags,
+    int? since,
+  }) async {
     try {
-      await _c.from('companies').update({
-        if (location != null) 'location': location,
-        if (about != null) 'about': about,
-        if (tags != null) 'tags': tags,
-        if (since != null) 'since': since,
-      }).eq('id', id);
+      await _c
+          .from('companies')
+          .update({
+            if (location != null) 'location': location,
+            if (about != null) 'about': about,
+            if (tags != null) 'tags': tags,
+            if (since != null) 'since': since,
+          })
+          .eq('id', id);
       return null;
     } on PostgrestException catch (e) {
       // about/tags columns come from patches.sql; retry with location only
       if (e.code == 'PGRST204' && location != null) {
         try {
-          await _c.from('companies').update({'location': location}).eq('id', id);
+          await _c
+              .from('companies')
+              .update({'location': location})
+              .eq('id', id);
           return null;
         } catch (e2) {
           return e2.toString();
@@ -405,13 +607,71 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<Offer?> createPackage(
-      Map<String, dynamic> fields, List<ItineraryDay> itinerary, Company company) async {
+  Future<String?> submitCompanyApplication(String companyId) async {
     try {
-      final row = await _c.from('packages').insert(fields).select('*, itinerary_days(*)').single();
+      await _c.rpc(
+        'submit_company_application',
+        params: {'p_company_id': companyId},
+      );
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> reviewCompanyApplication(
+    String companyId,
+    String decision, {
+    String? reason,
+  }) async {
+    try {
+      await _c.rpc(
+        'review_company_application',
+        params: {
+          'p_company_id': companyId,
+          'p_decision': decision,
+          'p_reason': reason,
+        },
+      );
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<Offer?> createPackage(
+    Map<String, dynamic> fields,
+    List<ItineraryDay> itinerary,
+    Company company,
+  ) async {
+    try {
+      final pricing = (fields.remove('_pricing') as List?) ?? const [];
+      final hotels = (fields.remove('_hotels') as List?) ?? const [];
+      final inclusions = (fields.remove('_inclusions') as List?) ?? const [];
+      final row = await _c
+          .from('packages')
+          .insert(fields)
+          .select('*, itinerary_days(*)')
+          .single();
       final id = row['id'] as String;
       await _replaceItinerary(id, itinerary);
-      final fresh = await _c.from('packages').select('*, itinerary_days(*)').eq('id', id).single();
+      await _replaceOfferDetails(
+        id,
+        pricing: pricing,
+        hotels: hotels,
+        inclusions: inclusions,
+      );
+      final fresh = await _c
+          .from('packages')
+          .select(_offerRichSelect)
+          .eq('id', id)
+          .single();
       return Offer.fromRow(fresh, company: company);
     } catch (_) {
       return null;
@@ -419,17 +679,33 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<String?> updatePackage(String id, Map<String, dynamic> fields, List<ItineraryDay> itinerary) async {
+  Future<String?> updatePackage(
+    String id,
+    Map<String, dynamic> fields,
+    List<ItineraryDay> itinerary,
+  ) async {
     try {
+      final pricing = (fields.remove('_pricing') as List?) ?? const [];
+      final hotels = (fields.remove('_hotels') as List?) ?? const [];
+      final inclusions = (fields.remove('_inclusions') as List?) ?? const [];
       await _c.from('packages').update(fields).eq('id', id);
       await _replaceItinerary(id, itinerary);
+      await _replaceOfferDetails(
+        id,
+        pricing: pricing,
+        hotels: hotels,
+        inclusions: inclusions,
+      );
       return null;
     } catch (e) {
       return e.toString();
     }
   }
 
-  Future<void> _replaceItinerary(String packageId, List<ItineraryDay> itinerary) async {
+  Future<void> _replaceItinerary(
+    String packageId,
+    List<ItineraryDay> itinerary,
+  ) async {
     await _c.from('itinerary_days').delete().eq('package_id', packageId);
     if (itinerary.isEmpty) return;
     await _c.from('itinerary_days').insert([
@@ -439,8 +715,53 @@ class SupabaseService implements DataService {
           'day_no': i + 1,
           'title': itinerary[i].title,
           'summary': itinerary[i].summary,
-        }
+        },
     ]);
+  }
+
+  Future<void> _replaceOfferDetails(
+    String offerId, {
+    required List pricing,
+    required List hotels,
+    required List inclusions,
+  }) async {
+    await _c.from('offer_pricing').delete().eq('offer_id', offerId);
+    if (pricing.isNotEmpty) {
+      await _c.from('offer_pricing').insert([
+        for (final row in pricing)
+          {...(row as Map<String, dynamic>), 'offer_id': offerId},
+      ]);
+    }
+
+    await _c.from('offer_inclusions').delete().eq('offer_id', offerId);
+    if (inclusions.isNotEmpty) {
+      await _c.from('offer_inclusions').insert([
+        for (var i = 0; i < inclusions.length; i++)
+          {
+            ...(inclusions[i] as Map<String, dynamic>),
+            'offer_id': offerId,
+            'sort_order': i,
+          },
+      ]);
+    }
+
+    await _c.from('offer_hotels').delete().eq('offer_id', offerId);
+    for (final raw in hotels) {
+      final row = Map<String, dynamic>.from(raw as Map);
+      final city = row.remove('city') as String;
+      final nights = row.remove('nights') as int;
+      final distance = row.remove('distance_from_haram_m') as int;
+      row['city'] = city;
+      row['created_by'] = _c.auth.currentUser?.id;
+      final hotel = await _c.from('hotels').insert(row).select('id').single();
+      await _c.from('offer_hotels').insert({
+        'offer_id': offerId,
+        'hotel_id': hotel['id'],
+        'city': city,
+        'nights': nights,
+        'distance_from_haram_m': distance,
+      });
+    }
   }
 
   @override
@@ -454,13 +775,53 @@ class SupabaseService implements DataService {
   }
 
   @override
+  Future<String?> submitPackage(String packageId) async {
+    try {
+      await _c.rpc('submit_package', params: {'p_package_id': packageId});
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> reviewPackage(
+    String packageId,
+    String decision, {
+    String? reason,
+  }) async {
+    try {
+      await _c.rpc(
+        'review_package',
+        params: {
+          'p_package_id': packageId,
+          'p_decision': decision,
+          'p_reason': reason,
+        },
+      );
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
   Future<String?> uploadPackageImage(String packageId, Uint8List bytes) async {
     try {
       final path = '$packageId.jpg';
-      await _c.storage.from('package-images').uploadBinary(
+      await _c.storage
+          .from('package-images')
+          .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
           );
       final url = _c.storage.from('package-images').getPublicUrl(path);
       await _c.from('packages').update({'image_url': url}).eq('id', packageId);
@@ -476,10 +837,15 @@ class SupabaseService implements DataService {
       // lives in the existing package-images bucket (logos/ prefix) so no
       // extra storage setup is needed beyond patches.sql
       final path = 'logos/$companyId.jpg';
-      await _c.storage.from('package-images').uploadBinary(
+      await _c.storage
+          .from('package-images')
+          .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
           );
       // version param busts image caches when the logo is replaced in place
       final url =
@@ -496,18 +862,84 @@ class SupabaseService implements DataService {
   Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes) async {
     try {
       final path = 'banners/$companyId.jpg';
-      await _c.storage.from('package-images').uploadBinary(
+      await _c.storage
+          .from('package-images')
+          .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
           );
       final url =
           '${_c.storage.from('package-images').getPublicUrl(path)}?v=${DateTime.now().millisecondsSinceEpoch}';
-      await _c.from('companies').update({'banner_url': url}).eq('id', companyId);
+      await _c
+          .from('companies')
+          .update({'banner_url': url})
+          .eq('id', companyId);
       return url;
     } catch (e) {
       print('uploadCompanyBanner error: $e');
       return null;
+    }
+  }
+
+  @override
+  Future<String?> uploadAgencyDocument({
+    required String companyId,
+    required String documentType,
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    final safeName = fileName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    final path =
+        '$companyId/${DateTime.now().millisecondsSinceEpoch}-$safeName';
+    try {
+      await _c.storage
+          .from('agency-documents')
+          .uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: false),
+          );
+      await _c.from('agency_documents').insert({
+        'agency_id': companyId,
+        'document_type': documentType,
+        'storage_path': path,
+        'file_name': fileName,
+      });
+      return null;
+    } on StorageException catch (error) {
+      return error.message;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<AgencyDocument>> fetchAgencyDocuments(String companyId) async {
+    try {
+      final rows = await _c
+          .from('agency_documents')
+          .select()
+          .eq('agency_id', companyId)
+          .order('created_at', ascending: false);
+      final documents = <AgencyDocument>[];
+      for (final row in rows) {
+        String? previewUrl;
+        try {
+          previewUrl = await _c.storage
+              .from('agency-documents')
+              .createSignedUrl(row['storage_path'] as String, 600);
+        } catch (_) {}
+        documents.add(AgencyDocument.fromRow(row, previewUrl: previewUrl));
+      }
+      return documents;
+    } catch (_) {
+      return [];
     }
   }
 
@@ -535,6 +967,10 @@ class SupabaseService implements DataService {
     DateTime? departureDate,
     String? contactPhone,
     String? note,
+    String? roomLabel,
+    int? roomOccupancy,
+    String? mealPreference,
+    List<PilgrimInfo>? pilgrims,
   }) async {
     try {
       // The departure date rides in the same free-text note column (parsed
@@ -543,23 +979,53 @@ class SupabaseService implements DataService {
       final depLine = departureDate == null
           ? null
           : 'dep:${departureDate.toIso8601String().substring(0, 10)}';
-      final noteText = [depLine, note]
-          .where((s) => s != null && s.isNotEmpty)
-          .join('\n');
-      await _c.from('bookings').insert({
-        'package_id': packageId,
-        'client_id': clientId,
-        'travellers': travellers,
-        'pay_method': payMethod,
-        if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
-        if (noteText.isNotEmpty) 'note': noteText,
-        // company_id / prices / commission are filled by the DB trigger
-        'company_id': '00000000-0000-0000-0000-000000000000',
-        'unit_price_iqd': 0,
-        'total_iqd': 0,
-        'commission_iqd': 0,
-        'payout_iqd': 0,
-      });
+      final noteText = [
+        depLine,
+        note,
+      ].where((s) => s != null && s.isNotEmpty).join('\n');
+      final row = await _c
+          .from('bookings')
+          .insert({
+            'package_id': packageId,
+            'client_id': clientId,
+            'travellers': travellers,
+            'pay_method': payMethod,
+            if (contactPhone != null && contactPhone.isNotEmpty)
+              'contact_phone': contactPhone,
+            if (noteText.isNotEmpty) 'note': noteText,
+            if (departureDate != null)
+              'departure_date': departureDate.toIso8601String().substring(
+                0,
+                10,
+              ),
+            if (roomLabel != null && roomLabel.isNotEmpty)
+              'room_label': roomLabel,
+            if (roomOccupancy != null) 'room_occupancy': roomOccupancy,
+            if (mealPreference != null && mealPreference.isNotEmpty)
+              'meal_preference': mealPreference,
+            // Company, prices, payment state, and commission are filled by
+            // server-side triggers and cannot be supplied by the client.
+          })
+          .select('id')
+          .single();
+      if (pilgrims != null && pilgrims.isNotEmpty) {
+        await _c.from('booking_travellers').insert([
+          for (var i = 0; i < pilgrims.length; i++)
+            {
+              'booking_id': row['id'],
+              'client_id': clientId,
+              'full_name': pilgrims[i].fullName,
+              if (pilgrims[i].passportNo.isNotEmpty)
+                'passport_no': pilgrims[i].passportNo,
+              if (pilgrims[i].dateOfBirth != null)
+                'date_of_birth': pilgrims[i].dateOfBirth!
+                    .toIso8601String()
+                    .substring(0, 10),
+              if (pilgrims[i].phone.isNotEmpty) 'phone': pilgrims[i].phone,
+              'is_lead': i == 0,
+            },
+        ]);
+      }
       return null;
     } on PostgrestException catch (e) {
       return e.message;
@@ -569,13 +1035,71 @@ class SupabaseService implements DataService {
   }
 
   @override
+  Future<List<BookingTraveller>> fetchBookingTravellers(
+    String bookingId,
+  ) async {
+    final rows = await _c
+        .from('booking_travellers')
+        .select(
+          'id, booking_id, full_name, passport_no, passport_image_path, selfie_image_path',
+        )
+        .eq('booking_id', bookingId)
+        .order('is_lead', ascending: false)
+        .order('created_at');
+    return rows.map((row) => BookingTraveller.fromRow(row)).toList();
+  }
+
+  @override
+  Future<String?> saveTravellerPassport({
+    required String travellerId,
+    required String bookingId,
+    required String passportNo,
+    required Uint8List passportBytes,
+    required Uint8List selfieBytes,
+  }) async {
+    try {
+      final path = '$bookingId/$travellerId-passport.jpg';
+      final selfiePath = '$bookingId/$travellerId-selfie.jpg';
+      await _c.storage
+          .from('booking-passports')
+          .uploadBinary(
+            path,
+            passportBytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
+      await _c.storage
+          .from('booking-passports')
+          .uploadBinary(
+            selfiePath,
+            selfieBytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
+      await _c
+          .from('booking_travellers')
+          .update({
+            'passport_no': passportNo.trim(),
+            'passport_image_path': path,
+            'selfie_image_path': selfiePath,
+          })
+          .eq('id', travellerId)
+          .eq('booking_id', bookingId);
+      return null;
+    } on StorageException catch (error) {
+      return error.message;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
   Future<String?> cancelBooking(String id) async {
     try {
-      final rows =
-          await _c.from('bookings').update({'status': 'cancelled'}).eq('id', id).select('id');
-      if (rows.isEmpty) {
-        return 'rls'; // no row updated — client cancel policy missing (patches.sql)
-      }
+      await _c.rpc(
+        'transition_booking',
+        params: {'p_booking_id': id, 'p_action': 'cancel', 'p_reason': null},
+      );
       return null;
     } on PostgrestException catch (e) {
       return e.message;
@@ -592,7 +1116,10 @@ class SupabaseService implements DataService {
   @override
   Future<Set<String>> fetchSavedOfferIds(String clientId) async {
     try {
-      final rows = await _c.from('saved_offers').select('package_id').eq('client_id', clientId);
+      final rows = await _c
+          .from('saved_offers')
+          .select('package_id')
+          .eq('client_id', clientId);
       return rows.map((r) => r['package_id'] as String).toSet();
     } catch (_) {
       return {};
@@ -602,14 +1129,21 @@ class SupabaseService implements DataService {
   @override
   Future<void> saveOfferRemote(String clientId, String packageId) async {
     try {
-      await _c.from('saved_offers').insert({'client_id': clientId, 'package_id': packageId});
+      await _c.from('saved_offers').insert({
+        'client_id': clientId,
+        'package_id': packageId,
+      });
     } catch (_) {}
   }
 
   @override
   Future<void> unsaveOfferRemote(String clientId, String packageId) async {
     try {
-      await _c.from('saved_offers').delete().eq('client_id', clientId).eq('package_id', packageId);
+      await _c
+          .from('saved_offers')
+          .delete()
+          .eq('client_id', clientId)
+          .eq('package_id', packageId);
     } catch (_) {}
   }
 
@@ -633,17 +1167,22 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<void> updateAccountPrefs(String clientId, {
+  Future<void> updateAccountPrefs(
+    String clientId, {
     bool? marketingEmails,
     bool? shareActivity,
     String? preferredPayMethod,
   }) async {
     try {
-      await _c.from('profiles').update({
-        if (marketingEmails != null) 'marketing_emails': marketingEmails,
-        if (shareActivity != null) 'share_activity': shareActivity,
-        if (preferredPayMethod != null) 'preferred_pay_method': preferredPayMethod,
-      }).eq('id', clientId);
+      await _c
+          .from('profiles')
+          .update({
+            if (marketingEmails != null) 'marketing_emails': marketingEmails,
+            if (shareActivity != null) 'share_activity': shareActivity,
+            if (preferredPayMethod != null)
+              'preferred_pay_method': preferredPayMethod,
+          })
+          .eq('id', clientId);
     } catch (_) {}
   }
 
@@ -671,11 +1210,15 @@ class SupabaseService implements DataService {
     String? companyId,
   }) async {
     try {
-      final row = await _c.from('home_ads').insert({
-        'title': title,
-        if (packageId != null) 'package_id': packageId,
-        if (companyId != null) 'company_id': companyId,
-      }).select().single();
+      final row = await _c
+          .from('home_ads')
+          .insert({
+            'title': title,
+            if (packageId != null) 'package_id': packageId,
+            if (companyId != null) 'company_id': companyId,
+          })
+          .select()
+          .single();
       return HomeAd.fromRow(row);
     } catch (_) {
       return null;
@@ -683,12 +1226,19 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<String?> updateHomeAd(String id, {String? title, bool? isActive}) async {
+  Future<String?> updateHomeAd(
+    String id, {
+    String? title,
+    bool? isActive,
+  }) async {
     try {
-      await _c.from('home_ads').update({
-        if (title != null) 'title': title,
-        if (isActive != null) 'is_active': isActive,
-      }).eq('id', id);
+      await _c
+          .from('home_ads')
+          .update({
+            if (title != null) 'title': title,
+            if (isActive != null) 'is_active': isActive,
+          })
+          .eq('id', id);
       return null;
     } catch (e) {
       return e.toString();
@@ -709,10 +1259,15 @@ class SupabaseService implements DataService {
   Future<String?> uploadAdImage(String adId, Uint8List bytes) async {
     try {
       final path = 'ads/$adId.jpg';
-      await _c.storage.from('package-images').uploadBinary(
+      await _c.storage
+          .from('package-images')
+          .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'),
+            fileOptions: const FileOptions(
+              upsert: true,
+              contentType: 'image/jpeg',
+            ),
           );
       final url = _c.storage.from('package-images').getPublicUrl(path);
       await _c.from('home_ads').update({'image_url': url}).eq('id', adId);
@@ -727,9 +1282,8 @@ class SupabaseService implements DataService {
     try {
       final rows = await _c
           .from('companies')
-          .select()
-          .eq('is_verified', false)
-          .eq('is_active', true)
+          .select(_companyRichSelect)
+          .inFilter('verification_status', ['pending', 'needs_changes'])
           .order('created_at', ascending: false);
       return rows.map((r) => Company.fromRow(r)).toList();
     } catch (_) {
@@ -739,27 +1293,21 @@ class SupabaseService implements DataService {
 
   @override
   Future<String?> setCompanyVerified(String id, bool verified) async {
-    try {
-      final rows = await _c
-          .from('companies')
-          .update({'is_verified': verified})
-          .eq('id', id)
-          .select('id');
-      return rows.isEmpty ? 'rls' : null;
-    } catch (e) {
-      return e.toString();
-    }
+    return reviewCompanyApplication(
+      id,
+      verified ? 'approved' : 'rejected',
+      reason: verified ? null : 'Application declined by administrator',
+    );
   }
 
   @override
   Future<String?> setCompanyPromoted(String id, bool promoted) async {
     try {
-      final rows = await _c
-          .from('companies')
-          .update({'is_promoted': promoted})
-          .eq('id', id)
-          .select('id');
-      return rows.isEmpty ? 'rls' : null;
+      await _c.rpc(
+        'admin_set_company_promoted',
+        params: {'p_company_id': id, 'p_value': promoted},
+      );
+      return null;
     } catch (e) {
       return e.toString();
     }
@@ -768,14 +1316,36 @@ class SupabaseService implements DataService {
   @override
   Future<String?> setPackageFeatured(String id, bool featured) async {
     try {
-      final rows = await _c
-          .from('packages')
-          .update({'is_featured': featured})
-          .eq('id', id)
-          .select('id');
-      return rows.isEmpty ? 'rls' : null;
+      await _c.rpc(
+        'admin_set_package_featured',
+        params: {'p_package_id': id, 'p_value': featured},
+      );
+      return null;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> setAgencyBadge(
+    String agencyId,
+    String badgeKey,
+    bool enabled,
+  ) async {
+    try {
+      await _c.rpc(
+        'admin_set_agency_badge',
+        params: {
+          'p_agency_id': agencyId,
+          'p_badge_key': badgeKey,
+          'p_enabled': enabled,
+        },
+      );
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
     }
   }
 
@@ -814,7 +1384,18 @@ class SupabaseService implements DataService {
   @override
   Future<void> markAllNotificationsRead(String userId) async {
     try {
-      await _c.from('notifications').update({'read': true}).eq('user_id', userId).eq('read', false);
+      await _c
+          .from('notifications')
+          .update({'read': true})
+          .eq('user_id', userId)
+          .eq('read', false);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> deleteNotification(String id) async {
+    try {
+      await _c.from('notifications').delete().eq('id', id);
     } catch (_) {}
   }
 
@@ -842,16 +1423,80 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<String?> setBookingStatus(String bookingId, String status) async {
+  Future<List<Booking>> fetchAllBookings() async {
     try {
       final rows = await _c
           .from('bookings')
-          .update({'status': status})
-          .eq('id', bookingId)
-          .select('id');
-      return rows.isEmpty ? 'rls' : null;
+          .select(
+            '*, packages(title, title_ar, title_en), companies(name,name_ar,name_en,tint), profiles(full_name)',
+          )
+          .order('created_at', ascending: false);
+      return rows.map((row) => Booking.fromRow(row)).toList();
+    } catch (_) {
+      try {
+        final rows = await _c
+            .from('bookings')
+            .select(
+              '*, packages(title, title_ar, title_en), companies(name,name_ar,name_en,tint)',
+            )
+            .order('created_at', ascending: false);
+        return rows.map((row) => Booking.fromRow(row)).toList();
+      } catch (_) {
+        return [];
+      }
+    }
+  }
+
+  @override
+  Future<String?> setBookingStatus(String bookingId, String status) async {
+    try {
+      await _c.rpc(
+        'transition_booking',
+        params: {
+          'p_booking_id': bookingId,
+          'p_action': status,
+          'p_reason': status == 'reject' ? 'Declined by company' : null,
+        },
+      );
+      return null;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> confirmCashReceived(String bookingId) async {
+    try {
+      await _c.rpc(
+        'confirm_cash_received',
+        params: {'p_booking_id': bookingId, 'p_amount_iqd': null},
+      );
+      return null;
+    } on PostgrestException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> initiateFibPayment(
+    String bookingId,
+    int amountIqd,
+  ) async {
+    try {
+      final response = await _c.functions.invoke(
+        'fib-create-payment',
+        body: {
+          'booking_id': bookingId,
+          'amount_iqd': amountIqd,
+          'idempotency_key': 'fib-$bookingId-$amountIqd',
+        },
+      );
+      if (response.status < 200 || response.status >= 300) return null;
+      return Map<String, dynamic>.from(response.data as Map);
+    } catch (_) {
+      return null;
     }
   }
 
@@ -860,7 +1505,9 @@ class SupabaseService implements DataService {
   @override
   Future<List<Commission>> fetchCommissions({String? companyId}) async {
     try {
-      var query = _c.from('commissions').select('*, companies(name,name_ar,name_en)');
+      var query = _c
+          .from('commissions')
+          .select('*, companies(name,name_ar,name_en)');
       if (companyId != null) query = query.eq('company_id', companyId);
       final rows = await query.order('created_at', ascending: false);
       return rows.map((r) => Commission.fromRow(r)).toList();
@@ -872,10 +1519,13 @@ class SupabaseService implements DataService {
   @override
   Future<String?> setCommissionCollected(String id) async {
     try {
-      await _c.from('commissions').update({
-        'status': 'collected',
-        'collected_at': DateTime.now().toIso8601String(),
-      }).eq('id', id);
+      await _c
+          .from('commissions')
+          .update({
+            'status': 'collected',
+            'collected_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', id);
       return null;
     } catch (e) {
       return e.toString();
@@ -885,7 +1535,11 @@ class SupabaseService implements DataService {
   // ── support ───────────────────────────────────────────────────────────────
 
   @override
-  Future<String?> sendSupportMessage({String? userId, String? email, required String message}) async {
+  Future<String?> sendSupportMessage({
+    String? userId,
+    String? email,
+    required String message,
+  }) async {
     try {
       await _c.from('support_messages').insert({
         if (userId != null) 'user_id': userId,
@@ -901,7 +1555,11 @@ class SupabaseService implements DataService {
   @override
   Future<List<SupportMessage>> fetchSupportMessages() async {
     try {
-      final rows = await _c.from('support_messages').select().order('created_at', ascending: false);
+      final rows = await _c
+          .from('support_messages')
+          .select()
+          .neq('status', 'closed')
+          .order('created_at', ascending: false);
       return rows.map((r) => SupportMessage.fromRow(r)).toList();
     } catch (_) {
       return [];
@@ -911,7 +1569,10 @@ class SupabaseService implements DataService {
   @override
   Future<String?> deleteSupportMessage(String id) async {
     try {
-      await _c.from('support_messages').delete().eq('id', id);
+      await _c.rpc(
+        'resolve_support_message',
+        params: {'p_message_id': id, 'p_resolution_note': null},
+      );
       return null;
     } catch (e) {
       return e.toString();
@@ -947,10 +1608,112 @@ class SupabaseService implements DataService {
   @override
   Future<Set<String>> fetchReviewedBookingIds(String clientId) async {
     try {
-      final rows = await _c.from('reviews').select('booking_id').eq('client_id', clientId);
+      final rows = await _c
+          .from('reviews')
+          .select('booking_id')
+          .eq('client_id', clientId);
       return rows.map((r) => r['booking_id'] as String).toSet();
     } catch (_) {
       return {};
+    }
+  }
+
+  @override
+  Future<List<Review>> fetchCompanyReviews(String companyId) async {
+    try {
+      final rows = await _c
+          .from('reviews')
+          .select()
+          .eq('company_id', companyId)
+          .eq('moderation_status', 'visible')
+          .order('created_at', ascending: false);
+      return rows.map((row) => Review.fromRow(row)).toList();
+    } on PostgrestException catch (error) {
+      if (error.code == '42703' || error.code == 'PGRST204') {
+        final rows = await _c
+            .from('reviews')
+            .select()
+            .eq('company_id', companyId)
+            .order('created_at', ascending: false);
+        return rows.map((row) => Review.fromRow(row)).toList();
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> replyToReview(String reviewId, String reply) async {
+    try {
+      await _c
+          .from('reviews')
+          .update({
+            'public_reply': reply.trim(),
+            'replied_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', reviewId);
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> reportAgency({
+    required String reporterId,
+    required String agencyId,
+    required String reason,
+    String details = '',
+  }) async {
+    try {
+      await _c.from('agency_reports').insert({
+        'reporter_id': reporterId,
+        'agency_id': agencyId,
+        'reason': reason,
+        if (details.trim().isNotEmpty) 'details': details.trim(),
+      });
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<InquiryThread>> fetchAgencyInquiries(String agencyId) async {
+    try {
+      final rows = await _c
+          .from('inquiries')
+          .select('*, inquiry_messages(*)')
+          .eq('agency_id', agencyId)
+          .order('updated_at', ascending: false);
+      return rows.map((row) => InquiryThread.fromRow(row)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> sendInquiryReply({
+    required String inquiryId,
+    required String senderId,
+    required String body,
+  }) async {
+    try {
+      await _c.from('inquiry_messages').insert({
+        'inquiry_id': inquiryId,
+        'sender_id': senderId,
+        'body': body.trim(),
+      });
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
     }
   }
 
@@ -978,7 +1741,11 @@ class SupabaseService implements DataService {
     required String newPassword,
   }) async {
     try {
-      await _c.auth.verifyOTP(email: email, token: code, type: OtpType.recovery);
+      await _c.auth.verifyOTP(
+        email: email,
+        token: code,
+        type: OtpType.recovery,
+      );
       await _c.auth.updateUser(UserAttributes(password: newPassword));
       return null;
     } on AuthException catch (e) {
@@ -991,7 +1758,12 @@ class SupabaseService implements DataService {
   // ── error logging ────────────────────────────────────────────────────────
 
   @override
-  Future<void> logError({String? userId, required String message, String? stack, String? context}) async {
+  Future<void> logError({
+    String? userId,
+    required String message,
+    String? stack,
+    String? context,
+  }) async {
     try {
       await _c.from('error_logs').insert({
         if (userId != null) 'user_id': userId,

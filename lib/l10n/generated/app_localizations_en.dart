@@ -2161,6 +2161,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingChooseRoom => 'Choose room type';
 
   @override
+  String get bookingChooseMeal => 'Choose meal type';
+
+  @override
+  String get bookingMealPreference => 'Meal preference for this booking';
+
+  @override
   String get bookingRoomDouble => 'Double room';
 
   @override
@@ -2248,6 +2254,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingSummaryRoom => 'Room';
 
   @override
+  String get bookingSummaryMeal => 'Meals';
+
+  @override
+  String get bookingPassportDocuments => 'Traveller passports';
+
+  @override
+  String bookingPassportDocumentsBody(int count) {
+    return 'Passport details required for all $count travellers';
+  }
+
+  @override
+  String get bookingPassportPrivacy =>
+      'Add passport details separately for each traveller. Images are stored privately for this booking only.';
+
+  @override
+  String get bookingPassportRequired =>
+      'Enter the passport number and choose an image.';
+
+  @override
+  String get bookingPassportSaved => 'Passport details saved.';
+
+  @override
+  String get bookingPassportChooseImage => 'Choose passport image';
+
+  @override
+  String get bookingPassportImageUploaded => 'Passport image uploaded';
+
+  @override
+  String get bookingPhotoExamples => 'Photo examples';
+
+  @override
+  String get bookingTakeRequiredPhotos => 'Take selfie and passport photos';
+
+  @override
   String get payFibSub => 'Pay directly in the FIB app';
 
   @override
@@ -2283,4 +2323,562 @@ class AppLocalizationsEn extends AppLocalizations {
   String bookingPilgrimsSummary(int count, String room) {
     return '$count pilgrims · $room';
   }
+
+  @override
+  String get workflowSubmitForReview => 'Submit for review';
+
+  @override
+  String get workflowSubmitted => 'Submitted for review.';
+
+  @override
+  String get workflowSubmitCompanyBody =>
+      'Complete your company profile, then submit it for verification.';
+
+  @override
+  String get workflowChangesRequired => 'Changes required';
+
+  @override
+  String get workflowPackagesToReview => 'Packages to review';
+
+  @override
+  String get workflowNoPackagesToReview => 'No packages are waiting for review';
+
+  @override
+  String get workflowReasonRequired => 'Reason required';
+
+  @override
+  String get workflowReasonHint => 'Explain what must change';
+
+  @override
+  String get workflowSendDecision => 'Send decision';
+
+  @override
+  String get workflowDecisionSaved => 'Decision saved.';
+
+  @override
+  String get workflowAwaitingPayment => 'Awaiting payment';
+
+  @override
+  String get workflowReadyToTravel => 'Ready for travel';
+
+  @override
+  String get workflowInProgress => 'Trip in progress';
+
+  @override
+  String get workflowRejected => 'Rejected';
+
+  @override
+  String get workflowExpired => 'Expired';
+
+  @override
+  String get workflowMarkReady => 'Mark ready';
+
+  @override
+  String get workflowStartTrip => 'Start trip';
+
+  @override
+  String get workflowStatusUpdated => 'Booking status updated.';
+
+  @override
+  String get workflowCompanyReviewTitle => 'Company verification updated';
+
+  @override
+  String workflowCompanyReviewBody(Object status) {
+    return 'Your company application is now: $status';
+  }
+
+  @override
+  String get workflowPackageReviewTitle => 'Package review updated';
+
+  @override
+  String workflowPackageReviewBody(Object status) {
+    return 'Your package is now: $status';
+  }
+
+  @override
+  String get workflowConfirmCash => 'Confirm cash received';
+
+  @override
+  String get workflowCashConfirmed => 'Cash payment confirmed.';
+
+  @override
+  String get workflowDraftSaved => 'Package saved as a draft.';
+
+  @override
+  String get workflowCapacity => 'Traveller capacity';
+
+  @override
+  String get workflowDepartureDate => 'Departure date';
+
+  @override
+  String get workflowReturnDate => 'Return date';
+
+  @override
+  String get workflowPayNow => 'Pay now';
+
+  @override
+  String get workflowPaymentStartFailed => 'Could not start the payment.';
+
+  @override
+  String get workflowFibPaymentTitle => 'Pay with FIB';
+
+  @override
+  String get workflowFibPaymentBody =>
+      'Open FIB and use this payment code. Your booking confirms automatically after FIB verifies the payment.';
+
+  @override
+  String get workflowCopyPayment => 'Copy payment details';
+
+  @override
+  String get addEditOfferHotelMakkahDescription => 'Makkah hotel description';
+
+  @override
+  String get addEditOfferHotelMadinahDescription => 'Madinah hotel description';
+
+  @override
+  String get addEditOfferHotelDescriptionHint =>
+      'Describe the location, facilities, service and nearby landmarks';
+
+  @override
+  String get addEditOfferAvailableRooms => 'Available room types';
+
+  @override
+  String get addEditOfferAvailableRoomsHelper =>
+      'Choose every room occupancy clients can book for this package.';
+
+  @override
+  String get addEditOfferChooseRoomType =>
+      'Choose at least one available room type.';
+
+  @override
+  String bookingRoomOccupancy(int count) {
+    return '$count-person room';
+  }
+
+  @override
+  String get offerFormCommercialPolicy => 'Policy & payment';
+
+  @override
+  String get offerFormTitleKu => 'Package title (Kurdish)';
+
+  @override
+  String get offerFormTitleAr => 'Package title (Arabic)';
+
+  @override
+  String get offerFormTitleEn => 'Package title (English)';
+
+  @override
+  String get offerFormOverviewKu => 'Overview (Kurdish)';
+
+  @override
+  String get offerFormOverviewAr => 'Overview (Arabic)';
+
+  @override
+  String get offerFormOverviewEn => 'Overview (English)';
+
+  @override
+  String get offerFormOverviewHint =>
+      'Describe what makes this package special';
+
+  @override
+  String get offerFormPackageTier => 'Package tier';
+
+  @override
+  String get offerTierEconomy => 'Economy';
+
+  @override
+  String get offerTierStandard => 'Standard';
+
+  @override
+  String get offerTierVip => 'VIP';
+
+  @override
+  String get offerFormGroupType => 'Group type';
+
+  @override
+  String get offerGroupFamily => 'Family';
+
+  @override
+  String get offerGroupIndividual => 'Individual';
+
+  @override
+  String get offerGroupGroup => 'Group';
+
+  @override
+  String get offerFormSeason => 'Season';
+
+  @override
+  String get offerSeasonRamadan => 'Ramadan';
+
+  @override
+  String get offerSeasonRegular => 'Regular';
+
+  @override
+  String get offerSeasonShawwal => 'Shawwal';
+
+  @override
+  String get offerSeasonOther => 'Other';
+
+  @override
+  String get offerFormDepartureAirport => 'Departure airport';
+
+  @override
+  String get offerFormFlightType => 'Flight type';
+
+  @override
+  String get offerFlightDirect => 'Direct';
+
+  @override
+  String get offerFlightConnecting => 'Connecting';
+
+  @override
+  String get offerFormBusBetweenCities =>
+      'Bus between Makkah and Madinah included';
+
+  @override
+  String get offerFormAirportTransfers => 'Airport transfers included';
+
+  @override
+  String get offerFormOccupancyPricing => 'Price per person by room occupancy';
+
+  @override
+  String offerFormOccupancyPrice(String room) {
+    return '$room price (IQD)';
+  }
+
+  @override
+  String get offerFormDepositAmount => 'Deposit amount (IQD)';
+
+  @override
+  String get offerFormNonRefundableDeposit => 'Deposit is non-refundable';
+
+  @override
+  String get offerFormDepositTerms => 'Deposit terms';
+
+  @override
+  String get offerFormDepositTermsHint => 'Explain when the balance is due';
+
+  @override
+  String get offerFormCancellationPolicy => 'Cancellation and refund policy';
+
+  @override
+  String get offerFormCancellationPolicyHint =>
+      'Explain cancellation dates, fees and refund timing';
+
+  @override
+  String get offerFormAcceptedPayments => 'Accepted payment methods';
+
+  @override
+  String get offerSoldOut => 'Sold out';
+
+  @override
+  String offerFewSeatsLeft(int count) {
+    return 'Only $count seats left';
+  }
+
+  @override
+  String get offerAvailable => 'Available';
+
+  @override
+  String get offerOccupancyPricing => 'Room pricing';
+
+  @override
+  String get offerTrustAndPolicy => 'Trust, policy & payment';
+
+  @override
+  String offerDepositLabel(String amount) {
+    return 'Deposit: $amount';
+  }
+
+  @override
+  String offerAcceptedPaymentsLabel(String methods) {
+    return 'Accepted: $methods';
+  }
+
+  @override
+  String get offerCapacitySoldOut => 'Sold out';
+
+  @override
+  String offerCapacityFewLeft(int count) {
+    return 'Only $count seats left';
+  }
+
+  @override
+  String get offerCapacityAvailable => 'Available';
+
+  @override
+  String offerCapacityRemaining(int count) {
+    return '$count seats remaining';
+  }
+
+  @override
+  String offerHotelNights(int count) {
+    return '$count nights';
+  }
+
+  @override
+  String offerDepositRequired(String amount) {
+    return 'Deposit required: $amount';
+  }
+
+  @override
+  String get offerDepositNonRefundable => 'The deposit is non-refundable';
+
+  @override
+  String offerAcceptedPaymentList(String methods) {
+    return 'Accepted payment methods: $methods';
+  }
+
+  @override
+  String get agencyAccessUnderReviewTitle => 'Your agency is under review';
+
+  @override
+  String get agencyAccessUnderReviewBody =>
+      'You can sign in while the admin verifies your registration and documents. The dashboard will unlock after approval.';
+
+  @override
+  String get agencyAccessRejectedTitle => 'Registration needs attention';
+
+  @override
+  String get agencyAccessRejectedBody =>
+      'Your registration was not approved. Review the administrator feedback and resubmit your documents.';
+
+  @override
+  String get agencyAccessSuspendedTitle => 'Agency access suspended';
+
+  @override
+  String get agencyAccessSuspendedBody =>
+      'Your offers are hidden while this suspension is reviewed. Contact platform support for details.';
+
+  @override
+  String get companyTrustSignals => 'Trust & verification';
+
+  @override
+  String companyLicenseNumber(String number) {
+    return 'License: $number';
+  }
+
+  @override
+  String companyPilgrimsServed(int count) {
+    return '$count+ pilgrims served';
+  }
+
+  @override
+  String companyResponseTime(String time) {
+    return 'Usually responds within $time';
+  }
+
+  @override
+  String get companyContactLocation => 'Contact & location';
+
+  @override
+  String get companyAgencyReply => 'Agency reply';
+
+  @override
+  String get companyReportAgency => 'Report this agency';
+
+  @override
+  String get companyReportReason => 'Reason';
+
+  @override
+  String get companyReportDetails => 'Details (optional)';
+
+  @override
+  String get companyReportSubmit => 'Submit report';
+
+  @override
+  String get companyReportSubmitted => 'Report submitted for review';
+
+  @override
+  String get adminBookingsPayments => 'Bookings & payments';
+
+  @override
+  String get adminNoBookings => 'No bookings found';
+
+  @override
+  String get bookingStageRequested => 'Requested';
+
+  @override
+  String get bookingStageConfirmed => 'Confirmed';
+
+  @override
+  String get bookingStageCompleted => 'Completed';
+
+  @override
+  String get bookingStageCancelled => 'Cancelled';
+
+  @override
+  String get agencyMessages => 'Messages';
+
+  @override
+  String get agencyMessagesEmpty => 'No inquiries yet';
+
+  @override
+  String get agencyMessagesEmptyBody =>
+      'Client questions will appear here in real time.';
+
+  @override
+  String agencyInquiryNumber(int number) {
+    return 'Inquiry #$number';
+  }
+
+  @override
+  String get agencyInquiryNoMessages => 'No messages';
+
+  @override
+  String get agencyReplyHint => 'Write a reply…';
+
+  @override
+  String get adminAgencyBadges => 'Manual badges';
+
+  @override
+  String get badgeVerified => 'Verified';
+
+  @override
+  String get badgePremiumPartner => 'Premium Partner';
+
+  @override
+  String get agencyDocumentsTitle => 'Documents & verification';
+
+  @override
+  String get agencyDocumentsMenuSubtitle => 'Upload or renew license documents';
+
+  @override
+  String get agencyDocumentsBody =>
+      'Upload clear images of current business documents. The administrator can preview them securely during review.';
+
+  @override
+  String get agencyDocumentType => 'Document type';
+
+  @override
+  String get agencyDocumentLicense => 'Travel agency license';
+
+  @override
+  String get agencyDocumentRegistration => 'Business registration';
+
+  @override
+  String get agencyDocumentOffice => 'Office verification';
+
+  @override
+  String get agencyDocumentChoose => 'Choose document image';
+
+  @override
+  String get agencyDocumentUpload => 'Upload document';
+
+  @override
+  String get agencyDocumentUploaded => 'Document uploaded for review';
+
+  @override
+  String get agencyDocumentsResubmit => 'Upload or resubmit documents';
+
+  @override
+  String get adminNoAgencyDocuments => 'No documents uploaded yet';
+
+  @override
+  String get agencyDocumentStatusPending => 'Pending';
+
+  @override
+  String get agencyDocumentStatusApproved => 'Approved';
+
+  @override
+  String get agencyDocumentStatusRejected => 'Rejected';
+
+  @override
+  String get adminRequestMoreInfo => 'Request more information';
+
+  @override
+  String get adminMoreInfoRequested => 'Information request sent';
+
+  @override
+  String get identityVerification => 'Identity verification';
+
+  @override
+  String get identityVerificationTitle => 'Verify your identity';
+
+  @override
+  String get identityVerificationBody =>
+      'Upload a clear passport photo and a selfie. Your documents are stored securely and reviewed privately.';
+
+  @override
+  String get identityPassportPhoto => 'Passport photo';
+
+  @override
+  String get identityPassportBody =>
+      'A clear image of your passport identification page';
+
+  @override
+  String get identitySelfiePhoto => 'Selfie';
+
+  @override
+  String get identitySelfieBody =>
+      'A clear photo of you looking directly at the camera';
+
+  @override
+  String get identityExampleTitle => 'Photo example & instructions';
+
+  @override
+  String get identityPassportInstruction1 =>
+      'Show the full identification page and all four corners.';
+
+  @override
+  String get identityPassportInstruction2 =>
+      'Use good lighting and avoid glare or shadows.';
+
+  @override
+  String get identityPassportInstruction3 =>
+      'Make sure every detail is sharp and readable.';
+
+  @override
+  String get identitySelfieInstruction1 =>
+      'Look directly at the camera in good lighting.';
+
+  @override
+  String get identitySelfieInstruction2 =>
+      'Keep your full face visible and centered.';
+
+  @override
+  String get identitySelfieInstruction3 =>
+      'Do not wear a hat, sunglasses, or face covering.';
+
+  @override
+  String get identityClose => 'Close';
+
+  @override
+  String get identityContinue => 'Continue';
+
+  @override
+  String get identityChooseSource => 'Choose photo source';
+
+  @override
+  String get identityCamera => 'Take a photo';
+
+  @override
+  String get identityGallery => 'Choose from gallery';
+
+  @override
+  String get identityNoPhoto => 'No photo selected';
+
+  @override
+  String get identityViewExample => 'View example';
+
+  @override
+  String get identityUploadPhoto => 'Upload photo';
+
+  @override
+  String get identityChangePhoto => 'Change photo';
+
+  @override
+  String get identitySubmit => 'Submit for verification';
+
+  @override
+  String get identitySubmitted =>
+      'Your identity documents were submitted for review.';
+
+  @override
+  String get identitySignInRequired =>
+      'Please sign in before submitting identity documents.';
+
+  @override
+  String get identityUploadFailed =>
+      'The documents could not be uploaded. Please try again.';
 }

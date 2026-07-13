@@ -56,9 +56,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
 
     setState(() => _saving = true);
     final err = await context.read<AppProvider>().updateAccountDetails(
-          fullName: name,
-          phone: _phoneCtrl.text.trim(),
-        );
+      fullName: name,
+      phone: _phoneCtrl.text.trim(),
+    );
     if (!mounted) return;
     setState(() => _saving = false);
     showAppSnack(context, err ?? t.accountUpdated, isError: err != null);
@@ -82,15 +82,27 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: AppColors.background,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(t.accountVerifyIdentity, style: AppTheme.serif(20)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.accountVerifyIdentityBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+              Text(
+                t.accountVerifyIdentityBody,
+                style: AppTheme.sans(13, color: AppColors.inkLight),
+              ),
               const SizedBox(height: 6),
-              Text(currentEmail, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+              Text(
+                currentEmail,
+                style: AppTheme.sans(
+                  13,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
               const SizedBox(height: 18),
               Container(
                 decoration: BoxDecoration(
@@ -105,10 +117,19 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   decoration: InputDecoration(
                     hintText: '••••••••',
                     hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     suffixIcon: IconButton(
-                      icon: Icon(obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: AppColors.muted, size: 20),
+                      icon: Icon(
+                        obscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: AppColors.muted,
+                        size: 20,
+                      ),
                       onPressed: () => setDialogState(() => obscure = !obscure),
                     ),
                     border: InputBorder.none,
@@ -121,11 +142,21 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+              child: Text(
+                t.agencyDashboardCancel,
+                style: AppTheme.sans(13, color: AppColors.muted),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, passwordCtrl.text),
-              child: Text(t.accountVerify, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+              child: Text(
+                t.accountVerify,
+                style: AppTheme.sans(
+                  13,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
           ],
         ),
@@ -155,20 +186,27 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: AppColors.background,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(t.accountChangeEmail, style: AppTheme.serif(20)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.accountChangeEmailBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+              Text(
+                t.accountChangeEmailBody,
+                style: AppTheme.sans(13, color: AppColors.inkLight),
+              ),
               const SizedBox(height: 18),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: emailFieldError != null ? AppColors.errorRed : AppColors.border,
+                    color: emailFieldError != null
+                        ? AppColors.errorRed
+                        : AppColors.border,
                     width: emailFieldError != null ? 2 : 1.5,
                   ),
                 ),
@@ -179,7 +217,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   decoration: InputDecoration(
                     hintText: 'newemail@example.com',
                     hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-                    prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                    prefixIcon: const Icon(
+                      Icons.email_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -189,9 +231,18 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, size: 14, color: AppColors.errorRed),
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      size: 14,
+                      color: AppColors.errorRed,
+                    ),
                     const SizedBox(width: 6),
-                    Expanded(child: Text(emailFieldError!, style: AppTheme.sans(12, color: AppColors.errorRed))),
+                    Expanded(
+                      child: Text(
+                        emailFieldError!,
+                        style: AppTheme.sans(12, color: AppColors.errorRed),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -200,7 +251,10 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+              child: Text(
+                t.agencyDashboardCancel,
+                style: AppTheme.sans(13, color: AppColors.muted),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -210,12 +264,21 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   return;
                 }
                 if (newEmailCtrl.text.trim() == currentEmail) {
-                  setDialogState(() => emailFieldError = t.accountEmailSameAsCurrent);
+                  setDialogState(
+                    () => emailFieldError = t.accountEmailSameAsCurrent,
+                  );
                   return;
                 }
                 Navigator.pop(ctx, newEmailCtrl.text.trim());
               },
-              child: Text(t.accountUpdate, style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.primary)),
+              child: Text(
+                t.accountUpdate,
+                style: AppTheme.sans(
+                  13,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
           ],
         ),
@@ -235,7 +298,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.background,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Row(
             children: [
               Container(
@@ -244,17 +309,32 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   color: const Color(0xFF34C759).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.mark_email_read_outlined, color: Color(0xFF34C759), size: 22),
+                child: const Icon(
+                  Icons.mark_email_read_outlined,
+                  color: Color(0xFF34C759),
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
-              Expanded(child: Text(t.accountEmailConfirmationTitle, style: AppTheme.serif(18))),
+              Expanded(
+                child: Text(
+                  t.accountEmailConfirmationTitle,
+                  style: AppTheme.serif(18),
+                ),
+              ),
             ],
           ),
-          content: Text(t.accountEmailConfirmationBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+          content: Text(
+            t.accountEmailConfirmationBody,
+            style: AppTheme.sans(13, color: AppColors.inkLight),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t.agencyBookingsConfirm, style: AppTheme.sans(13, weight: FontWeight.w700)),
+              child: Text(
+                t.agencyBookingsConfirm,
+                style: AppTheme.sans(13, weight: FontWeight.w700),
+              ),
             ),
           ],
         ),
@@ -263,7 +343,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       showAppSnack(context, err, isError: true);
     }
   }
-
 
   Future<void> _confirmDelete() async {
     final t = AppLocalizations.of(context);
@@ -276,16 +355,28 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.accountDeleteTitle, style: AppTheme.serif(20)),
-        content: Text(t.accountDeleteBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(
+          t.accountDeleteBody,
+          style: AppTheme.sans(13, color: AppColors.inkLight),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, false),
-            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            child: Text(
+              t.agencyDashboardCancel,
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, true),
-            child: Text(t.accountDeleteConfirm,
-                style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+            child: Text(
+              t.accountDeleteConfirm,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w700,
+                color: AppColors.errorRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -342,28 +433,52 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                         color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.email_outlined, color: AppColors.primary, size: 20),
+                      child: const Icon(
+                        Icons.email_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(t.agencyLoginEmail, style: AppTheme.sans(11, color: AppColors.muted, weight: FontWeight.w600)),
+                          Text(
+                            t.agencyLoginEmail,
+                            style: AppTheme.sans(
+                              11,
+                              color: AppColors.muted,
+                              weight: FontWeight.w600,
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(user?.email ?? '',
-                              style: AppTheme.sans(14, weight: FontWeight.w600),
-                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(
+                            user?.email ?? '',
+                            style: AppTheme.sans(14, weight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(t.accountChangeEmail, style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.primary)),
+                      child: Text(
+                        t.accountChangeEmail,
+                        style: AppTheme.sans(
+                          11,
+                          weight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -371,7 +486,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ),
             const SizedBox(height: 24),
 
-            _Field(label: t.authFullName, controller: _nameCtrl, hint: t.authFullNameHint),
+            _Field(
+              label: t.authFullName,
+              controller: _nameCtrl,
+              hint: t.authFullNameHint,
+            ),
             const SizedBox(height: 18),
             _Field(
               label: t.authPhone,
@@ -387,8 +506,14 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ),
             const SizedBox(height: 32),
 
-            Text(t.accountDangerZone,
-                style: AppTheme.sans(13, weight: FontWeight.w800, color: AppColors.errorRed)),
+            Text(
+              t.accountDangerZone,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w800,
+                color: AppColors.errorRed,
+              ),
+            ),
             const SizedBox(height: 10),
             GestureDetector(
               onTap: _deleting ? null : _confirmDelete,
@@ -397,24 +522,45 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.errorRed.withOpacity(0.06),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: AppColors.errorRed.withOpacity(0.3), width: 1.5),
+                  border: Border.all(
+                    color: AppColors.errorRed.withOpacity(0.3),
+                    width: 1.5,
+                  ),
                 ),
                 child: Row(
                   children: [
                     _deleting
-                        ? const SizedBox(width: 20, height: 20,
-                            child: CircularProgressIndicator(color: AppColors.errorRed, strokeWidth: 2.5))
-                        : const Icon(Icons.delete_forever_rounded, color: AppColors.errorRed, size: 22),
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: AppColors.errorRed,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.delete_forever_rounded,
+                            color: AppColors.errorRed,
+                            size: 22,
+                          ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(t.accountDeleteAccount,
-                              style: AppTheme.sans(14, weight: FontWeight.w700, color: AppColors.errorRed)),
+                          Text(
+                            t.accountDeleteAccount,
+                            style: AppTheme.sans(
+                              14,
+                              weight: FontWeight.w700,
+                              color: AppColors.errorRed,
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(t.accountDeleteHint,
-                              style: AppTheme.sans(11.5, color: AppColors.muted)),
+                          Text(
+                            t.accountDeleteHint,
+                            style: AppTheme.sans(11.5, color: AppColors.muted),
+                          ),
                         ],
                       ),
                     ),
@@ -434,7 +580,11 @@ class _PrimaryBtn extends StatelessWidget {
   final String label;
   final bool busy;
   final VoidCallback onTap;
-  const _PrimaryBtn({required this.label, required this.busy, required this.onTap});
+  const _PrimaryBtn({
+    required this.label,
+    required this.busy,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -449,10 +599,22 @@ class _PrimaryBtn extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: busy
-            ? const SizedBox(width: 20, height: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-            : Text(label,
-                style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(
+                label,
+                style: AppTheme.sans(
+                  14,
+                  weight: FontWeight.w800,
+                  color: const Color(0xFFF6F2E9),
+                ),
+              ),
       ),
     );
   }
@@ -466,8 +628,12 @@ class _Field extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? suffix;
   const _Field({
-    required this.label, required this.controller, required this.hint,
-    this.obscure = false, this.keyboardType, this.suffix,
+    required this.label,
+    required this.controller,
+    required this.hint,
+    this.obscure = false,
+    this.keyboardType,
+    this.suffix,
   });
 
   @override
@@ -493,7 +659,10 @@ class _Field extends StatelessWidget {
               hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
               suffixIcon: suffix,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 13,
+              ),
             ),
           ),
         ),

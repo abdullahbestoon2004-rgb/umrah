@@ -40,42 +40,52 @@ class _HomePreviewScreenState extends State<HomePreviewScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(13),
-                        border:
-                            Border.all(color: AppColors.border, width: 1.5),
+                        border: Border.all(color: AppColors.border, width: 1.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 18, color: AppColors.ink),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: Text(t.contentPreviewHome,
-                        style: AppTheme.serif(20),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      t.contentPreviewHome,
+                      style: AppTheme.serif(20),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   TagChip(
                     label: 'کوردی',
                     active: lang == 'ku',
                     onTap: () => setState(() => _lang = 'ku'),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 7,
+                    ),
                   ),
                   const SizedBox(width: 5),
                   TagChip(
                     label: 'عربي',
                     active: lang == 'ar',
                     onTap: () => setState(() => _lang = 'ar'),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 7,
+                    ),
                   ),
                   const SizedBox(width: 5),
                   TagChip(
                     label: 'En',
                     active: lang == 'en',
                     onTap: () => setState(() => _lang = 'en'),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 7,
+                    ),
                   ),
                 ],
               ),
@@ -86,8 +96,9 @@ class _HomePreviewScreenState extends State<HomePreviewScreen> {
                 context: context,
                 locale: Locale(lang),
                 child: Directionality(
-                  textDirection:
-                      lang == 'en' ? TextDirection.ltr : TextDirection.rtl,
+                  textDirection: lang == 'en'
+                      ? TextDirection.ltr
+                      : TextDirection.rtl,
                   child: const HomeScreen(),
                 ),
               ),

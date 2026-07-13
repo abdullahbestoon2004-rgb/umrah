@@ -66,12 +66,14 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsetsDirectional.fromSTEB(9, 4, 9, 4),
-        decoration: BoxDecoration(
-          color: _bg,
-          borderRadius: BorderRadius.circular(7),
-        ),
-        child: Text(label,
-            style: AppTheme.sans(10.5, weight: FontWeight.w700, color: _fg)),
-      );
+    padding: const EdgeInsetsDirectional.fromSTEB(9, 4, 9, 4),
+    decoration: BoxDecoration(
+      color: _bg,
+      borderRadius: BorderRadius.circular(7),
+    ),
+    child: Text(
+      label,
+      style: AppTheme.sans(10.5, weight: FontWeight.w700, color: _fg),
+    ),
+  );
 }

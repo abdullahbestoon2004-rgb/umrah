@@ -15,7 +15,8 @@ class EditAgencyProfileScreen extends StatefulWidget {
   const EditAgencyProfileScreen({super.key, required this.company});
 
   @override
-  State<EditAgencyProfileScreen> createState() => _EditAgencyProfileScreenState();
+  State<EditAgencyProfileScreen> createState() =>
+      _EditAgencyProfileScreenState();
 }
 
 class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
@@ -31,9 +32,9 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   void initState() {
     super.initState();
     _locationCtrl = TextEditingController(text: widget.company.location);
-    _aboutCtrl    = TextEditingController(text: widget.company.about);
-    _tagsCtrl     = TextEditingController(text: widget.company.tags.join(', '));
-    _sinceCtrl    = TextEditingController(text: '${widget.company.since}');
+    _aboutCtrl = TextEditingController(text: widget.company.about);
+    _tagsCtrl = TextEditingController(text: widget.company.tags.join(', '));
+    _sinceCtrl = TextEditingController(text: '${widget.company.since}');
   }
 
   @override
@@ -46,14 +47,20 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   }
 
   Future<void> _pickLogo() async {
-    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final xfile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (xfile == null) return;
     final bytes = await xfile.readAsBytes();
     setState(() => _logoBytes = bytes);
   }
 
   Future<void> _pickBanner() async {
-    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final xfile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (xfile == null) return;
     final bytes = await xfile.readAsBytes();
     setState(() => _bannerBytes = bytes);
@@ -69,7 +76,10 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
       return;
     }
     final sinceYear = int.tryParse(_sinceCtrl.text.trim());
-    if (_sinceCtrl.text.trim().isNotEmpty && (sinceYear == null || sinceYear < 1900 || sinceYear > DateTime.now().year)) {
+    if (_sinceCtrl.text.trim().isNotEmpty &&
+        (sinceYear == null ||
+            sinceYear < 1900 ||
+            sinceYear > DateTime.now().year)) {
       showAppSnack(context, t.editAgencyProfileYearInvalid, isError: true);
       return;
     }
@@ -84,9 +94,9 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     final err = await context.read<AppProvider>().updateCompanyProfile(
       widget.company.id,
       location: _locationCtrl.text.trim(),
-      about:    _aboutCtrl.text.trim(),
-      tags:     tags,
-      since:    int.tryParse(_sinceCtrl.text.trim()),
+      about: _aboutCtrl.text.trim(),
+      tags: tags,
+      since: int.tryParse(_sinceCtrl.text.trim()),
       logoBytes: _logoBytes,
       bannerBytes: _bannerBytes,
     );
@@ -121,11 +131,31 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
             child: GestureDetector(
               onTap: _saving ? null : _save,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 9,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: _saving
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(t.editAgencyProfileSave, style: AppTheme.sans(13, weight: FontWeight.w800, color: Colors.white)),
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        t.editAgencyProfileSave,
+                        style: AppTheme.sans(
+                          13,
+                          weight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ),
@@ -150,10 +180,17 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                   children: [
                     _logoBytes != null
                         ? Container(
-                            width: 52, height: 52,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14)),
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                             clipBehavior: Clip.antiAlias,
-                            child: Image.memory(_logoBytes!, fit: BoxFit.cover, cacheWidth: 104),
+                            child: Image.memory(
+                              _logoBytes!,
+                              fit: BoxFit.cover,
+                              cacheWidth: 104,
+                            ),
                           )
                         : CompanyAvatar(
                             mono: widget.company.mono,
@@ -165,18 +202,33 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                           ),
                     const SizedBox(width: 14),
                     Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(widget.company.name, style: AppTheme.sans(16, weight: FontWeight.w700)),
-                        const SizedBox(height: 2),
-                        Text(
-                          (_logoBytes != null || (widget.company.logoUrl ?? '').isNotEmpty)
-                              ? t.agencyLogoChange
-                              : t.agencyLogoAdd,
-                          style: AppTheme.sans(11.5, weight: FontWeight.w700, color: AppColors.primary),
-                        ),
-                      ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.company.name,
+                            style: AppTheme.sans(16, weight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            (_logoBytes != null ||
+                                    (widget.company.logoUrl ?? '').isNotEmpty)
+                                ? t.agencyLogoChange
+                                : t.agencyLogoAdd,
+                            style: AppTheme.sans(
+                              11.5,
+                              weight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 20),
+                    const Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                   ],
                 ),
               ),
@@ -184,7 +236,10 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
             const SizedBox(height: 18),
 
             // Background Banner Picker
-            Text(t.editAgencyProfileBannerLabel, style: AppTheme.sans(13, weight: FontWeight.w700)),
+            Text(
+              t.editAgencyProfileBannerLabel,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: _pickBanner,
@@ -200,27 +255,44 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
                 child: _bannerBytes != null
                     ? Image.memory(_bannerBytes!, fit: BoxFit.cover)
                     : (widget.company.bannerUrl ?? '').isNotEmpty
-                        ? Image.network(widget.company.bannerUrl!, fit: BoxFit.cover)
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 28),
-                                const SizedBox(height: 6),
-                                Text(
-                                  (_bannerBytes != null || (widget.company.bannerUrl ?? '').isNotEmpty)
-                                      ? t.agencyBannerChange
-                                      : t.agencyBannerAdd,
-                                  style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.primary),
-                                ),
-                              ],
+                    ? Image.network(
+                        widget.company.bannerUrl!,
+                        fit: BoxFit.cover,
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: AppColors.primary,
+                              size: 28,
                             ),
-                          ),
+                            const SizedBox(height: 6),
+                            Text(
+                              (_bannerBytes != null ||
+                                      (widget.company.bannerUrl ?? '')
+                                          .isNotEmpty)
+                                  ? t.agencyBannerChange
+                                  : t.agencyBannerAdd,
+                              style: AppTheme.sans(
+                                12,
+                                weight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 24),
 
-            _Field(label: t.editAgencyProfileLocationLabel, controller: _locationCtrl, hint: t.editAgencyProfileLocationHint),
+            _Field(
+              label: t.editAgencyProfileLocationLabel,
+              controller: _locationCtrl,
+              hint: t.editAgencyProfileLocationHint,
+            ),
             const SizedBox(height: 18),
             _Field(
               label: t.agencyCompanySince,
@@ -242,8 +314,10 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
               hint: t.editAgencyProfileTagsHint,
             ),
             const SizedBox(height: 8),
-            Text(t.editAgencyProfileTagsBadgeHint,
-                style: AppTheme.sans(11.5, color: AppColors.muted)),
+            Text(
+              t.editAgencyProfileTagsBadgeHint,
+              style: AppTheme.sans(11.5, color: AppColors.muted),
+            ),
             const SizedBox(height: 32),
           ],
         ),
@@ -258,8 +332,13 @@ class _Field extends StatelessWidget {
   final String hint;
   final int maxLines;
   final TextInputType? keyboardType;
-  const _Field({required this.label, required this.controller, required this.hint,
-      this.maxLines = 1, this.keyboardType});
+  const _Field({
+    required this.label,
+    required this.controller,
+    required this.hint,
+    this.maxLines = 1,
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +362,10 @@ class _Field extends StatelessWidget {
               hintText: hint,
               hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 13,
+              ),
             ),
           ),
         ),

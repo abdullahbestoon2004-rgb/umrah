@@ -30,7 +30,9 @@ class TagChip extends StatelessWidget {
           color: active ? AppColors.primary : AppColors.surface,
           borderRadius: BorderRadius.circular(11),
           border: Border.all(
-            color: active ? AppColors.primary : AppColors.primary.withOpacity(0.16),
+            color: active
+                ? AppColors.primary
+                : AppColors.primary.withOpacity(0.16),
             width: 1.5,
           ),
         ),
@@ -41,7 +43,10 @@ class TagChip extends StatelessWidget {
               Icon(icon, size: 13, color: color),
               const SizedBox(width: 5),
             ],
-            Text(label, style: AppTheme.sans(13, weight: FontWeight.w700, color: color)),
+            Text(
+              label,
+              style: AppTheme.sans(13, weight: FontWeight.w700, color: color),
+            ),
           ],
         ),
       ),
@@ -67,7 +72,14 @@ class InfoChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[icon!, const SizedBox(width: 5)],
-          Text(label, style: AppTheme.sans(11.5, weight: FontWeight.w600, color: const Color(0xFF5E6B63))),
+          Text(
+            label,
+            style: AppTheme.sans(
+              11.5,
+              weight: FontWeight.w600,
+              color: const Color(0xFF5E6B63),
+            ),
+          ),
         ],
       ),
     );

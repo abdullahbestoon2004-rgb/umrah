@@ -5,8 +5,8 @@ import '../../widgets/dashboard/dashboard_shell.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'admin_overview_tab.dart';
 import 'admin_agencies_tab.dart';
-import 'admin_finance_tab.dart';
 import 'admin_content_tab.dart';
+import 'admin_bookings_tab.dart';
 import 'admin_more_tab.dart';
 
 /// Owner-only control panel, restructured as a 5-destination shell:
@@ -44,16 +44,22 @@ class _AdminScreenState extends State<AdminScreen> {
       onSelect: _goToTab,
       destinations: [
         DashboardDestination(
-            icon: Icons.space_dashboard_rounded, label: t.tabOverview),
+          icon: Icons.space_dashboard_rounded,
+          label: t.tabOverview,
+        ),
         DashboardDestination(
           icon: Icons.domain_rounded,
           label: t.navAgencies,
           badge: provider.pendingCompanies.length,
         ),
         DashboardDestination(
-            icon: Icons.receipt_long_rounded, label: t.adminActionFinance),
+          icon: Icons.local_offer_rounded,
+          label: t.navOffers,
+        ),
         DashboardDestination(
-            icon: Icons.campaign_rounded, label: t.tabContent),
+          icon: Icons.receipt_long_rounded,
+          label: t.navBookings,
+        ),
         DashboardDestination(
           icon: Icons.more_horiz_rounded,
           label: t.tabMore,
@@ -63,8 +69,8 @@ class _AdminScreenState extends State<AdminScreen> {
       pages: [
         AdminOverviewTab(onGoToTab: _goToTab),
         const AdminAgenciesTab(),
-        const AdminFinanceTab(),
         const AdminContentTab(),
+        const AdminBookingsTab(),
         const AdminMoreTab(),
       ],
     );

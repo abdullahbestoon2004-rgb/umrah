@@ -26,8 +26,9 @@ Widget wrap(Widget child, AppProvider provider) {
 void main() {
   setUpAll(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('full 3-step booking flow reaches the confirmation ticket',
-      (tester) async {
+  testWidgets('full 3-step booking flow reaches the confirmation ticket', (
+    tester,
+  ) async {
     final p = AppProvider(service: FakeService(), autoLoad: false);
     await p.init();
     await p.signIn('client@test.com', 'pass');
@@ -35,14 +36,19 @@ void main() {
     final company = p.companyById(offer.companyId)!;
 
     await tester.pumpWidget(
-        wrap(BookingFlowScreen(offer: offer, company: company), p));
+      wrap(BookingFlowScreen(offer: offer, company: company), p),
+    );
     await tester.pumpAndSettle();
 
     // ── Step 1: room + count ──
     expect(find.text('Choose room type'), findsOneWidget);
     await tester.tap(find.text('Double room'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Full board'));
+    await tester.tap(find.text('Full board'));
+    await tester.pump();
     // add a second pilgrim
+    await tester.ensureVisible(find.byIcon(Icons.add_rounded));
     await tester.tap(find.byIcon(Icons.add_rounded));
     await tester.pump();
     await tester.tap(find.text('Continue'));
@@ -56,10 +62,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Booking summary'), findsNothing);
 
-    // fill both pilgrims: name + passport, pick DOB via the picker
+    // Passport data is deliberately collected after booking, per traveller.
+    expect(find.text('Passport number'), findsNothing);
+    // Fill both pilgrims: name + DOB only.
     final textFields = find.byType(TextField);
     await tester.enterText(textFields.at(0), 'Karwan Omar');
-    await tester.enterText(textFields.at(1), 'A1234567');
     await tester.pump();
     // pilgrim 1 DOB
     await tester.ensureVisible(find.text('Select date').first);
@@ -67,9 +74,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    // pilgrim 2 (field order: name1, passport1, phone1, name2, passport2)
-    await tester.enterText(textFields.at(3), 'Zhyan Mohammed');
-    await tester.enterText(textFields.at(4), 'B7654321');
+    // pilgrim 2 (field order: name1, phone1, name2)
+    await tester.enterText(textFields.at(2), 'Zhyan Mohammed');
     await tester.pump();
     await tester.ensureVisible(find.text('Select date').first);
     await tester.tap(find.text('Select date').first);
@@ -85,6 +91,8 @@ void main() {
     expect(find.text('Booking summary'), findsOneWidget);
     expect(find.text('Karwan Omar · Zhyan Mohammed'), findsOneWidget);
     expect(find.text('Double room'), findsOneWidget);
+    expect(find.text('Full board'), findsOneWidget);
+    await tester.ensureVisible(find.text('Pay directly in the FIB app'));
     await tester.tap(find.text('Pay directly in the FIB app'));
     await tester.pump();
     await tester.tap(find.text('Confirm booking'));
@@ -96,5 +104,6 @@ void main() {
     expect(p.bookings.length, 1);
     expect(p.bookings.first.payMethod, 'fib');
     expect(p.bookings.first.travelers, 2);
+    expect(p.bookings.first.mealPreference, 'Full board');
   });
 }

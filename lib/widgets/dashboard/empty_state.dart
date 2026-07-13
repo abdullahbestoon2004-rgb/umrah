@@ -29,14 +29,17 @@ class EmptyState extends StatelessWidget {
     if (compact) {
       return Padding(
         padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: kDashPagePad),
+          horizontal: kDashPagePad,
+        ),
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.mutedLight),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(title,
-                  style: AppTheme.sans(13, color: AppColors.muted)),
+              child: Text(
+                title,
+                style: AppTheme.sans(13, color: AppColors.muted),
+              ),
             ),
           ],
         ),
@@ -52,31 +55,39 @@ class EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: const BoxDecoration(
-                  color: Color(0xFFECF0E9), shape: BoxShape.circle),
+                color: Color(0xFFECF0E9),
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: AppColors.primary, size: 32),
             ),
             const SizedBox(height: 16),
             Text(title, style: AppTheme.serif(20), textAlign: TextAlign.center),
             if (body != null) ...[
               const SizedBox(height: 5),
-              Text(body!,
-                  style: AppTheme.sans(13, color: AppColors.muted),
-                  textAlign: TextAlign.center),
+              Text(
+                body!,
+                style: AppTheme.sans(13, color: AppColors.muted),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (ctaLabel != null && onCta != null) ...[
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: onCta,
                 child: Container(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(24, 13, 24, 13),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 13, 24, 13),
                   decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(13)),
-                  child: Text(ctaLabel!,
-                      style: AppTheme.sans(13,
-                          weight: FontWeight.w700,
-                          color: const Color(0xFFF6F2E9))),
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Text(
+                    ctaLabel!,
+                    style: AppTheme.sans(
+                      13,
+                      weight: FontWeight.w700,
+                      color: const Color(0xFFF6F2E9),
+                    ),
+                  ),
                 ),
               ),
             ],

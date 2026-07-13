@@ -19,6 +19,7 @@ import 'privacy_security_screen.dart';
 import 'help_support_screen.dart';
 import 'account_details_screen.dart';
 import 'legal_screen.dart';
+import 'identity_verification_screen.dart';
 import '../auth/auth_screen.dart';
 import '../../widgets/app_snackbar.dart';
 
@@ -40,7 +41,10 @@ class ProfileScreen extends StatelessWidget {
               delegate: SliverChildListDelegate([
                 if (!provider.isSignedIn) ...[
                   _SignInBanner(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AuthScreen()),
+                    ),
                   ),
                   const SizedBox(height: 18),
                 ],
@@ -50,30 +54,56 @@ class ProfileScreen extends StatelessWidget {
                   _MenuCard(
                     icon: Icons.manage_accounts_rounded,
                     label: t.profileAccountDetails,
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const AccountDetailsScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AccountDetailsScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  _MenuCard(
+                    icon: Icons.verified_user_outlined,
+                    label: t.identityVerification,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const IdentityVerificationScreen(),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                 ],
                 _MenuCard(
                   icon: Icons.favorite_border_rounded,
                   label: t.profileSavedTrips,
-                  badge: provider.saved.isEmpty ? null : '${provider.saved.length}',
+                  badge: provider.saved.isEmpty
+                      ? null
+                      : '${provider.saved.length}',
                   onTap: () => _openSaved(context, provider),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.calendar_month_rounded,
                   label: t.profileMyBookings,
-                  badge: provider.bookings.isEmpty ? null : '${provider.bookings.length}',
+                  badge: provider.bookings.isEmpty
+                      ? null
+                      : '${provider.bookings.length}',
                   onTap: () => provider.setTab(3),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.notifications_outlined,
                   label: t.profileNotifications,
-                  badge: provider.unreadNotifications == 0 ? null : '${provider.unreadNotifications}',
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                  badge: provider.unreadNotifications == 0
+                      ? null
+                      : '${provider.unreadNotifications}',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 22),
                 _SectionLabel(t.profileSectionPreferences),
@@ -81,7 +111,12 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.credit_card_rounded,
                   label: t.profilePaymentMethods,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PaymentMethodsScreen(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
@@ -94,7 +129,12 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.lock_outline_rounded,
                   label: t.profilePrivacySecurity,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacySecurityScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PrivacySecurityScreen(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 22),
                 _SectionLabel(t.profileSectionSupport),
@@ -102,7 +142,12 @@ class ProfileScreen extends StatelessWidget {
                 _MenuCard(
                   icon: Icons.chat_bubble_outline_rounded,
                   label: t.profileHelpSupport,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const HelpSupportScreen(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 _MenuCard(
@@ -121,14 +166,23 @@ class ProfileScreen extends StatelessWidget {
                 ],
                 const SizedBox(height: 18),
                 // Agency portal divider
-                Row(children: [
-                  Expanded(child: Divider(color: AppColors.border)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(t.profileAgencyDivider, style: AppTheme.sans(11, weight: FontWeight.w700, color: AppColors.muted)),
-                  ),
-                  Expanded(child: Divider(color: AppColors.border)),
-                ]),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: AppColors.border)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        t.profileAgencyDivider,
+                        style: AppTheme.sans(
+                          11,
+                          weight: FontWeight.w700,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: AppColors.border)),
+                  ],
+                ),
                 const SizedBox(height: 14),
                 _MenuCard(
                   icon: provider.isAdminUser
@@ -137,21 +191,36 @@ class ProfileScreen extends StatelessWidget {
                   label: provider.isAdminUser
                       ? t.profileAdminDashboard
                       : provider.isAgencyLoggedIn
-                          ? t.profileAgencyDashboardWithName(provider.agencyCompany?.name ?? '')
-                          : t.profileAgencyPortal,
+                      ? t.profileAgencyDashboardWithName(
+                          provider.agencyCompany?.name ?? '',
+                        )
+                      : t.profileAgencyPortal,
                   subtitle: provider.isAdminUser
                       ? t.profileAdminDashboardSub
                       : provider.isAgencyLoggedIn
-                          ? t.profileAgencyDashboardSub
-                          : t.profileAgencyPortalSub,
+                      ? t.profileAgencyDashboardSub
+                      : t.profileAgencyPortalSub,
                   tint: AppColors.primary,
                   onTap: () {
                     if (provider.isAdminUser) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AdminScreen()),
+                      );
                     } else if (provider.isAgencyLoggedIn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AgencyDashboardScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AgencyDashboardScreen(),
+                        ),
+                      );
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AgencyLoginScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AgencyLoginScreen(),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -173,10 +242,16 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _openSaved(BuildContext context, AppProvider provider) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const _SavedScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const _SavedScreen()),
+    );
   }
 
-  Future<void> _confirmAgencyLogout(BuildContext context, AppProvider provider) async {
+  Future<void> _confirmAgencyLogout(
+    BuildContext context,
+    AppProvider provider,
+  ) async {
     final t = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -184,16 +259,28 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.profileAgencyLogoutTitle, style: AppTheme.serif(20)),
-        content: Text(t.profileAgencyLogoutBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(
+          t.profileAgencyLogoutBody,
+          style: AppTheme.sans(13, color: AppColors.inkLight),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, false),
-            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            child: Text(
+              t.agencyDashboardCancel,
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, true),
-            child: Text(t.profileAgencyLogout,
-                style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+            child: Text(
+              t.profileAgencyLogout,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w700,
+                color: AppColors.errorRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -202,7 +289,10 @@ class ProfileScreen extends StatelessWidget {
     provider.agencyLogout();
   }
 
-  Future<void> _confirmSignOut(BuildContext context, AppProvider provider) async {
+  Future<void> _confirmSignOut(
+    BuildContext context,
+    AppProvider provider,
+  ) async {
     final t = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
@@ -211,16 +301,28 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.profileSignOutConfirmTitle, style: AppTheme.serif(20)),
-        content: Text(t.profileSignOutConfirmBody, style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(
+          t.profileSignOutConfirmBody,
+          style: AppTheme.sans(13, color: AppColors.inkLight),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, false),
-            child: Text(t.agencyDashboardCancel, style: AppTheme.sans(13, color: AppColors.muted)),
+            child: Text(
+              t.agencyDashboardCancel,
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, true),
-            child: Text(t.profileSignOut,
-                style: AppTheme.sans(13, weight: FontWeight.w700, color: AppColors.errorRed)),
+            child: Text(
+              t.profileSignOut,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w700,
+                color: AppColors.errorRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -238,7 +340,9 @@ class ProfileScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (sheetCtx) => Padding(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
         child: Column(
@@ -246,15 +350,30 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
                 Container(
-                  width: 52, height: 52,
-                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
-                  child: const Icon(Icons.mosque_rounded, color: Color(0xFFF3E6C4), size: 26),
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: const Icon(
+                    Icons.mosque_rounded,
+                    color: Color(0xFFF3E6C4),
+                    size: 26,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Column(
@@ -262,7 +381,10 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Text(t.appTitle, style: AppTheme.serif(22)),
                     const SizedBox(height: 2),
-                    Text(t.aboutVersion(_appVersion), style: AppTheme.sans(12, color: AppColors.muted)),
+                    Text(
+                      t.aboutVersion(_appVersion),
+                      style: AppTheme.sans(12, color: AppColors.muted),
+                    ),
                   ],
                 ),
               ],
@@ -273,7 +395,12 @@ class ProfileScreen extends StatelessWidget {
               label: t.aboutPrivacyPolicy,
               onTap: () {
                 Navigator.pop(sheetCtx);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const LegalScreen(kind: LegalKind.privacy)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalScreen(kind: LegalKind.privacy),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 10),
@@ -282,7 +409,12 @@ class ProfileScreen extends StatelessWidget {
               label: t.aboutTermsOfUse,
               onTap: () {
                 Navigator.pop(sheetCtx);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const LegalScreen(kind: LegalKind.terms)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalScreen(kind: LegalKind.terms),
+                  ),
+                );
               },
             ),
           ],
@@ -307,7 +439,9 @@ class ProfileScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
         child: Column(
@@ -315,29 +449,51 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Text(t.chooseLanguageTitle, style: AppTheme.serif(22)),
             const SizedBox(height: 16),
-            _LanguageOption(label: t.languageKurdish, code: 'ku', provider: provider),
+            _LanguageOption(
+              label: t.languageKurdish,
+              code: 'ku',
+              provider: provider,
+            ),
             const SizedBox(height: 10),
-            _LanguageOption(label: t.languageArabic, code: 'ar', provider: provider),
+            _LanguageOption(
+              label: t.languageArabic,
+              code: 'ar',
+              provider: provider,
+            ),
             const SizedBox(height: 10),
-            _LanguageOption(label: t.languageEnglish, code: 'en', provider: provider),
+            _LanguageOption(
+              label: t.languageEnglish,
+              code: 'en',
+              provider: provider,
+            ),
           ],
         ),
       ),
     );
   }
-
 }
 
 class _AboutLink extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _AboutLink({required this.icon, required this.label, required this.onTap});
+  const _AboutLink({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -354,8 +510,17 @@ class _AboutLink extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primary, size: 20),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: AppTheme.sans(14, weight: FontWeight.w600))),
-            const Icon(Icons.chevron_right_rounded, color: Color(0xFFC1C8BF), size: 20),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.sans(14, weight: FontWeight.w600),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFFC1C8BF),
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -367,7 +532,11 @@ class _LanguageOption extends StatelessWidget {
   final String label;
   final String code;
   final AppProvider provider;
-  const _LanguageOption({required this.label, required this.code, required this.provider});
+  const _LanguageOption({
+    required this.label,
+    required this.code,
+    required this.provider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -380,14 +549,33 @@ class _LanguageOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         decoration: BoxDecoration(
-          color: active ? AppColors.primary.withOpacity(0.08) : AppColors.surface,
+          color: active
+              ? AppColors.primary.withOpacity(0.08)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: active ? AppColors.primary : AppColors.border, width: 1.5),
+          border: Border.all(
+            color: active ? AppColors.primary : AppColors.border,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
-            Expanded(child: Text(label, style: AppTheme.sans(15, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.ink))),
-            if (active) Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w700,
+                  color: active ? AppColors.primary : AppColors.ink,
+                ),
+              ),
+            ),
+            if (active)
+              Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
           ],
         ),
       ),
@@ -414,31 +602,61 @@ class _SignInBanner extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 46, height: 46,
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(14)),
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.16),
+                borderRadius: BorderRadius.circular(14),
+              ),
               alignment: Alignment.center,
-              child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white, size: 24),
+              child: const Icon(
+                Icons.person_add_alt_1_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t.profileSignIn, style: AppTheme.sans(15.5, weight: FontWeight.w800, color: Colors.white)),
+                  Text(
+                    t.profileSignIn,
+                    style: AppTheme.sans(
+                      15.5,
+                      weight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
                   const SizedBox(height: 3),
-                  Text(t.profileSignInBannerSubtitle,
-                      style: AppTheme.sans(12, color: Colors.white.withOpacity(0.82)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(
+                    t.profileSignInBannerSubtitle,
+                    style: AppTheme.sans(
+                      12,
+                      color: Colors.white.withOpacity(0.82),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 6),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white,
+              size: 16,
+            ),
           ],
         ),
       ),
@@ -465,7 +683,9 @@ class _ProfileHeader extends StatelessWidget {
         bottom: false,
         child: Stack(
           children: [
-            const Positioned.fill(child: IslamicPattern(opacity: 0.06, cell: 72)),
+            const Positioned.fill(
+              child: IslamicPattern(opacity: 0.06, cell: 72),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 30, 22, 26),
               child: Column(
@@ -474,20 +694,33 @@ class _ProfileHeader extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        width: 66, height: 66,
-                        decoration: BoxDecoration(color: const Color(0xFFF3E6C4), borderRadius: BorderRadius.circular(20)),
+                        width: 66,
+                        height: 66,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3E6C4),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         alignment: Alignment.center,
                         // show the user's initial (like the home header); generic icon for guests
-                        child: provider.isSignedIn &&
-                                (provider.user!.fullName.isNotEmpty || provider.user!.email.isNotEmpty)
+                        child:
+                            provider.isSignedIn &&
+                                (provider.user!.fullName.isNotEmpty ||
+                                    provider.user!.email.isNotEmpty)
                             ? Text(
                                 (provider.user!.fullName.isNotEmpty
                                         ? provider.user!.fullName.trim()[0]
                                         : provider.user!.email[0])
                                     .toUpperCase(),
-                                style: AppTheme.serif(28, color: AppColors.primary),
+                                style: AppTheme.serif(
+                                  28,
+                                  color: AppColors.primary,
+                                ),
                               )
-                            : Icon(Icons.person_rounded, color: AppColors.primary, size: 30),
+                            : Icon(
+                                Icons.person_rounded,
+                                color: AppColors.primary,
+                                size: 30,
+                              ),
                       ),
                       const SizedBox(width: 15),
                       Expanded(
@@ -504,14 +737,33 @@ class _ProfileHeader extends StatelessWidget {
                             ),
                             const SizedBox(height: 5),
                             if (provider.isSignedIn)
-                              Text(provider.user!.email,
-                                  style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8)),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis)
+                              Text(
+                                provider.user!.email,
+                                style: AppTheme.sans(
+                                  12,
+                                  color: Colors.white.withOpacity(0.8),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
                             else
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(color: AppColors.gold.withOpacity(0.95), borderRadius: BorderRadius.circular(8)),
-                                child: Text(t.profileGuestBadge, style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)).copyWith(letterSpacing: 0.4)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold.withOpacity(0.95),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  t.profileGuestBadge,
+                                  style: AppTheme.sans(
+                                    11,
+                                    weight: FontWeight.w800,
+                                    color: const Color(0xFF1C2317),
+                                  ).copyWith(letterSpacing: 0.4),
+                                ),
                               ),
                           ],
                         ),
@@ -520,7 +772,10 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
                   Container(
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Row(
                       children: [
                         _StatCell(
@@ -532,13 +787,23 @@ class _ProfileHeader extends StatelessWidget {
                         _StatCell(
                           value: '${provider.saved.length}',
                           label: t.profileStatSaved,
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _SavedScreen())),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const _SavedScreen(),
+                            ),
+                          ),
                         ),
                         _Div(),
                         _StatCell(
                           value: '${provider.unreadNotifications}',
                           label: t.profileStatAlerts,
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationsScreen(),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -564,11 +829,16 @@ class _StatCell extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 13),
-        child: Column(children: [
-          Text(value, style: AppTheme.serif(22, color: Colors.white)),
-          const SizedBox(height: 2),
-          Text(label, style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7))),
-        ]),
+        child: Column(
+          children: [
+            Text(value, style: AppTheme.serif(22, color: Colors.white)),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7)),
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -590,7 +860,11 @@ class _SectionLabel extends StatelessWidget {
       padding: const EdgeInsetsDirectional.only(start: 4, bottom: 2),
       child: Text(
         label.toUpperCase(),
-        style: AppTheme.sans(11, weight: FontWeight.w800, color: AppColors.muted).copyWith(letterSpacing: 0.8),
+        style: AppTheme.sans(
+          11,
+          weight: FontWeight.w800,
+          color: AppColors.muted,
+        ).copyWith(letterSpacing: 0.8),
       ),
     );
   }
@@ -604,7 +878,15 @@ class _MenuCard extends StatelessWidget {
   final String? trailingLabel;
   final Color? tint;
   final VoidCallback onTap;
-  const _MenuCard({required this.icon, required this.label, this.subtitle, this.badge, this.trailingLabel, this.tint, required this.onTap});
+  const _MenuCard({
+    required this.icon,
+    required this.label,
+    this.subtitle,
+    this.badge,
+    this.trailingLabel,
+    this.tint,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -616,13 +898,20 @@ class _MenuCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: tint != null ? tint!.withOpacity(0.25) : AppColors.border, width: 1.5),
+          border: Border.all(
+            color: tint != null ? tint!.withOpacity(0.25) : AppColors.border,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
             Container(
-              width: 38, height: 38,
-              decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(11)),
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(11),
+              ),
               alignment: Alignment.center,
               child: Icon(icon, color: iconColor, size: 20),
             ),
@@ -632,27 +921,61 @@ class _MenuCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(label, style: AppTheme.sans(14, weight: FontWeight.w600, color: const Color(0xFF1F2D26)), overflow: TextOverflow.ellipsis),
+                  Text(
+                    label,
+                    style: AppTheme.sans(
+                      14,
+                      weight: FontWeight.w600,
+                      color: const Color(0xFF1F2D26),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
-                    Text(subtitle!, style: AppTheme.sans(11.5, color: AppColors.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(
+                      subtitle!,
+                      style: AppTheme.sans(11.5, color: AppColors.muted),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ],
               ),
             ),
             if (trailingLabel != null) ...[
-              Text(trailingLabel!, style: AppTheme.sans(12.5, weight: FontWeight.w600, color: AppColors.muted)),
+              Text(
+                trailingLabel!,
+                style: AppTheme.sans(
+                  12.5,
+                  weight: FontWeight.w600,
+                  color: AppColors.muted,
+                ),
+              ),
               const SizedBox(width: 6),
             ],
             if (badge != null) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
-                child: Text(badge!, style: AppTheme.sans(11, weight: FontWeight.w700, color: Colors.white)),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badge!,
+                  style: AppTheme.sans(
+                    11,
+                    weight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
               ),
               const SizedBox(width: 6),
             ],
-            Icon(Icons.chevron_right_rounded, color: const Color(0xFFC1C8BF), size: 20),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: const Color(0xFFC1C8BF),
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -682,26 +1005,50 @@ class _SavedScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 42, height: 42,
-                      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(13), border: Border.all(color: AppColors.border, width: 1.5)),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(13),
+                        border: Border.all(color: AppColors.border, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(t.savedTripsTitle, style: AppTheme.serif(26))),
+                  Expanded(
+                    child: Text(t.savedTripsTitle, style: AppTheme.serif(26)),
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: offers.isEmpty
                   ? Center(
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        const Icon(Icons.favorite_border_rounded, size: 48, color: AppColors.mutedLight),
-                        const SizedBox(height: 14),
-                        Text(t.savedTripsEmptyTitle, style: AppTheme.serif(20)),
-                        const SizedBox(height: 6),
-                        Text(t.savedTripsEmptyBody, style: AppTheme.sans(13, color: AppColors.muted)),
-                      ]),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.favorite_border_rounded,
+                            size: 48,
+                            color: AppColors.mutedLight,
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            t.savedTripsEmptyTitle,
+                            style: AppTheme.serif(20),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            t.savedTripsEmptyBody,
+                            style: AppTheme.sans(13, color: AppColors.muted),
+                          ),
+                        ],
+                      ),
                     )
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -728,42 +1075,97 @@ class _SavedCard extends StatelessWidget {
     final company = provider.companyById(offer.companyId);
     final tag = 'offer-saved-${offer.id}';
     return InteractiveScale(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag),
+        ),
+      ),
       child: Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border, width: 1.5),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 16, offset: const Offset(0, 6))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            OfferImage(offer: offer, height: 88, width: 88, borderRadius: BorderRadius.circular(13)),
+            OfferImage(
+              offer: offer,
+              height: 88,
+              width: 88,
+              borderRadius: BorderRadius.circular(13),
+            ),
             const SizedBox(width: 13),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(
+                    company?.nameFor(
+                          Localizations.localeOf(context).languageCode,
+                        ) ??
+                        '',
+                    style: AppTheme.sans(
+                      10.5,
+                      weight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(16), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(
+                    offer.titleFor(
+                      Localizations.localeOf(context).languageCode,
+                    ),
+                    style: AppTheme.serif(16),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 6),
-                  Row(children: [
-                    StarRating(rating: offer.rating),
-                    const Spacer(),
-                    Text.rich(TextSpan(children: [
-                      TextSpan(text: t.priceFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
-                      TextSpan(text: offer.priceFmt, style: AppTheme.serif(16, color: AppColors.primary)),
-                    ])),
-                  ]),
+                  Row(
+                    children: [
+                      StarRating(rating: offer.rating),
+                      const Spacer(),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: t.priceFromPrefix,
+                              style: AppTheme.sans(11, color: AppColors.muted),
+                            ),
+                            TextSpan(
+                              text: offer.priceFmt,
+                              style: AppTheme.serif(
+                                16,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
             GestureDetector(
-              onTap: () { provider.toggleSave(offer.id); if (provider.savedOffers.isEmpty) Navigator.pop(context); },
-              child: const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 20),
+              onTap: () {
+                provider.toggleSave(offer.id);
+                if (provider.savedOffers.isEmpty) Navigator.pop(context);
+              },
+              child: const Icon(
+                Icons.favorite_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
             ),
           ],
         ),

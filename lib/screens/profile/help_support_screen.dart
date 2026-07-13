@@ -79,13 +79,18 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 42, height: 42,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(13),
                         border: Border.all(color: AppColors.border, width: 1.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -97,14 +102,22 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  Text(t.helpFaqHeader,
-                      style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+                  Text(
+                    t.helpFaqHeader,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   ...List.generate(faqs.length, (i) {
                     final (q, a) = faqs[i];
                     final open = _openFaq == i;
                     return Padding(
-                      padding: EdgeInsets.only(bottom: i < faqs.length - 1 ? 10 : 0),
+                      padding: EdgeInsets.only(
+                        bottom: i < faqs.length - 1 ? 10 : 0,
+                      ),
                       child: GestureDetector(
                         onTap: () => setState(() => _openFaq = open ? null : i),
                         child: Container(
@@ -113,7 +126,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                              color: open ? AppColors.primary.withOpacity(0.35) : AppColors.border,
+                              color: open
+                                  ? AppColors.primary.withOpacity(0.35)
+                                  : AppColors.border,
                               width: 1.5,
                             ),
                           ),
@@ -122,16 +137,33 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Expanded(child: Text(q, style: AppTheme.sans(13.5, weight: FontWeight.w700))),
+                                  Expanded(
+                                    child: Text(
+                                      q,
+                                      style: AppTheme.sans(
+                                        13.5,
+                                        weight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
                                   Icon(
-                                    open ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                                    color: AppColors.primary, size: 22,
+                                    open
+                                        ? Icons.keyboard_arrow_up_rounded
+                                        : Icons.keyboard_arrow_down_rounded,
+                                    color: AppColors.primary,
+                                    size: 22,
                                   ),
                                 ],
                               ),
                               if (open) ...[
                                 const SizedBox(height: 8),
-                                Text(a, style: AppTheme.sans(12.5, color: const Color(0xFF62706A)).copyWith(height: 1.6)),
+                                Text(
+                                  a,
+                                  style: AppTheme.sans(
+                                    12.5,
+                                    color: const Color(0xFF62706A),
+                                  ).copyWith(height: 1.6),
+                                ),
                               ],
                             ],
                           ),
@@ -140,8 +172,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     );
                   }),
                   const SizedBox(height: 22),
-                  Text(t.helpContactHeader,
-                      style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+                  Text(
+                    t.helpContactHeader,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   _ContactTile(
                     icon: Icons.email_outlined,
@@ -157,8 +195,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     onTap: () => _copy(_supportPhone),
                   ),
                   const SizedBox(height: 22),
-                  Text(t.helpMessageHeader,
-                      style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+                  Text(
+                    t.helpMessageHeader,
+                    style: AppTheme.sans(
+                      12,
+                      weight: FontWeight.w700,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   Container(
                     decoration: BoxDecoration(
@@ -172,7 +216,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       style: AppTheme.sans(14),
                       decoration: InputDecoration(
                         hintText: t.helpMessageHint,
-                        hintStyle: AppTheme.sans(13.5, color: AppColors.mutedLight),
+                        hintStyle: AppTheme.sans(
+                          13.5,
+                          color: AppColors.mutedLight,
+                        ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(15),
                       ),
@@ -184,12 +231,28 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(15)),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                       alignment: Alignment.center,
                       child: _sending
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                          : Text(t.helpMessageSend,
-                              style: AppTheme.sans(14, weight: FontWeight.w800, color: const Color(0xFFF6F2E9))),
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Text(
+                              t.helpMessageSend,
+                              style: AppTheme.sans(
+                                14,
+                                weight: FontWeight.w800,
+                                color: const Color(0xFFF6F2E9),
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -207,7 +270,12 @@ class _ContactTile extends StatelessWidget {
   final String label;
   final String value;
   final VoidCallback onTap;
-  const _ContactTile({required this.icon, required this.label, required this.value, required this.onTap});
+  const _ContactTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +291,8 @@ class _ContactTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(11),
@@ -235,7 +304,10 @@ class _ContactTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: AppTheme.sans(13.5, weight: FontWeight.w700)),
+                  Text(
+                    label,
+                    style: AppTheme.sans(13.5, weight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 2),
                   Text(value, style: AppTheme.sans(12, color: AppColors.muted)),
                 ],

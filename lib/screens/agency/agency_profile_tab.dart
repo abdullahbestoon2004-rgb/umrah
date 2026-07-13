@@ -11,6 +11,8 @@ import '../../widgets/dashboard/status_chip.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../companies/company_detail_screen.dart';
 import 'edit_agency_profile_screen.dart';
+import 'agency_money_tab.dart';
+import 'agency_documents_screen.dart';
 
 /// Agency profile tab: identity card, public-profile actions (edit +
 /// "preview my card" as clients see it), and account actions.
@@ -31,7 +33,11 @@ class AgencyProfileTab extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, kDashCardGap, kDashPagePad, 0),
+              kDashPagePad,
+              kDashCardGap,
+              kDashPagePad,
+              0,
+            ),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -53,10 +59,12 @@ class AgencyProfileTab extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(company.nameFor(lang),
-                            style: AppTheme.serif(20),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        Text(
+                          company.nameFor(lang),
+                          style: AppTheme.serif(20),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 5),
                         Row(
                           children: [
@@ -79,52 +87,118 @@ class AgencyProfileTab extends StatelessWidget {
           ),
         ),
         SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
+            child: EntityListCard(
+              leading: const _MenuIcon(
+                icon: Icons.verified_user_outlined,
+                color: Color(0xFF397C74),
+              ),
+              title: t.agencyDocumentsTitle,
+              subtitle: t.agencyDocumentsMenuSubtitle,
+              chevron: true,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AgencyDocumentsScreen(),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
+            child: EntityListCard(
+              leading: const _MenuIcon(
+                icon: Icons.account_balance_wallet_outlined,
+                color: AppColors.primary,
+              ),
+              title: t.adminActionFinance,
+              subtitle: t.adminCommissionsOwedLabel,
+              chevron: true,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AgencyMoneyTab()),
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
           child: SectionHeader(title: t.agencyDashboardEditProfile),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: const _MenuIcon(
-                  icon: Icons.edit_outlined, color: AppColors.primary),
+                icon: Icons.edit_outlined,
+                color: AppColors.primary,
+              ),
               title: t.agencyDashboardEditProfile,
               chevron: true,
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-                          EditAgencyProfileScreen(company: company))),
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditAgencyProfileScreen(company: company),
+                ),
+              ),
             ),
           ),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: const _MenuIcon(
-                  icon: Icons.remove_red_eye_outlined,
-                  color: Color(0xFF397C74)),
+                icon: Icons.remove_red_eye_outlined,
+                color: Color(0xFF397C74),
+              ),
               title: t.profilePreviewCard,
               chevron: true,
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CompanyDetailScreen(company: company))),
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CompanyDetailScreen(company: company),
+                ),
+              ),
             ),
           ),
         ),
-        SliverToBoxAdapter(
-          child: SectionHeader(title: t.moreGroupSystem),
-        ),
+        SliverToBoxAdapter(child: SectionHeader(title: t.moreGroupSystem)),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 0, kDashPagePad, kDashCardGap),
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
             child: EntityListCard(
               leading: const _MenuIcon(
-                  icon: Icons.logout_rounded, color: AppColors.errorRed),
+                icon: Icons.logout_rounded,
+                color: AppColors.errorRed,
+              ),
               title: t.profileAgencyLogout,
               onTap: () => _confirmLogout(context),
             ),
@@ -143,26 +217,34 @@ class AgencyProfileTab extends StatelessWidget {
         backgroundColor: AppColors.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(t.profileAgencyLogoutTitle, style: AppTheme.serif(20)),
-        content: Text(t.profileAgencyLogoutBody,
-            style: AppTheme.sans(13, color: AppColors.inkLight)),
+        content: Text(
+          t.profileAgencyLogoutBody,
+          style: AppTheme.sans(13, color: AppColors.inkLight),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, false),
-            child: Text(t.agencyDashboardCancel,
-                style: AppTheme.sans(13, color: AppColors.muted)),
+            child: Text(
+              t.agencyDashboardCancel,
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, true),
-            child: Text(t.profileAgencyLogout,
-                style: AppTheme.sans(13,
-                    weight: FontWeight.w700, color: AppColors.errorRed)),
+            child: Text(
+              t.profileAgencyLogout,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w700,
+                color: AppColors.errorRed,
+              ),
+            ),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
-    provider.agencyLogout();
-    if (context.mounted) Navigator.pop(context);
+    await provider.agencyLogout();
   }
 }
 
@@ -173,12 +255,12 @@ class _MenuIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: color, size: 20),
-      );
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Icon(icon, color: color, size: 20),
+  );
 }

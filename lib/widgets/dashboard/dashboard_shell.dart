@@ -61,14 +61,24 @@ class DashboardShell extends StatelessWidget {
                     : NavigationRailLabelType.all,
                 selectedIndex: index,
                 onDestinationSelected: onSelect,
-                selectedIconTheme:
-                    const IconThemeData(color: AppColors.primary, size: 24),
-                unselectedIconTheme:
-                    const IconThemeData(color: AppColors.mutedLight, size: 24),
-                selectedLabelTextStyle: AppTheme.sans(12.5,
-                    weight: FontWeight.w700, color: AppColors.primary),
-                unselectedLabelTextStyle: AppTheme.sans(12.5,
-                    weight: FontWeight.w600, color: AppColors.muted),
+                selectedIconTheme: const IconThemeData(
+                  color: AppColors.primary,
+                  size: 24,
+                ),
+                unselectedIconTheme: const IconThemeData(
+                  color: AppColors.mutedLight,
+                  size: 24,
+                ),
+                selectedLabelTextStyle: AppTheme.sans(
+                  12.5,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+                unselectedLabelTextStyle: AppTheme.sans(
+                  12.5,
+                  weight: FontWeight.w600,
+                  color: AppColors.muted,
+                ),
                 destinations: [
                   for (final d in destinations)
                     NavigationRailDestination(
@@ -111,7 +121,9 @@ class _BottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background.withOpacity(0.96),
-        border: const Border(top: BorderSide(color: AppColors.border, width: 1.5)),
+        border: const Border(
+          top: BorderSide(color: AppColors.border, width: 1.5),
+        ),
       ),
       child: SafeArea(
         top: false,
@@ -131,7 +143,11 @@ class _BottomBar extends StatelessWidget {
                           duration: const Duration(milliseconds: 220),
                           curve: Curves.easeOut,
                           padding: const EdgeInsetsDirectional.fromSTEB(
-                              16, 3, 16, 3),
+                            16,
+                            3,
+                            16,
+                            3,
+                          ),
                           decoration: BoxDecoration(
                             color: i == index
                                 ? AppColors.primary.withOpacity(0.12)
@@ -146,11 +162,13 @@ class _BottomBar extends StatelessWidget {
                         const SizedBox(height: 3),
                         Text(
                           destinations[i].label,
-                          style: AppTheme.sans(10,
-                              weight: FontWeight.w700,
-                              color: i == index
-                                  ? AppColors.primary
-                                  : AppColors.mutedLight),
+                          style: AppTheme.sans(
+                            10,
+                            weight: FontWeight.w700,
+                            color: i == index
+                                ? AppColors.primary
+                                : AppColors.mutedLight,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -188,14 +206,19 @@ class _BadgedIcon extends StatelessWidget {
           top: -5,
           child: Container(
             padding: const EdgeInsets.all(3),
-            decoration:
-                const BoxDecoration(color: AppColors.gold, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: AppColors.gold,
+              shape: BoxShape.circle,
+            ),
             constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
             child: Text(
               '${destination.badge}',
               textAlign: TextAlign.center,
-              style: AppTheme.sans(9,
-                  weight: FontWeight.w800, color: const Color(0xFF1C2317)),
+              style: AppTheme.sans(
+                9,
+                weight: FontWeight.w800,
+                color: const Color(0xFF1C2317),
+              ),
             ),
           ),
         ),

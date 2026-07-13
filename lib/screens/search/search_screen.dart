@@ -24,11 +24,17 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _hasTyped = false;
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   void _onChanged(String q) {
     final results = context.read<AppProvider>().searchOffers(q);
-    setState(() { _results = results; _hasTyped = q.trim().isNotEmpty; });
+    setState(() {
+      _results = results;
+      _hasTyped = q.trim().isNotEmpty;
+    });
   }
 
   @override
@@ -50,16 +56,35 @@ class _SearchScreenState extends State<SearchScreen> {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
-                          width: 42, height: 42,
-                          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(13), border: Border.all(color: AppColors.border, width: 1.5)),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.ink),
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(13),
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: AppColors.ink,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Container(
                           height: 48,
-                          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border, width: 1.5)),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
+                          ),
                           child: TextField(
                             controller: _ctrl,
                             autofocus: true,
@@ -67,13 +92,32 @@ class _SearchScreenState extends State<SearchScreen> {
                             style: AppTheme.sans(14),
                             decoration: InputDecoration(
                               hintText: t.searchHint,
-                              hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-                              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
+                              hintStyle: AppTheme.sans(
+                                14,
+                                color: AppColors.mutedLight,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search_rounded,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
                               suffixIcon: _ctrl.text.isNotEmpty
-                                  ? IconButton(icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.muted), onPressed: () { _ctrl.clear(); _onChanged(''); })
+                                  ? IconButton(
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        size: 18,
+                                        color: AppColors.muted,
+                                      ),
+                                      onPressed: () {
+                                        _ctrl.clear();
+                                        _onChanged('');
+                                      },
+                                    )
                                   : null,
                               border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                              ),
                             ),
                           ),
                         ),
@@ -86,15 +130,22 @@ class _SearchScreenState extends State<SearchScreen> {
                 // results
                 Expanded(
                   child: !_hasTyped
-                      ? _Suggestions(onTap: (q) { _ctrl.text = q; _onChanged(q); })
+                      ? _Suggestions(
+                          onTap: (q) {
+                            _ctrl.text = q;
+                            _onChanged(q);
+                          },
+                        )
                       : _results.isEmpty
-                          ? _NoResults(query: _ctrl.text)
-                          : ListView.separated(
-                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                              itemCount: _results.length,
-                              separatorBuilder: (_, __) => const SizedBox(height: 12),
-                              itemBuilder: (context, i) => _ResultCard(offer: _results[i]),
-                            ),
+                      ? _NoResults(query: _ctrl.text)
+                      : ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          itemCount: _results.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, i) =>
+                              _ResultCard(offer: _results[i]),
+                        ),
                 ),
               ],
             ),
@@ -120,23 +171,40 @@ class _Suggestions extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(t.searchPopularSearches, style: AppTheme.sans(12, weight: FontWeight.w700, color: AppColors.muted)),
+          Text(
+            t.searchPopularSearches,
+            style: AppTheme.sans(
+              12,
+              weight: FontWeight.w700,
+              color: AppColors.muted,
+            ),
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: suggestions.map((s) => InteractiveScale(
-              onTap: () => onTap(s),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.border, width: 1.5),
-                ),
-                child: Text(s, style: AppTheme.sans(13, weight: FontWeight.w600)),
-              ),
-            )).toList(),
+            children: suggestions
+                .map(
+                  (s) => InteractiveScale(
+                    onTap: () => onTap(s),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.border, width: 1.5),
+                      ),
+                      child: Text(
+                        s,
+                        style: AppTheme.sans(13, weight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -154,11 +222,18 @@ class _NoResults extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.search_off_rounded, size: 52, color: AppColors.mutedLight),
+          const Icon(
+            Icons.search_off_rounded,
+            size: 52,
+            color: AppColors.mutedLight,
+          ),
           const SizedBox(height: 14),
           Text(t.searchNoResultsFor(query), style: AppTheme.serif(20)),
           const SizedBox(height: 6),
-          Text(t.searchTryDifferentTerm, style: AppTheme.sans(13, color: AppColors.muted)),
+          Text(
+            t.searchTryDifferentTerm,
+            style: AppTheme.sans(13, color: AppColors.muted),
+          ),
         ],
       ),
     );
@@ -175,35 +250,84 @@ class _ResultCard extends StatelessWidget {
     final company = context.read<AppProvider>().companyById(offer.companyId);
     final tag = 'offer-search-${offer.id}';
     return InteractiveScale(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OfferDetailScreen(offer: offer, heroTag: tag),
+        ),
+      ),
       child: Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.border, width: 1.5),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 16, offset: const Offset(0, 6))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            OfferImage(offer: offer, height: 80, width: 80, borderRadius: BorderRadius.circular(12), heroTag: tag),
+            OfferImage(
+              offer: offer,
+              height: 80,
+              width: 80,
+              borderRadius: BorderRadius.circular(12),
+              heroTag: tag,
+            ),
             const SizedBox(width: 13),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '', style: AppTheme.sans(10.5, weight: FontWeight.w700, color: AppColors.primary)),
+                  Text(
+                    company?.nameFor(
+                          Localizations.localeOf(context).languageCode,
+                        ) ??
+                        '',
+                    style: AppTheme.sans(
+                      10.5,
+                      weight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(16), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    offer.titleFor(
+                      Localizations.localeOf(context).languageCode,
+                    ),
+                    style: AppTheme.serif(16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 6),
-                  Row(children: [
-                    StarRating(rating: offer.rating),
-                    const Spacer(),
-                    Text.rich(TextSpan(children: [
-                      TextSpan(text: t.searchFromPrefix, style: AppTheme.sans(11, color: AppColors.muted)),
-                      TextSpan(text: offer.priceFmt, style: AppTheme.serif(16, color: AppColors.primary)),
-                    ])),
-                  ]),
+                  Row(
+                    children: [
+                      StarRating(rating: offer.rating),
+                      const Spacer(),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: t.searchFromPrefix,
+                              style: AppTheme.sans(11, color: AppColors.muted),
+                            ),
+                            TextSpan(
+                              text: offer.priceFmt,
+                              style: AppTheme.serif(
+                                16,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

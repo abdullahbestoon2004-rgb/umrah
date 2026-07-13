@@ -46,7 +46,11 @@ class DashboardScaffold extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
-                kDashPagePad, 14, kDashPagePad, 12),
+              kDashPagePad,
+              14,
+              kDashPagePad,
+              12,
+            ),
             child: Row(
               children: [
                 if (leading != null) ...[leading!, const SizedBox(width: 14)],
@@ -57,10 +61,12 @@ class DashboardScaffold extends StatelessWidget {
                       Text(title, style: AppTheme.serif(24)),
                       if (subtitle != null) ...[
                         const SizedBox(height: 3),
-                        Text(subtitle!,
-                            style: AppTheme.sans(12, color: AppColors.muted),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        Text(
+                          subtitle!,
+                          style: AppTheme.sans(12, color: AppColors.muted),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ],
                   ),
@@ -79,7 +85,11 @@ class DashboardScaffold extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
-                  kDashPagePad, kDashCardGap, kDashPagePad, 0),
+                kDashPagePad,
+                kDashCardGap,
+                kDashPagePad,
+                0,
+              ),
               child: summary!,
             ),
           ),
@@ -114,18 +124,18 @@ class DashIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: AppColors.border, width: 1.5),
-          ),
-          child: Icon(icon, size: 18, color: AppColors.ink),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: AppColors.border, width: 1.5),
+      ),
+      child: Icon(icon, size: 18, color: AppColors.ink),
+    ),
+  );
 }
 
 class _PinnedBar extends SliverPersistentHeaderDelegate {

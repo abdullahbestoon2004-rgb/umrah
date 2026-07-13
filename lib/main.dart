@@ -116,16 +116,23 @@ class TawafApp extends StatelessWidget {
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
               child: child!,
             ),
-            onGenerateRoute: (settings) {
-              return MaterialPageRoute(
-                builder: (context) =>
-                    provider.locked ? const LockScreen() : const MainScreen(),
-              );
-            },
-            home: provider.locked ? const LockScreen() : const MainScreen(),
+            // Keep the Navigator's root route stable. AppProvider notifies while
+            // it restores preferences/auth, and changing MaterialApp.home during
+            // that update can briefly remove the Navigator's only history entry.
+            home: const _AppRoot(),
           );
         },
       ),
     );
+  }
+}
+
+class _AppRoot extends StatelessWidget {
+  const _AppRoot();
+
+  @override
+  Widget build(BuildContext context) {
+    final locked = context.select<AppProvider, bool>((value) => value.locked);
+    return locked ? const LockScreen() : const MainScreen();
   }
 }

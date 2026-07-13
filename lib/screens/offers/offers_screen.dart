@@ -56,7 +56,10 @@ class _OffersHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(t.offersTitle, style: AppTheme.serif(30)),
-                Text(t.offersPackagesMatch(count), style: AppTheme.sans(13, color: const Color(0xFF7D8A82))),
+                Text(
+                  t.offersPackagesMatch(count),
+                  style: AppTheme.sans(13, color: const Color(0xFF7D8A82)),
+                ),
               ],
             ),
           ),
@@ -65,7 +68,10 @@ class _OffersHeader extends StatelessWidget {
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
-              builder: (_) => ChangeNotifierProvider.value(value: provider, child: const FilterSheet()),
+              builder: (_) => ChangeNotifierProvider.value(
+                value: provider,
+                child: const FilterSheet(),
+              ),
             ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
@@ -75,20 +81,38 @@ class _OffersHeader extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.tune_rounded, color: Color(0xFFF6F2E9), size: 16),
+                  const Icon(
+                    Icons.tune_rounded,
+                    color: Color(0xFFF6F2E9),
+                    size: 16,
+                  ),
                   const SizedBox(width: 7),
-                  Text(t.offersFilters, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+                  Text(
+                    t.offersFilters,
+                    style: AppTheme.sans(
+                      13,
+                      weight: FontWeight.w700,
+                      color: const Color(0xFFF6F2E9),
+                    ),
+                  ),
                   if (provider.filters.hasActiveFilters) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.gold,
                         borderRadius: BorderRadius.circular(9),
                       ),
                       child: Text(
                         '${provider.filters.activeCount}',
-                        style: AppTheme.sans(11, weight: FontWeight.w800, color: const Color(0xFF1C2317)),
+                        style: AppTheme.sans(
+                          11,
+                          weight: FontWeight.w800,
+                          color: const Color(0xFF1C2317),
+                        ),
                       ),
                     ),
                   ],
@@ -126,28 +150,36 @@ class _QuickChips extends StatelessWidget {
             label: t.offersByAir,
             icon: Icons.flight_rounded,
             active: f.transport == 'plane',
-            onTap: () => provider.updateFilters(f.copyWith(transport: f.transport == 'plane' ? 'all' : 'plane')),
+            onTap: () => provider.updateFilters(
+              f.copyWith(transport: f.transport == 'plane' ? 'all' : 'plane'),
+            ),
           ),
           const SizedBox(width: 9),
           TagChip(
             label: t.offersByCoach,
             icon: Icons.directions_bus_rounded,
             active: f.transport == 'bus',
-            onTap: () => provider.updateFilters(f.copyWith(transport: f.transport == 'bus' ? 'all' : 'bus')),
+            onTap: () => provider.updateFilters(
+              f.copyWith(transport: f.transport == 'bus' ? 'all' : 'bus'),
+            ),
           ),
           const SizedBox(width: 9),
           TagChip(
             label: t.offers5Star,
             icon: Icons.star_rounded,
             active: f.acc == '5',
-            onTap: () => provider.updateFilters(f.copyWith(acc: f.acc == '5' ? 'all' : '5')),
+            onTap: () => provider.updateFilters(
+              f.copyWith(acc: f.acc == '5' ? 'all' : '5'),
+            ),
           ),
           const SizedBox(width: 9),
           TagChip(
             label: t.offers4Star,
             icon: Icons.star_rounded,
             active: f.acc == '4',
-            onTap: () => provider.updateFilters(f.copyWith(acc: f.acc == '4' ? 'all' : '4')),
+            onTap: () => provider.updateFilters(
+              f.copyWith(acc: f.acc == '4' ? 'all' : '4'),
+            ),
           ),
         ],
       ),
@@ -166,16 +198,39 @@ class _SortRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(22, 4, 22, 4),
       child: Row(
         children: [
-          Text(t.offersSort, style: AppTheme.sans(12, weight: FontWeight.w600, color: AppColors.muted)),
+          Text(
+            t.offersSort,
+            style: AppTheme.sans(
+              12,
+              weight: FontWeight.w600,
+              color: AppColors.muted,
+            ),
+          ),
           const SizedBox(width: 8),
-          _SortBtn(label: t.offersPopular, value: 'popular', current: sort,
-              onTap: () => provider.updateFilters(provider.filters.copyWith(sort: 'popular'))),
+          _SortBtn(
+            label: t.offersPopular,
+            value: 'popular',
+            current: sort,
+            onTap: () => provider.updateFilters(
+              provider.filters.copyWith(sort: 'popular'),
+            ),
+          ),
           const SizedBox(width: 6),
-          _SortBtn(label: t.offersPriceLowToHigh, value: 'low', current: sort,
-              onTap: () => provider.updateFilters(provider.filters.copyWith(sort: 'low'))),
+          _SortBtn(
+            label: t.offersPriceLowToHigh,
+            value: 'low',
+            current: sort,
+            onTap: () =>
+                provider.updateFilters(provider.filters.copyWith(sort: 'low')),
+          ),
           const SizedBox(width: 6),
-          _SortBtn(label: t.offersPriceHighToLow, value: 'high', current: sort,
-              onTap: () => provider.updateFilters(provider.filters.copyWith(sort: 'high'))),
+          _SortBtn(
+            label: t.offersPriceHighToLow,
+            value: 'high',
+            current: sort,
+            onTap: () =>
+                provider.updateFilters(provider.filters.copyWith(sort: 'high')),
+          ),
         ],
       ),
     );
@@ -187,7 +242,12 @@ class _SortBtn extends StatelessWidget {
   final String value;
   final String current;
   final VoidCallback onTap;
-  const _SortBtn({required this.label, required this.value, required this.current, required this.onTap});
+  const _SortBtn({
+    required this.label,
+    required this.value,
+    required this.current,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,13 +260,19 @@ class _SortBtn extends StatelessWidget {
           color: active ? const Color(0xFFEEF4F0) : AppColors.chipBg,
           borderRadius: BorderRadius.circular(9),
           border: Border.all(
-            color: active ? AppColors.primary.withOpacity(0.3) : AppColors.primary.withOpacity(0.12),
+            color: active
+                ? AppColors.primary.withOpacity(0.3)
+                : AppColors.primary.withOpacity(0.12),
             width: 1.5,
           ),
         ),
         child: Text(
           label,
-          style: AppTheme.sans(12, weight: FontWeight.w700, color: active ? AppColors.primary : AppColors.ink),
+          style: AppTheme.sans(
+            12,
+            weight: FontWeight.w700,
+            color: active ? AppColors.primary : AppColors.ink,
+          ),
         ),
       ),
     );
@@ -227,14 +293,30 @@ class _OffersList extends StatelessWidget {
           children: [
             Text(t.offersNoMatches, style: AppTheme.serif(22)),
             const SizedBox(height: 6),
-            Text(t.offersTryWideningFilters, style: AppTheme.sans(13, color: AppColors.muted)),
+            Text(
+              t.offersTryWideningFilters,
+              style: AppTheme.sans(13, color: AppColors.muted),
+            ),
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () => provider.resetFilters(),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-                child: Text(t.offersResetFilters, style: AppTheme.sans(13, weight: FontWeight.w700, color: const Color(0xFFF6F2E9))),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 11,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  t.offersResetFilters,
+                  style: AppTheme.sans(
+                    13,
+                    weight: FontWeight.w700,
+                    color: const Color(0xFFF6F2E9),
+                  ),
+                ),
               ),
             ),
           ],
@@ -263,14 +345,24 @@ class OfferCard extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     return InteractiveScale(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => OfferDetailScreen(offer: offer)),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1.5),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.1),
+            width: 1.5,
+          ),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF0F3729).withOpacity(0.07), blurRadius: 30, offset: const Offset(0, 14)),
+            BoxShadow(
+              color: const Color(0xFF0F3729).withOpacity(0.07),
+              blurRadius: 30,
+              offset: const Offset(0, 14),
+            ),
           ],
         ),
         child: Column(
@@ -278,7 +370,9 @@ class OfferCard extends StatelessWidget {
           children: [
             // image area
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(21),
+              ),
               child: SizedBox(
                 height: 140,
                 child: Stack(
@@ -290,7 +384,10 @@ class OfferCard extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, const Color(0xFF071C17).withOpacity(0.55)],
+                          colors: [
+                            Colors.transparent,
+                            const Color(0xFF071C17).withOpacity(0.55),
+                          ],
                           stops: const [0.4, 1.0],
                         ),
                       ),
@@ -300,15 +397,21 @@ class OfferCard extends StatelessWidget {
                         left: 14,
                         top: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.gold,
                             borderRadius: BorderRadius.circular(7),
                           ),
                           child: Text(
                             offer.badge.toUpperCase(),
-                            style: AppTheme.sans(10, weight: FontWeight.w800, color: const Color(0xFF1C2317))
-                                .copyWith(letterSpacing: 0.5),
+                            style: AppTheme.sans(
+                              10,
+                              weight: FontWeight.w800,
+                              color: const Color(0xFF1C2317),
+                            ).copyWith(letterSpacing: 0.5),
                           ),
                         ),
                       ),
@@ -325,7 +428,9 @@ class OfferCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(11),
                           ),
                           child: Icon(
-                            saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            saved
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
                             color: AppColors.primary,
                             size: 17,
                           ),
@@ -339,10 +444,24 @@ class OfferCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(company?.nameFor(Localizations.localeOf(context).languageCode) ?? '',
-                              style: AppTheme.sans(10.5, weight: FontWeight.w700, color: const Color(0xFFE7CF95))),
+                          Text(
+                            company?.nameFor(
+                                  Localizations.localeOf(context).languageCode,
+                                ) ??
+                                '',
+                            style: AppTheme.sans(
+                              10.5,
+                              weight: FontWeight.w700,
+                              color: const Color(0xFFE7CF95),
+                            ),
+                          ),
                           const SizedBox(height: 1),
-                          Text(offer.titleFor(Localizations.localeOf(context).languageCode), style: AppTheme.serif(21, color: Colors.white)),
+                          Text(
+                            offer.titleFor(
+                              Localizations.localeOf(context).languageCode,
+                            ),
+                            style: AppTheme.serif(21, color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
@@ -362,7 +481,11 @@ class OfferCard extends StatelessWidget {
                     children: [
                       InfoChip(
                         label: t.offersDaysCount(offer.days),
-                        icon: const Icon(Icons.calendar_today_rounded, color: AppColors.primary, size: 13),
+                        icon: const Icon(
+                          Icons.calendar_today_rounded,
+                          color: AppColors.primary,
+                          size: 13,
+                        ),
                       ),
                       InfoChip(label: offer.transportLabelFor(t)),
                       InfoChip(label: t.offersStarCount(offer.acc)),
@@ -380,14 +503,33 @@ class OfferCard extends StatelessWidget {
                           if (offer.hasDiscount)
                             Text(
                               offer.originalFmt,
-                              style: AppTheme.sans(12, color: AppColors.errorRed)
-                                  .copyWith(decoration: TextDecoration.lineThrough),
+                              style:
+                                  AppTheme.sans(
+                                    12,
+                                    color: AppColors.errorRed,
+                                  ).copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                             ),
                           Text.rich(
-                            TextSpan(children: [
-                              TextSpan(text: '${t.offersFromPricePrefix} ', style: AppTheme.sans(11, color: AppColors.muted)),
-                              TextSpan(text: offer.priceFmt, style: AppTheme.serif(23, color: AppColors.primary)),
-                            ]),
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${t.offersFromPricePrefix} ',
+                                  style: AppTheme.sans(
+                                    11,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: offer.priceFmt,
+                                  style: AppTheme.serif(
+                                    23,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

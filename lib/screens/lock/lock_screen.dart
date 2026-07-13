@@ -40,43 +40,71 @@ class _LockScreenState extends State<LockScreen> {
         children: [
           const Positioned.fill(child: IslamicPattern(opacity: 0.05, cell: 84)),
           SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 84,
-                height: 84,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                child: const Icon(Icons.fingerprint_rounded, color: Color(0xFFF3E6C4), size: 46),
-              ),
-              const SizedBox(height: 24),
-              Text(t.lockTitle, style: AppTheme.serif(28, color: Colors.white)),
-              const SizedBox(height: 8),
-              Text(t.lockSubtitle, style: AppTheme.sans(14, color: Colors.white.withOpacity(0.75))),
-              const SizedBox(height: 36),
-              GestureDetector(
-                onTap: _tryUnlock,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3E6C4),
-                    borderRadius: BorderRadius.circular(15),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 84,
+                    height: 84,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    child: const Icon(
+                      Icons.fingerprint_rounded,
+                      color: Color(0xFFF3E6C4),
+                      size: 46,
+                    ),
                   ),
-                  child: Text(t.lockUnlock,
-                      style: AppTheme.sans(15, weight: FontWeight.w800, color: AppColors.primary)),
-                ),
+                  const SizedBox(height: 24),
+                  Text(
+                    t.lockTitle,
+                    style: AppTheme.serif(28, color: Colors.white),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    t.lockSubtitle,
+                    style: AppTheme.sans(
+                      14,
+                      color: Colors.white.withOpacity(0.75),
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+                  GestureDetector(
+                    onTap: _tryUnlock,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3E6C4),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Text(
+                        t.lockUnlock,
+                        style: AppTheme.sans(
+                          15,
+                          weight: FontWeight.w800,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (_failed) ...[
+                    const SizedBox(height: 18),
+                    Text(
+                      t.lockFailed,
+                      style: AppTheme.sans(
+                        12.5,
+                        color: const Color(0xFFF3C4B4),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              if (_failed) ...[
-                const SizedBox(height: 18),
-                Text(t.lockFailed, style: AppTheme.sans(12.5, color: const Color(0xFFF3C4B4))),
-              ],
-            ],
-          ),
-        ),
+            ),
           ),
         ],
       ),
