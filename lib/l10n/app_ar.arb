@@ -871,5 +871,14 @@
   "identitySubmit": "إرسال للتحقق",
   "identitySubmitted": "تم إرسال مستندات هويتك للمراجعة.",
   "identitySignInRequired": "يرجى تسجيل الدخول قبل إرسال مستندات الهوية.",
-  "identityUploadFailed": "تعذر رفع المستندات. يرجى المحاولة مرة أخرى."
+  "identityUploadFailed": "تعذر رفع المستندات. يرجى المحاولة مرة أخرى.",
+  "identitySecureTitle": "تحقق آمن",
+  "identitySecureBody": "نطلب التحقق من هويتك للمساعدة في ضمان أن الحجوزات مشروعة ومتوافقة مع متطلبات السفر. تُشفّر مستنداتك وتُحفظ بأمان.",
+  "identityPassportPlaceholder": "صفحة معلومات جواز السفر",
+  "identitySelfiePlaceholder": "صورتك الشخصية",
+  "identitySelfieInstruction4": "استخدم خلفية بسيطة وغير مزدحمة.",
+  "identityPassportExampleTitle": "مثال لجواز السفر",
+  "identitySelfieExampleTitle": "مثال للصورة الشخصية",
+  "identityPassportExampleCaption": "تأكد من أن جميع المعلومات واضحة وقابلة للقراءة.",
+  "identitySelfieExampleCaption": "انظر مباشرة إلى الكاميرا مع إضاءة جيدة ومن دون قبعة أو نظارة شمسية."
 }

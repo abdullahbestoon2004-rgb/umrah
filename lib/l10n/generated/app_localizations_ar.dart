@@ -2839,4 +2839,34 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get identityUploadFailed =>
       'تعذر رفع المستندات. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get identitySecureTitle => 'تحقق آمن';
+
+  @override
+  String get identitySecureBody =>
+      'نطلب التحقق من هويتك للمساعدة في ضمان أن الحجوزات مشروعة ومتوافقة مع متطلبات السفر. تُشفّر مستنداتك وتُحفظ بأمان.';
+
+  @override
+  String get identityPassportPlaceholder => 'صفحة معلومات جواز السفر';
+
+  @override
+  String get identitySelfiePlaceholder => 'صورتك الشخصية';
+
+  @override
+  String get identitySelfieInstruction4 => 'استخدم خلفية بسيطة وغير مزدحمة.';
+
+  @override
+  String get identityPassportExampleTitle => 'مثال لجواز السفر';
+
+  @override
+  String get identitySelfieExampleTitle => 'مثال للصورة الشخصية';
+
+  @override
+  String get identityPassportExampleCaption =>
+      'تأكد من أن جميع المعلومات واضحة وقابلة للقراءة.';
+
+  @override
+  String get identitySelfieExampleCaption =>
+      'انظر مباشرة إلى الكاميرا مع إضاءة جيدة ومن دون قبعة أو نظارة شمسية.';
 }

@@ -5087,6 +5087,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The documents could not be uploaded. Please try again.'**
   String get identityUploadFailed;
+
+  /// No description provided for @identitySecureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure verification'**
+  String get identitySecureTitle;
+
+  /// No description provided for @identitySecureBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We ask you to verify your identity to help keep bookings legitimate and comply with travel requirements. Your documents are encrypted and stored securely.'**
+  String get identitySecureBody;
+
+  /// No description provided for @identityPassportPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport information page'**
+  String get identityPassportPlaceholder;
+
+  /// No description provided for @identitySelfiePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selfie photo'**
+  String get identitySelfiePlaceholder;
+
+  /// No description provided for @identitySelfieInstruction4.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a simple, uncluttered background.'**
+  String get identitySelfieInstruction4;
+
+  /// No description provided for @identityPassportExampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport example'**
+  String get identityPassportExampleTitle;
+
+  /// No description provided for @identitySelfieExampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie example'**
+  String get identitySelfieExampleTitle;
+
+  /// No description provided for @identityPassportExampleCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure all information is clear and readable.'**
+  String get identityPassportExampleCaption;
+
+  /// No description provided for @identitySelfieExampleCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Look directly at the camera, use good lighting, and do not wear a hat or sunglasses.'**
+  String get identitySelfieExampleCaption;
 }
 
 class _AppLocalizationsDelegate

@@ -845,7 +845,7 @@
   "agencyDocumentStatusRejected": "ڕەتکراوە",
   "adminRequestMoreInfo": "داوای زانیاری زیاتر",
   "adminMoreInfoRequested": "داواکاری زانیاری نێردرا",
-  "identityVerification": "پشتڕاستکردنەوەی ناسنامە",
+  "identityVerification": "سەلماندنی ناسنامە",
   "identityVerificationTitle": "ناسنامەکەت پشتڕاست بکەرەوە",
   "identityVerificationBody": "وێنەیەکی ڕوونی پاسپۆرت و سێلفییەک باربکە. بەڵگەنامەکانت بە پارێزراوی هەڵدەگیرێن و بە نهێنی پێداچوونەوەیان بۆ دەکرێت.",
   "identityPassportPhoto": "وێنەی پاسپۆرت",
@@ -868,8 +868,17 @@
   "identityViewExample": "بینینی نموونە",
   "identityUploadPhoto": "بارکردنی وێنە",
   "identityChangePhoto": "گۆڕینی وێنە",
-  "identitySubmit": "ناردن بۆ پشتڕاستکردنەوە",
+  "identitySubmit": "ناردنی سەلماندن",
   "identitySubmitted": "بەڵگەنامەکانی ناسنامەکەت بۆ پێداچوونەوە نێردران.",
   "identitySignInRequired": "پێش ناردنی بەڵگەنامەکانی ناسنامە تکایە بچۆ ژوورەوە.",
-  "identityUploadFailed": "بارکردنی بەڵگەنامەکان سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە."
+  "identityUploadFailed": "بارکردنی بەڵگەنامەکان سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە.",
+  "identitySecureTitle": "سەلماندنی پارێزراو",
+  "identitySecureBody": "ئێمە داوای سەلماندنی ناسنامە دەکەین بۆ دڵنیابوون لەوەی کە حجزەکان یاسایین و لەگەڵ ڕێساکانی گەشتکردن دەگونجێن. بەڵگەنامەکانت بە پارێزراوی و بە کۆدکراوی هەڵدەگیرێن.",
+  "identityPassportPlaceholder": "لاپەڕەی زانیاری پاسپۆرت",
+  "identitySelfiePlaceholder": "وێنەی سێلفی خۆت",
+  "identitySelfieInstruction4": "باشترە پاشبنەمایەکی سادە و بێ گرتن بێت.",
+  "identityPassportExampleTitle": "نموونەی پاسپۆرت",
+  "identitySelfieExampleTitle": "نموونەی سێلفی",
+  "identityPassportExampleCaption": "دڵنیابە کە هەموو زانیارییەکان ڕوون و خوێندنەوەن.",
+  "identitySelfieExampleCaption": "ڕاستەوخۆ سەیری کامێراکە بکە، دڵنیابە لە ڕووناکی باش و نەبوونی کڵاو یان چاوەیلکەی خۆر."
 }

@@ -8,7 +8,6 @@ import '../../providers/identity_verification_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/colors.dart';
 import '../../widgets/app_snackbar.dart';
-import '../../widgets/islamic_pattern.dart';
 
 enum _IdentityPhotoKind { passport, selfie }
 
@@ -25,114 +24,89 @@ class IdentityVerificationScreen extends StatelessWidget {
 class _IdentityVerificationView extends StatelessWidget {
   const _IdentityVerificationView();
 
-  Future<bool> _showExample(
+  Future<void> _showExample(
     BuildContext context,
-    _IdentityPhotoKind kind, {
-    required bool beforePicking,
-  }) async {
+    _IdentityPhotoKind kind,
+  ) async {
     final t = AppLocalizations.of(context);
-    final passport = kind == _IdentityPhotoKind.passport;
-    return await showDialog<bool>(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            backgroundColor: AppColors.background,
-            insetPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 24,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(22),
-            ),
-            title: Text(t.identityExampleTitle, style: AppTheme.serif(20)),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    final isPassport = kind == _IdentityPhotoKind.passport;
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.52),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: AppColors.background,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 390, maxHeight: 690),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
+                    Expanded(
+                      child: Text(
+                        isPassport
+                            ? t.identityPassportExampleTitle
+                            : t.identitySelfieExampleTitle,
+                        style: AppTheme.sans(19, weight: FontWeight.w800),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: t.identityClose,
+                      onPressed: () => Navigator.pop(dialogContext),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: ColoredBox(
+                      color: AppColors.surface,
                       child: Image.asset(
-                        passport
+                        isPassport
                             ? 'assets/images/iraqi_passport_example.jpg'
                             : 'assets/images/man_selfie_example.jpg',
-                        height: 320,
                         width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          height: 320,
-                          width: double.infinity,
-                          color: AppColors.surfaceAlt,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            passport
-                                ? Icons.badge_outlined
-                                : Icons.face_retouching_natural_outlined,
-                            size: 40,
-                            color: AppColors.muted,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => SizedBox(
+                          height: 360,
+                          child: Center(
+                            child: Icon(
+                              isPassport
+                                  ? Icons.menu_book_rounded
+                                  : Icons.face_rounded,
+                              size: 52,
+                              color: AppColors.muted,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    ...(passport
-                            ? [
-                                t.identityPassportInstruction1,
-                                t.identityPassportInstruction2,
-                                t.identityPassportInstruction3,
-                              ]
-                            : [
-                                t.identitySelfieInstruction1,
-                                t.identitySelfieInstruction2,
-                                t.identitySelfieInstruction3,
-                              ])
-                        .map(
-                          (instruction) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 3),
-                                  child: Icon(
-                                    Icons.check_circle_rounded,
-                                    size: 17,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    instruction,
-                                    style: AppTheme.sans(
-                                      12.5,
-                                      color: AppColors.inkLight,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  isPassport
+                      ? t.identityPassportExampleCaption
+                      : t.identitySelfieExampleCaption,
+                  textAlign: TextAlign.center,
+                  style: AppTheme.sans(
+                    12.5,
+                    color: AppColors.inkLight,
+                    weight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(t.identityClose),
-              ),
-              if (beforePicking)
-                FilledButton(
-                  onPressed: () => Navigator.pop(dialogContext, true),
-                  child: Text(t.identityContinue),
-                ),
-            ],
           ),
-        ) ??
-        false;
+        ),
+      ),
+    );
   }
 
   Future<ImageSource?> _chooseSource(BuildContext context) {
@@ -141,6 +115,9 @@ class _IdentityVerificationView extends StatelessWidget {
       context: context,
       backgroundColor: AppColors.background,
       showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
@@ -148,9 +125,15 @@ class _IdentityVerificationView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.identityChooseSource, style: AppTheme.serif(20)),
+              Text(
+                t.identityChooseSource,
+                style: AppTheme.sans(19, weight: FontWeight.w800),
+              ),
               const SizedBox(height: 12),
               ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 leading: const Icon(
                   Icons.photo_camera_outlined,
                   color: AppColors.primary,
@@ -159,6 +142,9 @@ class _IdentityVerificationView extends StatelessWidget {
                 onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
               ),
               ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 leading: const Icon(
                   Icons.photo_library_outlined,
                   color: AppColors.primary,
@@ -174,11 +160,9 @@ class _IdentityVerificationView extends StatelessWidget {
   }
 
   Future<void> _pick(BuildContext context, _IdentityPhotoKind kind) async {
-    final canContinue = await _showExample(context, kind, beforePicking: true);
-    if (!canContinue || !context.mounted) return;
-
     final source = await _chooseSource(context);
     if (source == null || !context.mounted) return;
+
     final provider = context.read<IdentityVerificationProvider>();
     if (kind == _IdentityPhotoKind.passport) {
       await provider.pickPassport(source);
@@ -217,102 +201,162 @@ class _IdentityVerificationView extends StatelessWidget {
     final state = context.watch<IdentityVerificationProvider>();
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(t.identityVerification)),
-      body: Stack(
+      appBar: AppBar(
+        centerTitle: true,
+        toolbarHeight: 56,
+        title: Text(
+          t.identityVerification,
+          style: AppTheme.sans(20, weight: FontWeight.w800),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
         children: [
-          const Positioned.fill(
-            child: IslamicPattern(opacity: 0.035, isEightFold: true),
+          _SecurityNotice(text: t.identitySecureBody),
+          const SizedBox(height: 24),
+          _UploadSection(
+            step: 1,
+            title: t.identityPassportPhoto,
+            instructions: [
+              t.identityPassportInstruction1,
+              t.identityPassportInstruction2,
+              t.identityPassportInstruction3,
+            ],
+            placeholder: t.identityPassportPlaceholder,
+            icon: Icons.menu_book_rounded,
+            photo: state.passport,
+            onViewExample: () =>
+                _showExample(context, _IdentityPhotoKind.passport),
+            onPick: () => _pick(context, _IdentityPhotoKind.passport),
           ),
-          SafeArea(
-            top: false,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-              children: [
-                Text(t.identityVerificationTitle, style: AppTheme.serif(26)),
-                const SizedBox(height: 6),
-                Text(
-                  t.identityVerificationBody,
-                  style: AppTheme.sans(13, color: AppColors.muted),
-                ),
-                const SizedBox(height: 20),
-                _UploadSection(
-                  title: t.identityPassportPhoto,
-                  description: t.identityPassportBody,
-                  icon: Icons.badge_outlined,
-                  photo: state.passport,
-                  onViewExample: () => _showExample(
-                    context,
-                    _IdentityPhotoKind.passport,
-                    beforePicking: false,
-                  ),
-                  onPick: () => _pick(context, _IdentityPhotoKind.passport),
-                ),
-                const SizedBox(height: 16),
-                _UploadSection(
-                  title: t.identitySelfiePhoto,
-                  description: t.identitySelfieBody,
-                  icon: Icons.face_retouching_natural_outlined,
-                  photo: state.selfie,
-                  onViewExample: () => _showExample(
-                    context,
-                    _IdentityPhotoKind.selfie,
-                    beforePicking: false,
-                  ),
-                  onPick: () => _pick(context, _IdentityPhotoKind.selfie),
-                ),
-                const SizedBox(height: 22),
-                SizedBox(
-                  height: 52,
-                  child: FilledButton(
-                    onPressed: state.canSubmit ? () => _submit(context) : null,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      disabledBackgroundColor: AppColors.muted.withValues(
-                        alpha: 0.3,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: state.isSubmitting
-                        ? const SizedBox.square(
-                            dimension: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            t.identitySubmit,
-                            style: AppTheme.sans(
-                              14,
-                              weight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 24),
+          _UploadSection(
+            step: 2,
+            title: t.identitySelfiePhoto,
+            instructions: [
+              t.identitySelfieInstruction1,
+              t.identitySelfieInstruction2,
+              t.identitySelfieInstruction3,
+              t.identitySelfieInstruction4,
+            ],
+            placeholder: t.identitySelfiePlaceholder,
+            icon: Icons.face_rounded,
+            photo: state.selfie,
+            onViewExample: () =>
+                _showExample(context, _IdentityPhotoKind.selfie),
+            onPick: () => _pick(context, _IdentityPhotoKind.selfie),
           ),
         ],
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(24, 14, 24, 12),
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x0D000000),
+                blurRadius: 18,
+                offset: Offset(0, -4),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: 54,
+            child: FilledButton(
+              onPressed: state.canSubmit ? () => _submit(context) : null,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                disabledBackgroundColor: const Color(0xFFE1E5DE),
+                disabledForegroundColor: AppColors.muted,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: state.isSubmitting
+                  ? const SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      t.identitySubmit,
+                      style: AppTheme.sans(
+                        14,
+                        weight: FontWeight.w700,
+                        color: state.canSubmit ? Colors.white : AppColors.muted,
+                      ),
+                    ),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
+class _SecurityNotice extends StatelessWidget {
+  const _SecurityNotice({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(22),
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.border),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.security_rounded, color: Color(0xFF09836E), size: 30),
+        const SizedBox(width: 13),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context).identitySecureTitle,
+                style: AppTheme.sans(15, weight: FontWeight.w800),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                text,
+                style: AppTheme.sans(
+                  11.5,
+                  color: AppColors.inkLight,
+                  weight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class _UploadSection extends StatelessWidget {
   const _UploadSection({
+    required this.step,
     required this.title,
-    required this.description,
+    required this.instructions,
+    required this.placeholder,
     required this.icon,
     required this.photo,
     required this.onViewExample,
     required this.onPick,
   });
 
+  final int step;
   final String title;
-  final String description;
+  final List<String> instructions;
+  final String placeholder;
   final IconData icon;
   final IdentityPhoto? photo;
   final VoidCallback onViewExample;
@@ -321,16 +365,18 @@ class _UploadSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final language = Localizations.localeOf(context).languageCode;
+    final stepLabel = language == 'en' ? '$step' : (step == 1 ? '١' : '٢');
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 16,
+            color: Color(0x09000000),
+            blurRadius: 18,
             offset: Offset(0, 5),
           ),
         ],
@@ -338,50 +384,113 @@ class _UploadSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTheme.sans(16, weight: FontWeight.w700)),
-          const SizedBox(height: 3),
-          Text(description, style: AppTheme.sans(11.5, color: AppColors.muted)),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              height: 170,
-              width: double.infinity,
-              color: AppColors.surfaceAlt,
-              child: photo == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(icon, size: 40, color: AppColors.muted),
-                        const SizedBox(height: 8),
-                        Text(
-                          t.identityNoPhoto,
-                          style: AppTheme.sans(12, color: AppColors.muted),
-                        ),
-                      ],
-                    )
-                  : Image.memory(photo!.bytes, fit: BoxFit.cover),
+          Text(
+            '$stepLabel. $title',
+            style: AppTheme.sans(17, weight: FontWeight.w800),
+          ),
+          const SizedBox(height: 9),
+          ...instructions.map(
+            (instruction) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Container(
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        color: AppColors.inkLight,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      instruction,
+                      style: AppTheme.sans(
+                        11.5,
+                        color: AppColors.inkLight,
+                        weight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 23),
+          Container(
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFDCE1D8)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: photo == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(icon, size: 38, color: AppColors.mutedLight),
+                      const SizedBox(height: 10),
+                      Text(
+                        placeholder,
+                        style: AppTheme.sans(
+                          12,
+                          color: AppColors.muted,
+                          weight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                : Image.memory(photo!.bytes, fit: BoxFit.cover),
+          ),
+          const SizedBox(height: 17),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: onViewExample,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    foregroundColor: AppColors.ink,
+                    side: const BorderSide(color: Color(0xFFE1E5DF)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
                   icon: const Icon(Icons.visibility_outlined, size: 18),
-                  label: Text(t.identityViewExample),
+                  label: Text(
+                    t.identityViewExample,
+                    style: AppTheme.sans(12, weight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onPick,
-                  icon: const Icon(Icons.add_a_photo_outlined, size: 18),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
+                  icon: const Icon(Icons.file_upload_outlined, size: 18),
                   label: Text(
                     photo == null
                         ? t.identityUploadPhoto
                         : t.identityChangePhoto,
+                    style: AppTheme.sans(
+                      12,
+                      color: Colors.white,
+                      weight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),

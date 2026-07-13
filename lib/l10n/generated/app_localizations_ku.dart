@@ -2781,7 +2781,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get adminMoreInfoRequested => 'داواکاری زانیاری نێردرا';
 
   @override
-  String get identityVerification => 'پشتڕاستکردنەوەی ناسنامە';
+  String get identityVerification => 'سەلماندنی ناسنامە';
 
   @override
   String get identityVerificationTitle => 'ناسنامەکەت پشتڕاست بکەرەوە';
@@ -2859,7 +2859,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get identityChangePhoto => 'گۆڕینی وێنە';
 
   @override
-  String get identitySubmit => 'ناردن بۆ پشتڕاستکردنەوە';
+  String get identitySubmit => 'ناردنی سەلماندن';
 
   @override
   String get identitySubmitted =>
@@ -2872,4 +2872,35 @@ class AppLocalizationsKu extends AppLocalizations {
   @override
   String get identityUploadFailed =>
       'بارکردنی بەڵگەنامەکان سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get identitySecureTitle => 'سەلماندنی پارێزراو';
+
+  @override
+  String get identitySecureBody =>
+      'ئێمە داوای سەلماندنی ناسنامە دەکەین بۆ دڵنیابوون لەوەی کە حجزەکان یاسایین و لەگەڵ ڕێساکانی گەشتکردن دەگونجێن. بەڵگەنامەکانت بە پارێزراوی و بە کۆدکراوی هەڵدەگیرێن.';
+
+  @override
+  String get identityPassportPlaceholder => 'لاپەڕەی زانیاری پاسپۆرت';
+
+  @override
+  String get identitySelfiePlaceholder => 'وێنەی سێلفی خۆت';
+
+  @override
+  String get identitySelfieInstruction4 =>
+      'باشترە پاشبنەمایەکی سادە و بێ گرتن بێت.';
+
+  @override
+  String get identityPassportExampleTitle => 'نموونەی پاسپۆرت';
+
+  @override
+  String get identitySelfieExampleTitle => 'نموونەی سێلفی';
+
+  @override
+  String get identityPassportExampleCaption =>
+      'دڵنیابە کە هەموو زانیارییەکان ڕوون و خوێندنەوەن.';
+
+  @override
+  String get identitySelfieExampleCaption =>
+      'ڕاستەوخۆ سەیری کامێراکە بکە، دڵنیابە لە ڕووناکی باش و نەبوونی کڵاو یان چاوەیلکەی خۆر.';
 }

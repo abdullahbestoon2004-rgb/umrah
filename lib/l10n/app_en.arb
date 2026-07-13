@@ -965,5 +965,14 @@
   "identitySubmit": "Submit for verification",
   "identitySubmitted": "Your identity documents were submitted for review.",
   "identitySignInRequired": "Please sign in before submitting identity documents.",
-  "identityUploadFailed": "The documents could not be uploaded. Please try again."
+  "identityUploadFailed": "The documents could not be uploaded. Please try again.",
+  "identitySecureTitle": "Secure verification",
+  "identitySecureBody": "We ask you to verify your identity to help keep bookings legitimate and comply with travel requirements. Your documents are encrypted and stored securely.",
+  "identityPassportPlaceholder": "Passport information page",
+  "identitySelfiePlaceholder": "Your selfie photo",
+  "identitySelfieInstruction4": "Use a simple, uncluttered background.",
+  "identityPassportExampleTitle": "Passport example",
+  "identitySelfieExampleTitle": "Selfie example",
+  "identityPassportExampleCaption": "Make sure all information is clear and readable.",
+  "identitySelfieExampleCaption": "Look directly at the camera, use good lighting, and do not wear a hat or sunglasses."
 }

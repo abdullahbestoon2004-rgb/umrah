@@ -2881,4 +2881,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get identityUploadFailed =>
       'The documents could not be uploaded. Please try again.';
+
+  @override
+  String get identitySecureTitle => 'Secure verification';
+
+  @override
+  String get identitySecureBody =>
+      'We ask you to verify your identity to help keep bookings legitimate and comply with travel requirements. Your documents are encrypted and stored securely.';
+
+  @override
+  String get identityPassportPlaceholder => 'Passport information page';
+
+  @override
+  String get identitySelfiePlaceholder => 'Your selfie photo';
+
+  @override
+  String get identitySelfieInstruction4 =>
+      'Use a simple, uncluttered background.';
+
+  @override
+  String get identityPassportExampleTitle => 'Passport example';
+
+  @override
+  String get identitySelfieExampleTitle => 'Selfie example';
+
+  @override
+  String get identityPassportExampleCaption =>
+      'Make sure all information is clear and readable.';
+
+  @override
+  String get identitySelfieExampleCaption =>
+      'Look directly at the camera, use good lighting, and do not wear a hat or sunglasses.';
 }

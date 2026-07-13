@@ -590,7 +590,9 @@ class _PassportDocumentsButton extends StatelessWidget {
       onTap: () => showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
+        useSafeArea: true,
         backgroundColor: AppColors.background,
+        shape: const RoundedRectangleBorder(),
         builder: (_) => _PassportDocumentsSheet(booking: booking),
       ),
       child: Container(
@@ -667,113 +669,74 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     super.dispose();
   }
 
-  Future<bool> _showExample(
-    _TravellerPhotoKind kind, {
-    required bool beforePicking,
-  }) async {
+  Future<void> _showExample(_TravellerPhotoKind kind) async {
     final t = AppLocalizations.of(context);
     final passport = kind == _TravellerPhotoKind.passport;
-    return await showDialog<bool>(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            backgroundColor: AppColors.background,
-            insetPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 24,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(22),
-            ),
-            title: Text(t.identityExampleTitle, style: AppTheme.serif(20)),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.52),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: AppColors.background,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 390, maxHeight: 690),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
+                    Expanded(
+                      child: Text(
+                        passport
+                            ? t.identityPassportExampleTitle
+                            : t.identitySelfieExampleTitle,
+                        style: AppTheme.sans(19, weight: FontWeight.w800),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: t.identityClose,
+                      onPressed: () => Navigator.pop(dialogContext),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: ColoredBox(
+                      color: AppColors.surface,
                       child: Image.asset(
                         passport
                             ? 'assets/images/iraqi_passport_example.jpg'
                             : 'assets/images/man_selfie_example.jpg',
-                        height: 320,
                         width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          height: 320,
-                          width: double.infinity,
-                          color: AppColors.surfaceAlt,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            passport
-                                ? Icons.badge_outlined
-                                : Icons.face_retouching_natural_outlined,
-                            size: 40,
-                            color: AppColors.muted,
-                          ),
-                        ),
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    ...(passport
-                            ? [
-                                t.identityPassportInstruction1,
-                                t.identityPassportInstruction2,
-                                t.identityPassportInstruction3,
-                              ]
-                            : [
-                                t.identitySelfieInstruction1,
-                                t.identitySelfieInstruction2,
-                                t.identitySelfieInstruction3,
-                              ])
-                        .map(
-                          (instruction) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 3),
-                                  child: Icon(
-                                    Icons.check_circle_rounded,
-                                    size: 17,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    instruction,
-                                    style: AppTheme.sans(
-                                      12.5,
-                                      color: AppColors.inkLight,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  passport
+                      ? t.identityPassportExampleCaption
+                      : t.identitySelfieExampleCaption,
+                  textAlign: TextAlign.center,
+                  style: AppTheme.sans(
+                    12.5,
+                    color: AppColors.inkLight,
+                    weight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(t.identityClose),
-              ),
-              if (beforePicking)
-                FilledButton(
-                  onPressed: () => Navigator.pop(dialogContext, true),
-                  child: Text(t.identityContinue),
-                ),
-            ],
           ),
-        ) ??
-        false;
+        ),
+      ),
+    );
   }
 
   Future<ImageSource?> _chooseSource() {
@@ -818,9 +781,6 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     BookingTraveller traveller,
     _TravellerPhotoKind kind,
   ) async {
-    final canContinue = await _showExample(kind, beforePicking: true);
-    if (!canContinue || !mounted) return;
-
     final source = await _chooseSource();
     if (source == null || !mounted) return;
 
@@ -902,23 +862,35 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          20,
-          18,
-          20,
+          24,
+          0,
+          24,
           MediaQuery.viewInsetsOf(context).bottom + 20,
         ),
         child: SizedBox(
-          height: MediaQuery.sizeOf(context).height * 0.86,
+          height: MediaQuery.sizeOf(context).height,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.bookingPassportDocuments, style: AppTheme.serif(22)),
-              const SizedBox(height: 4),
-              Text(
-                t.bookingPassportPrivacy,
-                style: AppTheme.sans(12, color: AppColors.muted),
+              SizedBox(
+                height: 64,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      t.identityVerification,
+                      style: AppTheme.sans(20, weight: FontWeight.w800),
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: BackButton(
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
+              _BookingSecurityNotice(text: t.identitySecureBody),
+              const SizedBox(height: 24),
               Expanded(
                 child: FutureBuilder<List<BookingTraveller>>(
                   future: _future,
@@ -928,7 +900,7 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                     }
                     return ListView.separated(
                       itemCount: snapshot.data!.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      separatorBuilder: (_, _) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final traveller = snapshot.data![index];
                         final controller = _controllers.putIfAbsent(
@@ -950,12 +922,7 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                             passportBytes != null &&
                             selfieBytes != null;
                         return Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.border),
-                          ),
+                          padding: EdgeInsets.zero,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -977,14 +944,19 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                               ),
                               const SizedBox(height: 14),
                               _TravellerPhotoTile(
+                                step: 1,
                                 title: t.identityPassportPhoto,
-                                icon: Icons.badge_outlined,
+                                instructions: [
+                                  t.identityPassportInstruction1,
+                                  t.identityPassportInstruction2,
+                                  t.identityPassportInstruction3,
+                                ],
+                                placeholder: t.identityPassportPlaceholder,
+                                icon: Icons.menu_book_outlined,
                                 bytes: passportBytes,
                                 uploaded: hasPassport,
-                                onViewExample: () => _showExample(
-                                  _TravellerPhotoKind.passport,
-                                  beforePicking: false,
-                                ),
+                                onViewExample: () =>
+                                    _showExample(_TravellerPhotoKind.passport),
                                 onPick: () => _pick(
                                   traveller,
                                   _TravellerPhotoKind.passport,
@@ -992,14 +964,20 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                               ),
                               const SizedBox(height: 12),
                               _TravellerPhotoTile(
+                                step: 2,
                                 title: t.identitySelfiePhoto,
+                                instructions: [
+                                  t.identitySelfieInstruction1,
+                                  t.identitySelfieInstruction2,
+                                  t.identitySelfieInstruction3,
+                                  t.identitySelfieInstruction4,
+                                ],
+                                placeholder: t.identitySelfiePlaceholder,
                                 icon: Icons.face_retouching_natural_outlined,
                                 bytes: selfieBytes,
                                 uploaded: hasSelfie,
-                                onViewExample: () => _showExample(
-                                  _TravellerPhotoKind.selfie,
-                                  beforePicking: false,
-                                ),
+                                onViewExample: () =>
+                                    _showExample(_TravellerPhotoKind.selfie),
                                 onPick: () => _pick(
                                   traveller,
                                   _TravellerPhotoKind.selfie,
@@ -1040,9 +1018,55 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
   }
 }
 
+class _BookingSecurityNotice extends StatelessWidget {
+  const _BookingSecurityNotice({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(22),
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.border),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.security_rounded, color: Color(0xFF09836E), size: 30),
+        const SizedBox(width: 13),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context).identitySecureTitle,
+                style: AppTheme.sans(15, weight: FontWeight.w800),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                text,
+                style: AppTheme.sans(
+                  11.5,
+                  color: AppColors.inkLight,
+                  weight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class _TravellerPhotoTile extends StatelessWidget {
   const _TravellerPhotoTile({
+    required this.step,
     required this.title,
+    required this.instructions,
+    required this.placeholder,
     required this.icon,
     required this.bytes,
     required this.uploaded,
@@ -1050,7 +1074,10 @@ class _TravellerPhotoTile extends StatelessWidget {
     required this.onPick,
   });
 
+  final int step;
   final String title;
+  final List<String> instructions;
+  final String placeholder;
   final IconData icon;
   final Uint8List? bytes;
   final bool uploaded;
@@ -1060,64 +1087,138 @@ class _TravellerPhotoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final language = Localizations.localeOf(context).languageCode;
+    final stepLabel = language == 'en' ? '$step' : (step == 1 ? '١' : '٢');
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x09000000),
+            blurRadius: 18,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTheme.sans(13, weight: FontWeight.w700)),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 140,
-              width: double.infinity,
-              color: AppColors.surface,
-              child: bytes != null
-                  ? Image.memory(bytes!, fit: BoxFit.cover)
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          uploaded ? Icons.check_circle_outline : icon,
-                          size: 34,
-                          color: uploaded ? AppColors.primary : AppColors.muted,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          uploaded
-                              ? t.bookingPassportImageUploaded
-                              : t.identityNoPhoto,
-                          style: AppTheme.sans(11.5, color: AppColors.muted),
-                        ),
-                      ],
+          Text(
+            '$stepLabel. $title',
+            style: AppTheme.sans(17, weight: FontWeight.w800),
+          ),
+          const SizedBox(height: 9),
+          ...instructions.map(
+            (instruction) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Container(
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        color: AppColors.inkLight,
+                        shape: BoxShape.circle,
+                      ),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      instruction,
+                      style: AppTheme.sans(
+                        11.5,
+                        color: AppColors.inkLight,
+                        weight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 13),
+          Container(
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFDCE1D8)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: bytes != null
+                ? Image.memory(bytes!, fit: BoxFit.cover)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        uploaded ? Icons.check_circle_outline : icon,
+                        size: 38,
+                        color: uploaded
+                            ? AppColors.primary
+                            : AppColors.mutedLight,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        uploaded ? t.bookingPassportImageUploaded : placeholder,
+                        style: AppTheme.sans(
+                          12,
+                          color: AppColors.muted,
+                          weight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+          const SizedBox(height: 17),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: onViewExample,
-                  icon: const Icon(Icons.visibility_outlined, size: 17),
-                  label: Text(t.identityViewExample),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    foregroundColor: AppColors.ink,
+                    side: const BorderSide(color: Color(0xFFE1E5DF)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
+                  icon: const Icon(Icons.visibility_outlined, size: 18),
+                  label: Text(
+                    t.identityViewExample,
+                    style: AppTheme.sans(12, weight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onPick,
-                  icon: const Icon(Icons.add_a_photo_outlined, size: 17),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
+                  icon: const Icon(Icons.file_upload_outlined, size: 18),
                   label: Text(
                     bytes == null && !uploaded
                         ? t.identityUploadPhoto
                         : t.identityChangePhoto,
+                    style: AppTheme.sans(
+                      12,
+                      color: Colors.white,
+                      weight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
