@@ -578,7 +578,7 @@ class SupabaseService implements DataService {
     String? tint,
   }) async {
     try {
-      await _c
+      final updatedRows = await _c
           .from('companies')
           .update({
             if (location != null) 'location': location,
@@ -587,7 +587,11 @@ class SupabaseService implements DataService {
             if (since != null) 'since': since,
             if (tint != null) 'tint': tint,
           })
-          .eq('id', id);
+          .eq('id', id)
+          .select('id');
+      if (updatedRows.isEmpty) {
+        return 'Unable to update this agency profile. Check its Supabase permissions.';
+      }
       return null;
     } on PostgrestException catch (e) {
       // about/tags columns come from patches.sql; retry with location only

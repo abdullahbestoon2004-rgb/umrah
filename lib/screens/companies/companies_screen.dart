@@ -418,11 +418,6 @@ class _CompanyListCard extends StatelessWidget {
         ? 0.0
         : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
 
-    final gradDark = Color.alphaBlend(
-      Colors.black.withOpacity(0.35),
-      company.tint,
-    );
-
     return InteractiveScale(
       onTap: () => Navigator.push(
         context,
@@ -449,7 +444,7 @@ class _CompanyListCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── gradient header ──────────────────────────────────────────
+            // ── brand-colour / photo header ──────────────────────────────
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(21),
@@ -459,33 +454,17 @@ class _CompanyListCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // gradient background from tint colour
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [company.tint, gradDark],
-                        ),
-                      ),
-                    ),
+                    Container(color: company.tint),
                     if ((company.bannerUrl ?? '').isNotEmpty)
                       Image.network(company.bannerUrl!, fit: BoxFit.cover),
+                    // Keep the agency brand colour visible even when a
+                    // background photo has been added.
+                    if ((company.bannerUrl ?? '').isNotEmpty)
+                      Container(color: company.tint.withOpacity(0.48)),
                     const IslamicPattern(opacity: 0.08, cell: 46),
-                    // bottom scrim for text legibility
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.52),
-                          ],
-                          stops: const [0.4, 1.0],
-                        ),
-                      ),
-                    ),
+                    // A uniform scrim preserves contrast without changing
+                    // the selected background into a gradient.
+                    Container(color: Colors.black.withOpacity(0.16)),
                     // verified badge — top left
                     if (company.isVerified)
                       Positioned(

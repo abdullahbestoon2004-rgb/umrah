@@ -462,13 +462,7 @@ class _CompanyHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [company.tint, const Color(0xFF0A3F35)],
-        ),
-      ),
+      color: company.tint,
       child: SafeArea(
         bottom: false,
         child: Stack(
@@ -477,19 +471,12 @@ class _CompanyHeader extends StatelessWidget {
               Positioned.fill(
                 child: Image.network(company.bannerUrl!, fit: BoxFit.cover),
               ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      company.tint.withOpacity(0.4),
-                      const Color(0xFF0A3F35).withOpacity(0.9),
-                    ],
-                  ),
-                ),
+            if ((company.bannerUrl ?? '').isNotEmpty)
+              Positioned.fill(
+                child: Container(color: company.tint.withOpacity(0.42)),
               ),
+            Positioned.fill(
+              child: Container(color: Colors.black.withOpacity(0.16)),
             ),
             const Positioned.fill(
               child: IslamicPattern(opacity: 0.06, cell: 72),

@@ -19,6 +19,7 @@ import '../offers/offer_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/interactive_scale.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/tawaf_loading_spinner.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -31,9 +32,7 @@ class HomeScreen extends StatelessWidget {
     if (provider.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
+        body: Center(child: TawafLoadingSpinner(size: 112)),
       );
     }
     if (provider.loadFailed || provider.allOffers.isEmpty) {
@@ -260,6 +259,19 @@ class _AdCard extends StatelessWidget {
             ),
           )
         : null;
+    final adImage = Image.network(
+      ad.imageUrl ?? '',
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const _CarouselImagePlaceholder();
+      },
+      errorBuilder: (_, __, ___) => const GradientCard(
+        colors: [AppColors.primary, AppColors.primaryDark],
+        height: 240,
+      ),
+    );
+
     return InteractiveScale(
       onTap: onTap,
       child: ClipRRect(
@@ -268,26 +280,7 @@ class _AdCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if ((ad.imageUrl ?? '').isNotEmpty)
-              tag != null
-                  ? Hero(
-                      tag: tag,
-                      child: Image.network(
-                        ad.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const GradientCard(
-                          colors: [AppColors.primary, AppColors.primaryDark],
-                          height: 240,
-                        ),
-                      ),
-                    )
-                  : Image.network(
-                      ad.imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const GradientCard(
-                        colors: [AppColors.primary, AppColors.primaryDark],
-                        height: 240,
-                      ),
-                    )
+              tag != null ? Hero(tag: tag, child: adImage) : adImage
             else if (offer != null)
               OfferImage(offer: offer, height: 240, heroTag: tag)
             else
@@ -382,6 +375,51 @@ class _AdCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Keeps the paid-ad slot intentional while a remote banner is downloading.
+class _CarouselImagePlaceholder extends StatelessWidget {
+  const _CarouselImagePlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const ColoredBox(color: AppColors.surfaceAlt),
+        const IslamicPattern(opacity: 0.10, cell: 40),
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const TawafLoadingSpinner(
+                size: 52,
+                semanticLabel: 'Loading carousel image',
+              ),
+              const SizedBox(height: 14),
+              Container(
+                width: 92,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+              const SizedBox(height: 7),
+              Container(
+                width: 58,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -567,11 +605,6 @@ class _AgencyCard extends StatelessWidget {
     final fromPrice = offers.isEmpty
         ? 0.0
         : offers.map((o) => o.price).reduce((a, b) => a < b ? a : b);
-    final gradDark = Color.alphaBlend(
-      Colors.black.withOpacity(0.35),
-      company.tint,
-    );
-
     return InteractiveScale(
       onTap: () => Navigator.push(
         context,
@@ -613,28 +646,9 @@ class _AgencyCard extends StatelessWidget {
                       children: [
                         if ((company.bannerUrl ?? '').isNotEmpty) ...[
                           Image.network(company.bannerUrl!, fit: BoxFit.cover),
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.2),
-                                  Colors.black.withOpacity(0.0),
-                                ],
-                              ),
-                            ),
-                          ),
+                          Container(color: company.tint.withOpacity(0.42)),
                         ] else ...[
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [company.tint, gradDark],
-                              ),
-                            ),
-                          ),
+                          Container(color: company.tint),
                           const IslamicPattern(opacity: 0.10, cell: 40),
                         ],
                         Positioned(

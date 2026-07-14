@@ -1069,21 +1069,35 @@ class AppProvider extends ChangeNotifier {
       tint: tint == null ? null : _colorToHex(tint),
     );
     if (err != null) return err;
-    final c = companyById(companyId);
-    if (c != null) {
-      if (location != null) c.location = location;
-      if (about != null) c.about = about;
-      if (tags != null) c.tags = tags;
-      if (since != null) c.since = since;
-      if (tint != null) c.tint = tint;
+    // My agency can be represented by a different object than its directory
+    // card, so keep every in-memory copy in sync without waiting for reload.
+    final companiesToUpdate = [
+      ..._companies.where((company) => company.id == companyId),
+      ..._pendingCompanies.where((company) => company.id == companyId),
+      if (_myCompany?.id == companyId) _myCompany!,
+    ];
+    for (final company in companiesToUpdate) {
+      if (location != null) company.location = location;
+      if (about != null) company.about = about;
+      if (tags != null) company.tags = tags;
+      if (since != null) company.since = since;
+      if (tint != null) company.tint = tint;
     }
     if (logoBytes != null) {
       final url = await _service.uploadCompanyLogo(companyId, logoBytes);
-      if (url != null) c?.logoUrl = url;
+      if (url != null) {
+        for (final company in companiesToUpdate) {
+          company.logoUrl = url;
+        }
+      }
     }
     if (bannerBytes != null) {
       final url = await _service.uploadCompanyBanner(companyId, bannerBytes);
-      if (url != null) c?.bannerUrl = url;
+      if (url != null) {
+        for (final company in companiesToUpdate) {
+          company.bannerUrl = url;
+        }
+      }
     }
     notifyListeners();
     return null;
