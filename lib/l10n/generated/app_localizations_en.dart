@@ -495,6 +495,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companiesFromPrefix => 'from ';
 
   @override
+  String get companiesSearchHint => 'Search agencies or cities…';
+
+  @override
+  String get companiesFilterVerified => 'Verified';
+
+  @override
+  String get companiesFilterTopRated => 'Top Rated';
+
+  @override
+  String get companiesFilterPromoted => 'Promoted';
+
+  @override
+  String get companiesFilterWithPackages => 'With Packages';
+
+  @override
+  String get companiesNoMatches => 'No agencies found';
+
+  @override
+  String get companiesTryDifferentSearch =>
+      'Try a different agency name, city, or filter.';
+
+  @override
   String get companyDetailAbout => 'About';
 
   @override
@@ -1430,6 +1452,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editAgencyProfileBannerLabel => 'Background Image';
 
   @override
+  String get editAgencyProfileBackgroundColorLabel => 'Card Background Color';
+
+  @override
   String get addEditOfferEditTitle => 'Edit Package';
 
   @override
@@ -2270,7 +2295,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingPassportRequired =>
-      'Enter the passport number and choose an image.';
+      'Upload both passport and selfie photos.';
 
   @override
   String get bookingPassportSaved => 'Passport details saved.';

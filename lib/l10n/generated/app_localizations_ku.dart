@@ -498,6 +498,28 @@ class AppLocalizationsKu extends AppLocalizations {
   String get companiesFromPrefix => 'لە ';
 
   @override
+  String get companiesSearchHint => 'گەڕان بۆ کۆمپانیا یان شار…';
+
+  @override
+  String get companiesFilterVerified => 'پشتڕاستکراوە';
+
+  @override
+  String get companiesFilterTopRated => 'بەرزترین هەڵسەنگاندن';
+
+  @override
+  String get companiesFilterPromoted => 'تایبەت';
+
+  @override
+  String get companiesFilterWithPackages => 'بە گەشتەکان';
+
+  @override
+  String get companiesNoMatches => 'هیچ کۆمپانیایەک نەدۆزرایەوە';
+
+  @override
+  String get companiesTryDifferentSearch =>
+      'ناوێکی تر، شارێک یان فلتەرێکی تر تاقی بکەرەوە.';
+
+  @override
   String get companyDetailAbout => 'دەربارە';
 
   @override
@@ -1416,6 +1438,9 @@ class AppLocalizationsKu extends AppLocalizations {
   String get editAgencyProfileBannerLabel => 'وێنەی پاشبنەما';
 
   @override
+  String get editAgencyProfileBackgroundColorLabel => 'ڕەنگی پاشبنەمای کارتەکە';
+
+  @override
   String get addEditOfferEditTitle => 'دەستکاریکردنی گەشت';
 
   @override
@@ -2257,7 +2282,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get bookingPassportRequired =>
-      'ژمارەی پاسپۆرت بنووسە و وێنەیەک هەڵبژێرە.';
+      'هەردوو وێنەی پاسپۆرت و وێنەی کەسی باربکە.';
 
   @override
   String get bookingPassportSaved => 'زانیاری پاسپۆرت پاشەکەوت کرا.';

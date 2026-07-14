@@ -10,13 +10,65 @@ import '../../widgets/company_avatar.dart';
 import 'company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/interactive_scale.dart';
+import '../../widgets/tag_chip.dart';
 
-class CompaniesScreen extends StatelessWidget {
+class CompaniesScreen extends StatefulWidget {
   const CompaniesScreen({super.key});
+
+  @override
+  State<CompaniesScreen> createState() => _CompaniesScreenState();
+}
+
+class _CompaniesScreenState extends State<CompaniesScreen> {
+  final _searchController = TextEditingController();
+  String _query = '';
+  String _filter = 'all';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(
+      () =>
+          setState(() => _query = _searchController.text.trim().toLowerCase()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  bool _matches(Company company, String lang, AppProvider provider) {
+    final matchesQuery =
+        _query.isEmpty ||
+        company.nameFor(lang).toLowerCase().contains(_query) ||
+        company.location.toLowerCase().contains(_query);
+    if (!matchesQuery) return false;
+
+    switch (_filter) {
+      case 'verified':
+        return company.isVerified;
+      case 'topRated':
+        return company.rating >= 4.5;
+      case 'promoted':
+        return company.isPromoted;
+      case 'packages':
+        return provider.getCompanyOffers(company.id).isNotEmpty;
+      default:
+        return true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final provider = context.watch<AppProvider>();
+    final lang = Localizations.localeOf(context).languageCode;
+    final companies = provider.companies
+        .where((company) => _matches(company, lang, provider))
+        .toList();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -31,36 +83,219 @@ class CompaniesScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(t.companiesTitle, style: AppTheme.serif(30)),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                t.companiesTitle,
+                                style: AppTheme.serif(30),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => _showFilters(context, t),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 11,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.tune_rounded,
+                                      color: Color(0xFFF6F2E9),
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Text(
+                                      t.offersFilters,
+                                      style: AppTheme.sans(
+                                        13,
+                                        weight: FontWeight.w700,
+                                        color: const Color(0xFFF6F2E9),
+                                      ),
+                                    ),
+                                    if (_filter != 'all') ...[
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.gold,
+                                          borderRadius: BorderRadius.circular(
+                                            9,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '1',
+                                          style: AppTheme.sans(
+                                            11,
+                                            weight: FontWeight.w800,
+                                            color: const Color(0xFF1C2317),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 3),
                         Text(
-                          t.companiesSubtitle(
-                            context.watch<AppProvider>().companies.length,
-                          ),
+                          t.companiesSubtitle(companies.length),
                           style: AppTheme.sans(
                             13,
                             color: const Color(0xFF7D8A82),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 15),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.primary.withOpacity(0.14),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            style: AppTheme.sans(14),
+                            decoration: InputDecoration(
+                              hintText: t.companiesSearchHint,
+                              hintStyle: AppTheme.sans(
+                                14,
+                                color: AppColors.mutedLight,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search_rounded,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
+                              suffixIcon: _query.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      onPressed: _searchController.clear,
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        color: AppColors.muted,
+                                        size: 18,
+                                      ),
+                                    ),
+                              border: InputBorder.none,
+                              contentPadding:
+                                  const EdgeInsetsDirectional.fromSTEB(
+                                    14,
+                                    13,
+                                    14,
+                                    13,
+                                  ),
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 9),
                       ],
                     ),
                   ),
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, i) {
-                    final list = context.watch<AppProvider>().companies;
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 52,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsetsDirectional.fromSTEB(
                         22,
-                        0,
+                        5,
                         22,
-                        i < list.length - 1 ? 13 : 24,
+                        7,
                       ),
-                      child: _CompanyListCard(company: list[i]),
-                    );
-                  }, childCount: context.watch<AppProvider>().companies.length),
+                      children: [
+                        _CompanyFilterChip(
+                          label: t.offersAll,
+                          active: _filter == 'all',
+                          onTap: () => setState(() => _filter = 'all'),
+                        ),
+                        _CompanyFilterChip(
+                          label: t.companiesFilterVerified,
+                          icon: Icons.verified_rounded,
+                          active: _filter == 'verified',
+                          onTap: () => setState(() => _filter = 'verified'),
+                        ),
+                        _CompanyFilterChip(
+                          label: t.companiesFilterTopRated,
+                          icon: Icons.star_rounded,
+                          active: _filter == 'topRated',
+                          onTap: () => setState(() => _filter = 'topRated'),
+                        ),
+                        _CompanyFilterChip(
+                          label: t.companiesFilterPromoted,
+                          icon: Icons.workspace_premium_rounded,
+                          active: _filter == 'promoted',
+                          onTap: () => setState(() => _filter = 'promoted'),
+                        ),
+                        _CompanyFilterChip(
+                          label: t.companiesFilterWithPackages,
+                          icon: Icons.luggage_rounded,
+                          active: _filter == 'packages',
+                          onTap: () => setState(() => _filter = 'packages'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+                if (companies.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.search_off_rounded,
+                              size: 38,
+                              color: AppColors.mutedLight,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              t.companiesNoMatches,
+                              style: AppTheme.serif(21),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              t.companiesTryDifferentSearch,
+                              textAlign: TextAlign.center,
+                              style: AppTheme.sans(13, color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                      return Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          22,
+                          0,
+                          22,
+                          i < companies.length - 1 ? 13 : 24,
+                        ),
+                        child: _CompanyListCard(company: companies[i]),
+                      );
+                    }, childCount: companies.length),
+                  ),
               ],
             ),
           ],
@@ -68,6 +303,106 @@ class CompaniesScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showFilters(BuildContext context, AppLocalizations t) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _CompanyFilterSheet(
+        selected: _filter,
+        labels: {
+          'all': t.offersAll,
+          'verified': t.companiesFilterVerified,
+          'topRated': t.companiesFilterTopRated,
+          'promoted': t.companiesFilterPromoted,
+          'packages': t.companiesFilterWithPackages,
+        },
+        onSelect: (filter) {
+          setState(() => _filter = filter);
+          Navigator.pop(sheetContext);
+        },
+      ),
+    );
+  }
+}
+
+class _CompanyFilterChip extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _CompanyFilterChip({
+    required this.label,
+    required this.active,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.only(end: 9),
+    child: TagChip(label: label, icon: icon, active: active, onTap: onTap),
+  );
+}
+
+class _CompanyFilterSheet extends StatelessWidget {
+  final String selected;
+  final Map<String, String> labels;
+  final ValueChanged<String> onSelect;
+
+  const _CompanyFilterSheet({
+    required this.selected,
+    required this.labels,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+    decoration: const BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+    ),
+    child: SafeArea(
+      top: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 38,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            AppLocalizations.of(context).offersFilters,
+            style: AppTheme.serif(24),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 9,
+            runSpacing: 9,
+            children: labels.entries
+                .map(
+                  (entry) => TagChip(
+                    label: entry.value,
+                    active: entry.key == selected,
+                    onTap: () => onSelect(entry.key),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _CompanyListCard extends StatelessWidget {
@@ -134,6 +469,8 @@ class _CompanyListCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if ((company.bannerUrl ?? '').isNotEmpty)
+                      Image.network(company.bannerUrl!, fit: BoxFit.cover),
                     const IslamicPattern(opacity: 0.08, cell: 46),
                     // bottom scrim for text legibility
                     Container(

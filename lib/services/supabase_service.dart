@@ -79,6 +79,7 @@ abstract class DataService {
     String? about,
     List<String>? tags,
     int? since,
+    String? tint,
   });
   Future<String?> uploadCompanyLogo(String companyId, Uint8List bytes);
   Future<String?> uploadCompanyBanner(String companyId, Uint8List bytes);
@@ -133,7 +134,6 @@ abstract class DataService {
   Future<String?> saveTravellerPassport({
     required String travellerId,
     required String bookingId,
-    required String passportNo,
     required Uint8List passportBytes,
     required Uint8List selfieBytes,
   });
@@ -575,6 +575,7 @@ class SupabaseService implements DataService {
     String? about,
     List<String>? tags,
     int? since,
+    String? tint,
   }) async {
     try {
       await _c
@@ -584,6 +585,7 @@ class SupabaseService implements DataService {
             if (about != null) 'about': about,
             if (tags != null) 'tags': tags,
             if (since != null) 'since': since,
+            if (tint != null) 'tint': tint,
           })
           .eq('id', id);
       return null;
@@ -1053,7 +1055,6 @@ class SupabaseService implements DataService {
   Future<String?> saveTravellerPassport({
     required String travellerId,
     required String bookingId,
-    required String passportNo,
     required Uint8List passportBytes,
     required Uint8List selfieBytes,
   }) async {
@@ -1077,7 +1078,6 @@ class SupabaseService implements DataService {
       await _c
           .from('booking_travellers')
           .update({
-            'passport_no': passportNo.trim(),
             'passport_image_path': path,
             'selfie_image_path': selfiePath,
           })

@@ -51,7 +51,7 @@ class Company {
   final bool isPromoted;
   final String verificationStatus;
   final String? verificationReason;
-  final Color tint;
+  Color tint;
   String? logoUrl;
   String? bannerUrl;
   final String status;

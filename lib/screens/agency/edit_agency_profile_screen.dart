@@ -26,6 +26,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
   late final TextEditingController _sinceCtrl;
   Uint8List? _logoBytes;
   Uint8List? _bannerBytes;
+  late Color _selectedTint;
   bool _saving = false;
 
   @override
@@ -35,6 +36,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
     _aboutCtrl = TextEditingController(text: widget.company.about);
     _tagsCtrl = TextEditingController(text: widget.company.tags.join(', '));
     _sinceCtrl = TextEditingController(text: '${widget.company.since}');
+    _selectedTint = widget.company.tint;
   }
 
   @override
@@ -97,6 +99,7 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
       about: _aboutCtrl.text.trim(),
       tags: tags,
       since: int.tryParse(_sinceCtrl.text.trim()),
+      tint: _selectedTint,
       logoBytes: _logoBytes,
       bannerBytes: _bannerBytes,
     );
@@ -234,6 +237,53 @@ class _EditAgencyProfileScreenState extends State<EditAgencyProfileScreen> {
               ),
             ),
             const SizedBox(height: 18),
+
+            Text(
+              t.editAgencyProfileBackgroundColorLabel,
+              style: AppTheme.sans(13, weight: FontWeight.w700),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: Company.curatedTints
+                  .map(
+                    (color) => GestureDetector(
+                      onTap: () => setState(() => _selectedTint = color),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 160),
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: color == _selectedTint
+                                ? AppColors.gold
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: color == _selectedTint
+                            ? const Icon(
+                                Icons.check_rounded,
+                                size: 20,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 24),
 
             // Background Banner Picker
             Text(

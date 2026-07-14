@@ -496,6 +496,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get companiesFromPrefix => 'تبدأ من ';
 
   @override
+  String get companiesSearchHint => 'ابحث عن وكالة أو مدينة…';
+
+  @override
+  String get companiesFilterVerified => 'موثّقة';
+
+  @override
+  String get companiesFilterTopRated => 'الأعلى تقييماً';
+
+  @override
+  String get companiesFilterPromoted => 'مميزة';
+
+  @override
+  String get companiesFilterWithPackages => 'لديها باقات';
+
+  @override
+  String get companiesNoMatches => 'لم يتم العثور على وكالات';
+
+  @override
+  String get companiesTryDifferentSearch =>
+      'جرّب اسماً أو مدينة أو فلترًا مختلفًا.';
+
+  @override
   String get companyDetailAbout => 'نبذة';
 
   @override
@@ -1399,6 +1421,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get editAgencyProfileBannerLabel => 'صورة الخلفية';
 
   @override
+  String get editAgencyProfileBackgroundColorLabel => 'لون خلفية البطاقة';
+
+  @override
   String get addEditOfferEditTitle => 'تعديل الباقة';
 
   @override
@@ -2234,7 +2259,8 @@ class AppLocalizationsAr extends AppLocalizations {
       'أضف بيانات الجواز لكل مسافر بشكل منفصل. تُحفظ الصور بشكل خاص لهذا الحجز فقط.';
 
   @override
-  String get bookingPassportRequired => 'أدخل رقم الجواز واختر صورة.';
+  String get bookingPassportRequired =>
+      'حمّل صورتي جواز السفر والصورة الشخصية.';
 
   @override
   String get bookingPassportSaved => 'تم حفظ بيانات الجواز.';

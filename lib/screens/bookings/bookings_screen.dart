@@ -646,7 +646,6 @@ class _PassportDocumentsSheet extends StatefulWidget {
 
 class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
   late Future<List<BookingTraveller>> _future;
-  final Map<String, TextEditingController> _controllers = {};
   final Map<String, Uint8List> _passportImages = {};
   final Map<String, Uint8List> _selfies = {};
   final Set<String> _saving = {};
@@ -659,14 +658,6 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
 
   void _reload() {
     _future = context.read<AppProvider>().bookingTravellers(widget.booking.id);
-  }
-
-  @override
-  void dispose() {
-    for (final controller in _controllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   Future<void> _showExample(_TravellerPhotoKind kind) async {
@@ -815,10 +806,9 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
 
   Future<void> _save(BookingTraveller traveller) async {
     final t = AppLocalizations.of(context);
-    final passportNo = _controllers[traveller.id]!.text.trim();
     final passport = _passportImages[traveller.id];
     final selfie = _selfies[traveller.id];
-    if (passportNo.isEmpty || passport == null || selfie == null) {
+    if (passport == null || selfie == null) {
       _showMessage(t.bookingPassportRequired);
       return;
     }
@@ -826,7 +816,6 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     final error = await context.read<AppProvider>().saveTravellerPassport(
       travellerId: traveller.id,
       bookingId: traveller.bookingId,
-      passportNo: passportNo,
       passportBytes: passport,
       selfieBytes: selfie,
     );
@@ -903,12 +892,6 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                       separatorBuilder: (_, _) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final traveller = snapshot.data![index];
-                        final controller = _controllers.putIfAbsent(
-                          traveller.id,
-                          () => TextEditingController(
-                            text: traveller.passportNo ?? '',
-                          ),
-                        );
                         final passportBytes = _passportImages[traveller.id];
                         final selfieBytes = _selfies[traveller.id];
                         final hasPassport =
@@ -918,9 +901,7 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                             selfieBytes != null ||
                             (traveller.selfieImagePath ?? '').isNotEmpty;
                         final canSave =
-                            controller.text.trim().isNotEmpty &&
-                            passportBytes != null &&
-                            selfieBytes != null;
+                            passportBytes != null && selfieBytes != null;
                         return Container(
                           padding: EdgeInsets.zero,
                           child: Column(
@@ -931,15 +912,6 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                                 style: AppTheme.sans(
                                   14,
                                   weight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: controller,
-                                onChanged: (_) => setState(() {}),
-                                decoration: InputDecoration(
-                                  labelText: t.bookingPassportNo,
-                                  border: const OutlineInputBorder(),
                                 ),
                               ),
                               const SizedBox(height: 14),

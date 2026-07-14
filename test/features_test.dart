@@ -230,6 +230,7 @@ class FakeService implements DataService {
     String? about,
     List<String>? tags,
     int? since,
+    String? tint,
   }) async => null;
 
   @override

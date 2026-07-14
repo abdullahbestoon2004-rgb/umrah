@@ -882,6 +882,48 @@ abstract class AppLocalizations {
   /// **'from '**
   String get companiesFromPrefix;
 
+  /// No description provided for @companiesSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search agencies or cities…'**
+  String get companiesSearchHint;
+
+  /// No description provided for @companiesFilterVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get companiesFilterVerified;
+
+  /// No description provided for @companiesFilterTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get companiesFilterTopRated;
+
+  /// No description provided for @companiesFilterPromoted.
+  ///
+  /// In en, this message translates to:
+  /// **'Promoted'**
+  String get companiesFilterPromoted;
+
+  /// No description provided for @companiesFilterWithPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'With Packages'**
+  String get companiesFilterWithPackages;
+
+  /// No description provided for @companiesNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No agencies found'**
+  String get companiesNoMatches;
+
+  /// No description provided for @companiesTryDifferentSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different agency name, city, or filter.'**
+  String get companiesTryDifferentSearch;
+
   /// No description provided for @companyDetailAbout.
   ///
   /// In en, this message translates to:
@@ -2436,6 +2478,12 @@ abstract class AppLocalizations {
   /// **'Background Image'**
   String get editAgencyProfileBannerLabel;
 
+  /// No description provided for @editAgencyProfileBackgroundColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Background Color'**
+  String get editAgencyProfileBackgroundColorLabel;
+
   /// No description provided for @addEditOfferEditTitle.
   ///
   /// In en, this message translates to:
@@ -3987,7 +4035,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookingPassportRequired.
   ///
   /// In en, this message translates to:
-  /// **'Enter the passport number and choose an image.'**
+  /// **'Upload both passport and selfie photos.'**
   String get bookingPassportRequired;
 
   /// No description provided for @bookingPassportSaved.

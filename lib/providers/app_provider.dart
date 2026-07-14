@@ -1056,6 +1056,7 @@ class AppProvider extends ChangeNotifier {
     String? about,
     List<String>? tags,
     int? since,
+    Color? tint,
     Uint8List? logoBytes,
     Uint8List? bannerBytes,
   }) async {
@@ -1065,6 +1066,7 @@ class AppProvider extends ChangeNotifier {
       about: about,
       tags: tags,
       since: since,
+      tint: tint == null ? null : _colorToHex(tint),
     );
     if (err != null) return err;
     final c = companyById(companyId);
@@ -1073,6 +1075,7 @@ class AppProvider extends ChangeNotifier {
       if (about != null) c.about = about;
       if (tags != null) c.tags = tags;
       if (since != null) c.since = since;
+      if (tint != null) c.tint = tint;
     }
     if (logoBytes != null) {
       final url = await _service.uploadCompanyLogo(companyId, logoBytes);
@@ -1084,6 +1087,13 @@ class AppProvider extends ChangeNotifier {
     }
     notifyListeners();
     return null;
+  }
+
+  String _colorToHex(Color color) {
+    final red = (color.r * 255).round().toRadixString(16).padLeft(2, '0');
+    final green = (color.g * 255).round().toRadixString(16).padLeft(2, '0');
+    final blue = (color.b * 255).round().toRadixString(16).padLeft(2, '0');
+    return '#$red$green$blue';
   }
 
   Future<String?> uploadAgencyDocument({
@@ -1191,13 +1201,11 @@ class AppProvider extends ChangeNotifier {
   Future<String?> saveTravellerPassport({
     required String travellerId,
     required String bookingId,
-    required String passportNo,
     required Uint8List passportBytes,
     required Uint8List selfieBytes,
   }) => _service.saveTravellerPassport(
     travellerId: travellerId,
     bookingId: bookingId,
-    passportNo: passportNo,
     passportBytes: passportBytes,
     selfieBytes: selfieBytes,
   );
