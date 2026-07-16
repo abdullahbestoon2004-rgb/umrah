@@ -37,7 +37,7 @@ class GradientCard extends StatelessWidget {
           children: [
             // small cards get a tighter tile so the motif stays visible
             IslamicPattern(cell: height < 120 ? 40 : 62, opacity: 0.09),
-            if (child != null) child!,
+            ?child,
           ],
         ),
       ),

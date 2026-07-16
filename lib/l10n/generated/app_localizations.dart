@@ -489,7 +489,7 @@ abstract class AppLocalizations {
   /// No description provided for @offerDetailFreeCancellation.
   ///
   /// In en, this message translates to:
-  /// **'Free cancellation up to 30 days before departure'**
+  /// **'See this trip\'s cancellation policy'**
   String get offerDetailFreeCancellation;
 
   /// No description provided for @offerDetailDepartureDate.
@@ -1047,7 +1047,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookingsCancelBody.
   ///
   /// In en, this message translates to:
-  /// **'\"{title}\" will be cancelled. This is free up to 30 days before departure.'**
+  /// **'\"{title}\" will be cancelled. Review the trip policy and estimated refund below before continuing.'**
   String bookingsCancelBody(String title);
 
   /// No description provided for @bookingsKeepBooking.
@@ -1719,7 +1719,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpFaq2A.
   ///
   /// In en, this message translates to:
-  /// **'Yes — cancellation is free up to 30 days before departure. Open My Bookings and tap \"Cancel booking\" on the trip.'**
+  /// **'Open My Bookings and tap \"Cancel booking\". The app shows the trip\'s snapshotted policy and estimated refund before you confirm.'**
   String get helpFaq2A;
 
   /// No description provided for @helpFaq3Q.
@@ -1743,7 +1743,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpFaq4A.
   ///
   /// In en, this message translates to:
-  /// **'Each offer lists its inclusions — visa processing, transport, hotel, meals and guided ziyarah. Check the \"What\'s Included\" section of the offer.'**
+  /// **'Each offer has its own declared inclusions. Check the \"What\'s Included\" section; anything not listed there should not be assumed.'**
   String get helpFaq4A;
 
   /// No description provided for @helpFaq5Q.
@@ -2751,7 +2751,7 @@ abstract class AppLocalizations {
   /// No description provided for @addEditOfferPriceUsd.
   ///
   /// In en, this message translates to:
-  /// **'Price (USD) *'**
+  /// **'Base price (IQD) *'**
   String get addEditOfferPriceUsd;
 
   /// No description provided for @addEditOfferOriginalPrice.
@@ -4590,6 +4590,36 @@ abstract class AppLocalizations {
   /// **'Accepted payment methods'**
   String get offerFormAcceptedPayments;
 
+  /// No description provided for @offerFormRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get offerFormRequired;
+
+  /// No description provided for @offerFormInvalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value.'**
+  String get offerFormInvalidValue;
+
+  /// No description provided for @offerFormSelectOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one option.'**
+  String get offerFormSelectOne;
+
+  /// No description provided for @offerFormReturnDateAfterDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Return date must be after departure.'**
+  String get offerFormReturnDateAfterDeparture;
+
+  /// No description provided for @offerFormFixHighlighted.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the highlighted required fields.'**
+  String get offerFormFixHighlighted;
+
   /// No description provided for @offerSoldOut.
   ///
   /// In en, this message translates to:
@@ -5189,6 +5219,816 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look directly at the camera, use good lighting, and do not wear a hat or sunglasses.'**
   String get identitySelfieExampleCaption;
+
+  /// No description provided for @bookingRoomCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get bookingRoomCount;
+
+  /// No description provided for @bookingNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get bookingNotes;
+
+  /// No description provided for @bookingAmountDueNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due now'**
+  String get bookingAmountDueNow;
+
+  /// No description provided for @bookingCancelReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for cancellation'**
+  String get bookingCancelReason;
+
+  /// No description provided for @bookingCancelReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the agency why you need to cancel'**
+  String get bookingCancelReasonHint;
+
+  /// No description provided for @bookingCancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation policy'**
+  String get bookingCancellationPolicy;
+
+  /// No description provided for @bookingEstimatedRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated refund'**
+  String get bookingEstimatedRefund;
+
+  /// No description provided for @bookingExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete this request before {time}'**
+  String bookingExpiresAt(String time);
+
+  /// No description provided for @agencyBookingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking details'**
+  String get agencyBookingDetails;
+
+  /// No description provided for @agencyRequestInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Request information'**
+  String get agencyRequestInformation;
+
+  /// No description provided for @agencyRequestInformationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain exactly what the pilgrim needs to provide'**
+  String get agencyRequestInformationHint;
+
+  /// No description provided for @agencyTravellerDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Traveller documents'**
+  String get agencyTravellerDocuments;
+
+  /// No description provided for @agencyDeclineReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for declining'**
+  String get agencyDeclineReason;
+
+  /// No description provided for @offerFormBothHotelsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Both hotels need their own name and description.'**
+  String get offerFormBothHotelsRequired;
+
+  /// No description provided for @offerFormHotelNightsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel nights must total {nights}.'**
+  String offerFormHotelNightsTotal(int nights);
+
+  /// No description provided for @offerFormPaymentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one payment method.'**
+  String get offerFormPaymentRequired;
+
+  /// No description provided for @offerFormRoomPriceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Every selected room needs a valid price.'**
+  String get offerFormRoomPriceRequired;
+
+  /// No description provided for @offerFormDepositTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'The deposit cannot be higher than the lowest per-person room price.'**
+  String get offerFormDepositTooHigh;
+
+  /// No description provided for @workflowPauseTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause trip'**
+  String get workflowPauseTrip;
+
+  /// No description provided for @workflowPausedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip paused and removed from the marketplace.'**
+  String get workflowPausedSnack;
+
+  /// No description provided for @offerUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get offerUnavailable;
+
+  /// No description provided for @agencyTripOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get agencyTripOverview;
+
+  /// No description provided for @agencyTripBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get agencyTripBookings;
+
+  /// No description provided for @agencyTripTravellers.
+  ///
+  /// In en, this message translates to:
+  /// **'Travellers'**
+  String get agencyTripTravellers;
+
+  /// No description provided for @agencyTripDocumentsVisa.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents & visa'**
+  String get agencyTripDocumentsVisa;
+
+  /// No description provided for @agencyTripOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get agencyTripOperations;
+
+  /// No description provided for @agencyTripUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
+  String get agencyTripUpdates;
+
+  /// No description provided for @agencyTripDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate trip'**
+  String get agencyTripDuplicate;
+
+  /// No description provided for @agencyTripDuplicateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new draft with this trip\'s hotels, prices, itinerary and policies? Dates and capacity can be adjusted before submission.'**
+  String get agencyTripDuplicateBody;
+
+  /// No description provided for @agencyTripDuplicated.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip duplicated as a draft.'**
+  String get agencyTripDuplicated;
+
+  /// No description provided for @agencyTripDuplicateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The trip could not be duplicated.'**
+  String get agencyTripDuplicateFailed;
+
+  /// No description provided for @agencyTripExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The passenger file could not be created.'**
+  String get agencyTripExportFailed;
+
+  /// No description provided for @agencyTripConfirmedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed booking value'**
+  String get agencyTripConfirmedValue;
+
+  /// No description provided for @agencyTripCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer payments collected'**
+  String get agencyTripCollected;
+
+  /// No description provided for @agencyTripDocumentsMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents needing attention'**
+  String get agencyTripDocumentsMissing;
+
+  /// No description provided for @agencyTripVisaPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Visas not approved'**
+  String get agencyTripVisaPending;
+
+  /// No description provided for @agencyTripPassengerExports.
+  ///
+  /// In en, this message translates to:
+  /// **'Passenger manifests'**
+  String get agencyTripPassengerExports;
+
+  /// No description provided for @agencyTripExportExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Excel'**
+  String get agencyTripExportExcel;
+
+  /// No description provided for @agencyTripExportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export PDF'**
+  String get agencyTripExportPdf;
+
+  /// No description provided for @agencyTripSearchTravellers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search name or passport number'**
+  String get agencyTripSearchTravellers;
+
+  /// No description provided for @agencyTripNoTravellers.
+  ///
+  /// In en, this message translates to:
+  /// **'No travellers in this trip yet'**
+  String get agencyTripNoTravellers;
+
+  /// No description provided for @agencyDocumentReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review document'**
+  String get agencyDocumentReview;
+
+  /// No description provided for @agencyDocumentUploads.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded traveller documents'**
+  String get agencyDocumentUploads;
+
+  /// No description provided for @agencyVisaStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa status'**
+  String get agencyVisaStatus;
+
+  /// No description provided for @agencyVisaReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa application reference'**
+  String get agencyVisaReference;
+
+  /// No description provided for @agencyTripTransportSeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight or bus seat'**
+  String get agencyTripTransportSeat;
+
+  /// No description provided for @agencyTripRooming.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooming'**
+  String get agencyTripRooming;
+
+  /// No description provided for @agencyTripAddRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Add room'**
+  String get agencyTripAddRoom;
+
+  /// No description provided for @agencyTripNoRooms.
+  ///
+  /// In en, this message translates to:
+  /// **'No rooms have been prepared yet.'**
+  String get agencyTripNoRooms;
+
+  /// No description provided for @agencyTripCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get agencyTripCity;
+
+  /// No description provided for @agencyTripMakkah.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah'**
+  String get agencyTripMakkah;
+
+  /// No description provided for @agencyTripMadinah.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah'**
+  String get agencyTripMadinah;
+
+  /// No description provided for @agencyTripRoomLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Room number or label'**
+  String get agencyTripRoomLabel;
+
+  /// No description provided for @agencyTripRoomPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Room group'**
+  String get agencyTripRoomPolicy;
+
+  /// No description provided for @agencyTripRoomFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get agencyTripRoomFamily;
+
+  /// No description provided for @agencyTripRoomMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Men'**
+  String get agencyTripRoomMale;
+
+  /// No description provided for @agencyTripRoomFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Women'**
+  String get agencyTripRoomFemale;
+
+  /// No description provided for @agencyTripRoomCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Room added.'**
+  String get agencyTripRoomCreated;
+
+  /// No description provided for @agencyTripRoomDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Room removed.'**
+  String get agencyTripRoomDeleted;
+
+  /// No description provided for @agencyTripTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transportation'**
+  String get agencyTripTransport;
+
+  /// No description provided for @agencyTripAddTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Add transport'**
+  String get agencyTripAddTransport;
+
+  /// No description provided for @agencyTripNoTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'No flight or bus details have been added yet.'**
+  String get agencyTripNoTransport;
+
+  /// No description provided for @agencyTripTransportProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Airline or bus company'**
+  String get agencyTripTransportProvider;
+
+  /// No description provided for @agencyTripTransportReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight, bus or vehicle number'**
+  String get agencyTripTransportReference;
+
+  /// No description provided for @agencyTripDeparturePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure place'**
+  String get agencyTripDeparturePlace;
+
+  /// No description provided for @agencyTripMeetingPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting point'**
+  String get agencyTripMeetingPoint;
+
+  /// No description provided for @agencyTripGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned guide'**
+  String get agencyTripGuide;
+
+  /// No description provided for @agencyTripTransportCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Transportation added.'**
+  String get agencyTripTransportCreated;
+
+  /// No description provided for @agencyTripTransportDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transportation removed.'**
+  String get agencyTripTransportDeleted;
+
+  /// No description provided for @agencyTripNewAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'New announcement'**
+  String get agencyTripNewAnnouncement;
+
+  /// No description provided for @agencyTripAnnouncementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement title'**
+  String get agencyTripAnnouncementTitle;
+
+  /// No description provided for @agencyTripAnnouncementMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get agencyTripAnnouncementMessage;
+
+  /// No description provided for @agencyTripAudience.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients'**
+  String get agencyTripAudience;
+
+  /// No description provided for @agencyTripAudienceUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Travellers with unpaid balances'**
+  String get agencyTripAudienceUnpaid;
+
+  /// No description provided for @agencyTripSendAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Send announcement'**
+  String get agencyTripSendAnnouncement;
+
+  /// No description provided for @agencyTripAnnouncementSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement sent.'**
+  String get agencyTripAnnouncementSent;
+
+  /// No description provided for @agencyTripNoAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'No announcements have been sent yet'**
+  String get agencyTripNoAnnouncements;
+
+  /// No description provided for @agencyWalletTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet & payouts'**
+  String get agencyWalletTitle;
+
+  /// No description provided for @agencyWalletSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Online earnings and cash commission in one balance'**
+  String get agencyWalletSubtitle;
+
+  /// No description provided for @agencyWalletTawafOwesYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Tawaf owes your company'**
+  String get agencyWalletTawafOwesYou;
+
+  /// No description provided for @agencyWalletYouOweTawaf.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company owes Tawaf'**
+  String get agencyWalletYouOweTawaf;
+
+  /// No description provided for @agencyWalletSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Your balance is settled'**
+  String get agencyWalletSettled;
+
+  /// No description provided for @agencyWalletBalanceExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Online payments add your net earnings. Cash bookings subtract Tawaf\'s commission. Payouts and refunds are recorded automatically.'**
+  String get agencyWalletBalanceExplanation;
+
+  /// No description provided for @agencyWalletAvailablePayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Available payout'**
+  String get agencyWalletAvailablePayout;
+
+  /// No description provided for @agencyWalletPendingPayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending payout'**
+  String get agencyWalletPendingPayout;
+
+  /// No description provided for @agencyWalletActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet activity'**
+  String get agencyWalletActivity;
+
+  /// No description provided for @agencyWalletNoActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallet activity yet'**
+  String get agencyWalletNoActivity;
+
+  /// No description provided for @agencyWalletNoActivityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Successful customer payments will appear here.'**
+  String get agencyWalletNoActivityBody;
+
+  /// No description provided for @agencyWalletPayouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout history'**
+  String get agencyWalletPayouts;
+
+  /// No description provided for @agencyWalletPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get agencyWalletPaid;
+
+  /// No description provided for @agencyWalletFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get agencyWalletFailed;
+
+  /// No description provided for @agencyWalletPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get agencyWalletPending;
+
+  /// No description provided for @agencyWalletOnlinePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Online booking earnings'**
+  String get agencyWalletOnlinePayment;
+
+  /// No description provided for @agencyWalletCashCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission on cash booking'**
+  String get agencyWalletCashCommission;
+
+  /// No description provided for @agencyWalletRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund reversal'**
+  String get agencyWalletRefund;
+
+  /// No description provided for @agencyWalletPayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Company payout'**
+  String get agencyWalletPayout;
+
+  /// No description provided for @agencyWalletAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance adjustment'**
+  String get agencyWalletAdjustment;
+
+  /// No description provided for @agencyOverviewUnpaidBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings with unpaid balances'**
+  String get agencyOverviewUnpaidBookings;
+
+  /// No description provided for @agencyManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team, reports & reviews'**
+  String get agencyManagementTitle;
+
+  /// No description provided for @agencyManagementMenuSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance, customer feedback and staff access'**
+  String get agencyManagementMenuSubtitle;
+
+  /// No description provided for @agencyManagementReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get agencyManagementReports;
+
+  /// No description provided for @agencyManagementStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get agencyManagementStaff;
+
+  /// No description provided for @agencyManagementBookingValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Active booking value'**
+  String get agencyManagementBookingValue;
+
+  /// No description provided for @agencyManagementOccupancy.
+  ///
+  /// In en, this message translates to:
+  /// **'Seat occupancy'**
+  String get agencyManagementOccupancy;
+
+  /// No description provided for @agencyManagementCancellationRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation rate'**
+  String get agencyManagementCancellationRate;
+
+  /// No description provided for @agencyManagementTripPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip performance'**
+  String get agencyManagementTripPerformance;
+
+  /// No description provided for @agencyManagementNoReportData.
+  ///
+  /// In en, this message translates to:
+  /// **'No trip data is available yet'**
+  String get agencyManagementNoReportData;
+
+  /// No description provided for @agencyManagementNoReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No customer reviews yet'**
+  String get agencyManagementNoReviews;
+
+  /// No description provided for @agencyManagementReplyReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to review'**
+  String get agencyManagementReplyReview;
+
+  /// No description provided for @agencyManagementReplyReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a helpful public response'**
+  String get agencyManagementReplyReviewHint;
+
+  /// No description provided for @agencyManagementReplySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your public reply was posted.'**
+  String get agencyManagementReplySent;
+
+  /// No description provided for @agencyManagementAddStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add staff member'**
+  String get agencyManagementAddStaff;
+
+  /// No description provided for @agencyManagementProfileId.
+  ///
+  /// In en, this message translates to:
+  /// **'User profile ID'**
+  String get agencyManagementProfileId;
+
+  /// No description provided for @agencyManagementProfileIdHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Tawaf profile UUID for this employee'**
+  String get agencyManagementProfileIdHelp;
+
+  /// No description provided for @agencyManagementRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get agencyManagementRole;
+
+  /// No description provided for @agencyManagementStaffAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff access added.'**
+  String get agencyManagementStaffAdded;
+
+  /// No description provided for @agencyManagementStaffRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff access removed.'**
+  String get agencyManagementStaffRemoved;
+
+  /// No description provided for @agencyManagementNoStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff members added yet'**
+  String get agencyManagementNoStaff;
+
+  /// No description provided for @agencyManagementNoStaffBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add employees and give each role only the access it needs.'**
+  String get agencyManagementNoStaffBody;
+
+  /// No description provided for @agencyManagementTripCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings: {bookings} · Travellers: {travellers}'**
+  String agencyManagementTripCounts(int bookings, int travellers);
+
+  /// No description provided for @agencyTripAssignRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign room (remaining beds)'**
+  String get agencyTripAssignRoom;
+
+  /// No description provided for @bookingTripUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip updates & announcements'**
+  String get bookingTripUpdates;
+
+  /// No description provided for @bookingTripNoUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'The company has not posted any updates yet.'**
+  String get bookingTripNoUpdates;
+
+  /// No description provided for @bookingAdditionalDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload another document'**
+  String get bookingAdditionalDocument;
+
+  /// No description provided for @bookingAdditionalDocumentUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Document uploaded for company review.'**
+  String get bookingAdditionalDocumentUploaded;
+
+  /// No description provided for @bookingDocumentNationalId.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID'**
+  String get bookingDocumentNationalId;
+
+  /// No description provided for @bookingDocumentResidency.
+  ///
+  /// In en, this message translates to:
+  /// **'Residency card'**
+  String get bookingDocumentResidency;
+
+  /// No description provided for @bookingDocumentVaccination.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination certificate'**
+  String get bookingDocumentVaccination;
+
+  /// No description provided for @bookingDocumentAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed agreement'**
+  String get bookingDocumentAgreement;
+
+  /// No description provided for @bookingDocumentPaymentReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment receipt'**
+  String get bookingDocumentPaymentReceipt;
+
+  /// No description provided for @bookingDocumentOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other document'**
+  String get bookingDocumentOther;
+
+  /// No description provided for @bookingPassportName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name exactly as written in passport'**
+  String get bookingPassportName;
+
+  /// No description provided for @bookingPassportNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Latin passport spelling'**
+  String get bookingPassportNameHint;
+
+  /// No description provided for @bookingLocalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Local-language name (optional)'**
+  String get bookingLocalName;
+
+  /// No description provided for @bookingLocalNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Kurdish or Arabic name'**
+  String get bookingLocalNameHint;
 }
 
 class _AppLocalizationsDelegate

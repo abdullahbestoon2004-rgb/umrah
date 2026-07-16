@@ -550,7 +550,7 @@ class _LanguageOption extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         decoration: BoxDecoration(
           color: active
-              ? AppColors.primary.withOpacity(0.08)
+              ? AppColors.primary.withValues(alpha: 0.08)
               : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
@@ -603,7 +603,7 @@ class _SignInBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -615,7 +615,7 @@ class _SignInBanner extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.16),
+                color: Colors.white.withValues(alpha: 0.16),
                 borderRadius: BorderRadius.circular(14),
               ),
               alignment: Alignment.center,
@@ -643,7 +643,7 @@ class _SignInBanner extends StatelessWidget {
                     t.profileSignInBannerSubtitle,
                     style: AppTheme.sans(
                       12,
-                      color: Colors.white.withOpacity(0.82),
+                      color: Colors.white.withValues(alpha: 0.82),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -741,7 +741,7 @@ class _ProfileHeader extends StatelessWidget {
                                 provider.user!.email,
                                 style: AppTheme.sans(
                                   12,
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withValues(alpha: 0.8),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -753,7 +753,7 @@ class _ProfileHeader extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.gold.withOpacity(0.95),
+                                  color: AppColors.gold.withValues(alpha: 0.95),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -773,7 +773,7 @@ class _ProfileHeader extends StatelessWidget {
                   const SizedBox(height: 22),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -835,7 +835,10 @@ class _StatCell extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7)),
+              style: AppTheme.sans(
+                11,
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
             ),
           ],
         ),
@@ -846,8 +849,11 @@ class _StatCell extends StatelessWidget {
 
 class _Div extends StatelessWidget {
   @override
-  Widget build(BuildContext context) =>
-      Container(width: 1, height: 40, color: Colors.white.withOpacity(0.15));
+  Widget build(BuildContext context) => Container(
+    width: 1,
+    height: 40,
+    color: Colors.white.withValues(alpha: 0.15),
+  );
 }
 
 class _SectionLabel extends StatelessWidget {
@@ -899,7 +905,9 @@ class _MenuCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: tint != null ? tint!.withOpacity(0.25) : AppColors.border,
+            color: tint != null
+                ? tint!.withValues(alpha: 0.25)
+                : AppColors.border,
             width: 1.5,
           ),
         ),
@@ -909,7 +917,7 @@ class _MenuCard extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
               alignment: Alignment.center,
@@ -1053,7 +1061,7 @@ class _SavedScreen extends StatelessWidget {
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                       itemCount: offers.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 13),
+                      separatorBuilder: (_, _) => const SizedBox(height: 13),
                       itemBuilder: (context, i) => _SavedCard(offer: offers[i]),
                     ),
             ),
@@ -1089,7 +1097,7 @@ class _SavedCard extends StatelessWidget {
           border: Border.all(color: AppColors.border, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),

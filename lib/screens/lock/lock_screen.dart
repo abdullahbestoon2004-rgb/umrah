@@ -48,7 +48,7 @@ class _LockScreenState extends State<LockScreen> {
                     width: 84,
                     height: 84,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.12),
+                      color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(26),
                     ),
                     child: const Icon(
@@ -67,7 +67,7 @@ class _LockScreenState extends State<LockScreen> {
                     t.lockSubtitle,
                     style: AppTheme.sans(
                       14,
-                      color: Colors.white.withOpacity(0.75),
+                      color: Colors.white.withValues(alpha: 0.75),
                     ),
                   ),
                   const SizedBox(height: 36),

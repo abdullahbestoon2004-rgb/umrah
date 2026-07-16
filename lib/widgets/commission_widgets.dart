@@ -71,7 +71,7 @@ class CommissionRow extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: const Icon(
@@ -115,7 +115,10 @@ class CommissionSummaryCard extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: AppTheme.sans(12, color: Colors.white.withOpacity(0.8)),
+                style: AppTheme.sans(
+                  12,
+                  color: Colors.white.withValues(alpha: 0.8),
+                ),
               ),
               const SizedBox(height: 4),
               Text(

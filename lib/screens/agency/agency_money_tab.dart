@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../theme/colors.dart';
-import '../../theme/app_theme.dart';
-import '../../providers/app_provider.dart';
-import '../../models/commission_model.dart';
+
+import '../../l10n/generated/app_localizations.dart';
+import '../../models/agency_operations_model.dart';
 import '../../models/offer_model.dart' show fmtIqd;
-import '../../widgets/commission_widgets.dart';
+import '../../providers/app_provider.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/colors.dart';
 import '../../widgets/dashboard/dashboard_scaffold.dart';
 import '../../widgets/dashboard/empty_state.dart';
 import '../../widgets/dashboard/status_chip.dart';
-import '../../l10n/generated/app_localizations.dart';
 
-/// The agency's money view: net balance owed to the platform on top, then
-/// the commission ledger grouped by month, each group collapsible with its
-/// own subtotal.
-class AgencyMoneyTab extends StatelessWidget {
+/// The hybrid marketplace wallet. A positive balance means Tawaf owes the
+/// agency; a negative balance means the agency owes Tawaf for cash commission.
+class AgencyMoneyTab extends StatefulWidget {
   const AgencyMoneyTab({super.key});
+
+  @override
+  State<AgencyMoneyTab> createState() => _AgencyMoneyTabState();
+}
+
+class _AgencyMoneyTabState extends State<AgencyMoneyTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context.read<AppProvider>().loadAgencyWallet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final provider = context.watch<AppProvider>();
-    final commissions = provider.commissions;
-    final owed = provider.commissionsOwed;
-    final groups = _groupByMonth(commissions);
-
+    final wallet = context.watch<AppProvider>().agencyWallet;
     return DashboardScaffold(
-      title: t.adminActionFinance,
-      onRefresh: () => context.read<AppProvider>().loadCommissions(),
+      title: t.agencyWalletTitle,
+      subtitle: t.agencyWalletSubtitle,
+      onRefresh: () => context.read<AppProvider>().loadAgencyWallet(),
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
@@ -37,187 +46,342 @@ class AgencyMoneyTab extends StatelessWidget {
               kDashPagePad,
               0,
             ),
-            child: owed > 0
-                ? CommissionSummaryCard(
-                    label: t.agencyMoneyYouOwe,
-                    amount: owed,
-                  )
-                : Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.09),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.24),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          color: AppColors.primary,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 11),
-                        Expanded(
-                          child: Text(
-                            t.agencyMoneySettled,
-                            style: AppTheme.sans(
-                              12.5,
-                              weight: FontWeight.w700,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+            child: _BalanceCard(wallet: wallet),
           ),
         ),
-        if (commissions.isEmpty)
-          SliverFillRemaining(
-            hasScrollBody: false,
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              10,
+              kDashPagePad,
+              0,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _WalletMetric(
+                    label: t.agencyWalletAvailablePayout,
+                    amount: wallet.availablePayoutIqd,
+                    icon: Icons.account_balance_wallet_outlined,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _WalletMetric(
+                    label: t.agencyWalletPendingPayout,
+                    amount: wallet.pendingPayoutIqd,
+                    icon: Icons.schedule_outlined,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              22,
+              kDashPagePad,
+              10,
+            ),
+            child: Text(
+              t.agencyWalletActivity,
+              style: AppTheme.sans(15, weight: FontWeight.w800),
+            ),
+          ),
+        ),
+        if (wallet.entries.isEmpty)
+          SliverToBoxAdapter(
             child: EmptyState(
               icon: Icons.receipt_long_outlined,
-              title: t.adminCommissionsEmptyTitle,
-              body: t.adminCommissionsEmptyBody,
+              title: t.agencyWalletNoActivity,
+              body: t.agencyWalletNoActivityBody,
+              compact: true,
             ),
           )
         else
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, i) => Padding(
+              (context, index) => Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   kDashPagePad,
-                  kDashCardGap,
-                  kDashPagePad,
                   0,
+                  kDashPagePad,
+                  9,
                 ),
-                child: _MonthGroup(
-                  label: _monthLabel(groups[i].month),
-                  commissions: groups[i].rows,
-                  initiallyExpanded: i == 0,
-                ),
+                child: _LedgerRow(entry: wallet.entries[index]),
               ),
-              childCount: groups.length,
+              childCount: wallet.entries.length,
             ),
           ),
+        if (wallet.payouts.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                kDashPagePad,
+                22,
+                kDashPagePad,
+                10,
+              ),
+              child: Text(
+                t.agencyWalletPayouts,
+                style: AppTheme.sans(15, weight: FontWeight.w800),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  kDashPagePad,
+                  0,
+                  kDashPagePad,
+                  9,
+                ),
+                child: _PayoutRow(payout: wallet.payouts[index]),
+              ),
+              childCount: wallet.payouts.length,
+            ),
+          ),
+        ],
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
     );
   }
-
-  List<({DateTime month, List<Commission> rows})> _groupByMonth(
-    List<Commission> commissions,
-  ) {
-    final map = <String, List<Commission>>{};
-    for (final c in commissions) {
-      final key =
-          '${c.createdAt.year}-${c.createdAt.month.toString().padLeft(2, '0')}';
-      map.putIfAbsent(key, () => []).add(c);
-    }
-    final keys = map.keys.toList()..sort((a, b) => b.compareTo(a));
-    return [
-      for (final k in keys)
-        (
-          month: DateTime(
-            int.parse(k.split('-')[0]),
-            int.parse(k.split('-')[1]),
-          ),
-          rows: map[k]!,
-        ),
-    ];
-  }
-
-  // Numeric year/month keeps this locale-proof (intl has no Sorani data).
-  String _monthLabel(DateTime month) =>
-      '${month.year} / ${month.month.toString().padLeft(2, '0')}';
 }
 
-class _MonthGroup extends StatefulWidget {
-  final String label;
-  final List<Commission> commissions;
-  final bool initiallyExpanded;
-  const _MonthGroup({
-    required this.label,
-    required this.commissions,
-    this.initiallyExpanded = false,
-  });
-
-  @override
-  State<_MonthGroup> createState() => _MonthGroupState();
-}
-
-class _MonthGroupState extends State<_MonthGroup> {
-  late bool _open = widget.initiallyExpanded;
+class _BalanceCard extends StatelessWidget {
+  final AgencyWallet wallet;
+  const _BalanceCard({required this.wallet});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final subtotal = widget.commissions.fold(0.0, (s, c) => s + c.amount);
-    final owedCount = widget.commissions
-        .where((c) => c.status == 'owed')
-        .length;
-
+    final positive = wallet.balanceIqd > 0;
+    final negative = wallet.balanceIqd < 0;
+    final color = positive
+        ? AppColors.primary
+        : negative
+        ? AppColors.errorRed
+        : AppColors.muted;
+    final label = positive
+        ? t.agencyWalletTawafOwesYou
+        : negative
+        ? t.agencyWalletYouOweTawaf
+        : t.agencyWalletSettled;
     return Container(
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => setState(() => _open = !_open),
-            behavior: HitTestBehavior.opaque,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  Text(
-                    widget.label,
-                    style: AppTheme.sans(13.5, weight: FontWeight.w700),
-                  ),
-                  const SizedBox(width: 8),
-                  if (owedCount > 0)
-                    StatusChip(
-                      kind: StatusKind.pending,
-                      label: '$owedCount ${t.adminCommissionsOwed}',
-                    ),
-                  const Spacer(),
-                  Text(
-                    fmtIqd(subtotal),
-                    style: AppTheme.serif(15, color: AppColors.primary),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    _open
-                        ? Icons.keyboard_arrow_up_rounded
-                        : Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.muted,
-                    size: 20,
-                  ),
-                ],
+          Row(
+            children: [
+              Icon(Icons.balance_rounded, color: color),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTheme.sans(13, weight: FontWeight.w800),
+                ),
               ),
-            ),
+            ],
           ),
-          if (_open)
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 10, 10),
-              child: Column(
-                children: [
-                  for (final c in widget.commissions)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: CommissionRow(
-                        commission: c,
-                        showCompanyName: false,
-                      ),
-                    ),
-                ],
-              ),
-            ),
+          const SizedBox(height: 14),
+          Text(
+            fmtIqd(wallet.balanceIqd.abs()),
+            style: AppTheme.serif(27, color: color),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            t.agencyWalletBalanceExplanation,
+            style: AppTheme.sans(
+              11.5,
+              color: AppColors.inkLight,
+            ).copyWith(height: 1.4),
+          ),
         ],
       ),
     );
   }
 }
+
+class _WalletMetric extends StatelessWidget {
+  final String label;
+  final double amount;
+  final IconData icon;
+  const _WalletMetric({
+    required this.label,
+    required this.amount,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(13),
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(15),
+      border: Border.all(color: AppColors.border),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: AppColors.primary, size: 20),
+        const SizedBox(height: 10),
+        Text(fmtIqd(amount), style: AppTheme.serif(15)),
+        const SizedBox(height: 3),
+        Text(
+          label,
+          style: AppTheme.sans(10.5, color: AppColors.muted),
+          maxLines: 2,
+        ),
+      ],
+    ),
+  );
+}
+
+class _LedgerRow extends StatelessWidget {
+  final AgencyLedgerEntry entry;
+  const _LedgerRow({required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final incoming = entry.amountIqd > 0;
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: (incoming ? AppColors.primary : AppColors.errorRed)
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(
+              incoming ? Icons.south_west_rounded : Icons.north_east_rounded,
+              color: incoming ? AppColors.primary : AppColors.errorRed,
+              size: 19,
+            ),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _entryLabel(entry.type, t),
+                  style: AppTheme.sans(12.5, weight: FontWeight.w800),
+                ),
+                if (entry.description.isNotEmpty)
+                  Text(
+                    entry.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.sans(10.5, color: AppColors.muted),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${incoming ? '+' : '−'}${fmtIqd(entry.amountIqd.abs())}',
+                style: AppTheme.sans(
+                  12.5,
+                  weight: FontWeight.w800,
+                  color: incoming ? AppColors.primary : AppColors.errorRed,
+                ),
+              ),
+              Text(
+                _date(entry.createdAt),
+                style: AppTheme.sans(9.5, color: AppColors.muted),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PayoutRow extends StatelessWidget {
+  final AgencyPayout payout;
+  const _PayoutRow({required this.payout});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.account_balance_outlined, color: AppColors.primary),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fmtIqd(payout.amountIqd),
+                  style: AppTheme.sans(13, weight: FontWeight.w800),
+                ),
+                Text(
+                  [
+                    payout.method,
+                    payout.reference,
+                  ].where((value) => value.isNotEmpty).join(' · '),
+                  style: AppTheme.sans(10.5, color: AppColors.muted),
+                ),
+              ],
+            ),
+          ),
+          StatusChip(
+            kind: payout.status == 'completed'
+                ? StatusKind.positive
+                : payout.status == 'failed'
+                ? StatusKind.negative
+                : StatusKind.pending,
+            label: payout.status == 'completed'
+                ? t.agencyWalletPaid
+                : payout.status == 'failed'
+                ? t.agencyWalletFailed
+                : t.agencyWalletPending,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _entryLabel(String type, AppLocalizations t) => switch (type) {
+  'booking_credit' => t.agencyWalletOnlinePayment,
+  'cash_commission_debit' => t.agencyWalletCashCommission,
+  'refund_reversal' => t.agencyWalletRefund,
+  'payout' => t.agencyWalletPayout,
+  _ => t.agencyWalletAdjustment,
+};
+
+String _date(DateTime value) =>
+    '${value.year}/${value.month.toString().padLeft(2, '0')}/${value.day.toString().padLeft(2, '0')}';

@@ -54,34 +54,24 @@ class OfferDetailScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _RatingRow(offer: offer, company: company),
                       const SizedBox(height: 22),
-                      Text(t.offerDetailOverview, style: AppTheme.serif(20)),
-                      const SizedBox(height: 8),
-                      Text(
-                        offer
-                                .overviewFor(
-                                  Localizations.localeOf(context).languageCode,
-                                )
-                                .isNotEmpty
-                            ? offer.overviewFor(
-                                Localizations.localeOf(context).languageCode,
-                              )
-                            : t.offerDetailOverviewBody(
-                                offer.days,
-                                offer.transportLabelFor(t).toLowerCase(),
-                                offer.city,
-                                offer.acc,
-                                offer.hotel,
-                                offer.distance,
-                                company.nameFor(
-                                  Localizations.localeOf(context).languageCode,
-                                ),
-                              ),
-                        style: AppTheme.sans(
-                          13.5,
-                          color: const Color(0xFF52605A),
-                        ).copyWith(height: 1.65),
-                      ),
-                      const SizedBox(height: 24),
+                      if (offer
+                          .overviewFor(
+                            Localizations.localeOf(context).languageCode,
+                          )
+                          .isNotEmpty) ...[
+                        Text(t.offerDetailOverview, style: AppTheme.serif(20)),
+                        const SizedBox(height: 8),
+                        Text(
+                          offer.overviewFor(
+                            Localizations.localeOf(context).languageCode,
+                          ),
+                          style: AppTheme.sans(
+                            13.5,
+                            color: const Color(0xFF52605A),
+                          ).copyWith(height: 1.65),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                       if (offer.pricing.isNotEmpty) ...[
                         _OccupancyPricingSection(offer: offer),
                         const SizedBox(height: 24),
@@ -145,7 +135,7 @@ class _HeroSection extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  const Color(0xFF071C17).withOpacity(0.85),
+                  const Color(0xFF071C17).withValues(alpha: 0.85),
                 ],
                 stops: const [0.5, 1.0],
               ),
@@ -167,7 +157,7 @@ class _HeroSection extends StatelessWidget {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.92),
+                          color: Colors.white.withValues(alpha: 0.92),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
@@ -183,7 +173,7 @@ class _HeroSection extends StatelessWidget {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.92),
+                          color: Colors.white.withValues(alpha: 0.92),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
@@ -311,7 +301,7 @@ class _FactCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
         ),
@@ -329,149 +319,6 @@ class _FactCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _OfferClassificationLegacy extends StatelessWidget {
-  final Offer offer;
-  const _OfferClassificationLegacy({required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final remaining = offer.remainingSeats;
-    final statusLabel = switch (offer.capacityState) {
-      'sold_out' => t.offerSoldOut,
-      'few_left' => t.offerFewSeatsLeft(remaining ?? 0),
-      _ => t.offerAvailable,
-    };
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        _DetailPillLegacy(
-          icon: Icons.workspace_premium_outlined,
-          label: switch (offer.packageTier) {
-            'economy' => t.offerTierEconomy,
-            'vip' => t.offerTierVip,
-            _ => t.offerTierStandard,
-          },
-        ),
-        _DetailPillLegacy(
-          icon: Icons.groups_2_outlined,
-          label: switch (offer.groupType) {
-            'family' => t.offerGroupFamily,
-            'individual' => t.offerGroupIndividual,
-            _ => t.offerGroupGroup,
-          },
-        ),
-        _DetailPillLegacy(
-          icon: Icons.event_available_outlined,
-          label: statusLabel,
-          danger: offer.capacityState == 'sold_out',
-        ),
-      ],
-    );
-  }
-}
-
-class _DetailPillLegacy extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool danger;
-  const _DetailPillLegacy({
-    required this.icon,
-    required this.label,
-    this.danger = false,
-  });
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-    decoration: BoxDecoration(
-      color: danger
-          ? AppColors.errorRed.withOpacity(0.08)
-          : AppColors.primary.withOpacity(0.07),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 15,
-          color: danger ? AppColors.errorRed : AppColors.primary,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: AppTheme.sans(
-            11.5,
-            weight: FontWeight.w700,
-            color: danger ? AppColors.errorRed : AppColors.primary,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _OccupancyPricingSectionLegacy extends StatelessWidget {
-  final Offer offer;
-  const _OccupancyPricingSectionLegacy({required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(t.offerOccupancyPricing, style: AppTheme.serif(20)),
-        const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.primary.withOpacity(0.1)),
-          ),
-          child: Column(
-            children: [
-              for (var i = 0; i < offer.pricing.length; i++)
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    border: i == offer.pricing.length - 1
-                        ? null
-                        : const Border(
-                            bottom: BorderSide(color: Color(0x140F5C4D)),
-                          ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.bed_outlined,
-                        size: 20,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          t.bookingRoomOccupancy(offer.pricing[i].occupancy),
-                          style: AppTheme.sans(13.5, weight: FontWeight.w700),
-                        ),
-                      ),
-                      Text(
-                        fmtIqd(offer.pricing[i].priceIqd),
-                        style: AppTheme.serif(16, color: AppColors.primary),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -547,13 +394,13 @@ class _DetailPill extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
     decoration: BoxDecoration(
       color: warning
-          ? AppColors.gold.withOpacity(0.12)
-          : AppColors.primary.withOpacity(0.07),
+          ? AppColors.gold.withValues(alpha: 0.12)
+          : AppColors.primary.withValues(alpha: 0.07),
       borderRadius: BorderRadius.circular(10),
       border: Border.all(
         color: warning
-            ? AppColors.gold.withOpacity(0.45)
-            : AppColors.primary.withOpacity(0.15),
+            ? AppColors.gold.withValues(alpha: 0.45)
+            : AppColors.primary.withValues(alpha: 0.15),
       ),
     ),
     child: Row(
@@ -588,7 +435,7 @@ class _OccupancyPricingSection extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -649,7 +496,7 @@ class _RatingRow extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.1),
+          color: AppColors.primary.withValues(alpha: 0.1),
           width: 1.5,
         ),
       ),
@@ -705,7 +552,7 @@ class _AccommodationSection extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -722,8 +569,15 @@ class _AccommodationSection extends StatelessWidget {
                     hotelName: offer.hotels[i].nameFor(
                       Localizations.localeOf(context).languageCode,
                     ),
-                    description: t.offerHotelNights(offer.hotels[i].nights),
-                    distance: '${offer.hotels[i].distanceFromHaramM}m',
+                    description: [
+                      offer.hotels[i].descriptionFor(
+                        Localizations.localeOf(context).languageCode,
+                      ),
+                      t.offerHotelNights(offer.hotels[i].nights),
+                    ].where((part) => part.isNotEmpty).join(' · '),
+                    distance: offer.hotels[i].distanceFromHaramM > 0
+                        ? '${offer.hotels[i].distanceFromHaramM}m'
+                        : '',
                     starGlyph:
                         '★' * offer.hotels[i].starRating +
                         '☆' * (5 - offer.hotels[i].starRating),
@@ -916,7 +770,7 @@ class _AccommodationSection extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
@@ -962,7 +816,9 @@ class _AccommodationSection extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '•',
-                      style: TextStyle(color: AppColors.muted.withOpacity(0.5)),
+                      style: TextStyle(
+                        color: AppColors.muted.withValues(alpha: 0.5),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -1004,7 +860,7 @@ class _TransportSection extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -1152,6 +1008,7 @@ class _ItinerarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final days = offer.buildItinerary(t);
+    if (days.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1184,7 +1041,7 @@ class _ItinerarySection extends StatelessWidget {
                         Expanded(
                           child: Container(
                             width: 2,
-                            color: AppColors.primary.withOpacity(0.18),
+                            color: AppColors.primary.withValues(alpha: 0.18),
                           ),
                         ),
                     ],
@@ -1250,6 +1107,7 @@ class _IncludesSection extends StatelessWidget {
               )
               .toList()
         : structured;
+    if (items.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1261,7 +1119,7 @@ class _IncludesSection extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -1334,7 +1192,7 @@ class _PolicyPaymentSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1443,16 +1301,13 @@ class _PriceBreakdown extends StatelessWidget {
             label: t.offerDetailPackagePerPerson,
             value: offer.priceFmt,
           ),
-          const SizedBox(height: 10),
-          _PriceLine(
-            label: t.offerDetailVisaProcessing,
-            value: t.offerDetailIncluded,
-          ),
-          const SizedBox(height: 10),
-          _PriceLine(
-            label: t.offerDetailTaxesFees,
-            value: t.offerDetailIncluded,
-          ),
+          if (offer.depositIqd > 0) ...[
+            const SizedBox(height: 10),
+            _PriceLine(
+              label: t.offerFormDepositAmount,
+              value: fmtIqd(offer.depositIqd),
+            ),
+          ],
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 9),
             child: Divider(color: Colors.white24, height: 1),
@@ -1491,12 +1346,12 @@ class _PriceLine extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTheme.sans(13, color: Colors.white.withOpacity(0.82)),
+          style: AppTheme.sans(13, color: Colors.white.withValues(alpha: 0.82)),
         ),
         const Spacer(),
         Text(
           value,
-          style: AppTheme.sans(13, color: Colors.white.withOpacity(0.82)),
+          style: AppTheme.sans(13, color: Colors.white.withValues(alpha: 0.82)),
         ),
       ],
     );
@@ -1511,9 +1366,20 @@ class _StickyBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final unavailable =
+        offer.capacityState == 'sold_out' ||
+        offer.lifecycleStatus != 'published' ||
+        offer.departureDate == null ||
+        offer.departureDate!.isBefore(
+          DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+          ),
+        );
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background.withOpacity(0.96),
+        color: AppColors.background.withValues(alpha: 0.96),
         border: const Border(
           top: BorderSide(color: Color(0x1E0F5C4D), width: 1.5),
         ),
@@ -1543,21 +1409,23 @@ class _StickyBar extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(
             child: GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      BookingFlowScreen(offer: offer, company: company),
-                ),
-              ),
+              onTap: unavailable
+                  ? null
+                  : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            BookingFlowScreen(offer: offer, company: company),
+                      ),
+                    ),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: unavailable ? AppColors.mutedLight : AppColors.primary,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.5),
+                      color: AppColors.primary.withValues(alpha: 0.5),
                       blurRadius: 30,
                       offset: const Offset(0, 14),
                     ),
@@ -1565,7 +1433,11 @@ class _StickyBar extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  t.offerDetailBookThisTrip,
+                  unavailable
+                      ? (offer.capacityState == 'sold_out'
+                            ? t.offerSoldOut
+                            : t.offerUnavailable)
+                      : t.offerDetailBookThisTrip,
                   style: AppTheme.sans(
                     15,
                     weight: FontWeight.w800,

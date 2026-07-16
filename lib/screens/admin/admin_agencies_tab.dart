@@ -245,7 +245,7 @@ class PendingCompanyCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.gold.withOpacity(0.4),
+            color: AppColors.gold.withValues(alpha: 0.4),
             width: 1.5,
           ),
         ),
@@ -306,7 +306,7 @@ class PendingCompanyCard extends StatelessWidget {
                     width: 34,
                     height: 34,
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.12),
+                      color: AppColors.gold.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -389,17 +389,14 @@ class PendingCompanyCard extends StatelessWidget {
                       reason: reason,
                     );
                     messenger.showSnackBar(
-                      appSnack(
-                        err == null ? t.adminDeclined : err,
-                        isError: err != null,
-                      ),
+                      appSnack(err ?? t.adminDeclined, isError: err != null),
                     );
                   },
                   child: Container(
                     width: 34,
                     height: 34,
                     decoration: BoxDecoration(
-                      color: AppColors.errorRed.withOpacity(0.1),
+                      color: AppColors.errorRed.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(

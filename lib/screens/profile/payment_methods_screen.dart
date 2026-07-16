@@ -126,7 +126,7 @@ class _MethodTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         decoration: BoxDecoration(
           color: active
-              ? AppColors.primary.withOpacity(0.06)
+              ? AppColors.primary.withValues(alpha: 0.06)
               : AppColors.surface,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
@@ -140,7 +140,7 @@ class _MethodTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),

@@ -11,6 +11,7 @@ import 'agency_bookings_tab.dart';
 import 'agency_profile_tab.dart';
 import 'agency_messages_tab.dart';
 import 'agency_documents_screen.dart';
+import 'agency_money_tab.dart';
 
 /// Agency control panel, restructured as a 5-tab shell:
 /// Overview · Trips · Bookings · Money · Profile.
@@ -31,11 +32,17 @@ class _AgencyDashboardScreenState extends State<AgencyDashboardScreen> {
       final p = context.read<AppProvider>();
       p.loadAgencyBookings();
       p.loadCommissions();
+      p.loadAgencyWallet();
       p.loadAgencyInquiries();
     });
   }
 
   void _goToTab(int i) => setState(() => _index = i);
+
+  void _openMoney() => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const AgencyMoneyTab()),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +78,7 @@ class _AgencyDashboardScreenState extends State<AgencyDashboardScreen> {
         DashboardDestination(icon: Icons.more_horiz_rounded, label: t.tabMore),
       ],
       pages: [
-        AgencyOverviewTab(onGoToTab: _goToTab),
+        AgencyOverviewTab(onGoToTab: _goToTab, onOpenMoney: _openMoney),
         const AgencyTripsTab(),
         const AgencyBookingsTab(),
         const AgencyMessagesTab(),
@@ -108,7 +115,7 @@ class _AgencyAccessState extends StatelessWidget {
                         (isRejected || isSuspended
                                 ? AppColors.errorRed
                                 : AppColors.gold)
-                            .withOpacity(0.12),
+                            .withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

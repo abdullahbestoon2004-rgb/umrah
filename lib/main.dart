@@ -64,7 +64,7 @@ void main() {
 
     await Supabase.initialize(
       url: SupabaseConfig.url,
-      anonKey: SupabaseConfig.anonKey,
+      publishableKey: SupabaseConfig.publishableKey,
     );
 
     FlutterError.onError = (details) {

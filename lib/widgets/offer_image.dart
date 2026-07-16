@@ -51,7 +51,7 @@ class OfferImage extends StatelessWidget {
           height: height,
           width: width,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => fallback,
+          errorBuilder: (_, _, _) => fallback,
         ),
       );
     } else {

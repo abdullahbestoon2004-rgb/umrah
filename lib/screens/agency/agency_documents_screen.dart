@@ -42,7 +42,7 @@ class _AgencyDocumentsScreenState extends State<AgencyDocumentsScreen> {
             Container(
               padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
+                color: AppColors.gold.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Text(

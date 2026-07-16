@@ -44,9 +44,8 @@ void main() {
     expect(find.text('Choose room type'), findsOneWidget);
     await tester.tap(find.text('Double room'));
     await tester.pump();
+    // The meal is fixed by the published offer, not freely selectable.
     await tester.ensureVisible(find.text('Full board'));
-    await tester.tap(find.text('Full board'));
-    await tester.pump();
     // add a second pilgrim
     await tester.ensureVisible(find.byIcon(Icons.add_rounded));
     await tester.tap(find.byIcon(Icons.add_rounded));
@@ -74,8 +73,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    // pilgrim 2 (field order: name1, phone1, name2)
-    await tester.enterText(textFields.at(2), 'Zhyan Mohammed');
+    // pilgrim 2 (field order: passportName1, localName1, phone1,
+    // passportName2, localName2, phone2)
+    await tester.enterText(textFields.at(3), 'Zhyan Mohammed');
     await tester.pump();
     await tester.ensureVisible(find.text('Select date').first);
     await tester.tap(find.text('Select date').first);

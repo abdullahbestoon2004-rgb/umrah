@@ -13,6 +13,7 @@ import '../companies/company_detail_screen.dart';
 import 'edit_agency_profile_screen.dart';
 import 'agency_money_tab.dart';
 import 'agency_documents_screen.dart';
+import 'agency_management_screen.dart';
 
 /// Agency profile tab: identity card, public-profile actions (edit +
 /// "preview my card" as clients see it), and account actions.
@@ -125,11 +126,36 @@ class AgencyProfileTab extends StatelessWidget {
                 color: AppColors.primary,
               ),
               title: t.adminActionFinance,
-              subtitle: t.adminCommissionsOwedLabel,
+              subtitle: t.agencyWalletSubtitle,
               chevron: true,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AgencyMoneyTab()),
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kDashPagePad,
+              0,
+              kDashPagePad,
+              kDashCardGap,
+            ),
+            child: EntityListCard(
+              leading: const _MenuIcon(
+                icon: Icons.insights_outlined,
+                color: Color(0xFF397C74),
+              ),
+              title: t.agencyManagementTitle,
+              subtitle: t.agencyManagementMenuSubtitle,
+              chevron: true,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AgencyManagementScreen(),
+                ),
               ),
             ),
           ),
@@ -258,7 +284,7 @@ class _MenuIcon extends StatelessWidget {
     width: 40,
     height: 40,
     decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: Icon(icon, color: color, size: 20),

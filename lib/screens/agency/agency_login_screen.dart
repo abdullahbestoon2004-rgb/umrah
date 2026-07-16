@@ -346,7 +346,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                     color: const Color(0xFFFFF0EE),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.errorRed.withOpacity(0.3),
+                      color: AppColors.errorRed.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -379,7 +379,7 @@ class _AgencyLoginScreenState extends State<AgencyLoginScreen> {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withValues(alpha: 0.4),
                         blurRadius: 24,
                         offset: const Offset(0, 12),
                       ),

@@ -162,7 +162,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: AppColors.primary.withOpacity(0.14),
+                              color: AppColors.primary.withValues(alpha: 0.14),
                               width: 1.5,
                             ),
                           ),
@@ -430,12 +430,12 @@ class _CompanyListCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.07),
+              color: const Color(0xFF0F3729).withValues(alpha: 0.07),
               blurRadius: 30,
               offset: const Offset(0, 14),
             ),
@@ -460,11 +460,11 @@ class _CompanyListCard extends StatelessWidget {
                     // Keep the agency brand colour visible even when a
                     // background photo has been added.
                     if ((company.bannerUrl ?? '').isNotEmpty)
-                      Container(color: company.tint.withOpacity(0.48)),
+                      Container(color: company.tint.withValues(alpha: 0.48)),
                     const IslamicPattern(opacity: 0.08, cell: 46),
                     // A uniform scrim preserves contrast without changing
                     // the selected background into a gradient.
-                    Container(color: Colors.black.withOpacity(0.16)),
+                    Container(color: Colors.black.withValues(alpha: 0.16)),
                     // verified badge — top left
                     if (company.isVerified)
                       Positioned(
@@ -517,7 +517,7 @@ class _CompanyListCard extends StatelessWidget {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.92),
+                                color: Colors.white.withValues(alpha: 0.92),
                                 borderRadius: BorderRadius.circular(13),
                               ),
                               child: Center(
@@ -557,7 +557,7 @@ class _CompanyListCard extends StatelessWidget {
                             style: AppTheme.sans(
                               10.5,
                               weight: FontWeight.w600,
-                              color: Colors.white.withOpacity(0.78),
+                              color: Colors.white.withValues(alpha: 0.78),
                             ),
                           ),
                         ],

@@ -59,6 +59,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   final _hotelMakkahDescCtrl = TextEditingController();
   final _hotelMadinahDescCtrl = TextEditingController();
   final _distCtrl = TextEditingController();
+  final _madinahDistCtrl = TextEditingController();
   final _carrierCtrl = TextEditingController();
   final _transportPlaceCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
@@ -95,6 +96,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
   bool _busBetweenCities = true;
   bool _airportTransfers = true;
   bool _nonRefundableDeposit = false;
+  int _makkahNights = 5;
+  int _madinahNights = 4;
+  int _makkahStars = 4;
+  int _madinahStars = 4;
+  final Set<String> _invalidFields = {};
 
   static const _totalSteps = 7;
 
@@ -113,17 +119,32 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     super.initState();
     final o = widget.existing;
     if (o != null) {
+      OfferHotel? makkahHotel;
+      OfferHotel? madinahHotel;
+      for (final hotel in o.hotels) {
+        if (hotel.city == 'makkah') makkahHotel = hotel;
+        if (hotel.city == 'madinah') madinahHotel = hotel;
+      }
       _titleCtrl.text = o.title;
       _titleArCtrl.text = o.titleAr ?? '';
       _titleEnCtrl.text = o.titleEn ?? '';
       _overviewCtrl.text = o.overview;
       _overviewArCtrl.text = o.overviewAr ?? '';
       _overviewEnCtrl.text = o.overviewEn ?? '';
-      _hotelMakkahCtrl.text = o.hotelMakkah;
-      _hotelMadinahCtrl.text = o.hotelMadinah;
-      _hotelMakkahDescCtrl.text = o.hotelMakkahDescription;
-      _hotelMadinahDescCtrl.text = o.hotelMadinahDescription;
-      _distCtrl.text = o.distance;
+      _hotelMakkahCtrl.text = makkahHotel?.name ?? o.hotelMakkah;
+      _hotelMadinahCtrl.text = madinahHotel?.name ?? o.hotelMadinah;
+      _hotelMakkahDescCtrl.text =
+          makkahHotel?.description ?? o.hotelMakkahDescription;
+      _hotelMadinahDescCtrl.text =
+          madinahHotel?.description ?? o.hotelMadinahDescription;
+      _distCtrl.text = makkahHotel == null
+          ? o.distance
+          : makkahHotel.distanceFromHaramM.toString();
+      _madinahDistCtrl.text = madinahHotel?.distanceFromHaramM.toString() ?? '';
+      _makkahNights = makkahHotel?.nights ?? (o.nights / 2).ceil();
+      _madinahNights = madinahHotel?.nights ?? (o.nights - _makkahNights);
+      _makkahStars = makkahHotel?.starRating ?? o.acc;
+      _madinahStars = madinahHotel?.starRating ?? o.acc;
       _roomOccupancies
         ..clear()
         ..addAll(
@@ -150,7 +171,12 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       _nonRefundableDeposit = o.nonRefundableDeposit;
       _paymentMethods
         ..clear()
-        ..addAll(o.acceptedPaymentMethods);
+        ..addAll(
+          o.acceptedPaymentMethods.where(
+            (method) => method == 'cash' || method == 'fib',
+          ),
+        );
+      if (_paymentMethods.isEmpty) _paymentMethods.add('cash');
       for (final occupancy in _occupancyPrices.keys) {
         _occupancyPrices[occupancy]!.text = o
             .priceForOccupancy(occupancy)
@@ -186,47 +212,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       } else {
         _itinerary.clear();
         _includes.clear();
-        _seedDefaultItinerary(t);
-        _seedDefaultIncludes(t);
+        _itinerary.add(_ItineraryEntry());
+        _includes.add(_IncludeEntry());
       }
       _initialized = true;
     }
-  }
-
-  void _seedDefaultItinerary(AppLocalizations t) {
-    _itinerary.addAll([
-      _ItineraryEntry(
-        d: t.offerFallbackDayLabel(1),
-        t: t.offerFallbackDay1Title,
-        s: t.offerFallbackDay1Summary,
-      ),
-      _ItineraryEntry(
-        d: t.offerFallbackDayLabel(2),
-        t: t.offerFallbackDay2Title,
-        s: t.offerFallbackDay2Summary,
-      ),
-      _ItineraryEntry(
-        d: t.offerFallbackDayRangeLabel(3, 5),
-        t: t.offerFallbackMakkahTitle,
-        s: t.offerFallbackMakkahSummary,
-      ),
-      _ItineraryEntry(
-        d: t.offerFallbackFinalDaysLabel,
-        t: t.offerFallbackWorshipReturnTitle,
-        s: t.offerFallbackWorshipReturnSummary,
-      ),
-    ]);
-  }
-
-  void _seedDefaultIncludes(AppLocalizations t) {
-    _includes.addAll([
-      _IncludeEntry(text: t.offerFallbackIncludeVisa),
-      _IncludeEntry(text: t.offerFallbackIncludeFlights),
-      _IncludeEntry(text: t.offerDetailAccommodation),
-      _IncludeEntry(text: t.offerFallbackIncludeMeals(t.mealsBreakfast)),
-      _IncludeEntry(text: t.offerFallbackIncludeZiyarah),
-      _IncludeEntry(text: t.offerFallbackIncludeGuide),
-    ]);
   }
 
   @override
@@ -243,6 +233,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       _hotelMakkahDescCtrl,
       _hotelMadinahDescCtrl,
       _distCtrl,
+      _madinahDistCtrl,
       _carrierCtrl,
       _transportPlaceCtrl,
       _priceCtrl,
@@ -258,8 +249,12 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     for (final controller in _occupancyPrices.values) {
       controller.dispose();
     }
-    for (final e in _itinerary) e.dispose();
-    for (final e in _includes) e.dispose();
+    for (final e in _itinerary) {
+      e.dispose();
+    }
+    for (final e in _includes) {
+      e.dispose();
+    }
     super.dispose();
   }
 
@@ -311,30 +306,166 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     setState(() {
       if (departure) {
         _departureDate = picked;
-        if (_returnDate != null && _returnDate!.isBefore(picked)) {
+        _invalidFields.remove('departureDate');
+        if (_returnDate != null && !_returnDate!.isAfter(picked)) {
           _returnDate = picked.add(Duration(days: _days));
         }
       } else {
         _returnDate = picked;
       }
+      _invalidFields.remove('returnDate');
     });
+  }
+
+  Set<String> _fieldKeysForStep(int step) => switch (step) {
+    0 => {'title', 'overview'},
+    1 => {'capacity', 'departureDate', 'returnDate'},
+    2 => {
+      'makkahHotel',
+      'madinahHotel',
+      'makkahDescription',
+      'madinahDescription',
+      'hotelNights',
+      'roomOccupancies',
+    },
+    3 => {
+      'price',
+      for (final occupancy in _roomOccupancies) 'price_$occupancy',
+    },
+    4 => {'itinerary'},
+    5 => {'inclusions'},
+    _ => {'deposit', 'cancellationPolicy', 'paymentMethods'},
+  };
+
+  void _clearFieldError(String key) {
+    if (_invalidFields.contains(key)) {
+      setState(() => _invalidFields.remove(key));
+    }
+  }
+
+  String? _errorFor(String key, AppLocalizations t) {
+    if (!_invalidFields.contains(key)) return null;
+    if (key == 'paymentMethods' || key == 'roomOccupancies') {
+      return t.offerFormSelectOne;
+    }
+    if (key == 'returnDate') return t.offerFormReturnDateAfterDeparture;
+    if (key == 'capacity' ||
+        key == 'deposit' ||
+        key == 'price' ||
+        key.startsWith('price_')) {
+      return t.offerFormInvalidValue;
+    }
+    return t.offerFormRequired;
+  }
+
+  bool _validateStep(int step) {
+    final errors = <String>{};
+    final t = AppLocalizations.of(context);
+
+    switch (step) {
+      case 0:
+        if (_titleCtrl.text.trim().isEmpty) errors.add('title');
+        if (_overviewCtrl.text.trim().isEmpty) errors.add('overview');
+        break;
+      case 1:
+        final capacity = int.tryParse(_capacityCtrl.text.trim());
+        if (capacity == null || capacity <= 0) errors.add('capacity');
+        if (_departureDate == null) errors.add('departureDate');
+        if (_returnDate == null ||
+            (_departureDate != null &&
+                !_returnDate!.isAfter(_departureDate!))) {
+          errors.add('returnDate');
+        }
+        break;
+      case 2:
+        if (_hotelMakkahCtrl.text.trim().isEmpty) errors.add('makkahHotel');
+        if (_hotelMadinahCtrl.text.trim().isEmpty) errors.add('madinahHotel');
+        if (_hotelMakkahDescCtrl.text.trim().isEmpty) {
+          errors.add('makkahDescription');
+        }
+        if (_hotelMadinahDescCtrl.text.trim().isEmpty) {
+          errors.add('madinahDescription');
+        }
+        if (_makkahNights + _madinahNights != _days - 1) {
+          errors.add('hotelNights');
+        }
+        if (_roomOccupancies.isEmpty) errors.add('roomOccupancies');
+        break;
+      case 3:
+        final price =
+            double.tryParse(_priceCtrl.text.trim().replaceAll(',', '')) ?? 0;
+        if (price <= 0) errors.add('price');
+        for (final occupancy in _roomOccupancies) {
+          final occupancyPrice =
+              double.tryParse(
+                _occupancyPrices[occupancy]!.text.trim().replaceAll(',', ''),
+              ) ??
+              0;
+          if (occupancyPrice <= 0) errors.add('price_$occupancy');
+        }
+        break;
+      case 4:
+        if (_itinerary.isEmpty ||
+            _itinerary.any((entry) => entry.title.text.trim().isEmpty)) {
+          errors.add('itinerary');
+        }
+        break;
+      case 5:
+        if (!_includes.any((entry) => entry.ctrl.text.trim().isNotEmpty)) {
+          errors.add('inclusions');
+        }
+        break;
+      case 6:
+        final depositText = _depositCtrl.text.trim().replaceAll(',', '');
+        final deposit = depositText.isEmpty ? 0 : double.tryParse(depositText);
+        final prices = [
+          for (final occupancy in _roomOccupancies)
+            double.tryParse(
+                  _occupancyPrices[occupancy]!.text.trim().replaceAll(',', ''),
+                ) ??
+                0,
+        ];
+        final lowestRoomPrice = prices.isEmpty
+            ? 0
+            : prices.reduce((a, b) => a < b ? a : b);
+        if (deposit == null || deposit < 0 || deposit > lowestRoomPrice) {
+          errors.add('deposit');
+        }
+        if (_policyCtrl.text.trim().isEmpty) {
+          errors.add('cancellationPolicy');
+        }
+        if (_paymentMethods.isEmpty) errors.add('paymentMethods');
+        break;
+    }
+
+    setState(() {
+      _invalidFields.removeAll(_fieldKeysForStep(step));
+      _invalidFields.addAll(errors);
+    });
+    if (errors.isNotEmpty) {
+      showAppSnack(context, t.offerFormFixHighlighted, isError: true);
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateAllSteps() {
+    for (var step = 0; step < _totalSteps; step++) {
+      if (!_validateStep(step)) {
+        if (_step != step) setState(() => _step = step);
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> _save() async {
     if (_saving) return;
+    if (!_validateAllSteps()) return;
     final t = AppLocalizations.of(context);
     final title = _titleCtrl.text.trim();
     final price =
         double.tryParse(_priceCtrl.text.trim().replaceAll(',', '')) ?? 0;
-    if (title.isEmpty || price <= 0) {
-      showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
-      return;
-    }
-    if (_roomOccupancies.isEmpty) {
-      showAppSnack(context, t.addEditOfferChooseRoomType, isError: true);
-      return;
-    }
-    setState(() => _saving = true);
 
     final itinerary = _itinerary
         .where((e) => e.title.text.trim().isNotEmpty)
@@ -345,6 +476,29 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
         .where((e) => e.ctrl.text.trim().isNotEmpty)
         .map((e) => e.ctrl.text.trim())
         .toList();
+
+    final occupancyPricing = <OfferPrice>[
+      for (final occupancy in (_roomOccupancies.toList()..sort()))
+        OfferPrice(
+          occupancyType: switch (occupancy) {
+            2 => 'double',
+            3 => 'triple',
+            4 => 'quad',
+            _ => 'quintuple',
+          },
+          priceIqd:
+              double.tryParse(
+                _occupancyPrices[occupancy]!.text.replaceAll(',', ''),
+              ) ??
+              price,
+        ),
+    ];
+    final minimumPrice = occupancyPricing
+        .map((item) => item.priceIqd)
+        .reduce((a, b) => a < b ? a : b);
+    final deposit =
+        double.tryParse(_depositCtrl.text.trim().replaceAll(',', '')) ?? 0;
+    setState(() => _saving = true);
 
     final provider = context.read<AppProvider>();
     final company = provider.companyById(widget.companyId);
@@ -367,9 +521,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
           ? null
           : _overviewEnCtrl.text.trim(),
       transport: _transport,
-      acc: _acc,
+      acc: [_makkahStars, _madinahStars].reduce((a, b) => a < b ? a : b),
       days: _days,
-      price: price,
+      price: minimumPrice,
       original:
           double.tryParse(_originalCtrl.text.trim().replaceAll(',', '')) ?? 0,
       rating: company?.rating ?? 0,
@@ -389,7 +543,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       gradColors: [
         company?.tint ?? AppColors.primary,
         Color.alphaBlend(
-          Colors.black.withOpacity(0.55),
+          Colors.black.withValues(alpha: 0.55),
           company?.tint ?? AppColors.primary,
         ),
       ],
@@ -409,26 +563,36 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       flightType: _transport == 'plane' ? _flightType : null,
       busBetweenCities: _busBetweenCities,
       airportTransfers: _airportTransfers,
-      pricing: [
-        for (final occupancy in (_roomOccupancies.toList()..sort()))
-          if (occupancy >= 2 && occupancy <= 5)
-            OfferPrice(
-              occupancyType: switch (occupancy) {
-                2 => 'double',
-                3 => 'triple',
-                4 => 'quad',
-                _ => 'quintuple',
-              },
-              priceIqd:
-                  double.tryParse(
-                    _occupancyPrices[occupancy]!.text.replaceAll(',', ''),
-                  ) ??
-                  price,
-            ),
+      pricing: occupancyPricing,
+      hotels: [
+        OfferHotel(
+          city: 'makkah',
+          name: _hotelMakkahCtrl.text.trim(),
+          description: _hotelMakkahDescCtrl.text.trim(),
+          starRating: _makkahStars,
+          nights: _makkahNights,
+          distanceFromHaramM:
+              int.tryParse(
+                RegExp(r'\d+').firstMatch(_distCtrl.text)?.group(0) ?? '',
+              ) ??
+              0,
+        ),
+        OfferHotel(
+          city: 'madinah',
+          name: _hotelMadinahCtrl.text.trim(),
+          description: _hotelMadinahDescCtrl.text.trim(),
+          starRating: _madinahStars,
+          nights: _madinahNights,
+          distanceFromHaramM:
+              int.tryParse(
+                RegExp(r'\d+').firstMatch(_madinahDistCtrl.text)?.group(0) ??
+                    '',
+              ) ??
+              0,
+        ),
       ],
       cancellationPolicy: _policyCtrl.text.trim(),
-      depositIqd:
-          double.tryParse(_depositCtrl.text.trim().replaceAll(',', '')) ?? 0,
+      depositIqd: deposit,
       nonRefundableDeposit: _nonRefundableDeposit,
       depositTerms: _depositTermsCtrl.text.trim(),
       acceptedPaymentMethods: _paymentMethods.toList()..sort(),
@@ -555,22 +719,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
     }
   }
 
-  /// Mirrors the validation _save applies, but at the step that owns the
-  /// field, so mistakes surface before the reviewer reaches the end.
   void _nextStep() {
-    final t = AppLocalizations.of(context);
-    if (_step == 0 && _titleCtrl.text.trim().isEmpty) {
-      showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
-      return;
-    }
-    if (_step == 3) {
-      final price =
-          double.tryParse(_priceCtrl.text.trim().replaceAll(',', '')) ?? 0;
-      if (price <= 0) {
-        showAppSnack(context, t.addEditOfferFillTitlePrice, isError: true);
-        return;
-      }
-    }
+    if (!_validateStep(_step)) return;
     setState(() => _step++);
   }
 
@@ -662,7 +812,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   AppColors.primary;
               return [
                 tint,
-                Color.alphaBlend(Colors.black.withOpacity(0.55), tint),
+                Color.alphaBlend(Colors.black.withValues(alpha: 0.55), tint),
               ];
             }(),
             onPick: _pickImage,
@@ -673,6 +823,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             label: t.offerFormTitleKu,
             controller: _titleCtrl,
             hint: t.addEditOfferTitleHint,
+            isRequired: true,
+            errorText: _errorFor('title', t),
+            onChanged: (_) => _clearFieldError('title'),
           ),
           const SizedBox(height: 14),
           Row(
@@ -700,6 +853,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _overviewCtrl,
             hint: t.offerFormOverviewHint,
             maxLines: 3,
+            isRequired: true,
+            errorText: _errorFor('overview', t),
+            onChanged: (_) => _clearFieldError('overview'),
           ),
           const SizedBox(height: 14),
           Row(
@@ -807,7 +963,11 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   value: _acc,
                   min: 1,
                   max: 5,
-                  onChanged: (v) => setState(() => _acc = v),
+                  onChanged: (v) => setState(() {
+                    _acc = v;
+                    _makkahStars = v;
+                    _madinahStars = v;
+                  }),
                 ),
               ),
             ],
@@ -826,6 +986,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _capacityCtrl,
             hint: '40',
             numeric: true,
+            isRequired: true,
+            errorText: _errorFor('capacity', t),
+            onChanged: (_) => _clearFieldError('capacity'),
           ),
           const SizedBox(height: 16),
           Row(
@@ -835,6 +998,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   label: t.workflowDepartureDate,
                   value: _departureDate,
                   onTap: () => _pickWorkflowDate(true),
+                  isRequired: true,
+                  errorText: _errorFor('departureDate', t),
                 ),
               ),
               const SizedBox(width: 14),
@@ -843,6 +1008,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   label: t.workflowReturnDate,
                   value: _returnDate,
                   onTap: () => _pickWorkflowDate(false),
+                  isRequired: true,
+                  errorText: _errorFor('returnDate', t),
                 ),
               ),
             ],
@@ -859,6 +1026,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   label: t.addEditOfferHotelMakkah,
                   controller: _hotelMakkahCtrl,
                   hint: t.addEditOfferHotelMakkahHint,
+                  isRequired: true,
+                  errorText: _errorFor('makkahHotel', t),
+                  onChanged: (_) => _clearFieldError('makkahHotel'),
                 ),
               ),
               const SizedBox(width: 14),
@@ -867,6 +1037,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   label: t.addEditOfferHotelMadinah,
                   controller: _hotelMadinahCtrl,
                   hint: t.addEditOfferHotelMadinahHint,
+                  isRequired: true,
+                  errorText: _errorFor('madinahHotel', t),
+                  onChanged: (_) => _clearFieldError('madinahHotel'),
                 ),
               ),
             ],
@@ -877,6 +1050,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _hotelMakkahDescCtrl,
             hint: t.addEditOfferHotelDescriptionHint,
             maxLines: 3,
+            isRequired: true,
+            errorText: _errorFor('makkahDescription', t),
+            onChanged: (_) => _clearFieldError('makkahDescription'),
           ),
           const SizedBox(height: 14),
           _Field(
@@ -884,21 +1060,113 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _hotelMadinahDescCtrl,
             hint: t.addEditOfferHotelDescriptionHint,
             maxLines: 3,
+            isRequired: true,
+            errorText: _errorFor('madinahDescription', t),
+            onChanged: (_) => _clearFieldError('madinahDescription'),
           ),
           const SizedBox(height: 14),
-          _Field(
-            label: t.addEditOfferDistanceToHaram,
-            controller: _distCtrl,
-            hint: t.addEditOfferDistanceHint,
+          Row(
+            children: [
+              Expanded(
+                child: _Field(
+                  label:
+                      '${t.offerDetailHotelMakkah} — ${t.addEditOfferDistanceToHaram}',
+                  controller: _distCtrl,
+                  hint: '250',
+                  numeric: true,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _Field(
+                  label:
+                      '${t.offerDetailHotelMadinah} — ${t.addEditOfferDistanceToHaram}',
+                  controller: _madinahDistCtrl,
+                  hint: '500',
+                  numeric: true,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _Stepper(
+                  label: '${t.offerDetailHotelMakkah} — ${t.addEditOfferStars}',
+                  value: _makkahStars,
+                  min: 1,
+                  max: 5,
+                  onChanged: (value) => setState(() => _makkahStars = value),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _Stepper(
+                  label:
+                      '${t.offerDetailHotelMadinah} — ${t.addEditOfferStars}',
+                  value: _madinahStars,
+                  min: 1,
+                  max: 5,
+                  onChanged: (value) => setState(() => _madinahStars = value),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _Stepper(
+                  label:
+                      '${t.offerDetailHotelMakkah} — ${t.offerDetailNightsCount(_makkahNights)}',
+                  value: _makkahNights,
+                  min: 0,
+                  max: 30,
+                  onChanged: (value) => setState(() {
+                    _makkahNights = value;
+                    _invalidFields.remove('hotelNights');
+                  }),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _Stepper(
+                  label:
+                      '${t.offerDetailHotelMadinah} — ${t.offerDetailNightsCount(_madinahNights)}',
+                  value: _madinahNights,
+                  min: 0,
+                  max: 30,
+                  onChanged: (value) => setState(() {
+                    _madinahNights = value;
+                    _invalidFields.remove('hotelNights');
+                  }),
+                ),
+              ),
+            ],
+          ),
+          if (_errorFor('hotelNights', t) != null)
+            _FieldError(text: t.offerFormHotelNightsTotal(_days - 1)),
           const SizedBox(height: 18),
-          Text(
-            t.addEditOfferAvailableRooms,
-            style: AppTheme.sans(
-              12,
-              weight: FontWeight.w700,
-              color: AppColors.inkLight,
-            ),
+          Row(
+            children: [
+              Text(
+                t.addEditOfferAvailableRooms,
+                style: AppTheme.sans(
+                  12,
+                  weight: FontWeight.w700,
+                  color: AppColors.inkLight,
+                ),
+              ),
+              Text(
+                '*',
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: AppColors.errorRed,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(
@@ -910,7 +1178,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (var occupancy = 1; occupancy <= 6; occupancy++)
+              for (var occupancy = 2; occupancy <= 5; occupancy++)
                 FilterChip(
                   label: Text(t.bookingRoomOccupancy(occupancy)),
                   selected: _roomOccupancies.contains(occupancy),
@@ -918,8 +1186,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                     selected
                         ? _roomOccupancies.add(occupancy)
                         : _roomOccupancies.remove(occupancy);
+                    _invalidFields.remove('roomOccupancies');
                   }),
-                  selectedColor: AppColors.primary.withOpacity(0.13),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.13),
                   checkmarkColor: AppColors.primary,
                   side: BorderSide(
                     color: _roomOccupancies.contains(occupancy)
@@ -936,6 +1205,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                 ),
             ],
           ),
+          if (_errorFor('roomOccupancies', t) != null)
+            _FieldError(text: _errorFor('roomOccupancies', t)!),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -1021,6 +1292,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   controller: _priceCtrl,
                   hint: '0',
                   numeric: true,
+                  isRequired: true,
+                  errorText: _errorFor('price', t),
+                  onChanged: (_) => _clearFieldError('price'),
                 ),
               ),
               const SizedBox(width: 14),
@@ -1051,6 +1325,9 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                   controller: _occupancyPrices[occupancy]!,
                   hint: _priceCtrl.text.isEmpty ? '0' : _priceCtrl.text,
                   numeric: true,
+                  isRequired: true,
+                  errorText: _errorFor('price_$occupancy', t),
+                  onChanged: (_) => _clearFieldError('price_$occupancy'),
                 ),
               ),
         ];
@@ -1058,9 +1335,23 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       // ── Itinerary ───────────────────────────────────────────────────────
       case 4:
         return [
-          Text(
-            t.addEditOfferItineraryHelper,
-            style: AppTheme.sans(12.5, color: AppColors.muted),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  t.addEditOfferItineraryHelper,
+                  style: AppTheme.sans(12.5, color: AppColors.muted),
+                ),
+              ),
+              Text(
+                '*',
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: AppColors.errorRed,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           ..._itinerary.asMap().entries.map(
@@ -1069,7 +1360,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
               entry: e.value,
               isLast: e.key == _itinerary.length - 1,
               onRemove: () => _removeItineraryDay(e.key),
-              onChanged: () => setState(() {}),
+              onChanged: () => _clearFieldError('itinerary'),
+              titleError: _errorFor('itinerary', t),
             ),
           ),
           GestureDetector(
@@ -1078,10 +1370,10 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.symmetric(vertical: 13),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.07),
+                color: AppColors.primary.withValues(alpha: 0.07),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -1111,9 +1403,23 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
       // ── What's included ─────────────────────────────────────────────────
       case 5:
         return [
-          Text(
-            t.addEditOfferWhatsIncludedHelper,
-            style: AppTheme.sans(12.5, color: AppColors.muted),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  t.addEditOfferWhatsIncludedHelper,
+                  style: AppTheme.sans(12.5, color: AppColors.muted),
+                ),
+              ),
+              Text(
+                '*',
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: AppColors.errorRed,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           ..._includes.asMap().entries.map(
@@ -1132,11 +1438,17 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border, width: 1.5),
+                        border: Border.all(
+                          color: _errorFor('inclusions', t) != null
+                              ? AppColors.errorRed
+                              : AppColors.border,
+                          width: 1.5,
+                        ),
                       ),
                       child: TextField(
                         controller: e.value.ctrl,
                         style: AppTheme.sans(13.5),
+                        onChanged: (_) => _clearFieldError('inclusions'),
                         decoration: InputDecoration(
                           hintText: t.addEditOfferIncludeItemHint,
                           hintStyle: AppTheme.sans(
@@ -1159,7 +1471,7 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: AppColors.errorRed.withOpacity(0.1),
+                        color: AppColors.errorRed.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(9),
                       ),
                       child: Icon(
@@ -1173,16 +1485,18 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
               ),
             ),
           ),
+          if (_errorFor('inclusions', t) != null)
+            _FieldError(text: _errorFor('inclusions', t)!),
           GestureDetector(
             onTap: _addInclude,
             child: Container(
               margin: const EdgeInsets.only(top: 4),
               padding: const EdgeInsets.symmetric(vertical: 13),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.07),
+                color: AppColors.primary.withValues(alpha: 0.07),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -1215,6 +1529,8 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _depositCtrl,
             hint: '0',
             numeric: true,
+            errorText: _errorFor('deposit', t),
+            onChanged: (_) => _clearFieldError('deposit'),
           ),
           const SizedBox(height: 14),
           SwitchListTile.adaptive(
@@ -1238,21 +1554,35 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
             controller: _policyCtrl,
             hint: t.offerFormCancellationPolicyHint,
             maxLines: 4,
+            isRequired: true,
+            errorText: _errorFor('cancellationPolicy', t),
+            onChanged: (_) => _clearFieldError('cancellationPolicy'),
           ),
           const SizedBox(height: 18),
-          Text(
-            t.offerFormAcceptedPayments,
-            style: AppTheme.sans(13, weight: FontWeight.w800),
+          Row(
+            children: [
+              Text(
+                t.offerFormAcceptedPayments,
+                style: AppTheme.sans(13, weight: FontWeight.w800),
+              ),
+              Text(
+                '*',
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: AppColors.errorRed,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             children: [
-              for (final method in const ['fib', 'card', 'cash'])
+              for (final method in const ['fib', 'cash'])
                 FilterChip(
                   label: Text(switch (method) {
                     'fib' => 'FIB',
-                    'card' => t.payCard,
                     _ => t.payCash,
                   }),
                   selected: _paymentMethods.contains(method),
@@ -1260,10 +1590,13 @@ class _AddEditOfferScreenState extends State<AddEditOfferScreen> {
                     selected
                         ? _paymentMethods.add(method)
                         : _paymentMethods.remove(method);
+                    _invalidFields.remove('paymentMethods');
                   }),
                 ),
             ],
           ),
+          if (_errorFor('paymentMethods', t) != null)
+            _FieldError(text: _errorFor('paymentMethods', t)!),
         ];
     }
   }
@@ -1273,37 +1606,71 @@ class _WorkflowDateField extends StatelessWidget {
   final String label;
   final DateTime? value;
   final VoidCallback onTap;
+  final bool isRequired;
+  final String? errorText;
   const _WorkflowDateField({
     required this.label,
     required this.value,
     required this.onTap,
+    this.isRequired = false,
+    this.errorText,
   });
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: AppTheme.sans(11, color: AppColors.muted)),
-          const SizedBox(height: 5),
-          Text(
-            value == null
-                ? '—'
-                : '${value!.day}/${value!.month}/${value!.year}',
-            style: AppTheme.sans(13, weight: FontWeight.w700),
+  Widget build(BuildContext context) {
+    final hasError = errorText != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: hasError ? AppColors.errorRed : AppColors.border,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: AppTheme.sans(11, color: AppColors.muted),
+                      ),
+                    ),
+                    if (isRequired)
+                      Text(
+                        '*',
+                        style: AppTheme.sans(
+                          15,
+                          weight: FontWeight.w800,
+                          color: AppColors.errorRed,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  value == null
+                      ? '—'
+                      : '${value!.day}/${value!.month}/${value!.year}',
+                  style: AppTheme.sans(13, weight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+        if (hasError) _FieldError(text: errorText!),
+      ],
+    );
+  }
 }
 
 /// Persistent stepper progress header: numbered dots with connectors,
@@ -1366,7 +1733,7 @@ class _StepHeader extends StatelessWidget {
                     child: Container(
                       height: 2,
                       color: i < current
-                          ? AppColors.primary.withOpacity(0.45)
+                          ? AppColors.primary.withValues(alpha: 0.45)
                           : AppColors.border,
                     ),
                   ),
@@ -1403,6 +1770,7 @@ class _ItineraryRow extends StatelessWidget {
   final bool isLast;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
+  final String? titleError;
 
   const _ItineraryRow({
     required this.index,
@@ -1410,6 +1778,7 @@ class _ItineraryRow extends StatelessWidget {
     required this.isLast,
     required this.onRemove,
     required this.onChanged,
+    this.titleError,
   });
 
   @override
@@ -1421,7 +1790,7 @@ class _ItineraryRow extends StatelessWidget {
           ? BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
@@ -1474,7 +1843,7 @@ class _ItineraryRow extends StatelessWidget {
                           width: 28,
                           height: 28,
                           decoration: BoxDecoration(
-                            color: AppColors.errorRed.withOpacity(0.1),
+                            color: AppColors.errorRed.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -1493,7 +1862,9 @@ class _ItineraryRow extends StatelessWidget {
                     hint: t.addEditOfferDayTitleHint,
                     style: AppTheme.sans(14, weight: FontWeight.w700),
                     onChanged: onChanged,
+                    hasError: titleError != null,
                   ),
+                  if (titleError != null) _FieldError(text: titleError!),
                   const SizedBox(height: 6),
                   // description
                   Container(
@@ -1533,12 +1904,14 @@ class _InlineField extends StatelessWidget {
   final String hint;
   final TextStyle style;
   final VoidCallback? onChanged;
+  final bool hasError;
 
   const _InlineField({
     required this.controller,
     required this.hint,
     required this.style,
     this.onChanged,
+    this.hasError = false,
   });
 
   @override
@@ -1552,7 +1925,16 @@ class _InlineField extends StatelessWidget {
         hintStyle: style.copyWith(color: AppColors.mutedLight),
         isDense: true,
         contentPadding: EdgeInsets.zero,
-        border: InputBorder.none,
+        enabledBorder: hasError
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.errorRed),
+              )
+            : InputBorder.none,
+        focusedBorder: hasError
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+              )
+            : InputBorder.none,
       ),
     );
   }
@@ -1601,8 +1983,8 @@ class _CoverImagePicker extends StatelessWidget {
 
               // dark overlay
               Container(
-                color: Colors.black.withOpacity(
-                  imageBytes != null ? 0.28 : 0.18,
+                color: Colors.black.withValues(
+                  alpha: imageBytes != null ? 0.28 : 0.18,
                 ),
               ),
 
@@ -1614,7 +1996,7 @@ class _CoverImagePicker extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1652,7 +2034,7 @@ class _CoverImagePicker extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -1679,39 +2061,65 @@ class _Field extends StatelessWidget {
   final String hint;
   final bool numeric;
   final int maxLines;
+  final bool isRequired;
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
   const _Field({
     required this.label,
     required this.controller,
     required this.hint,
     this.numeric = false,
     this.maxLines = 1,
+    this.isRequired = false,
+    this.errorText,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasError = errorText != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTheme.sans(
-            12,
-            weight: FontWeight.w700,
-            color: AppColors.inkLight,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: AppTheme.sans(
+                  12,
+                  weight: FontWeight.w700,
+                  color: AppColors.inkLight,
+                ),
+              ),
+            ),
+            if (isRequired)
+              Text(
+                '*',
+                style: AppTheme.sans(
+                  15,
+                  weight: FontWeight.w800,
+                  color: AppColors.errorRed,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border, width: 1.5),
+            border: Border.all(
+              color: hasError ? AppColors.errorRed : AppColors.border,
+              width: 1.5,
+            ),
           ),
           child: TextField(
             controller: controller,
             keyboardType: numeric ? TextInputType.number : TextInputType.text,
             maxLines: maxLines,
             style: AppTheme.sans(14),
+            onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
@@ -1723,9 +2131,40 @@ class _Field extends StatelessWidget {
             ),
           ),
         ),
+        if (hasError) _FieldError(text: errorText!),
       ],
     );
   }
+}
+
+class _FieldError extends StatelessWidget {
+  final String text;
+  const _FieldError({required this.text});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 5),
+    child: Row(
+      children: [
+        const Icon(
+          Icons.error_outline_rounded,
+          size: 14,
+          color: AppColors.errorRed,
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            text,
+            style: AppTheme.sans(
+              11.5,
+              weight: FontWeight.w700,
+              color: AppColors.errorRed,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _SegmentRow extends StatelessWidget {

@@ -48,7 +48,7 @@ class CompanyAvatar extends StatelessWidget {
         fit: BoxFit.cover,
         // decode at display size to keep list scrolling cheap
         cacheWidth: (size * dpr).round(),
-        errorBuilder: (_, __, ___) => fallback,
+        errorBuilder: (_, _, _) => fallback,
       ),
     );
   }

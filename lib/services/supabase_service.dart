@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/company_model.dart';
 import '../models/offer_model.dart';
@@ -11,6 +11,7 @@ import '../models/support_message_model.dart';
 import '../models/review_model.dart';
 import '../models/inquiry_model.dart';
 import '../models/agency_document_model.dart';
+import '../models/agency_operations_model.dart';
 
 /// Account-wide preferences that follow the user across devices
 /// (as opposed to the biometric lock, which is deliberately per-device).
@@ -59,6 +60,10 @@ abstract class DataService {
 
   Future<List<Company>> fetchCompanies();
   Future<List<Offer>> fetchOffers(List<Company> companies);
+  Future<List<Offer>> fetchCompanyPackages(
+    String companyId,
+    List<Company> companies,
+  );
   Future<List<Offer>> fetchAdminPackages(List<Company> companies);
   Future<Company?> fetchMyCompany(String ownerId);
   Future<Company?> createCompany({
@@ -110,6 +115,7 @@ abstract class DataService {
   Future<String?> deletePackage(String id);
   Future<String?> uploadPackageImage(String packageId, Uint8List bytes);
   Future<String?> submitPackage(String packageId);
+  Future<String?> pausePackage(String packageId, {String? reason});
   Future<String?> reviewPackage(
     String packageId,
     String decision, {
@@ -117,6 +123,11 @@ abstract class DataService {
   });
 
   Future<List<Booking>> fetchMyBookings(String clientId);
+  Future<BookingQuote> fetchBookingQuote({
+    required String packageId,
+    required int travellers,
+    required int roomOccupancy,
+  });
   Future<String?> createBooking({
     required String packageId,
     required String clientId,
@@ -129,6 +140,7 @@ abstract class DataService {
     int? roomOccupancy,
     String? mealPreference,
     List<PilgrimInfo>? pilgrims,
+    String? requestKey,
   });
   Future<List<BookingTraveller>> fetchBookingTravellers(String bookingId);
   Future<String?> saveTravellerPassport({
@@ -137,7 +149,7 @@ abstract class DataService {
     required Uint8List passportBytes,
     required Uint8List selfieBytes,
   });
-  Future<String?> cancelBooking(String id);
+  Future<String?> cancelBooking(String id, String reason);
 
   // ── account sync ────────────────────────────────────────────────────────
   Future<Set<String>> fetchSavedOfferIds(String clientId);
@@ -183,12 +195,82 @@ abstract class DataService {
   // ── agency booking management ────────────────────────────────────────────
   Future<List<Booking>> fetchCompanyBookings(String companyId);
   Future<List<Booking>> fetchAllBookings();
-  Future<String?> setBookingStatus(String bookingId, String status);
+  Future<String?> setBookingStatus(
+    String bookingId,
+    String status, {
+    String? reason,
+  });
   Future<String?> confirmCashReceived(String bookingId);
   Future<Map<String, dynamic>?> initiateFibPayment(
     String bookingId,
     int amountIqd,
   );
+
+  // ── agency wallet and trip operations ──────────────────────────────────
+  Future<AgencyWallet> fetchAgencyWallet(String companyId);
+  Future<List<BookingTraveller>> fetchTripTravellers(String packageId);
+  Future<List<TravellerDocument>> fetchTravellerDocuments(String bookingId);
+  Future<String?> travellerDocumentUrl(String storagePath);
+  Future<String?> uploadTravellerDocument({
+    required String travellerId,
+    required String bookingId,
+    required String companyId,
+    required String kind,
+    required Uint8List bytes,
+    required String fileName,
+  });
+  Future<String?> updateTravellerOperations({
+    required String travellerId,
+    String? documentStatus,
+    String? documentReason,
+    String? visaStatus,
+    String? visaReference,
+    String? visaReason,
+    String? transportSeat,
+  });
+  Future<String?> reviewTravellerDocument({
+    required String documentId,
+    required String status,
+    String? reason,
+    DateTime? expiresOn,
+  });
+  Future<List<TripAnnouncement>> fetchTripAnnouncements(String packageId);
+  Future<String?> createTripAnnouncement({
+    required String packageId,
+    required String companyId,
+    required String title,
+    required String body,
+    required String audience,
+  });
+  Future<List<TripRoom>> fetchTripRooms(String packageId);
+  Future<String?> createTripRoom({
+    required String packageId,
+    required String companyId,
+    required String city,
+    required String label,
+    required int capacity,
+    required String genderPolicy,
+  });
+  Future<String?> deleteTripRoom(String roomId);
+  Future<String?> assignTravellerRoom({
+    required String roomId,
+    required String travellerId,
+  });
+  Future<List<TripTransportSegment>> fetchTripTransport(String packageId);
+  Future<String?> createTripTransport({
+    required String packageId,
+    required String companyId,
+    required Map<String, dynamic> fields,
+  });
+  Future<String?> deleteTripTransport(String segmentId);
+  Future<List<AgencyStaffMember>> fetchAgencyStaff(String companyId);
+  Future<String?> addAgencyStaff({
+    required String companyId,
+    required String userId,
+    required String role,
+    required List<String> permissions,
+  });
+  Future<String?> removeAgencyStaff(String membershipId);
 
   // ── commissions (what each agency owes the platform) ────────────────────
   /// Pass a companyId to scope to one agency; omit for the admin's full ledger.
@@ -253,6 +335,12 @@ class SupabaseService implements DataService {
   static const _offerRichSelect =
       '*, itinerary_days(*), offer_pricing(*), '
       'offer_hotels(*, hotels(*)), offer_inclusions(*), offer_media(*)';
+  static const _travellerSelect =
+      'id, booking_id, full_name, passport_no, passport_image_path, '
+      'selfie_image_path, date_of_birth, phone, is_lead, local_name, gender, '
+      'nationality, passport_expiry_date, national_id, emergency_contact, '
+      'medical_notes, accessibility_notes, document_status, document_reason, '
+      'visa_status, visa_reference, visa_reason, visa_updated_at, transport_seat';
 
   @override
   bool get isSignedIn => _c.auth.currentSession != null;
@@ -320,10 +408,10 @@ class SupabaseService implements DataService {
           // stashed so the company can still be created once a session exists —
           // e.g. after the user confirms their email and logs in later, when the
           // original sign-up form's values are long gone.
-          if (companyName != null) 'company_name': companyName,
-          if (companyLocation != null) 'company_location': companyLocation,
-          if (companyAbout != null) 'company_about': companyAbout,
-          if (companySince != null) 'company_since': companySince,
+          'company_name': ?companyName,
+          'company_location': ?companyLocation,
+          'company_about': ?companyAbout,
+          'company_since': ?companySince,
         },
       );
       if (res.session == null) {
@@ -349,10 +437,7 @@ class SupabaseService implements DataService {
     try {
       await _c
           .from('profiles')
-          .update({
-            if (fullName != null) 'full_name': fullName,
-            if (phone != null) 'phone': phone,
-          })
+          .update({'full_name': ?fullName, 'phone': ?phone})
           .eq('id', userId);
       return null;
     } on PostgrestException catch (e) {
@@ -466,6 +551,22 @@ class SupabaseService implements DataService {
   }
 
   @override
+  Future<List<Offer>> fetchCompanyPackages(
+    String companyId,
+    List<Company> companies,
+  ) async {
+    final rows = await _c
+        .from('packages')
+        .select(_offerRichSelect)
+        .eq('company_id', companyId)
+        .order('created_at', ascending: false);
+    final byId = {for (final company in companies) company.id: company};
+    return rows
+        .map((row) => Offer.fromRow(row, company: byId[row['company_id']]))
+        .toList();
+  }
+
+  @override
   Future<List<Offer>> fetchAdminPackages(List<Company> companies) async {
     try {
       final rows = await _c
@@ -508,7 +609,22 @@ class SupabaseService implements DataService {
           .eq('owner_id', ownerId)
           .maybeSingle();
     }
-    return row == null ? null : Company.fromRow(row);
+    if (row != null) return Company.fromRow(row);
+    try {
+      final membership = await _c
+          .from('agency_staff')
+          .select('companies($_companyRichSelect)')
+          .eq('user_id', ownerId)
+          .eq('status', 'active')
+          .limit(1)
+          .maybeSingle();
+      final company = membership?['companies'];
+      return company is Map
+          ? Company.fromRow(Map<String, dynamic>.from(company))
+          : null;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
@@ -528,7 +644,7 @@ class SupabaseService implements DataService {
             'name_en': name,
             'location': location,
             if (about.isNotEmpty) 'about': about,
-            if (since != null) 'since': since,
+            'since': ?since,
           })
           .select()
           .single();
@@ -581,11 +697,11 @@ class SupabaseService implements DataService {
       final updatedRows = await _c
           .from('companies')
           .update({
-            if (location != null) 'location': location,
-            if (about != null) 'about': about,
-            if (tags != null) 'tags': tags,
-            if (since != null) 'since': since,
-            if (tint != null) 'tint': tint,
+            'location': ?location,
+            'about': ?about,
+            'tags': ?tags,
+            'since': ?since,
+            'tint': ?tint,
           })
           .eq('id', id)
           .select('id');
@@ -657,26 +773,35 @@ class SupabaseService implements DataService {
     Company company,
   ) async {
     try {
-      final pricing = (fields.remove('_pricing') as List?) ?? const [];
-      final hotels = (fields.remove('_hotels') as List?) ?? const [];
-      final inclusions = (fields.remove('_inclusions') as List?) ?? const [];
-      final row = await _c
-          .from('packages')
-          .insert(fields)
-          .select('*, itinerary_days(*)')
-          .single();
-      final id = row['id'] as String;
-      await _replaceItinerary(id, itinerary);
-      await _replaceOfferDetails(
-        id,
-        pricing: pricing,
-        hotels: hotels,
-        inclusions: inclusions,
+      final packageFields = Map<String, dynamic>.from(fields);
+      final pricing = (packageFields.remove('_pricing') as List?) ?? const [];
+      final hotels = (packageFields.remove('_hotels') as List?) ?? const [];
+      final inclusions =
+          (packageFields.remove('_inclusions') as List?) ?? const [];
+      final id = await _c.rpc(
+        'create_offer_draft',
+        params: {
+          'p_fields': packageFields,
+          'p_itinerary': [
+            for (var i = 0; i < itinerary.length; i++)
+              {
+                'day_no': i + 1,
+                'title': itinerary[i].title,
+                'summary': itinerary[i].summary,
+              },
+          ],
+          'p_pricing': pricing,
+          'p_hotels': hotels,
+          'p_inclusions': [
+            for (var i = 0; i < inclusions.length; i++)
+              {...(inclusions[i] as Map<String, dynamic>), 'sort_order': i},
+          ],
+        },
       );
       final fresh = await _c
           .from('packages')
           .select(_offerRichSelect)
-          .eq('id', id)
+          .eq('id', id as String)
           .single();
       return Offer.fromRow(fresh, company: company);
     } catch (_) {
@@ -691,82 +816,35 @@ class SupabaseService implements DataService {
     List<ItineraryDay> itinerary,
   ) async {
     try {
-      final pricing = (fields.remove('_pricing') as List?) ?? const [];
-      final hotels = (fields.remove('_hotels') as List?) ?? const [];
-      final inclusions = (fields.remove('_inclusions') as List?) ?? const [];
-      await _c.from('packages').update(fields).eq('id', id);
-      await _replaceItinerary(id, itinerary);
-      await _replaceOfferDetails(
-        id,
-        pricing: pricing,
-        hotels: hotels,
-        inclusions: inclusions,
+      final packageFields = Map<String, dynamic>.from(fields);
+      final pricing = (packageFields.remove('_pricing') as List?) ?? const [];
+      final hotels = (packageFields.remove('_hotels') as List?) ?? const [];
+      final inclusions =
+          (packageFields.remove('_inclusions') as List?) ?? const [];
+      await _c.rpc(
+        'update_offer_bundle',
+        params: {
+          'p_offer_id': id,
+          'p_fields': packageFields,
+          'p_itinerary': [
+            for (var i = 0; i < itinerary.length; i++)
+              {
+                'day_no': i + 1,
+                'title': itinerary[i].title,
+                'summary': itinerary[i].summary,
+              },
+          ],
+          'p_pricing': pricing,
+          'p_hotels': hotels,
+          'p_inclusions': [
+            for (var i = 0; i < inclusions.length; i++)
+              {...(inclusions[i] as Map<String, dynamic>), 'sort_order': i},
+          ],
+        },
       );
       return null;
     } catch (e) {
       return e.toString();
-    }
-  }
-
-  Future<void> _replaceItinerary(
-    String packageId,
-    List<ItineraryDay> itinerary,
-  ) async {
-    await _c.from('itinerary_days').delete().eq('package_id', packageId);
-    if (itinerary.isEmpty) return;
-    await _c.from('itinerary_days').insert([
-      for (var i = 0; i < itinerary.length; i++)
-        {
-          'package_id': packageId,
-          'day_no': i + 1,
-          'title': itinerary[i].title,
-          'summary': itinerary[i].summary,
-        },
-    ]);
-  }
-
-  Future<void> _replaceOfferDetails(
-    String offerId, {
-    required List pricing,
-    required List hotels,
-    required List inclusions,
-  }) async {
-    await _c.from('offer_pricing').delete().eq('offer_id', offerId);
-    if (pricing.isNotEmpty) {
-      await _c.from('offer_pricing').insert([
-        for (final row in pricing)
-          {...(row as Map<String, dynamic>), 'offer_id': offerId},
-      ]);
-    }
-
-    await _c.from('offer_inclusions').delete().eq('offer_id', offerId);
-    if (inclusions.isNotEmpty) {
-      await _c.from('offer_inclusions').insert([
-        for (var i = 0; i < inclusions.length; i++)
-          {
-            ...(inclusions[i] as Map<String, dynamic>),
-            'offer_id': offerId,
-            'sort_order': i,
-          },
-      ]);
-    }
-
-    await _c.from('offer_hotels').delete().eq('offer_id', offerId);
-    for (final raw in hotels) {
-      final row = Map<String, dynamic>.from(raw as Map);
-      final city = row.remove('city') as String;
-      final nights = row.remove('nights') as int;
-      final distance = row.remove('distance_from_haram_m') as int;
-      row['city'] = city;
-      row['created_by'] = _c.auth.currentUser?.id;
-      final hotel = await _c.from('hotels').insert(row).select('id').single();
-      await _c.from('offer_hotels').insert({
-        'offer_id': offerId,
-        'hotel_id': hotel['id'],
-        'city': city,
-        'nights': nights,
-        'distance_from_haram_m': distance,
-      });
     }
   }
 
@@ -789,6 +867,21 @@ class SupabaseService implements DataService {
       return e.message;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  @override
+  Future<String?> pausePackage(String packageId, {String? reason}) async {
+    try {
+      await _c.rpc(
+        'pause_package',
+        params: {'p_package_id': packageId, 'p_reason': reason},
+      );
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
     }
   }
 
@@ -859,7 +952,7 @@ class SupabaseService implements DataService {
       await _c.from('companies').update({'logo_url': url}).eq('id', companyId);
       return url;
     } catch (e) {
-      print('uploadCompanyLogo error: $e');
+      debugPrint('uploadCompanyLogo error: $e');
       return null; // bucket not created yet (see supabase/patches.sql)
     }
   }
@@ -886,7 +979,7 @@ class SupabaseService implements DataService {
           .eq('id', companyId);
       return url;
     } catch (e) {
-      print('uploadCompanyBanner error: $e');
+      debugPrint('uploadCompanyBanner error: $e');
       return null;
     }
   }
@@ -965,6 +1058,23 @@ class SupabaseService implements DataService {
   }
 
   @override
+  Future<BookingQuote> fetchBookingQuote({
+    required String packageId,
+    required int travellers,
+    required int roomOccupancy,
+  }) async {
+    final data = await _c.rpc(
+      'quote_offer',
+      params: {
+        'p_offer_id': packageId,
+        'p_travellers': travellers,
+        'p_room_occupancy': roomOccupancy,
+      },
+    );
+    return BookingQuote.fromJson(Map<String, dynamic>.from(data as Map));
+  }
+
+  @override
   Future<String?> createBooking({
     required String packageId,
     required String clientId,
@@ -977,61 +1087,35 @@ class SupabaseService implements DataService {
     int? roomOccupancy,
     String? mealPreference,
     List<PilgrimInfo>? pilgrims,
+    String? requestKey,
   }) async {
     try {
-      // The departure date rides in the same free-text note column (parsed
-      // back out by Booking.fromRow); extra lines (room preference, pilgrim
-      // details) are appended after it so agencies can read them in place.
-      final depLine = departureDate == null
-          ? null
-          : 'dep:${departureDate.toIso8601String().substring(0, 10)}';
-      final noteText = [
-        depLine,
-        note,
-      ].where((s) => s != null && s.isNotEmpty).join('\n');
-      final row = await _c
-          .from('bookings')
-          .insert({
-            'package_id': packageId,
-            'client_id': clientId,
-            'travellers': travellers,
-            'pay_method': payMethod,
-            if (contactPhone != null && contactPhone.isNotEmpty)
-              'contact_phone': contactPhone,
-            if (noteText.isNotEmpty) 'note': noteText,
-            if (departureDate != null)
-              'departure_date': departureDate.toIso8601String().substring(
-                0,
-                10,
-              ),
-            if (roomLabel != null && roomLabel.isNotEmpty)
-              'room_label': roomLabel,
-            if (roomOccupancy != null) 'room_occupancy': roomOccupancy,
-            if (mealPreference != null && mealPreference.isNotEmpty)
-              'meal_preference': mealPreference,
-            // Company, prices, payment state, and commission are filled by
-            // server-side triggers and cannot be supplied by the client.
-          })
-          .select('id')
-          .single();
-      if (pilgrims != null && pilgrims.isNotEmpty) {
-        await _c.from('booking_travellers').insert([
-          for (var i = 0; i < pilgrims.length; i++)
-            {
-              'booking_id': row['id'],
-              'client_id': clientId,
-              'full_name': pilgrims[i].fullName,
-              if (pilgrims[i].passportNo.isNotEmpty)
+      if (roomOccupancy == null) return 'A room type is required';
+      await _c.rpc(
+        'create_booking_request',
+        params: {
+          'p_package_id': packageId,
+          'p_travellers': travellers,
+          'p_pay_method': payMethod,
+          'p_room_occupancy': roomOccupancy,
+          'p_contact_phone': contactPhone,
+          'p_note': note,
+          'p_request_key': requestKey,
+          'p_pilgrims': [
+            for (var i = 0; i < (pilgrims ?? const <PilgrimInfo>[]).length; i++)
+              {
+                'full_name': pilgrims![i].fullName,
+                'local_name': pilgrims[i].localName,
                 'passport_no': pilgrims[i].passportNo,
-              if (pilgrims[i].dateOfBirth != null)
-                'date_of_birth': pilgrims[i].dateOfBirth!
-                    .toIso8601String()
+                'date_of_birth': pilgrims[i].dateOfBirth
+                    ?.toIso8601String()
                     .substring(0, 10),
-              if (pilgrims[i].phone.isNotEmpty) 'phone': pilgrims[i].phone,
-              'is_lead': i == 0,
-            },
-        ]);
-      }
+                'phone': pilgrims[i].phone,
+                'is_lead': i == 0,
+              },
+          ],
+        },
+      );
       return null;
     } on PostgrestException catch (e) {
       return e.message;
@@ -1046,9 +1130,7 @@ class SupabaseService implements DataService {
   ) async {
     final rows = await _c
         .from('booking_travellers')
-        .select(
-          'id, booking_id, full_name, passport_no, passport_image_path, selfie_image_path',
-        )
+        .select(_travellerSelect)
         .eq('booking_id', bookingId)
         .order('is_lead', ascending: false)
         .order('created_at');
@@ -1098,11 +1180,11 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<String?> cancelBooking(String id) async {
+  Future<String?> cancelBooking(String id, String reason) async {
     try {
       await _c.rpc(
         'transition_booking',
-        params: {'p_booking_id': id, 'p_action': 'cancel', 'p_reason': null},
+        params: {'p_booking_id': id, 'p_action': 'cancel', 'p_reason': reason},
       );
       return null;
     } on PostgrestException catch (e) {
@@ -1181,10 +1263,9 @@ class SupabaseService implements DataService {
       await _c
           .from('profiles')
           .update({
-            if (marketingEmails != null) 'marketing_emails': marketingEmails,
-            if (shareActivity != null) 'share_activity': shareActivity,
-            if (preferredPayMethod != null)
-              'preferred_pay_method': preferredPayMethod,
+            'marketing_emails': ?marketingEmails,
+            'share_activity': ?shareActivity,
+            'preferred_pay_method': ?preferredPayMethod,
           })
           .eq('id', clientId);
     } catch (_) {}
@@ -1218,8 +1299,8 @@ class SupabaseService implements DataService {
           .from('home_ads')
           .insert({
             'title': title,
-            if (packageId != null) 'package_id': packageId,
-            if (companyId != null) 'company_id': companyId,
+            'package_id': ?packageId,
+            'company_id': ?companyId,
           })
           .select()
           .single();
@@ -1238,10 +1319,7 @@ class SupabaseService implements DataService {
     try {
       await _c
           .from('home_ads')
-          .update({
-            if (title != null) 'title': title,
-            if (isActive != null) 'is_active': isActive,
-          })
+          .update({'title': ?title, 'is_active': ?isActive})
           .eq('id', id);
       return null;
     } catch (e) {
@@ -1452,14 +1530,19 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<String?> setBookingStatus(String bookingId, String status) async {
+  Future<String?> setBookingStatus(
+    String bookingId,
+    String status, {
+    String? reason,
+  }) async {
     try {
       await _c.rpc(
         'transition_booking',
         params: {
           'p_booking_id': bookingId,
           'p_action': status,
-          'p_reason': status == 'reject' ? 'Declined by company' : null,
+          'p_reason':
+              reason ?? (status == 'reject' ? 'Declined by company' : null),
         },
       );
       return null;
@@ -1501,6 +1584,392 @@ class SupabaseService implements DataService {
       return Map<String, dynamic>.from(response.data as Map);
     } catch (_) {
       return null;
+    }
+  }
+
+  // ── agency wallet and trip operations ──────────────────────────────────
+
+  @override
+  Future<AgencyWallet> fetchAgencyWallet(String companyId) async {
+    try {
+      final balanceRow = await _c
+          .from('agency_balances')
+          .select('balance_iqd')
+          .eq('company_id', companyId)
+          .maybeSingle();
+      final ledgerRows = await _c
+          .from('agency_ledger')
+          .select(
+            'id, booking_id, payment_id, payout_id, entry_type, amount_iqd, '
+            'description, created_at',
+          )
+          .eq('company_id', companyId)
+          .order('created_at', ascending: false);
+      final payoutRows = await _c
+          .from('payouts')
+          .select(
+            'id, amount_iqd, method, reference, status, created_at, completed_at',
+          )
+          .eq('company_id', companyId)
+          .order('created_at', ascending: false);
+      return AgencyWallet(
+        balanceIqd: ((balanceRow?['balance_iqd'] ?? 0) as num).toDouble(),
+        entries: ledgerRows.map(AgencyLedgerEntry.fromRow).toList(),
+        payouts: payoutRows.map(AgencyPayout.fromRow).toList(),
+      );
+    } catch (_) {
+      return const AgencyWallet();
+    }
+  }
+
+  @override
+  Future<List<BookingTraveller>> fetchTripTravellers(String packageId) async {
+    final bookingRows = await _c
+        .from('bookings')
+        .select('id')
+        .eq('package_id', packageId)
+        .not('operational_stage', 'in', '(cancelled,rejected,expired)');
+    final bookingIds = bookingRows.map((row) => row['id'] as String).toList();
+    if (bookingIds.isEmpty) return [];
+    final rows = await _c
+        .from('booking_travellers')
+        .select(_travellerSelect)
+        .inFilter('booking_id', bookingIds)
+        .order('is_lead', ascending: false)
+        .order('created_at');
+    return rows.map(BookingTraveller.fromRow).toList();
+  }
+
+  @override
+  Future<List<TravellerDocument>> fetchTravellerDocuments(
+    String bookingId,
+  ) async {
+    try {
+      final rows = await _c
+          .from('traveller_documents')
+          .select()
+          .eq('booking_id', bookingId)
+          .order('created_at', ascending: false);
+      return rows.map(TravellerDocument.fromRow).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> travellerDocumentUrl(String storagePath) async {
+    try {
+      return await _c.storage
+          .from('traveller-documents')
+          .createSignedUrl(storagePath, 600);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<String?> uploadTravellerDocument({
+    required String travellerId,
+    required String bookingId,
+    required String companyId,
+    required String kind,
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    try {
+      final extension = fileName.contains('.')
+          ? fileName.split('.').last.toLowerCase()
+          : 'jpg';
+      final path =
+          '$bookingId/$travellerId/$kind-${DateTime.now().millisecondsSinceEpoch}.$extension';
+      await _c.storage
+          .from('traveller-documents')
+          .uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(upsert: false),
+          );
+      await _c.from('traveller_documents').insert({
+        'traveller_id': travellerId,
+        'booking_id': bookingId,
+        'company_id': companyId,
+        'kind': kind,
+        'storage_path': path,
+        'status': 'under_review',
+      });
+      return null;
+    } on StorageException catch (error) {
+      return error.message;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> updateTravellerOperations({
+    required String travellerId,
+    String? documentStatus,
+    String? documentReason,
+    String? visaStatus,
+    String? visaReference,
+    String? visaReason,
+    String? transportSeat,
+  }) async {
+    try {
+      await _c.rpc(
+        'update_traveller_operations',
+        params: {
+          'p_traveller_id': travellerId,
+          'p_document_status': documentStatus,
+          'p_document_reason': documentReason,
+          'p_visa_status': visaStatus,
+          'p_visa_reference': visaReference,
+          'p_visa_reason': visaReason,
+          'p_transport_seat': transportSeat,
+        },
+      );
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> reviewTravellerDocument({
+    required String documentId,
+    required String status,
+    String? reason,
+    DateTime? expiresOn,
+  }) async {
+    try {
+      await _c.rpc(
+        'review_traveller_document',
+        params: {
+          'p_document_id': documentId,
+          'p_status': status,
+          'p_reason': reason,
+          'p_expires_on': expiresOn?.toIso8601String().substring(0, 10),
+        },
+      );
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<TripAnnouncement>> fetchTripAnnouncements(
+    String packageId,
+  ) async {
+    try {
+      final rows = await _c
+          .from('trip_announcements')
+          .select()
+          .eq('package_id', packageId)
+          .order('created_at', ascending: false);
+      return rows.map(TripAnnouncement.fromRow).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> createTripAnnouncement({
+    required String packageId,
+    required String companyId,
+    required String title,
+    required String body,
+    required String audience,
+  }) async {
+    try {
+      await _c.from('trip_announcements').insert({
+        'package_id': packageId,
+        'company_id': companyId,
+        'created_by': _c.auth.currentUser!.id,
+        'title': title,
+        'body': body,
+        'audience': audience,
+      });
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<TripRoom>> fetchTripRooms(String packageId) async {
+    try {
+      final rows = await _c
+          .from('trip_rooms')
+          .select('*, trip_room_assignments(traveller_id)')
+          .eq('package_id', packageId)
+          .order('city')
+          .order('label');
+      return rows.map(TripRoom.fromRow).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> createTripRoom({
+    required String packageId,
+    required String companyId,
+    required String city,
+    required String label,
+    required int capacity,
+    required String genderPolicy,
+  }) async {
+    try {
+      await _c.from('trip_rooms').insert({
+        'package_id': packageId,
+        'company_id': companyId,
+        'city': city,
+        'label': label,
+        'capacity': capacity,
+        'gender_policy': genderPolicy,
+      });
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> deleteTripRoom(String roomId) async {
+    try {
+      await _c.from('trip_rooms').delete().eq('id', roomId);
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> assignTravellerRoom({
+    required String roomId,
+    required String travellerId,
+  }) async {
+    try {
+      await _c.rpc(
+        'assign_traveller_room',
+        params: {'p_room_id': roomId, 'p_traveller_id': travellerId},
+      );
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<TripTransportSegment>> fetchTripTransport(
+    String packageId,
+  ) async {
+    try {
+      final rows = await _c
+          .from('trip_transport_segments')
+          .select()
+          .eq('package_id', packageId)
+          .order('departure_at');
+      return rows.map(TripTransportSegment.fromRow).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> createTripTransport({
+    required String packageId,
+    required String companyId,
+    required Map<String, dynamic> fields,
+  }) async {
+    try {
+      await _c.from('trip_transport_segments').insert({
+        ...fields,
+        'package_id': packageId,
+        'company_id': companyId,
+      });
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> deleteTripTransport(String segmentId) async {
+    try {
+      await _c.from('trip_transport_segments').delete().eq('id', segmentId);
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<List<AgencyStaffMember>> fetchAgencyStaff(String companyId) async {
+    try {
+      final rows = await _c
+          .from('agency_staff')
+          .select('*, profiles(full_name)')
+          .eq('company_id', companyId)
+          .order('created_at');
+      return rows.map(AgencyStaffMember.fromRow).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<String?> addAgencyStaff({
+    required String companyId,
+    required String userId,
+    required String role,
+    required List<String> permissions,
+  }) async {
+    try {
+      await _c.from('agency_staff').upsert({
+        'company_id': companyId,
+        'user_id': userId,
+        'role': role,
+        'permissions': permissions,
+        'status': 'active',
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'company_id,user_id');
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  @override
+  Future<String?> removeAgencyStaff(String membershipId) async {
+    try {
+      await _c.from('agency_staff').delete().eq('id', membershipId);
+      return null;
+    } on PostgrestException catch (error) {
+      return error.message;
+    } catch (error) {
+      return error.toString();
     }
   }
 
@@ -1546,8 +2015,8 @@ class SupabaseService implements DataService {
   }) async {
     try {
       await _c.from('support_messages').insert({
-        if (userId != null) 'user_id': userId,
-        if (email != null) 'email': email,
+        'user_id': ?userId,
+        'email': ?email,
         'message': message,
       });
       return null;
@@ -1770,10 +2239,10 @@ class SupabaseService implements DataService {
   }) async {
     try {
       await _c.from('error_logs').insert({
-        if (userId != null) 'user_id': userId,
+        'user_id': ?userId,
         'message': message,
-        if (stack != null) 'stack': stack,
-        if (context != null) 'context': context,
+        'stack': ?stack,
+        'context': ?context,
       });
     } catch (_) {
       // logging must never throw — worst case we just lose this one report

@@ -32,7 +32,7 @@ class TagChip extends StatelessWidget {
           border: Border.all(
             color: active
                 ? AppColors.primary
-                : AppColors.primary.withOpacity(0.16),
+                : AppColors.primary.withValues(alpha: 0.16),
             width: 1.5,
           ),
         ),

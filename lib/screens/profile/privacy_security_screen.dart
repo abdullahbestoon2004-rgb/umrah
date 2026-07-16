@@ -135,8 +135,9 @@ class PrivacySecurityScreen extends StatelessWidget {
       return;
     }
     if (!await BiometricService.canAuthenticate()) {
-      if (context.mounted)
+      if (context.mounted) {
         showAppSnack(context, t.privacyBiometricUnavailable, isError: true);
+      }
       return;
     }
     // Prove the user can actually unlock before locking them out.
@@ -174,7 +175,7 @@ class _ToggleTile extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(icon, color: AppColors.primary, size: 20),
@@ -230,7 +231,7 @@ class _ActionTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),

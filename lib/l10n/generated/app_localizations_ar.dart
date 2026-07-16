@@ -227,8 +227,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get offerDetailFreeCancellation =>
-      'إلغاء مجاني حتى 30 يومًا قبل موعد السفر';
+  String get offerDetailFreeCancellation => 'راجع سياسة إلغاء هذه الرحلة';
 
   @override
   String get offerDetailDepartureDate => 'تاريخ المغادرة';
@@ -609,7 +608,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String bookingsCancelBody(String title) {
-    return 'سيتم إلغاء \"$title\". الإلغاء مجاني حتى 30 يومًا قبل المغادرة.';
+    return 'سيتم إلغاء \"$title\". راجع سياسة الرحلة ومبلغ الاسترداد المتوقع أدناه قبل المتابعة.';
   }
 
   @override
@@ -988,7 +987,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get helpFaq2A =>
-      'نعم — الإلغاء مجاني حتى 30 يومًا قبل المغادرة. افتح حجوزاتي واضغط \"إلغاء الحجز\" على الرحلة.';
+      'افتح حجوزاتي واضغط \"إلغاء الحجز\". يعرض التطبيق سياسة الرحلة المحفوظة ومبلغ الاسترداد المتوقع قبل التأكيد.';
 
   @override
   String get helpFaq3Q => 'هل الوكالات موثقة؟';
@@ -1002,7 +1001,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get helpFaq4A =>
-      'كل عرض يوضح ما يشمله — التأشيرة والنقل والفندق والوجبات والزيارات المصحوبة بمرشد. راجع قسم \"ما تشمله الباقة\" في العرض.';
+      'لكل عرض خدماته المعلنة. راجع قسم \"ما تشمله الباقة\" ولا تفترض شمول أي خدمة غير مذكورة.';
 
   @override
   String get helpFaq5Q => 'كيف تنضم الوكالات إلى المنصة؟';
@@ -1556,7 +1555,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addEditOfferPricing => 'التسعير';
 
   @override
-  String get addEditOfferPriceUsd => 'السعر (دولار) *';
+  String get addEditOfferPriceUsd => 'السعر الأساسي (د.ع) *';
 
   @override
   String get addEditOfferOriginalPrice => 'السعر الأصلي';
@@ -2556,6 +2555,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get offerFormAcceptedPayments => 'طرق الدفع المقبولة';
 
   @override
+  String get offerFormRequired => 'مطلوب';
+
+  @override
+  String get offerFormInvalidValue => 'أدخل قيمة صحيحة.';
+
+  @override
+  String get offerFormSelectOne => 'اختر خياراً واحداً على الأقل.';
+
+  @override
+  String get offerFormReturnDateAfterDeparture =>
+      'يجب أن يكون تاريخ العودة بعد تاريخ المغادرة.';
+
+  @override
+  String get offerFormFixHighlighted => 'يرجى إكمال الحقول المطلوبة المميزة.';
+
+  @override
   String get offerSoldOut => 'نفدت المقاعد';
 
   @override
@@ -2895,4 +2910,428 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get identitySelfieExampleCaption =>
       'انظر مباشرة إلى الكاميرا مع إضاءة جيدة ومن دون قبعة أو نظارة شمسية.';
+
+  @override
+  String get bookingRoomCount => 'عدد الغرف';
+
+  @override
+  String get bookingNotes => 'ملاحظات';
+
+  @override
+  String get bookingAmountDueNow => 'المبلغ المستحق الآن';
+
+  @override
+  String get bookingCancelReason => 'سبب الإلغاء';
+
+  @override
+  String get bookingCancelReasonHint => 'أخبر الشركة بسبب حاجتك إلى الإلغاء';
+
+  @override
+  String get bookingCancellationPolicy => 'سياسة الإلغاء';
+
+  @override
+  String get bookingEstimatedRefund => 'المبلغ المتوقع استرداده';
+
+  @override
+  String bookingExpiresAt(String time) {
+    return 'أكمل هذا الطلب قبل $time';
+  }
+
+  @override
+  String get agencyBookingDetails => 'تفاصيل الحجز';
+
+  @override
+  String get agencyRequestInformation => 'طلب معلومات';
+
+  @override
+  String get agencyRequestInformationHint =>
+      'وضّح بدقة ما الذي يجب على المعتمر تقديمه';
+
+  @override
+  String get agencyTravellerDocuments => 'مستندات المسافرين';
+
+  @override
+  String get agencyDeclineReason => 'سبب الرفض';
+
+  @override
+  String get offerFormBothHotelsRequired =>
+      'يجب إدخال اسم ووصف مستقل لكل من الفندقين.';
+
+  @override
+  String offerFormHotelNightsTotal(int nights) {
+    return 'يجب أن يكون مجموع ليالي الفندقين $nights.';
+  }
+
+  @override
+  String get offerFormPaymentRequired => 'اختر طريقة دفع واحدة على الأقل.';
+
+  @override
+  String get offerFormRoomPriceRequired =>
+      'يجب إدخال سعر صحيح لكل نوع غرفة محدد.';
+
+  @override
+  String get offerFormDepositTooHigh =>
+      'لا يمكن أن تكون العربون أعلى من أقل سعر للفرد حسب نوع الغرفة.';
+
+  @override
+  String get workflowPauseTrip => 'إيقاف الرحلة مؤقتًا';
+
+  @override
+  String get workflowPausedSnack => 'تم إيقاف الرحلة وإزالتها من السوق.';
+
+  @override
+  String get offerUnavailable => 'غير متاح';
+
+  @override
+  String get agencyTripOverview => 'نظرة عامة';
+
+  @override
+  String get agencyTripBookings => 'الحجوزات';
+
+  @override
+  String get agencyTripTravellers => 'المسافرون';
+
+  @override
+  String get agencyTripDocumentsVisa => 'المستندات والتأشيرة';
+
+  @override
+  String get agencyTripOperations => 'العمليات';
+
+  @override
+  String get agencyTripUpdates => 'التحديثات';
+
+  @override
+  String get agencyTripDuplicate => 'نسخ الرحلة';
+
+  @override
+  String get agencyTripDuplicateBody =>
+      'إنشاء مسودة جديدة تحتوي على الفنادق والأسعار والبرنامج والسياسات نفسها؟ يمكنك تعديل التواريخ والسعة قبل الإرسال.';
+
+  @override
+  String get agencyTripDuplicated => 'تم نسخ الرحلة كمسودة.';
+
+  @override
+  String get agencyTripDuplicateFailed => 'تعذر نسخ الرحلة.';
+
+  @override
+  String get agencyTripExportFailed => 'تعذر إنشاء ملف المسافرين.';
+
+  @override
+  String get agencyTripConfirmedValue => 'قيمة الحجوزات المؤكدة';
+
+  @override
+  String get agencyTripCollected => 'مدفوعات العملاء المستلمة';
+
+  @override
+  String get agencyTripDocumentsMissing => 'مستندات تحتاج إلى متابعة';
+
+  @override
+  String get agencyTripVisaPending => 'تأشيرات غير معتمدة';
+
+  @override
+  String get agencyTripPassengerExports => 'كشوف المسافرين';
+
+  @override
+  String get agencyTripExportExcel => 'تصدير Excel';
+
+  @override
+  String get agencyTripExportPdf => 'تصدير PDF';
+
+  @override
+  String get agencyTripSearchTravellers => 'البحث بالاسم أو رقم الجواز';
+
+  @override
+  String get agencyTripNoTravellers => 'لا يوجد مسافرون في هذه الرحلة بعد';
+
+  @override
+  String get agencyDocumentReview => 'مراجعة المستند';
+
+  @override
+  String get agencyDocumentUploads => 'مستندات المسافرين المرفوعة';
+
+  @override
+  String get agencyVisaStatus => 'حالة التأشيرة';
+
+  @override
+  String get agencyVisaReference => 'مرجع طلب التأشيرة';
+
+  @override
+  String get agencyTripTransportSeat => 'مقعد الطائرة أو الحافلة';
+
+  @override
+  String get agencyTripRooming => 'توزيع الغرف';
+
+  @override
+  String get agencyTripAddRoom => 'إضافة غرفة';
+
+  @override
+  String get agencyTripNoRooms => 'لم تتم تهيئة غرف بعد.';
+
+  @override
+  String get agencyTripCity => 'المدينة';
+
+  @override
+  String get agencyTripMakkah => 'مكة';
+
+  @override
+  String get agencyTripMadinah => 'المدينة المنورة';
+
+  @override
+  String get agencyTripRoomLabel => 'رقم الغرفة أو اسمها';
+
+  @override
+  String get agencyTripRoomPolicy => 'مجموعة الغرفة';
+
+  @override
+  String get agencyTripRoomFamily => 'عائلة';
+
+  @override
+  String get agencyTripRoomMale => 'رجال';
+
+  @override
+  String get agencyTripRoomFemale => 'نساء';
+
+  @override
+  String get agencyTripRoomCreated => 'تمت إضافة الغرفة.';
+
+  @override
+  String get agencyTripRoomDeleted => 'تم حذف الغرفة.';
+
+  @override
+  String get agencyTripTransport => 'النقل';
+
+  @override
+  String get agencyTripAddTransport => 'إضافة وسيلة نقل';
+
+  @override
+  String get agencyTripNoTransport =>
+      'لم تتم إضافة تفاصيل رحلة جوية أو حافلة بعد.';
+
+  @override
+  String get agencyTripTransportProvider => 'شركة الطيران أو الحافلات';
+
+  @override
+  String get agencyTripTransportReference => 'رقم الرحلة أو الحافلة أو المركبة';
+
+  @override
+  String get agencyTripDeparturePlace => 'مكان المغادرة';
+
+  @override
+  String get agencyTripMeetingPoint => 'نقطة التجمع';
+
+  @override
+  String get agencyTripGuide => 'المرشد المكلّف';
+
+  @override
+  String get agencyTripTransportCreated => 'تمت إضافة وسيلة النقل.';
+
+  @override
+  String get agencyTripTransportDeleted => 'تم حذف وسيلة النقل.';
+
+  @override
+  String get agencyTripNewAnnouncement => 'إعلان جديد';
+
+  @override
+  String get agencyTripAnnouncementTitle => 'عنوان الإعلان';
+
+  @override
+  String get agencyTripAnnouncementMessage => 'الرسالة';
+
+  @override
+  String get agencyTripAudience => 'المستلمون';
+
+  @override
+  String get agencyTripAudienceUnpaid =>
+      'المسافرون الذين لديهم مبالغ غير مدفوعة';
+
+  @override
+  String get agencyTripSendAnnouncement => 'إرسال الإعلان';
+
+  @override
+  String get agencyTripAnnouncementSent => 'تم إرسال الإعلان.';
+
+  @override
+  String get agencyTripNoAnnouncements => 'لم يتم إرسال أي إعلانات بعد';
+
+  @override
+  String get agencyWalletTitle => 'المحفظة والدفعات';
+
+  @override
+  String get agencyWalletSubtitle =>
+      'أرباح الدفع الإلكتروني وعمولة النقد في رصيد واحد';
+
+  @override
+  String get agencyWalletTawafOwesYou => 'طواف مدينة لشركتك';
+
+  @override
+  String get agencyWalletYouOweTawaf => 'شركتك مدينة لطواف';
+
+  @override
+  String get agencyWalletSettled => 'رصيدك مسوّى';
+
+  @override
+  String get agencyWalletBalanceExplanation =>
+      'تضيف المدفوعات الإلكترونية صافي أرباحك، وتخصم الحجوزات النقدية عمولة طواف. تُسجّل الدفعات والاستردادات تلقائيًا.';
+
+  @override
+  String get agencyWalletAvailablePayout => 'متاح للدفع';
+
+  @override
+  String get agencyWalletPendingPayout => 'دفعة قيد الانتظار';
+
+  @override
+  String get agencyWalletActivity => 'حركة المحفظة';
+
+  @override
+  String get agencyWalletNoActivity => 'لا توجد حركة في المحفظة بعد';
+
+  @override
+  String get agencyWalletNoActivityBody => 'ستظهر مدفوعات العملاء الناجحة هنا.';
+
+  @override
+  String get agencyWalletPayouts => 'سجل الدفعات';
+
+  @override
+  String get agencyWalletPaid => 'مدفوع';
+
+  @override
+  String get agencyWalletFailed => 'فشل';
+
+  @override
+  String get agencyWalletPending => 'قيد الانتظار';
+
+  @override
+  String get agencyWalletOnlinePayment => 'أرباح حجز إلكتروني';
+
+  @override
+  String get agencyWalletCashCommission => 'عمولة حجز نقدي';
+
+  @override
+  String get agencyWalletRefund => 'عكس مبلغ مسترد';
+
+  @override
+  String get agencyWalletPayout => 'دفعة للشركة';
+
+  @override
+  String get agencyWalletAdjustment => 'تسوية الرصيد';
+
+  @override
+  String get agencyOverviewUnpaidBookings => 'حجوزات لديها مبالغ غير مدفوعة';
+
+  @override
+  String get agencyManagementTitle => 'الفريق والتقارير والتقييمات';
+
+  @override
+  String get agencyManagementMenuSubtitle =>
+      'الأداء وآراء العملاء وصلاحيات الموظفين';
+
+  @override
+  String get agencyManagementReports => 'التقارير';
+
+  @override
+  String get agencyManagementStaff => 'الموظفون';
+
+  @override
+  String get agencyManagementBookingValue => 'قيمة الحجوزات النشطة';
+
+  @override
+  String get agencyManagementOccupancy => 'نسبة إشغال المقاعد';
+
+  @override
+  String get agencyManagementCancellationRate => 'معدل الإلغاء';
+
+  @override
+  String get agencyManagementTripPerformance => 'أداء الرحلات';
+
+  @override
+  String get agencyManagementNoReportData => 'لا تتوفر بيانات رحلات بعد';
+
+  @override
+  String get agencyManagementNoReviews => 'لا توجد تقييمات من العملاء بعد';
+
+  @override
+  String get agencyManagementReplyReview => 'الرد على التقييم';
+
+  @override
+  String get agencyManagementReplyReviewHint => 'اكتب ردًا عامًا مفيدًا';
+
+  @override
+  String get agencyManagementReplySent => 'تم نشر ردك العام.';
+
+  @override
+  String get agencyManagementAddStaff => 'إضافة موظف';
+
+  @override
+  String get agencyManagementProfileId => 'معرّف ملف المستخدم';
+
+  @override
+  String get agencyManagementProfileIdHelp =>
+      'أدخل معرّف UUID لملف الموظف في طواف';
+
+  @override
+  String get agencyManagementRole => 'الدور';
+
+  @override
+  String get agencyManagementStaffAdded => 'تمت إضافة صلاحية الموظف.';
+
+  @override
+  String get agencyManagementStaffRemoved => 'تم حذف صلاحية الموظف.';
+
+  @override
+  String get agencyManagementNoStaff => 'لم تتم إضافة موظفين بعد';
+
+  @override
+  String get agencyManagementNoStaffBody =>
+      'أضف الموظفين وامنح كل دور الصلاحيات التي يحتاجها فقط.';
+
+  @override
+  String agencyManagementTripCounts(int bookings, int travellers) {
+    return 'الحجوزات: $bookings · المسافرون: $travellers';
+  }
+
+  @override
+  String get agencyTripAssignRoom => 'تعيين غرفة (الأسرّة المتبقية)';
+
+  @override
+  String get bookingTripUpdates => 'تحديثات وإعلانات الرحلة';
+
+  @override
+  String get bookingTripNoUpdates => 'لم تنشر الشركة أي تحديثات بعد.';
+
+  @override
+  String get bookingAdditionalDocument => 'رفع مستند آخر';
+
+  @override
+  String get bookingAdditionalDocumentUploaded =>
+      'تم رفع المستند لمراجعة الشركة.';
+
+  @override
+  String get bookingDocumentNationalId => 'الهوية الوطنية';
+
+  @override
+  String get bookingDocumentResidency => 'بطاقة الإقامة';
+
+  @override
+  String get bookingDocumentVaccination => 'شهادة التطعيم';
+
+  @override
+  String get bookingDocumentAgreement => 'الاتفاقية الموقعة';
+
+  @override
+  String get bookingDocumentPaymentReceipt => 'إيصال الدفع';
+
+  @override
+  String get bookingDocumentOther => 'مستند آخر';
+
+  @override
+  String get bookingPassportName => 'الاسم كما هو مكتوب في جواز السفر';
+
+  @override
+  String get bookingPassportNameHint => 'تهجئة الاسم اللاتينية في الجواز';
+
+  @override
+  String get bookingLocalName => 'الاسم باللغة المحلية (اختياري)';
+
+  @override
+  String get bookingLocalNameHint => 'الاسم بالكردية أو العربية';
 }

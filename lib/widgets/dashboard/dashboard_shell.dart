@@ -54,7 +54,7 @@ class DashboardShell extends StatelessWidget {
             children: [
               NavigationRail(
                 backgroundColor: AppColors.surface,
-                indicatorColor: AppColors.primary.withOpacity(0.12),
+                indicatorColor: AppColors.primary.withValues(alpha: 0.12),
                 extended: extended,
                 labelType: extended
                     ? NavigationRailLabelType.none
@@ -120,7 +120,7 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background.withOpacity(0.96),
+        color: AppColors.background.withValues(alpha: 0.96),
         border: const Border(
           top: BorderSide(color: AppColors.border, width: 1.5),
         ),
@@ -150,7 +150,7 @@ class _BottomBar extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: i == index
-                                ? AppColors.primary.withOpacity(0.12)
+                                ? AppColors.primary.withValues(alpha: 0.12)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(13),
                           ),

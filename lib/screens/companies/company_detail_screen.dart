@@ -393,7 +393,7 @@ class _AgencyReviewsSection extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.06),
+                      color: AppColors.primary.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -473,10 +473,10 @@ class _CompanyHeader extends StatelessWidget {
               ),
             if ((company.bannerUrl ?? '').isNotEmpty)
               Positioned.fill(
-                child: Container(color: company.tint.withOpacity(0.42)),
+                child: Container(color: company.tint.withValues(alpha: 0.42)),
               ),
             Positioned.fill(
-              child: Container(color: Colors.black.withOpacity(0.16)),
+              child: Container(color: Colors.black.withValues(alpha: 0.16)),
             ),
             const Positioned.fill(
               child: IslamicPattern(opacity: 0.06, cell: 72),
@@ -492,7 +492,7 @@ class _CompanyHeader extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
+                        color: Colors.white.withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(13),
                       ),
                       child: const Icon(
@@ -518,7 +518,7 @@ class _CompanyHeader extends StatelessWidget {
                               width: 62,
                               height: 62,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.95),
+                                color: Colors.white.withValues(alpha: 0.95),
                                 borderRadius: BorderRadius.circular(18),
                               ),
                               alignment: Alignment.center,
@@ -564,7 +564,7 @@ class _CompanyHeader extends StatelessWidget {
                               ),
                               style: AppTheme.sans(
                                 12.5,
-                                color: Colors.white.withOpacity(0.78),
+                                color: Colors.white.withValues(alpha: 0.78),
                               ),
                             ),
                           ],
@@ -615,7 +615,7 @@ class _StatBox extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: AppTheme.sans(11, color: Colors.white.withOpacity(0.7)),
+          style: AppTheme.sans(11, color: Colors.white.withValues(alpha: 0.7)),
         ),
       ],
     );
@@ -634,7 +634,7 @@ class _TagBadge extends StatelessWidget {
         color: const Color(0xFFEAF1EC),
         borderRadius: BorderRadius.circular(9),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.15),
+          color: AppColors.primary.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
@@ -671,12 +671,12 @@ class _CompanyOfferCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.05),
+              color: const Color(0xFF0F3729).withValues(alpha: 0.05),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),

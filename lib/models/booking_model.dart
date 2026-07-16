@@ -6,24 +6,18 @@ import 'offer_model.dart';
 /// protected `booking_travellers` table.
 class PilgrimInfo {
   final String fullName;
+  final String localName;
   final String passportNo;
   final DateTime? dateOfBirth;
   final String phone; // lead pilgrim only
 
   const PilgrimInfo({
     required this.fullName,
+    this.localName = '',
     this.passportNo = '',
     this.dateOfBirth,
     this.phone = '',
   });
-
-  String toNoteLine(int index) {
-    final dob = dateOfBirth == null
-        ? ''
-        : dateOfBirth!.toIso8601String().substring(0, 10);
-    final parts = [fullName, dob, if (phone.isNotEmpty) phone];
-    return 'p$index:${parts.join(' | ')}';
-  }
 }
 
 class BookingTraveller {
@@ -33,6 +27,24 @@ class BookingTraveller {
   final String? passportNo;
   final String? passportImagePath;
   final String? selfieImagePath;
+  final DateTime? dateOfBirth;
+  final String? phone;
+  final bool isLead;
+  final String? localName;
+  final String? gender;
+  final String? nationality;
+  final DateTime? passportExpiryDate;
+  final String? nationalId;
+  final String? emergencyContact;
+  final String? medicalNotes;
+  final String? accessibilityNotes;
+  final String documentStatus;
+  final String? documentReason;
+  final String visaStatus;
+  final String? visaReference;
+  final String? visaReason;
+  final DateTime? visaUpdatedAt;
+  final String? transportSeat;
 
   const BookingTraveller({
     required this.id,
@@ -41,6 +53,24 @@ class BookingTraveller {
     this.passportNo,
     this.passportImagePath,
     this.selfieImagePath,
+    this.dateOfBirth,
+    this.phone,
+    this.isLead = false,
+    this.localName,
+    this.gender,
+    this.nationality,
+    this.passportExpiryDate,
+    this.nationalId,
+    this.emergencyContact,
+    this.medicalNotes,
+    this.accessibilityNotes,
+    this.documentStatus = 'missing',
+    this.documentReason,
+    this.visaStatus = 'not_started',
+    this.visaReference,
+    this.visaReason,
+    this.visaUpdatedAt,
+    this.transportSeat,
   });
 
   bool get passportComplete =>
@@ -56,7 +86,84 @@ class BookingTraveller {
         passportNo: row['passport_no'] as String?,
         passportImagePath: row['passport_image_path'] as String?,
         selfieImagePath: row['selfie_image_path'] as String?,
+        dateOfBirth: row['date_of_birth'] == null
+            ? null
+            : DateTime.tryParse(row['date_of_birth'] as String),
+        phone: row['phone'] as String?,
+        isLead: (row['is_lead'] ?? false) as bool,
+        localName: row['local_name'] as String?,
+        gender: row['gender'] as String?,
+        nationality: row['nationality'] as String?,
+        passportExpiryDate: row['passport_expiry_date'] == null
+            ? null
+            : DateTime.tryParse(row['passport_expiry_date'] as String),
+        nationalId: row['national_id'] as String?,
+        emergencyContact: row['emergency_contact'] as String?,
+        medicalNotes: row['medical_notes'] as String?,
+        accessibilityNotes: row['accessibility_notes'] as String?,
+        documentStatus: (row['document_status'] ?? 'missing') as String,
+        documentReason: row['document_reason'] as String?,
+        visaStatus: (row['visa_status'] ?? 'not_started') as String,
+        visaReference: row['visa_reference'] as String?,
+        visaReason: row['visa_reason'] as String?,
+        visaUpdatedAt: row['visa_updated_at'] == null
+            ? null
+            : DateTime.tryParse(row['visa_updated_at'] as String),
+        transportSeat: row['transport_seat'] as String?,
       );
+}
+
+class BookingQuote {
+  final String offerId;
+  final int version;
+  final int travellers;
+  final int roomOccupancy;
+  final int roomCount;
+  final double unitPriceIqd;
+  final double totalIqd;
+  final double amountDueNowIqd;
+  final DateTime? departureDate;
+  final DateTime? returnDate;
+  final String meal;
+  final String cancellationPolicy;
+  final List<String> acceptedPaymentMethods;
+
+  const BookingQuote({
+    required this.offerId,
+    required this.version,
+    required this.travellers,
+    required this.roomOccupancy,
+    required this.roomCount,
+    required this.unitPriceIqd,
+    required this.totalIqd,
+    required this.amountDueNowIqd,
+    this.departureDate,
+    this.returnDate,
+    this.meal = '',
+    this.cancellationPolicy = '',
+    this.acceptedPaymentMethods = const [],
+  });
+
+  factory BookingQuote.fromJson(Map<String, dynamic> json) => BookingQuote(
+    offerId: (json['offer_id'] ?? '') as String,
+    version: ((json['version'] ?? 1) as num).toInt(),
+    travellers: ((json['travellers'] ?? 1) as num).toInt(),
+    roomOccupancy: ((json['room_occupancy'] ?? 2) as num).toInt(),
+    roomCount: ((json['room_count'] ?? 1) as num).toInt(),
+    unitPriceIqd: ((json['unit_price_iqd'] ?? 0) as num).toDouble(),
+    totalIqd: ((json['total_iqd'] ?? 0) as num).toDouble(),
+    amountDueNowIqd: ((json['amount_due_now_iqd'] ?? 0) as num).toDouble(),
+    departureDate: json['departure_date'] == null
+        ? null
+        : DateTime.tryParse(json['departure_date'].toString()),
+    returnDate: json['return_date'] == null
+        ? null
+        : DateTime.tryParse(json['return_date'].toString()),
+    meal: (json['meal'] ?? '') as String,
+    cancellationPolicy: (json['cancellation_policy'] ?? '') as String,
+    acceptedPaymentMethods:
+        ((json['accepted_payment_methods'] ?? const []) as List).cast<String>(),
+  );
 }
 
 class Booking {
@@ -79,10 +186,22 @@ class Booking {
   final String? roomLabel;
   final int? roomOccupancy;
   final String? mealPreference;
+  final String? contactPhone;
+  final String? note;
   final DateTime? expiresAt;
   final String payMethod; // 'cash' | 'card' | 'fib'
   final String ref;
   final double total; // IQD
+  final double unitPrice;
+  final int roomCount;
+  final double amountDueNow;
+  final double amountPaid;
+  final int quoteVersion;
+  final String cancellationPolicySnapshot;
+  final double depositIqdSnapshot;
+  final bool nonRefundableDepositSnapshot;
+  final double refundDue;
+  final String refundStatus;
 
   Booking({
     required this.id,
@@ -104,10 +223,22 @@ class Booking {
     this.roomLabel,
     this.roomOccupancy,
     this.mealPreference,
+    this.contactPhone,
+    this.note,
     this.expiresAt,
     this.payMethod = 'cash',
     required this.ref,
     required this.total,
+    this.unitPrice = 0,
+    this.roomCount = 1,
+    this.amountDueNow = 0,
+    this.amountPaid = 0,
+    this.quoteVersion = 1,
+    this.cancellationPolicySnapshot = '',
+    this.depositIqdSnapshot = 0,
+    this.nonRefundableDepositSnapshot = false,
+    this.refundDue = 0,
+    this.refundStatus = 'none',
   }) : operationalStage = operationalStage ?? status.toLowerCase();
 
   String get totalFmt => fmtIqd(total);
@@ -148,10 +279,22 @@ class Booking {
     roomLabel: roomLabel,
     roomOccupancy: roomOccupancy,
     mealPreference: mealPreference,
+    contactPhone: contactPhone,
+    note: note,
     expiresAt: expiresAt,
     payMethod: payMethod,
     ref: ref,
     total: total,
+    unitPrice: unitPrice,
+    roomCount: roomCount,
+    amountDueNow: amountDueNow,
+    amountPaid: amountPaid,
+    quoteVersion: quoteVersion,
+    cancellationPolicySnapshot: cancellationPolicySnapshot,
+    depositIqdSnapshot: depositIqdSnapshot,
+    nonRefundableDepositSnapshot: nonRefundableDepositSnapshot,
+    refundDue: refundDue,
+    refundStatus: refundStatus,
   );
 
   /// Maps a DB row (with joined packages/companies) into the UI model.
@@ -159,8 +302,11 @@ class Booking {
   factory Booking.fromRow(Map<String, dynamic> r) {
     final pkg = (r['packages'] ?? const {}) as Map<String, dynamic>;
     final comp = (r['companies'] ?? const {}) as Map<String, dynamic>;
+    final quote = r['quote_snapshot'] is Map
+        ? Map<String, dynamic>.from(r['quote_snapshot'] as Map)
+        : const <String, dynamic>{};
     final tint = Company.parseTint(comp['tint'] as String?);
-    final dark = Color.alphaBlend(Colors.black.withOpacity(0.55), tint);
+    final dark = Color.alphaBlend(Colors.black.withValues(alpha: 0.55), tint);
     DateTime? dep = r['departure_date'] == null
         ? null
         : DateTime.tryParse(r['departure_date'] as String);
@@ -172,12 +318,12 @@ class Booking {
       id: r['id'] as String,
       offerId: (r['package_id'] ?? '') as String,
       companyId: (r['company_id'] ?? '') as String,
-      title: (pkg['title'] ?? '') as String,
-      titleAr: pkg['title_ar'] as String?,
-      titleEn: pkg['title_en'] as String?,
-      companyName: (comp['name'] ?? '') as String,
-      companyNameAr: comp['name_ar'] as String?,
-      companyNameEn: comp['name_en'] as String?,
+      title: (quote['offer_title'] ?? pkg['title'] ?? '') as String,
+      titleAr: (quote['offer_title_ar'] ?? pkg['title_ar']) as String?,
+      titleEn: (quote['offer_title_en'] ?? pkg['title_en']) as String?,
+      companyName: (quote['company_name'] ?? comp['name'] ?? '') as String,
+      companyNameAr: (quote['company_name_ar'] ?? comp['name_ar']) as String?,
+      companyNameEn: (quote['company_name_en'] ?? comp['name_en']) as String?,
       gradColors: [tint, dark],
       departureDate: dep,
       travelers: (r['travellers'] ?? 1) as int,
@@ -188,12 +334,27 @@ class Booking {
       roomLabel: r['room_label'] as String?,
       roomOccupancy: (r['room_occupancy'] as num?)?.toInt(),
       mealPreference: r['meal_preference'] as String?,
+      contactPhone: r['contact_phone'] as String?,
+      note: r['note'] as String?,
       expiresAt: r['expires_at'] == null
           ? null
           : DateTime.tryParse(r['expires_at'] as String),
       payMethod: (r['pay_method'] ?? 'cash') as String,
       ref: 'UM-${(r['id'] as String).substring(0, 6).toUpperCase()}',
       total: ((r['total_iqd'] ?? 0) as num).toDouble(),
+      unitPrice: ((r['unit_price_iqd'] ?? 0) as num).toDouble(),
+      roomCount: ((r['room_count'] ?? 1) as num).toInt(),
+      amountDueNow: ((r['amount_due_now_iqd'] ?? r['total_iqd'] ?? 0) as num)
+          .toDouble(),
+      amountPaid: ((r['amount_paid_iqd'] ?? 0) as num).toDouble(),
+      quoteVersion: ((r['quote_version'] ?? 1) as num).toInt(),
+      cancellationPolicySnapshot:
+          (r['cancellation_policy_snapshot'] ?? '') as String,
+      depositIqdSnapshot: ((r['deposit_iqd_snapshot'] ?? 0) as num).toDouble(),
+      nonRefundableDepositSnapshot:
+          (r['non_refundable_deposit_snapshot'] ?? false) as bool,
+      refundDue: ((r['refund_due_iqd'] ?? 0) as num).toDouble(),
+      refundStatus: (r['refund_status'] ?? 'none') as String,
     );
   }
 

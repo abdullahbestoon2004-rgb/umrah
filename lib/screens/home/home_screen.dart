@@ -214,7 +214,7 @@ class _AdsCarouselState extends State<_AdsCarousel> {
                     decoration: BoxDecoration(
                       color: i == _page
                           ? AppColors.primary
-                          : AppColors.primary.withOpacity(0.25),
+                          : AppColors.primary.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -266,7 +266,7 @@ class _AdCard extends StatelessWidget {
         if (loadingProgress == null) return child;
         return const _CarouselImagePlaceholder();
       },
-      errorBuilder: (_, __, ___) => const GradientCard(
+      errorBuilder: (_, _, _) => const GradientCard(
         colors: [AppColors.primary, AppColors.primaryDark],
         height: 240,
       ),
@@ -295,7 +295,7 @@ class _AdCard extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    const Color(0xFF071C17).withOpacity(0.92),
+                    const Color(0xFF071C17).withValues(alpha: 0.92),
                   ],
                   stops: const [0.4, 1.0],
                 ),
@@ -310,7 +310,7 @@ class _AdCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.gold.withOpacity(0.95),
+                  color: AppColors.gold.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -355,7 +355,7 @@ class _AdCard extends StatelessWidget {
                             t.homeDaysStarHotel(offer.days, offer.acc),
                             style: AppTheme.sans(
                               12.5,
-                              color: Colors.white.withOpacity(0.82),
+                              color: Colors.white.withValues(alpha: 0.82),
                             ),
                           ),
                         ),
@@ -457,7 +457,7 @@ class _HeroCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        const Color(0xFF071C17).withOpacity(0.92),
+                        const Color(0xFF071C17).withValues(alpha: 0.92),
                       ],
                       stops: const [0.4, 1.0],
                     ),
@@ -473,7 +473,7 @@ class _HeroCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.95),
+                      color: AppColors.gold.withValues(alpha: 0.95),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -523,7 +523,7 @@ class _HeroCard extends StatelessWidget {
                               t.homeDaysStarHotel(offer.days, offer.acc),
                               style: AppTheme.sans(
                                 12.5,
-                                color: Colors.white.withOpacity(0.82),
+                                color: Colors.white.withValues(alpha: 0.82),
                               ),
                             ),
                           ),
@@ -584,7 +584,7 @@ class _AgenciesSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 22),
             itemCount: companies.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
             itemBuilder: (context, i) => _AgencyCard(company: companies[i]),
           ),
         ),
@@ -618,12 +618,12 @@ class _AgencyCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.07),
+              color: const Color(0xFF0F3729).withValues(alpha: 0.07),
               blurRadius: 26,
               offset: const Offset(0, 12),
             ),
@@ -646,7 +646,9 @@ class _AgencyCard extends StatelessWidget {
                       children: [
                         if ((company.bannerUrl ?? '').isNotEmpty) ...[
                           Image.network(company.bannerUrl!, fit: BoxFit.cover),
-                          Container(color: company.tint.withOpacity(0.42)),
+                          Container(
+                            color: company.tint.withValues(alpha: 0.42),
+                          ),
                         ] else ...[
                           Container(color: company.tint),
                           const IslamicPattern(opacity: 0.10, cell: 40),
@@ -660,7 +662,7 @@ class _AgencyCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
+                              color: Colors.white.withValues(alpha: 0.95),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -698,7 +700,7 @@ class _AgencyCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -808,7 +810,7 @@ class _CuratedSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 22),
           itemCount: offers.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 14),
+          separatorBuilder: (_, _) => const SizedBox(height: 14),
           itemBuilder: (context, i) => _CuratedOfferCard(offer: offers[i]),
         ),
       ],
@@ -840,12 +842,12 @@ class _CuratedOfferCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.06),
+              color: const Color(0xFF0F3729).withValues(alpha: 0.06),
               blurRadius: 26,
               offset: const Offset(0, 10),
             ),
@@ -869,7 +871,7 @@ class _CuratedOfferCard extends StatelessWidget {
                     offer.cityCode,
                     style: AppTheme.sans(
                       8,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                     ).copyWith(letterSpacing: 0.8),
                   ),
                 ),
@@ -1029,7 +1031,7 @@ class _QuickCategories extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
         itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, i) {
           final item = items[i];
           return TagChip(
@@ -1134,6 +1136,7 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
         final prayerData = json.decode(prayerRes.body);
         final data = prayerData['data'];
         if (data != null) {
+          if (!mounted) return;
           final timings = data['timings'];
           final hijri = data['date']['hijri'];
           final lang = Localizations.localeOf(context).languageCode;
@@ -1267,8 +1270,8 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
     final diff = nextTime.difference(now);
     final h = diff.inHours;
     final m = diff.inMinutes % 60;
-    if (lang == 'ar') return "بعد ${h > 0 ? '$hس ' : ''}${m}د";
-    if (lang == 'ku') return "دوای ${h > 0 ? '$hک ' : ''}${m}خ";
+    if (lang == 'ar') return "بعد ${h > 0 ? '$hس ' : ''}$mد";
+    if (lang == 'ku') return "دوای ${h > 0 ? '$hک ' : ''}$mخ";
     return "in ${h > 0 ? '${h}h ' : ''}${m}m";
   }
 
@@ -1394,7 +1397,7 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F3729).withOpacity(0.12),
+                color: const Color(0xFF0F3729).withValues(alpha: 0.12),
                 blurRadius: 18,
                 offset: const Offset(0, 8),
               ),
@@ -1412,7 +1415,7 @@ class _PrayerTimesWidgetState extends State<_PrayerTimesWidget> {
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.15),
+                      color: AppColors.gold.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,

@@ -140,7 +140,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             alignment: AlignmentDirectional.centerEnd,
                             padding: const EdgeInsetsDirectional.only(end: 20),
                             decoration: BoxDecoration(
-                              color: AppColors.errorRed.withOpacity(0.12),
+                              color: AppColors.errorRed.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Icon(
@@ -265,7 +265,7 @@ class _NotificationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isNew
-                ? AppColors.primary.withOpacity(0.3)
+                ? AppColors.primary.withValues(alpha: 0.3)
                 : AppColors.border,
             width: 1.5,
           ),
@@ -277,7 +277,7 @@ class _NotificationCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _tint.withOpacity(0.12),
+                color: _tint.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(_icon, color: _tint, size: 20),

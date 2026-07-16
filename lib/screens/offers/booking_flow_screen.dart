@@ -29,11 +29,13 @@ class BookingFlowScreen extends StatefulWidget {
 /// Controllers for one pilgrim's details card.
 class _PilgrimFields {
   final name = TextEditingController();
+  final localName = TextEditingController();
   final phone = TextEditingController();
   DateTime? dob;
 
   void dispose() {
     name.dispose();
+    localName.dispose();
     phone.dispose();
   }
 
@@ -41,6 +43,7 @@ class _PilgrimFields {
 
   PilgrimInfo toInfo() => PilgrimInfo(
     fullName: name.text.trim(),
+    localName: localName.text.trim(),
     dateOfBirth: dob,
     phone: phone.text.trim(),
   );
@@ -51,20 +54,42 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   late int _roomOccupancy;
   int _travelers = 1;
   DateTime? _departureDate;
-  String _mealPreference = 'Breakfast';
+  String _mealPreference = '';
   late String _payMethod;
   bool _submitting = false;
+  BookingQuote? _quote;
+  String? _quoteError;
+  bool _quoteLoading = false;
+  late final String _requestKey;
 
   final List<_PilgrimFields> _pilgrims = [];
 
-  double get _total => widget.offer.price * _travelers;
+  double get _unitPrice => widget.offer.priceForOccupancy(_roomOccupancy);
+  double get _total => _quote?.totalIqd ?? _unitPrice * _travelers;
+  double get _amountDueNow =>
+      _quote?.amountDueNowIqd ??
+      (widget.offer.depositIqd > 0
+          ? (widget.offer.depositIqd * _travelers).clamp(0, _total)
+          : _total);
+  int get _roomCount =>
+      _quote?.roomCount ?? (_travelers / _roomOccupancy).ceil();
+  List<String> get _supportedPaymentMethods =>
+      (_quote?.acceptedPaymentMethods ?? widget.offer.acceptedPaymentMethods)
+          .where((method) => method == 'fib' || method == 'cash')
+          .toList();
   String get _totalFmt => fmtIqd(_total);
 
   @override
   void initState() {
     super.initState();
+    _requestKey = '${widget.offer.id}-${DateTime.now().microsecondsSinceEpoch}';
     final provider = context.read<AppProvider>();
-    _payMethod = provider.preferredPayMethod == 'fib' ? 'fib' : 'cash';
+    final supportedMethods = widget.offer.acceptedPaymentMethods
+        .where((method) => method == 'fib' || method == 'cash')
+        .toList();
+    _payMethod = supportedMethods.contains(provider.preferredPayMethod)
+        ? provider.preferredPayMethod
+        : (supportedMethods.isEmpty ? 'cash' : supportedMethods.first);
     final availableRooms = widget.offer.availableRoomOccupancies;
     _roomOccupancy = availableRooms.first;
     // Preserve the legacy package preference when it is still available.
@@ -79,7 +104,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         availableRooms.contains(4)) {
       _roomOccupancy = 4;
     }
+    _departureDate = widget.offer.departureDate;
+    _mealPreference = widget.offer.meals;
     _syncPilgrims();
+    Future<void>.microtask(_refreshQuote);
   }
 
   @override
@@ -130,21 +158,50 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
 
   String _fmtDate(DateTime d) => '${d.day}/${d.month}/${d.year}';
 
-  Future<void> _pickDepartureDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _departureDate ?? now.add(const Duration(days: 30)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365 * 2)),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppColors.primary),
-        ),
-        child: child!,
-      ),
-    );
-    if (picked != null) setState(() => _departureDate = picked);
+  Future<void> _refreshQuote() async {
+    final requestedTravellers = _travelers;
+    final requestedOccupancy = _roomOccupancy;
+    if (mounted) {
+      setState(() {
+        _quoteLoading = true;
+        _quoteError = null;
+      });
+    }
+    try {
+      final quote = await context.read<AppProvider>().bookingQuote(
+        widget.offer,
+        travelers: requestedTravellers,
+        roomOccupancy: requestedOccupancy,
+      );
+      if (!mounted ||
+          requestedTravellers != _travelers ||
+          requestedOccupancy != _roomOccupancy) {
+        return;
+      }
+      setState(() {
+        _quote = quote;
+        _quoteLoading = false;
+        _departureDate = quote.departureDate;
+        if (quote.meal.isNotEmpty) _mealPreference = quote.meal;
+        if (!quote.acceptedPaymentMethods.contains(_payMethod)) {
+          final supported = quote.acceptedPaymentMethods
+              .where((method) => method == 'fib' || method == 'cash')
+              .toList();
+          if (supported.isNotEmpty) _payMethod = supported.first;
+        }
+      });
+    } catch (error) {
+      if (!mounted ||
+          requestedTravellers != _travelers ||
+          requestedOccupancy != _roomOccupancy) {
+        return;
+      }
+      setState(() {
+        _quote = null;
+        _quoteLoading = false;
+        _quoteError = error.toString();
+      });
+    }
   }
 
   Future<void> _pickDob(_PilgrimFields entry) async {
@@ -186,6 +243,15 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       if (ok != true || !mounted) return;
     }
 
+    await _refreshQuote();
+    if (!mounted) return;
+    if (_quote == null || _quoteError != null) {
+      messenger.showSnackBar(
+        appSnack(_quoteError ?? t.bookingFailed, isError: true),
+      );
+      return;
+    }
+
     setState(() => _submitting = true);
     final err = await provider.confirmBooking(
       widget.offer,
@@ -196,6 +262,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       roomOccupancy: _roomOccupancy,
       mealPreference: _mealPreference,
       pilgrims: _pilgrims.map((p) => p.toInfo()).toList(),
+      requestKey: _requestKey,
     );
     if (!mounted) return;
     if (err == null) {
@@ -345,35 +412,38 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               t,
               widget.offer.availableRoomOccupancies[i],
             ),
-            sub: t.bookingRoomPax(widget.offer.availableRoomOccupancies[i]),
+            sub:
+                '${t.bookingRoomPax(widget.offer.availableRoomOccupancies[i])} · ${fmtIqd(widget.offer.priceForOccupancy(widget.offer.availableRoomOccupancies[i]))}',
             badge: widget.offer.availableRoomOccupancies[i] == 3
                 ? t.bookingMostPopular
                 : null,
             selected:
                 _roomOccupancy == widget.offer.availableRoomOccupancies[i],
-            onTap: () => setState(
-              () => _roomOccupancy = widget.offer.availableRoomOccupancies[i],
-            ),
+            onTap: () {
+              setState(
+                () => _roomOccupancy = widget.offer.availableRoomOccupancies[i],
+              );
+              _refreshQuote();
+            },
           ),
           if (i < widget.offer.availableRoomOccupancies.length - 1)
             const SizedBox(height: 12),
         ],
         const SizedBox(height: 22),
-        Text(
-          t.bookingChooseMeal,
-          style: AppTheme.sans(14, weight: FontWeight.w700),
-        ),
-        const SizedBox(height: 12),
-        for (final meal in const ['Breakfast', 'Half board', 'Full board']) ...[
-          _RoomCard(
-            label: Offer.mealsLabel(meal, t),
-            sub: t.bookingMealPreference,
-            selected: _mealPreference == meal,
-            onTap: () => setState(() => _mealPreference = meal),
+        if (_mealPreference.isNotEmpty) ...[
+          Text(
+            t.bookingChooseMeal,
+            style: AppTheme.sans(14, weight: FontWeight.w700),
           ),
-          if (meal != 'Full board') const SizedBox(height: 12),
+          const SizedBox(height: 12),
+          _RoomCard(
+            label: Offer.mealsLabel(_mealPreference, t),
+            sub: t.bookingMealPreference,
+            selected: true,
+            onTap: () {},
+          ),
+          const SizedBox(height: 22),
         ],
-        const SizedBox(height: 22),
         Text(
           t.bookingPilgrimCountTitle,
           style: AppTheme.sans(14, weight: FontWeight.w700),
@@ -385,7 +455,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -414,6 +484,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                       _travelers--;
                       _syncPilgrims();
                     });
+                    _refreshQuote();
                   }
                 },
               ),
@@ -424,11 +495,13 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               _CounterBtn(
                 icon: Icons.add_rounded,
                 onTap: () {
-                  if (_travelers < 9) {
+                  final remaining = widget.offer.remainingSeats ?? 50;
+                  if (_travelers < remaining && _travelers < 50) {
                     setState(() {
                       _travelers++;
                       _syncPilgrims();
                     });
+                    _refreshQuote();
                   }
                 },
               ),
@@ -437,65 +510,69 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         ),
         const SizedBox(height: 12),
         // departure date
-        GestureDetector(
-          onTap: _pickDepartureDate,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: AppColors.primary.withOpacity(0.1),
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  child: const Icon(
-                    Icons.event_rounded,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 13),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.offerDetailDepartureDate,
-                        style: AppTheme.sans(14, weight: FontWeight.w700),
-                      ),
-                      Text(
-                        _departureDate == null
-                            ? t.dateToBeScheduled
-                            : _fmtDate(_departureDate!),
-                        style: AppTheme.sans(
-                          11.5,
-                          color: _departureDate == null
-                              ? AppColors.muted
-                              : AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.edit_calendar_rounded,
-                  color: AppColors.primary,
-                  size: 18,
-                ),
-              ],
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              width: 1.5,
             ),
           ),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: const Icon(
+                  Icons.event_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t.offerDetailDepartureDate,
+                      style: AppTheme.sans(14, weight: FontWeight.w700),
+                    ),
+                    Text(
+                      _departureDate == null
+                          ? t.dateToBeScheduled
+                          : _fmtDate(_departureDate!),
+                      style: AppTheme.sans(
+                        11.5,
+                        color: _departureDate == null
+                            ? AppColors.muted
+                            : AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.lock_outline_rounded,
+                color: AppColors.primary,
+                size: 18,
+              ),
+            ],
+          ),
         ),
+        if (_quoteError != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            _quoteError!,
+            style: AppTheme.sans(12, color: AppColors.errorRed),
+          ),
+        ],
         const SizedBox(height: 18),
         // running total on deep emerald, gold total — echoes the prayer card
         Container(
@@ -510,10 +587,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      t.bookingTotalLine(_travelers, widget.offer.priceFmt),
+                      t.bookingTotalLine(_travelers, fmtIqd(_unitPrice)),
                       style: AppTheme.sans(
                         12,
-                        color: Colors.white.withOpacity(0.72),
+                        color: Colors.white.withValues(alpha: 0.72),
                       ),
                     ),
                   ),
@@ -521,7 +598,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                     _totalFmt,
                     style: AppTheme.sans(
                       12,
-                      color: Colors.white.withOpacity(0.72),
+                      color: Colors.white.withValues(alpha: 0.72),
                     ),
                   ),
                 ],
@@ -547,6 +624,29 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   ),
                 ],
               ),
+              if (_amountDueNow < _total) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      t.offerFormDepositAmount,
+                      style: AppTheme.sans(
+                        12,
+                        color: Colors.white.withValues(alpha: 0.72),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      fmtIqd(_amountDueNow),
+                      style: AppTheme.sans(
+                        12,
+                        weight: FontWeight.w700,
+                        color: const Color(0xFFF3E6C4),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -588,7 +688,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               width: 1.5,
             ),
           ),
@@ -614,6 +714,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
               if (names.isNotEmpty)
                 _SummaryRow(label: t.bookingSummaryPilgrims, value: names),
               _SummaryRow(label: t.bookingSummaryRoom, value: _roomLabel(t)),
+              _SummaryRow(label: t.bookingRoomCount, value: '$_roomCount'),
               _SummaryRow(label: t.bookingSummaryMeal, value: _mealLabel(t)),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -641,37 +742,41 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
           style: AppTheme.sans(14, weight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
-        _PayCard(
-          label: t.payFib,
-          sub: t.payFibSub,
-          selected: _payMethod == 'fib',
-          onTap: () => setState(() => _payMethod = 'fib'),
-          leading: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFF16324F),
-              borderRadius: BorderRadius.circular(11),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'FIB',
-              style: AppTheme.sans(
-                11,
-                weight: FontWeight.w800,
-                color: Colors.white,
+        if (_supportedPaymentMethods.contains('fib')) ...[
+          _PayCard(
+            label: t.payFib,
+            sub: t.payFibSub,
+            selected: _payMethod == 'fib',
+            onTap: () => setState(() => _payMethod = 'fib'),
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFF16324F),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'FIB',
+                style: AppTheme.sans(
+                  11,
+                  weight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-        _PayCard(
-          label: t.payCash,
-          sub: t.payCashSub,
-          selected: _payMethod == 'cash',
-          onTap: () => setState(() => _payMethod = 'cash'),
-          leading: _PayIconTile(icon: Icons.payments_outlined),
-        ),
+          if (_supportedPaymentMethods.contains('cash'))
+            const SizedBox(height: 10),
+        ],
+        if (_supportedPaymentMethods.contains('cash'))
+          _PayCard(
+            label: t.payCash,
+            sub: t.payCashSub,
+            selected: _payMethod == 'cash',
+            onTap: () => setState(() => _payMethod = 'cash'),
+            leading: _PayIconTile(icon: Icons.payments_outlined),
+          ),
       ],
     );
   }
@@ -683,6 +788,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     if (_step == 0) {
       bar = _PrimaryButton(
         label: t.bookingContinue,
+        enabled: !_quoteLoading && _quoteError == null && _quote != null,
         onTap: () => setState(() => _step = 1),
       );
     } else if (_step == 1) {
@@ -721,7 +827,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     }
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background.withOpacity(0.96),
+        color: AppColors.background.withValues(alpha: 0.96),
         border: const Border(
           top: BorderSide(color: Color(0x1E0F5C4D), width: 1.5),
         ),
@@ -756,7 +862,7 @@ class _Stepper extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: i < current
                           ? AppColors.primary
-                          : AppColors.primary.withOpacity(0.15),
+                          : AppColors.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -856,7 +962,7 @@ class _RoomCard extends StatelessWidget {
               boxShadow: selected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFF0F3729).withOpacity(0.1),
+                        color: const Color(0xFF0F3729).withValues(alpha: 0.1),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
@@ -944,7 +1050,7 @@ class _CounterBtn extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(11),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             width: 1.5,
           ),
         ),
@@ -976,7 +1082,7 @@ class _PilgrimCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.1),
+          color: AppColors.primary.withValues(alpha: 0.1),
           width: 1.5,
         ),
       ),
@@ -1036,8 +1142,11 @@ class _PilgrimCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          _FieldLabel(t.bookingFullName),
-          _InputBox(controller: entry.name, hint: t.bookingFullNameHint),
+          _FieldLabel(t.bookingPassportName),
+          _InputBox(controller: entry.name, hint: t.bookingPassportNameHint),
+          const SizedBox(height: 12),
+          _FieldLabel(t.bookingLocalName),
+          _InputBox(controller: entry.localName, hint: t.bookingLocalNameHint),
           const SizedBox(height: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1316,7 +1425,7 @@ class _PrimaryButton extends StatelessWidget {
           boxShadow: enabled
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.4),
+                    color: AppColors.primary.withValues(alpha: 0.4),
                     blurRadius: 28,
                     offset: const Offset(0, 13),
                   ),
@@ -1414,7 +1523,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.22),
+                      color: AppColors.gold.withValues(alpha: 0.22),
                       shape: BoxShape.circle,
                     ),
                     child: Container(
@@ -1442,7 +1551,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     t.bookingRegisteredBody(company.nameFor(lang)),
                     style: AppTheme.sans(
                       13,
-                      color: Colors.white.withOpacity(0.72),
+                      color: Colors.white.withValues(alpha: 0.72),
                     ).copyWith(height: 1.6),
                     textAlign: TextAlign.center,
                   ),
@@ -1472,7 +1581,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                                       color: const Color(0xFFFFF8E8),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: AppColors.gold.withOpacity(0.4),
+                                        color: AppColors.gold.withValues(alpha: 0.4),
                                       ),
                                     ),
                                     child: Text(
@@ -1623,10 +1732,10 @@ class BookingConfirmationScreen extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.28),
+                                color: Colors.white.withValues(alpha: 0.28),
                                 width: 1.5,
                               ),
                             ),

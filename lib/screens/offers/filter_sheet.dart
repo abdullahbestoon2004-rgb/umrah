@@ -60,7 +60,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 width: 42,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.25),
+                  color: AppColors.primary.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
@@ -109,7 +109,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: AppColors.primary,
                   thumbColor: AppColors.primary,
-                  inactiveTrackColor: AppColors.primary.withOpacity(0.15),
+                  inactiveTrackColor: AppColors.primary.withValues(alpha: 0.15),
                 ),
                 child: Slider(
                   min: 500000,
@@ -303,7 +303,7 @@ class _FilterSheetState extends State<FilterSheet> {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withValues(alpha: 0.4),
                         blurRadius: 30,
                         offset: const Offset(0, 14),
                       ),
@@ -366,7 +366,7 @@ class _Opt extends StatelessWidget {
           border: Border.all(
             color: active
                 ? AppColors.primary
-                : AppColors.primary.withOpacity(0.16),
+                : AppColors.primary.withValues(alpha: 0.16),
             width: 1.5,
           ),
         ),

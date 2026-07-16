@@ -44,6 +44,9 @@ class OfferHotel {
   final String name;
   final String? nameAr;
   final String? nameEn;
+  final String description;
+  final String? descriptionAr;
+  final String? descriptionEn;
   final int starRating;
   final int nights;
   final int distanceFromHaramM;
@@ -54,6 +57,9 @@ class OfferHotel {
     required this.name,
     this.nameAr,
     this.nameEn,
+    this.description = '',
+    this.descriptionAr,
+    this.descriptionEn,
     required this.starRating,
     required this.nights,
     required this.distanceFromHaramM,
@@ -66,6 +72,16 @@ class OfferHotel {
     return name;
   }
 
+  String descriptionFor(String lang) {
+    if (lang == 'en' && (descriptionEn ?? '').isNotEmpty) {
+      return descriptionEn!;
+    }
+    if (lang == 'ar' && (descriptionAr ?? '').isNotEmpty) {
+      return descriptionAr!;
+    }
+    return description;
+  }
+
   factory OfferHotel.fromRow(Map<String, dynamic> row) {
     final nested = row['hotels'];
     final hotel = nested is Map<String, dynamic> ? nested : row;
@@ -74,6 +90,9 @@ class OfferHotel {
       name: (hotel['name'] ?? '') as String,
       nameAr: hotel['name_ar'] as String?,
       nameEn: hotel['name_en'] as String?,
+      description: (hotel['description'] ?? '') as String,
+      descriptionAr: hotel['description_ar'] as String?,
+      descriptionEn: hotel['description_en'] as String?,
       starRating: ((hotel['star_rating'] ?? 3) as num).toInt(),
       nights: ((row['nights'] ?? 0) as num).toInt(),
       distanceFromHaramM: ((row['distance_from_haram_m'] ?? 0) as num).toInt(),
@@ -455,7 +474,7 @@ class Offer {
 
   factory Offer.fromRow(Map<String, dynamic> r, {Company? company}) {
     final tint = company?.tint ?? const Color(0xFF0F5C4D);
-    final dark = Color.alphaBlend(Colors.black.withOpacity(0.55), tint);
+    final dark = Color.alphaBlend(Colors.black.withValues(alpha: 0.55), tint);
     final itinRows = (r['itinerary_days'] as List?) ?? const [];
     final itinerary =
         itinRows
@@ -571,65 +590,21 @@ class Offer {
   }
 
   List<ItineraryDay> buildItinerary(AppLocalizations t) {
-    if (customItinerary != null && customItinerary!.isNotEmpty)
-      return customItinerary!;
-    final hasTwo = city.contains('·');
-    final half = (days / 2).round().clamp(2, days);
-    final items = <ItineraryDay>[
-      ItineraryDay(
-        t.offerFallbackDayLabel(1),
-        t.offerFallbackDay1Title,
-        t.offerFallbackDay1Summary,
-      ),
-      ItineraryDay(
-        t.offerFallbackDayLabel(2),
-        t.offerFallbackDay2Title,
-        t.offerFallbackDay2Summary,
-      ),
-      ItineraryDay(
-        t.offerFallbackDayRangeLabel(3, half),
-        t.offerFallbackMakkahTitle,
-        t.offerFallbackMakkahSummary,
-      ),
-    ];
-    if (hasTwo) {
-      items.add(
-        ItineraryDay(
-          t.offerFallbackDayLabel(half + 1),
-          t.offerFallbackMadinahTravelTitle,
-          t.offerFallbackMadinahTravelSummary,
-        ),
-      );
-      items.add(
-        ItineraryDay(
-          t.offerFallbackFinalDaysLabel,
-          t.offerFallbackMadinahReturnTitle,
-          t.offerFallbackMadinahReturnSummary,
-        ),
-      );
-    } else {
-      items.add(
-        ItineraryDay(
-          t.offerFallbackFinalDaysLabel,
-          t.offerFallbackWorshipReturnTitle,
-          t.offerFallbackWorshipReturnSummary,
-        ),
-      );
-    }
-    return items;
+    return customItinerary ?? const [];
   }
 
   List<String> buildIncludes(AppLocalizations t) {
-    if (customIncludes != null && customIncludes!.isNotEmpty)
-      return customIncludes!;
-    return [
-      t.offerFallbackIncludeVisa,
-      isByAir ? t.offerFallbackIncludeFlights : t.offerFallbackIncludeCoach,
-      t.offerFallbackIncludeHotel(acc, hotel),
-      t.offerFallbackIncludeMeals(mealsLabelFor(t)),
-      t.offerFallbackIncludeZiyarah,
-      t.offerFallbackIncludeGuide,
-    ];
+    if (inclusions.isNotEmpty) {
+      return inclusions
+          .where((item) => item.included)
+          .map((item) {
+            final details = item.detailsFor(t.localeName);
+            return details.isEmpty ? item.type : details;
+          })
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+    return customIncludes ?? const [];
   }
 }
 

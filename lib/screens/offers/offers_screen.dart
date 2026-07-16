@@ -261,8 +261,8 @@ class _SortBtn extends StatelessWidget {
           borderRadius: BorderRadius.circular(9),
           border: Border.all(
             color: active
-                ? AppColors.primary.withOpacity(0.3)
-                : AppColors.primary.withOpacity(0.12),
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : AppColors.primary.withValues(alpha: 0.12),
             width: 1.5,
           ),
         ),
@@ -327,7 +327,7 @@ class _OffersList extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(22, 14, 22, 24),
       itemCount: offers.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 15),
+      separatorBuilder: (_, _) => const SizedBox(height: 15),
       itemBuilder: (context, i) => OfferCard(offer: offers[i]),
     );
   }
@@ -354,12 +354,12 @@ class OfferCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F3729).withOpacity(0.07),
+              color: const Color(0xFF0F3729).withValues(alpha: 0.07),
               blurRadius: 30,
               offset: const Offset(0, 14),
             ),
@@ -386,7 +386,7 @@ class OfferCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            const Color(0xFF071C17).withOpacity(0.55),
+                            const Color(0xFF071C17).withValues(alpha: 0.55),
                           ],
                           stops: const [0.4, 1.0],
                         ),
@@ -424,7 +424,7 @@ class OfferCard extends StatelessWidget {
                           width: 34,
                           height: 34,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.92),
+                            color: Colors.white.withValues(alpha: 0.92),
                             borderRadius: BorderRadius.circular(11),
                           ),
                           child: Icon(

@@ -229,7 +229,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get offerDetailFreeCancellation =>
-      'هەڵوەشاندنەوەی بەخۆڕایی تا ٣٠ ڕۆژ پێش بەڕێکەوتن';
+      'سیاسەتی هەڵوەشاندنەوەی ئەم گەشتە ببینە';
 
   @override
   String get offerDetailDepartureDate => 'بەرواری گەشت';
@@ -611,7 +611,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String bookingsCancelBody(String title) {
-    return '\"$title\" هەڵدەوەشێنرێتەوە. هەڵوەشاندنەوە بێبەرامبەرە تا 30 ڕۆژ پێش گەشت.';
+    return '\"$title\" هەڵدەوەشێنرێتەوە. پێش بەردەوامبوون سیاسەتی گەشت و بڕی چاوەڕوانکراوی گەڕاندنەوە بخوێنەوە.';
   }
 
   @override
@@ -999,7 +999,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get helpFaq2A =>
-      'بەڵێ — هەڵوەشاندنەوە بێبەرامبەرە تا 30 ڕۆژ پێش گەشت. گەشتەکانم بکەرەوە و دەست بنێ بە \"هەڵوەشاندنەوەی گەشت\".';
+      'گەشتەکانم بکەرەوە و \"هەڵوەشاندنەوەی گەشت\" هەڵبژێرە. ئەپەکە پێش پشتڕاستکردنەوە سیاسەتی تۆمارکراو و بڕی گەڕاندنەوە پیشان دەدات.';
 
   @override
   String get helpFaq3Q => 'کۆمپانیاکان پشتڕاستکراون؟';
@@ -1013,7 +1013,7 @@ class AppLocalizationsKu extends AppLocalizations {
 
   @override
   String get helpFaq4A =>
-      'هەر پێشنیارێک ئەوانە دەنووسێت کە لەخۆی دەگرێت — ڤیزا، گواستنەوە، هوتێل، خواردن و زیارەتی بە ڕێنمایی. سەیری بەشی \"چی لەخۆدەگرێت\" بکە.';
+      'هەر پێشنیارێک خزمەتگوزارییە دیاریکراوەکانی خۆی هەیە. بەشی \"چی لەخۆدەگرێت\" ببینە و هیچ شتێکی نەنووسراو بە لەخۆگیراو مەزانە.';
 
   @override
   String get helpFaq5Q => 'کۆمپانیاکان چۆن بەشداری پلاتفۆرمەکە دەکەن؟';
@@ -1573,7 +1573,7 @@ class AppLocalizationsKu extends AppLocalizations {
   String get addEditOfferPricing => 'نرخنان';
 
   @override
-  String get addEditOfferPriceUsd => 'نرخ (دۆلار) *';
+  String get addEditOfferPriceUsd => 'نرخی بنەڕەتی (د.ع) *';
 
   @override
   String get addEditOfferOriginalPrice => 'نرخی ڕەسەن';
@@ -2584,6 +2584,23 @@ class AppLocalizationsKu extends AppLocalizations {
   String get offerFormAcceptedPayments => 'شێوازە پەسەندکراوەکانی پارەدان';
 
   @override
+  String get offerFormRequired => 'پێویستە';
+
+  @override
+  String get offerFormInvalidValue => 'تکایە نرخێکی دروست بنووسە.';
+
+  @override
+  String get offerFormSelectOne => 'لانیکەم یەک هەڵبژاردە هەڵبژێرە.';
+
+  @override
+  String get offerFormReturnDateAfterDeparture =>
+      'بەرواری گەڕانەوە دەبێت دوای بەرواری بەڕێکەوتن بێت.';
+
+  @override
+  String get offerFormFixHighlighted =>
+      'تکایە خانە پێویستە دیاریکراوەکان پڕ بکەرەوە.';
+
+  @override
   String get offerSoldOut => 'تەواو فرۆشراوە';
 
   @override
@@ -2928,4 +2945,433 @@ class AppLocalizationsKu extends AppLocalizations {
   @override
   String get identitySelfieExampleCaption =>
       'ڕاستەوخۆ سەیری کامێراکە بکە، دڵنیابە لە ڕووناکی باش و نەبوونی کڵاو یان چاوەیلکەی خۆر.';
+
+  @override
+  String get bookingRoomCount => 'ژمارەی ژوورەکان';
+
+  @override
+  String get bookingNotes => 'تێبینییەکان';
+
+  @override
+  String get bookingAmountDueNow => 'بڕی پێویست ئێستا';
+
+  @override
+  String get bookingCancelReason => 'هۆکاری هەڵوەشاندنەوە';
+
+  @override
+  String get bookingCancelReasonHint =>
+      'هۆکاری هەڵوەشاندنەوەکە بۆ کۆمپانیاکە بنووسە';
+
+  @override
+  String get bookingCancellationPolicy => 'سیاسەتی هەڵوەشاندنەوە';
+
+  @override
+  String get bookingEstimatedRefund => 'بڕی چاوەڕوانکراوی گەڕاندنەوە';
+
+  @override
+  String bookingExpiresAt(String time) {
+    return 'ئەم داواکارییە پێش $time تەواو بکە';
+  }
+
+  @override
+  String get agencyBookingDetails => 'وردەکاری حجز';
+
+  @override
+  String get agencyRequestInformation => 'داوای زانیاری';
+
+  @override
+  String get agencyRequestInformationHint =>
+      'بە ڕوونی بنووسە حاجی چی پێویستە دابین بکات';
+
+  @override
+  String get agencyTravellerDocuments => 'بەڵگەنامەکانی گەشتیاران';
+
+  @override
+  String get agencyDeclineReason => 'هۆکاری ڕەتکردنەوە';
+
+  @override
+  String get offerFormBothHotelsRequired =>
+      'هەردوو هۆتێلەکە پێویستیان بە ناو و وەسفی تایبەت هەیە.';
+
+  @override
+  String offerFormHotelNightsTotal(int nights) {
+    return 'کۆی شەوەکانی هۆتێل دەبێت $nights بێت.';
+  }
+
+  @override
+  String get offerFormPaymentRequired => 'لانیکەم یەک شێوازی پارەدان هەڵبژێرە.';
+
+  @override
+  String get offerFormRoomPriceRequired =>
+      'هەر ژوورێکی هەڵبژێردراو پێویستی بە نرخێکی دروست هەیە.';
+
+  @override
+  String get offerFormDepositTooHigh =>
+      'پێشەکی نابێت لە کەمترین نرخی کەسێک بەپێی جۆری ژوور زیاتر بێت.';
+
+  @override
+  String get workflowPauseTrip => 'ڕاگرتنی گەشت';
+
+  @override
+  String get workflowPausedSnack => 'گەشتەکە ڕاگیرا و لە بازاڕ لابرا.';
+
+  @override
+  String get offerUnavailable => 'بەردەست نییە';
+
+  @override
+  String get agencyTripOverview => 'پوختە';
+
+  @override
+  String get agencyTripBookings => 'حجزەکان';
+
+  @override
+  String get agencyTripTravellers => 'گەشتیاران';
+
+  @override
+  String get agencyTripDocumentsVisa => 'بەڵگەنامە و ڤیزا';
+
+  @override
+  String get agencyTripOperations => 'کارگێڕی';
+
+  @override
+  String get agencyTripUpdates => 'نوێکارییەکان';
+
+  @override
+  String get agencyTripDuplicate => 'لەبەرگرتنەوەی گەشت';
+
+  @override
+  String get agencyTripDuplicateBody =>
+      'ڕەشنووسێکی نوێ بە هەمان هۆتێل و نرخ و بەرنامە و سیاسەت دروست بکرێت؟ پێش ناردن دەتوانیت ڕێکەوت و ظرفیت بگۆڕیت.';
+
+  @override
+  String get agencyTripDuplicated => 'گەشتەکە وەک ڕەشنووس لەبەرگیرایەوە.';
+
+  @override
+  String get agencyTripDuplicateFailed =>
+      'لەبەرگرتنەوەی گەشتەکە سەرکەوتوو نەبوو.';
+
+  @override
+  String get agencyTripExportFailed =>
+      'دروستکردنی فایلی گەشتیاران سەرکەوتوو نەبوو.';
+
+  @override
+  String get agencyTripConfirmedValue => 'بەهای حجزە دڵنیابووەکان';
+
+  @override
+  String get agencyTripCollected => 'پارەی وەرگیراوی کڕیاران';
+
+  @override
+  String get agencyTripDocumentsMissing => 'بەڵگەنامەی پێویست بە بەدواداچوون';
+
+  @override
+  String get agencyTripVisaPending => 'ڤیزای پەسەندنەکراو';
+
+  @override
+  String get agencyTripPassengerExports => 'لیستی گەشتیاران';
+
+  @override
+  String get agencyTripExportExcel => 'هەناردەی Excel';
+
+  @override
+  String get agencyTripExportPdf => 'هەناردەی PDF';
+
+  @override
+  String get agencyTripSearchTravellers => 'گەڕان بە ناو یان ژمارەی پاسپۆرت';
+
+  @override
+  String get agencyTripNoTravellers => 'هێشتا هیچ گەشتیارێک لەم گەشتەدا نییە';
+
+  @override
+  String get agencyDocumentReview => 'پشکنینی بەڵگەنامە';
+
+  @override
+  String get agencyDocumentUploads => 'بەڵگەنامە بارکراوەکانی گەشتیاران';
+
+  @override
+  String get agencyVisaStatus => 'دۆخی ڤیزا';
+
+  @override
+  String get agencyVisaReference => 'ژمارەی داواکاری ڤیزا';
+
+  @override
+  String get agencyTripTransportSeat => 'کورسی فڕۆکە یان پاس';
+
+  @override
+  String get agencyTripRooming => 'دابەشکردنی ژوور';
+
+  @override
+  String get agencyTripAddRoom => 'زیادکردنی ژوور';
+
+  @override
+  String get agencyTripNoRooms => 'هێشتا هیچ ژوورێک ئامادە نەکراوە.';
+
+  @override
+  String get agencyTripCity => 'شار';
+
+  @override
+  String get agencyTripMakkah => 'مەککە';
+
+  @override
+  String get agencyTripMadinah => 'مەدینە';
+
+  @override
+  String get agencyTripRoomLabel => 'ژمارە یان ناوی ژوور';
+
+  @override
+  String get agencyTripRoomPolicy => 'گروپی ژوور';
+
+  @override
+  String get agencyTripRoomFamily => 'خێزان';
+
+  @override
+  String get agencyTripRoomMale => 'پیاوان';
+
+  @override
+  String get agencyTripRoomFemale => 'ئافرەتان';
+
+  @override
+  String get agencyTripRoomCreated => 'ژوور زیادکرا.';
+
+  @override
+  String get agencyTripRoomDeleted => 'ژوور لابرا.';
+
+  @override
+  String get agencyTripTransport => 'گواستنەوە';
+
+  @override
+  String get agencyTripAddTransport => 'زیادکردنی گواستنەوە';
+
+  @override
+  String get agencyTripNoTransport =>
+      'هێشتا وردەکاری فڕۆکە یان پاس زیاد نەکراوە.';
+
+  @override
+  String get agencyTripTransportProvider => 'کۆمپانیای فڕۆکەوانی یان پاس';
+
+  @override
+  String get agencyTripTransportReference =>
+      'ژمارەی فڕۆکە یان پاس یان ئۆتۆمبێل';
+
+  @override
+  String get agencyTripDeparturePlace => 'شوێنی بەڕێکەوتن';
+
+  @override
+  String get agencyTripMeetingPoint => 'خاڵی کۆبوونەوە';
+
+  @override
+  String get agencyTripGuide => 'ڕێبەری دیاریکراو';
+
+  @override
+  String get agencyTripTransportCreated => 'گواستنەوە زیادکرا.';
+
+  @override
+  String get agencyTripTransportDeleted => 'گواستنەوە لابرا.';
+
+  @override
+  String get agencyTripNewAnnouncement => 'ڕاگەیاندنی نوێ';
+
+  @override
+  String get agencyTripAnnouncementTitle => 'ناونیشانی ڕاگەیاندن';
+
+  @override
+  String get agencyTripAnnouncementMessage => 'پەیام';
+
+  @override
+  String get agencyTripAudience => 'وەرگرەکان';
+
+  @override
+  String get agencyTripAudienceUnpaid => 'گەشتیارانی پارە تەواونەدراو';
+
+  @override
+  String get agencyTripSendAnnouncement => 'ناردنی ڕاگەیاندن';
+
+  @override
+  String get agencyTripAnnouncementSent => 'ڕاگەیاندن نێردرا.';
+
+  @override
+  String get agencyTripNoAnnouncements => 'هێشتا هیچ ڕاگەیاندنێک نەنێردراوە';
+
+  @override
+  String get agencyWalletTitle => 'جزدان و پارەدانەکان';
+
+  @override
+  String get agencyWalletSubtitle =>
+      'قازانجی ئۆنلاین و کۆمیسیۆنی کاش لە یەک باڵانسدا';
+
+  @override
+  String get agencyWalletTawafOwesYou => 'تەواف قەرزداری کۆمپانیاکەتە';
+
+  @override
+  String get agencyWalletYouOweTawaf => 'کۆمپانیاکەت قەرزداری تەوافە';
+
+  @override
+  String get agencyWalletSettled => 'باڵانسەکەت یەکلایی کراوەتەوە';
+
+  @override
+  String get agencyWalletBalanceExplanation =>
+      'پارەدانی ئۆنلاین قازانجی پاکت زیاد دەکات و حجزە کاشەکان کۆمیسیۆنی تەواف کەم دەکەنەوە. پارەدان و گەڕاندنەوە خۆکارانە تۆمار دەکرێن.';
+
+  @override
+  String get agencyWalletAvailablePayout => 'پارەی بەردەست بۆ وەرگرتن';
+
+  @override
+  String get agencyWalletPendingPayout => 'پارەدانی چاوەڕوانکراو';
+
+  @override
+  String get agencyWalletActivity => 'جوڵەی جزدان';
+
+  @override
+  String get agencyWalletNoActivity => 'هێشتا هیچ جوڵەیەک نییە';
+
+  @override
+  String get agencyWalletNoActivityBody =>
+      'پارەدانە سەرکەوتووەکانی کڕیار لێرە دەردەکەون.';
+
+  @override
+  String get agencyWalletPayouts => 'مێژووی پارەدان';
+
+  @override
+  String get agencyWalletPaid => 'دراوە';
+
+  @override
+  String get agencyWalletFailed => 'سەرکەوتوو نەبوو';
+
+  @override
+  String get agencyWalletPending => 'چاوەڕوان';
+
+  @override
+  String get agencyWalletOnlinePayment => 'قازانجی حجزی ئۆنلاین';
+
+  @override
+  String get agencyWalletCashCommission => 'کۆمیسیۆنی حجزی کاش';
+
+  @override
+  String get agencyWalletRefund => 'پاشگەزبوونەوەی گەڕاندنەوە';
+
+  @override
+  String get agencyWalletPayout => 'پارەدان بۆ کۆمپانیا';
+
+  @override
+  String get agencyWalletAdjustment => 'ڕێکخستنی باڵانس';
+
+  @override
+  String get agencyOverviewUnpaidBookings => 'حجزە پارە تەواونەدراوەکان';
+
+  @override
+  String get agencyManagementTitle => 'تیم و ڕاپۆرت و هەڵسەنگاندن';
+
+  @override
+  String get agencyManagementMenuSubtitle =>
+      'کارایی و بۆچوونی کڕیار و دەسەڵاتی کارمەندان';
+
+  @override
+  String get agencyManagementReports => 'ڕاپۆرتەکان';
+
+  @override
+  String get agencyManagementStaff => 'کارمەندان';
+
+  @override
+  String get agencyManagementBookingValue => 'بەهای حجزە چالاکەکان';
+
+  @override
+  String get agencyManagementOccupancy => 'ڕێژەی پڕبوونی کورسی';
+
+  @override
+  String get agencyManagementCancellationRate => 'ڕێژەی هەڵوەشاندنەوە';
+
+  @override
+  String get agencyManagementTripPerformance => 'کارایی گەشتەکان';
+
+  @override
+  String get agencyManagementNoReportData => 'هێشتا داتای گەشت بەردەست نییە';
+
+  @override
+  String get agencyManagementNoReviews => 'هێشتا هیچ هەڵسەنگاندنێکی کڕیار نییە';
+
+  @override
+  String get agencyManagementReplyReview => 'وەڵامدانەوەی هەڵسەنگاندن';
+
+  @override
+  String get agencyManagementReplyReviewHint => 'وەڵامێکی گشتی و بەسوود بنووسە';
+
+  @override
+  String get agencyManagementReplySent => 'وەڵامە گشتییەکەت بڵاوکرایەوە.';
+
+  @override
+  String get agencyManagementAddStaff => 'زیادکردنی کارمەند';
+
+  @override
+  String get agencyManagementProfileId => 'ناسنامەی پرۆفایلی بەکارهێنەر';
+
+  @override
+  String get agencyManagementProfileIdHelp =>
+      'UUIDی پرۆفایلی تەوافی کارمەندەکە بنووسە';
+
+  @override
+  String get agencyManagementRole => 'ڕۆڵ';
+
+  @override
+  String get agencyManagementStaffAdded => 'دەسەڵاتی کارمەند زیادکرا.';
+
+  @override
+  String get agencyManagementStaffRemoved => 'دەسەڵاتی کارمەند لابرا.';
+
+  @override
+  String get agencyManagementNoStaff => 'هێشتا هیچ کارمەندێک زیاد نەکراوە';
+
+  @override
+  String get agencyManagementNoStaffBody =>
+      'کارمەندان زیاد بکە و تەنها دەسەڵاتی پێویست بە هەر ڕۆڵێک بدە.';
+
+  @override
+  String agencyManagementTripCounts(int bookings, int travellers) {
+    return 'حجزەکان: $bookings · گەشتیاران: $travellers';
+  }
+
+  @override
+  String get agencyTripAssignRoom => 'دیاریکردنی ژوور (جێگای ماوە)';
+
+  @override
+  String get bookingTripUpdates => 'نوێکاری و ڕاگەیاندنی گەشت';
+
+  @override
+  String get bookingTripNoUpdates =>
+      'کۆمپانیاکە هێشتا هیچ نوێکارییەکی بڵاونەکردووەتەوە.';
+
+  @override
+  String get bookingAdditionalDocument => 'بارکردنی بەڵگەنامەی تر';
+
+  @override
+  String get bookingAdditionalDocumentUploaded =>
+      'بەڵگەنامەکە بۆ پشکنینی کۆمپانیا بارکرا.';
+
+  @override
+  String get bookingDocumentNationalId => 'ناسنامەی نیشتیمانی';
+
+  @override
+  String get bookingDocumentResidency => 'کارتی نیشتەجێبوون';
+
+  @override
+  String get bookingDocumentVaccination => 'بڕوانامەی ڤاکسین';
+
+  @override
+  String get bookingDocumentAgreement => 'ڕێککەوتنی واژۆکراو';
+
+  @override
+  String get bookingDocumentPaymentReceipt => 'پسوڵەی پارەدان';
+
+  @override
+  String get bookingDocumentOther => 'بەڵگەنامەی تر';
+
+  @override
+  String get bookingPassportName => 'ناو بە هەمان شێوەی پاسپۆرت';
+
+  @override
+  String get bookingPassportNameHint => 'ڕێنووسی لاتینی پاسپۆرت';
+
+  @override
+  String get bookingLocalName => 'ناو بە زمانی ناوخۆیی (ئارەزوومەندانە)';
+
+  @override
+  String get bookingLocalNameHint => 'ناوی کوردی یان عەرەبی';
 }

@@ -34,6 +34,7 @@ class _AgencyBookingsTabState extends State<AgencyBookingsTab> {
     'completed': 6,
     'cancelled': 7,
     'rejected': 8,
+    'expired': 9,
   };
 
   @override
@@ -57,8 +58,11 @@ class _AgencyBookingsTabState extends State<AgencyBookingsTab> {
         options: [
           FilterOption('all', t.adminFilterAll),
           FilterOption('requested', t.bookingsStatusPending),
+          FilterOption('needs_information', t.workflowChangesRequired),
           FilterOption('awaiting_payment', t.workflowAwaitingPayment),
           FilterOption('confirmed', t.bookingsStatusConfirmed),
+          FilterOption('ready', t.workflowReadyToTravel),
+          FilterOption('in_progress', t.workflowInProgress),
           FilterOption('completed', t.agencyBookingsCompleted),
           FilterOption('cancelled', t.bookingsStatusCancelled),
         ],
@@ -117,6 +121,8 @@ class BookingRequestCard extends StatelessWidget {
           return t.bookingsStatusPending;
         case 'awaiting_payment':
           return t.workflowAwaitingPayment;
+        case 'needs_information':
+          return t.workflowChangesRequired;
         case 'ready':
           return t.workflowReadyToTravel;
         case 'in_progress':
@@ -125,6 +131,8 @@ class BookingRequestCard extends StatelessWidget {
           return t.workflowRejected;
         case 'cancelled':
           return t.bookingsStatusCancelled;
+        case 'expired':
+          return t.workflowExpired;
         case 'completed':
           return t.agencyBookingsCompleted;
         default:
@@ -134,19 +142,31 @@ class BookingRequestCard extends StatelessWidget {
 
     Future<void> respond(bool confirm) async {
       final messenger = ScaffoldMessenger.of(context);
-      final err = await provider.respondToBooking(booking.id, confirm: confirm);
-      final msg = err == null
-          ? (confirm
-                ? t.agencyBookingsConfirmedSnack
-                : t.agencyBookingsDeclinedSnack)
-          : err;
+      final reason = confirm
+          ? null
+          : await _askReason(
+              context,
+              t.agencyDeclineReason,
+              t.bookingCancelReasonHint,
+            );
+      if (!confirm && reason == null) return;
+      final err = await provider.respondToBooking(
+        booking.id,
+        confirm: confirm,
+        reason: reason,
+      );
+      final msg =
+          err ??
+          (confirm
+              ? t.agencyBookingsConfirmedSnack
+              : t.agencyBookingsDeclinedSnack);
       messenger.showSnackBar(appSnack(msg, isError: err != null));
     }
 
     Future<void> complete() async {
       final messenger = ScaffoldMessenger.of(context);
       final err = await provider.markBookingCompleted(booking.id);
-      final msg = err == null ? t.agencyBookingsCompletedSnack : err;
+      final msg = err ?? t.agencyBookingsCompletedSnack;
       messenger.showSnackBar(appSnack(msg, isError: err != null));
     }
 
@@ -156,179 +176,388 @@ class BookingRequestCard extends StatelessWidget {
           ? await provider.markBookingReady(booking.id)
           : await provider.startBookingTrip(booking.id);
       messenger.showSnackBar(
-        appSnack(
-          err == null ? t.workflowStatusUpdated : err,
-          isError: err != null,
-        ),
+        appSnack(err ?? t.workflowStatusUpdated, isError: err != null),
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  booking.titleFor(lang),
-                  style: AppTheme.serif(17),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              StatusChip(
-                kind: StatusChip.forBooking(booking.status),
-                label: statusLabel(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            t.bookingsRefLabel(booking.ref),
-            style: AppTheme.sans(
-              11,
-              color: AppColors.muted,
-            ).copyWith(letterSpacing: 0.5, fontFamily: 'monospace'),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            t.bookingsPaxCount(booking.travelers),
-            style: AppTheme.sans(12.5, color: const Color(0xFF5E6B63)),
-          ),
-          if ((booking.roomLabel ?? '').isNotEmpty) ...[
-            const SizedBox(height: 3),
-            Text(
-              booking.roomLabel!,
-              style: AppTheme.sans(
-                12.5,
-                color: AppColors.primary,
-                weight: FontWeight.w700,
-              ),
+    Future<void> requestInformation() async {
+      final messenger = ScaffoldMessenger.of(context);
+      final reason = await _askReason(
+        context,
+        t.agencyRequestInformation,
+        t.agencyRequestInformationHint,
+      );
+      if (reason == null) return;
+      final err = await provider.requestBookingInformation(booking.id, reason);
+      messenger.showSnackBar(
+        appSnack(err ?? t.workflowStatusUpdated, isError: err != null),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () => _showDetails(context),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
-          if ((booking.mealPreference ?? '').isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${t.bookingSummaryMeal}: ${Offer.mealsLabel(booking.mealPreference!, t)}',
-              style: AppTheme.sans(11.5, color: AppColors.muted),
-            ),
-          ],
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                booking.totalFmt,
-                style: AppTheme.serif(18, color: AppColors.primary),
-              ),
-              const Spacer(),
-              if (booking.operationalStage == 'requested') ...[
-                GestureDetector(
-                  onTap: () => respond(false),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.fromSTEB(14, 9, 14, 9),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorRed.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(11),
-                      border: Border.all(
-                        color: AppColors.errorRed.withOpacity(0.25),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      t.agencyBookingsDecline,
-                      style: AppTheme.sans(
-                        12.5,
-                        weight: FontWeight.w700,
-                        color: AppColors.errorRed,
-                      ),
-                    ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    booking.titleFor(lang),
+                    style: AppTheme.serif(17),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () => respond(true),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.fromSTEB(14, 9, 14, 9),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                    child: Text(
-                      t.agencyBookingsConfirm,
-                      style: AppTheme.sans(
-                        12.5,
-                        weight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                StatusChip(
+                  kind: StatusChip.forBooking(booking.status),
+                  label: statusLabel(),
                 ),
-              ] else if (booking.operationalStage == 'confirmed')
-                _ActionButton(
-                  label: t.workflowMarkReady,
-                  onTap: () => advance('ready'),
-                )
-              else if (booking.operationalStage == 'awaiting_payment' &&
-                  booking.payMethod == 'cash')
-                _ActionButton(
-                  label: t.workflowConfirmCash,
-                  onTap: () async {
-                    final messenger = ScaffoldMessenger.of(context);
-                    final err = await provider.confirmCashPayment(booking.id);
-                    messenger.showSnackBar(
-                      appSnack(
-                        err == null ? t.workflowCashConfirmed : err,
-                        isError: err != null,
-                      ),
-                    );
-                  },
-                )
-              else if (booking.operationalStage == 'ready')
-                _ActionButton(
-                  label: t.workflowStartTrip,
-                  onTap: () => advance('start'),
-                )
-              else if (booking.operationalStage == 'in_progress')
-                GestureDetector(
-                  onTap: complete,
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.fromSTEB(14, 9, 14, 9),
-                    decoration: BoxDecoration(
-                      color: AppColors.gold,
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                    child: Text(
-                      t.agencyBookingsMarkCompleted,
-                      style: AppTheme.sans(
-                        12.5,
-                        weight: FontWeight.w700,
-                        color: const Color(0xFF1C2317),
-                      ),
-                    ),
-                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              t.bookingsRefLabel(booking.ref),
+              style: AppTheme.sans(
+                11,
+                color: AppColors.muted,
+              ).copyWith(letterSpacing: 0.5, fontFamily: 'monospace'),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              t.bookingsPaxCount(booking.travelers),
+              style: AppTheme.sans(12.5, color: const Color(0xFF5E6B63)),
+            ),
+            if ((booking.roomLabel ?? '').isNotEmpty) ...[
+              const SizedBox(height: 3),
+              Text(
+                booking.roomLabel!,
+                style: AppTheme.sans(
+                  12.5,
+                  color: AppColors.primary,
+                  weight: FontWeight.w700,
                 ),
+              ),
             ],
+            if ((booking.mealPreference ?? '').isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                '${t.bookingSummaryMeal}: ${Offer.mealsLabel(booking.mealPreference!, t)}',
+                style: AppTheme.sans(11.5, color: AppColors.muted),
+              ),
+            ],
+            if (booking.statusReason != null &&
+                booking.statusReason!.isNotEmpty) ...[
+              const SizedBox(height: 5),
+              Text(
+                booking.statusReason!,
+                style: AppTheme.sans(11.5, color: AppColors.errorRed),
+              ),
+            ],
+            if (booking.operationalStage == 'requested' ||
+                booking.operationalStage == 'needs_information') ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  onPressed: requestInformation,
+                  icon: const Icon(Icons.help_outline_rounded, size: 17),
+                  label: Text(t.agencyRequestInformation),
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Text(
+                  booking.totalFmt,
+                  style: AppTheme.serif(18, color: AppColors.primary),
+                ),
+                const Spacer(),
+                if (booking.operationalStage == 'requested') ...[
+                  GestureDetector(
+                    onTap: () => respond(false),
+                    child: Container(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        14,
+                        9,
+                        14,
+                        9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorRed.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(11),
+                        border: Border.all(
+                          color: AppColors.errorRed.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        t.agencyBookingsDecline,
+                        style: AppTheme.sans(
+                          12.5,
+                          weight: FontWeight.w700,
+                          color: AppColors.errorRed,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => respond(true),
+                    child: Container(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        14,
+                        9,
+                        14,
+                        9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Text(
+                        t.agencyBookingsConfirm,
+                        style: AppTheme.sans(
+                          12.5,
+                          weight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else if (booking.operationalStage == 'confirmed')
+                  _ActionButton(
+                    label: t.workflowMarkReady,
+                    onTap: () => advance('ready'),
+                  )
+                else if (booking.operationalStage == 'awaiting_payment' &&
+                    booking.payMethod == 'cash')
+                  _ActionButton(
+                    label: t.workflowConfirmCash,
+                    onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final err = await provider.confirmCashPayment(booking.id);
+                      messenger.showSnackBar(
+                        appSnack(
+                          err ?? t.workflowCashConfirmed,
+                          isError: err != null,
+                        ),
+                      );
+                    },
+                  )
+                else if (booking.operationalStage == 'ready')
+                  _ActionButton(
+                    label: t.workflowStartTrip,
+                    onTap: () => advance('start'),
+                  )
+                else if (booking.operationalStage == 'in_progress')
+                  GestureDetector(
+                    onTap: complete,
+                    child: Container(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        14,
+                        9,
+                        14,
+                        9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold,
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Text(
+                        t.agencyBookingsMarkCompleted,
+                        style: AppTheme.sans(
+                          12.5,
+                          weight: FontWeight.w700,
+                          color: const Color(0xFF1C2317),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _askReason(
+    BuildContext context,
+    String title,
+    String hint,
+  ) async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: InputDecoration(hintText: hint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(AppLocalizations.of(context).agencyDashboardCancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = controller.text.trim();
+              if (value.isNotEmpty) Navigator.pop(dialogContext, value);
+            },
+            child: Text(AppLocalizations.of(context).agencyRequestInformation),
           ),
         ],
       ),
     );
+    controller.dispose();
+    return result;
   }
+
+  Future<void> _showDetails(BuildContext context) async {
+    final t = AppLocalizations.of(context);
+    final travellersFuture = context.read<AppProvider>().bookingTravellers(
+      booking.id,
+    );
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.background,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            22,
+            20,
+            22,
+            MediaQuery.viewInsetsOf(sheetContext).bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(t.agencyBookingDetails, style: AppTheme.serif(22)),
+                const SizedBox(height: 14),
+                _DetailLine(label: t.bookingSummaryTrip, value: booking.title),
+                _DetailLine(label: t.bookingsRefLabel(''), value: booking.ref),
+                _DetailLine(
+                  label: t.bookingSummaryPilgrims,
+                  value: '${booking.travelers}',
+                ),
+                _DetailLine(
+                  label: t.bookingRoomCount,
+                  value: '${booking.roomCount}',
+                ),
+                if ((booking.roomLabel ?? '').isNotEmpty)
+                  _DetailLine(
+                    label: t.bookingSummaryRoom,
+                    value: booking.roomLabel!,
+                  ),
+                if ((booking.contactPhone ?? '').isNotEmpty)
+                  _DetailLine(label: t.authPhone, value: booking.contactPhone!),
+                _DetailLine(label: t.offerDetailTotal, value: booking.totalFmt),
+                _DetailLine(
+                  label: t.bookingAmountDueNow,
+                  value: fmtIqd(booking.amountDueNow),
+                ),
+                if ((booking.note ?? '').isNotEmpty)
+                  _DetailLine(label: t.bookingNotes, value: booking.note!),
+                const SizedBox(height: 16),
+                Text(
+                  t.agencyTravellerDocuments,
+                  style: AppTheme.sans(14, weight: FontWeight.w800),
+                ),
+                const SizedBox(height: 8),
+                FutureBuilder<List<BookingTraveller>>(
+                  future: travellersFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final travellers = snapshot.data ?? const [];
+                    return Column(
+                      children: [
+                        for (final traveller in travellers)
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(
+                              traveller.passportComplete
+                                  ? Icons.verified_rounded
+                                  : Icons.pending_actions_rounded,
+                              color: traveller.passportComplete
+                                  ? AppColors.primary
+                                  : AppColors.gold,
+                            ),
+                            title: Text(traveller.fullName),
+                            subtitle: Text(
+                              [
+                                if (traveller.dateOfBirth != null)
+                                  traveller.dateOfBirth!
+                                      .toIso8601String()
+                                      .substring(0, 10),
+                                if ((traveller.phone ?? '').isNotEmpty)
+                                  traveller.phone!,
+                                if ((traveller.passportNo ?? '').isNotEmpty)
+                                  traveller.passportNo!,
+                              ].join(' · '),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailLine extends StatelessWidget {
+  final String label;
+  final String value;
+  const _DetailLine({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(label, style: AppTheme.sans(12, color: AppColors.muted)),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: AppTheme.sans(12.5, weight: FontWeight.w700),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _ActionButton extends StatelessWidget {

@@ -152,7 +152,7 @@ class _ResetPasswordOverlayState extends State<ResetPasswordOverlay> {
                     color: const Color(0xFFFFF0EE),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.errorRed.withOpacity(0.3),
+                      color: AppColors.errorRed.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

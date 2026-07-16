@@ -306,7 +306,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF34C759).withOpacity(0.1),
+                  color: const Color(0xFF34C759).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -430,7 +430,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
@@ -468,7 +468,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -520,10 +520,10 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               child: Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: AppColors.errorRed.withOpacity(0.06),
+                  color: AppColors.errorRed.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
-                    color: AppColors.errorRed.withOpacity(0.3),
+                    color: AppColors.errorRed.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                 ),
@@ -624,16 +624,12 @@ class _Field extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final String hint;
-  final bool obscure;
   final TextInputType? keyboardType;
-  final Widget? suffix;
   const _Field({
     required this.label,
     required this.controller,
     required this.hint,
-    this.obscure = false,
     this.keyboardType,
-    this.suffix,
   });
 
   @override
@@ -651,13 +647,11 @@ class _Field extends StatelessWidget {
           ),
           child: TextField(
             controller: controller,
-            obscureText: obscure,
             keyboardType: keyboardType,
             style: AppTheme.sans(14),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppTheme.sans(14, color: AppColors.mutedLight),
-              suffixIcon: suffix,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,

@@ -204,50 +204,117 @@ class _BookingCard extends StatelessWidget {
     );
   }
 
-  void _confirmCancel(BuildContext context) {
+  Future<void> _confirmCancel(BuildContext context) async {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
     final messenger = ScaffoldMessenger.of(context);
     final lang = Localizations.localeOf(context).languageCode;
-    showDialog(
+    final reasonController = TextEditingController();
+    final withheld = booking.nonRefundableDepositSnapshot
+        ? (booking.depositIqdSnapshot * booking.travelers).clamp(
+            0,
+            booking.amountPaid,
+          )
+        : 0;
+    final estimatedRefund = (booking.amountPaid - withheld).clamp(
+      0,
+      booking.amountPaid,
+    );
+    final reason = await showDialog<String>(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        backgroundColor: AppColors.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(t.bookingsCancelTitle, style: AppTheme.serif(20)),
-        content: Text(
-          t.bookingsCancelBody(booking.titleFor(lang)),
-          style: AppTheme.sans(13, color: AppColors.inkLight),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: Text(
-              t.bookingsKeepBooking,
-              style: AppTheme.sans(13, color: AppColors.muted),
+      builder: (dialogCtx) {
+        String? reasonError;
+        return StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: AppColors.background,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogCtx);
-              final err = await provider.cancelBooking(booking.id);
-              messenger.showSnackBar(
-                err == null
-                    ? appSnack(t.bookingsCancelledSnack)
-                    : appSnack(t.bookingsCancelFailed, isError: true),
-              );
-            },
-            child: Text(
-              t.bookingsConfirmCancel,
-              style: AppTheme.sans(
-                13,
-                weight: FontWeight.w700,
-                color: AppColors.errorRed,
+            title: Text(t.bookingsCancelTitle, style: AppTheme.serif(20)),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    t.bookingsCancelBody(booking.titleFor(lang)),
+                    style: AppTheme.sans(13, color: AppColors.inkLight),
+                  ),
+                  if (booking.cancellationPolicySnapshot.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    Text(
+                      t.bookingCancellationPolicy,
+                      style: AppTheme.sans(12, weight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      booking.cancellationPolicySnapshot,
+                      style: AppTheme.sans(12, color: AppColors.muted),
+                    ),
+                  ],
+                  if (booking.amountPaid > 0) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      '${t.bookingEstimatedRefund}: ${fmtIqd(estimatedRefund)}',
+                      style: AppTheme.sans(
+                        12.5,
+                        weight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: reasonController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: t.bookingCancelReason,
+                      hintText: t.bookingCancelReasonHint,
+                      errorText: reasonError,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ],
               ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                child: Text(
+                  t.bookingsKeepBooking,
+                  style: AppTheme.sans(13, color: AppColors.muted),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  final value = reasonController.text.trim();
+                  if (value.isEmpty) {
+                    setDialogState(() => reasonError = t.bookingCancelReason);
+                    return;
+                  }
+                  Navigator.pop(dialogCtx, value);
+                },
+                child: Text(
+                  t.bookingsConfirmCancel,
+                  style: AppTheme.sans(
+                    13,
+                    weight: FontWeight.w700,
+                    color: AppColors.errorRed,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
+    );
+    reasonController.dispose();
+    if (reason == null || !context.mounted) return;
+    final err = await provider.cancelBooking(booking.id, reason);
+    messenger.showSnackBar(
+      err == null
+          ? appSnack(t.bookingsCancelledSnack)
+          : appSnack(t.bookingsCancelFailed, isError: true),
     );
   }
 
@@ -315,12 +382,12 @@ class _BookingCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.1),
+          color: AppColors.primary.withValues(alpha: 0.1),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F3729).withOpacity(0.06),
+            color: const Color(0xFF0F3729).withValues(alpha: 0.06),
             blurRadius: 28,
             offset: const Offset(0, 12),
           ),
@@ -433,16 +500,87 @@ class _BookingCard extends StatelessWidget {
                           style: AppTheme.sans(11.5, color: AppColors.muted),
                         ),
                       ],
+                      if ((booking.statusReason ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          booking.statusReason!,
+                          style: AppTheme.sans(11.5, color: AppColors.errorRed),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ],
             ),
           ),
+          if (booking.operationalStage == 'awaiting_payment')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Row(
+                children: [
+                  Text(
+                    t.bookingAmountDueNow,
+                    style: AppTheme.sans(11.5, color: AppColors.muted),
+                  ),
+                  const Spacer(),
+                  Text(
+                    fmtIqd(
+                      (booking.amountDueNow - booking.amountPaid).clamp(
+                        0,
+                        booking.total,
+                      ),
+                    ),
+                    style: AppTheme.sans(
+                      12.5,
+                      weight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (booking.expiresAt != null &&
+              [
+                'requested',
+                'needs_information',
+                'awaiting_payment',
+              ].contains(booking.operationalStage))
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Text(
+                t.bookingExpiresAt(
+                  '${booking.expiresAt!.toLocal().day}/${booking.expiresAt!.toLocal().month} '
+                  '${booking.expiresAt!.toLocal().hour.toString().padLeft(2, '0')}:'
+                  '${booking.expiresAt!.toLocal().minute.toString().padLeft(2, '0')}',
+                ),
+                style: AppTheme.sans(11.5, color: AppColors.gold),
+              ),
+            ),
+          if (booking.refundStatus == 'pending')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Text(
+                '${t.bookingEstimatedRefund}: ${fmtIqd(booking.refundDue)}',
+                style: AppTheme.sans(
+                  12,
+                  weight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
           Container(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
             child: _PassportDocumentsButton(booking: booking),
           ),
+          if (![
+            'cancelled',
+            'rejected',
+            'expired',
+          ].contains(booking.operationalStage))
+            Container(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+              child: _TripAnnouncementsButton(booking: booking),
+            ),
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFFAF8F2),
@@ -508,10 +646,10 @@ class _BookingCard extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.errorRed.withOpacity(0.08),
+                        color: AppColors.errorRed.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.errorRed.withOpacity(0.25),
+                          color: AppColors.errorRed.withValues(alpha: 0.25),
                           width: 1,
                         ),
                       ),
@@ -536,10 +674,10 @@ class _BookingCard extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.gold.withOpacity(0.12),
+                        color: AppColors.gold.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.gold.withOpacity(0.4),
+                          color: AppColors.gold.withValues(alpha: 0.4),
                           width: 1,
                         ),
                       ),
@@ -598,9 +736,9 @@ class _PassportDocumentsButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.07),
+          color: AppColors.primary.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.primary.withOpacity(0.16)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.16)),
         ),
         child: Row(
           children: [
@@ -626,6 +764,110 @@ class _PassportDocumentsButton extends StatelessWidget {
               color: AppColors.primary,
               size: 20,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TripAnnouncementsButton extends StatelessWidget {
+  final Booking booking;
+  const _TripAnnouncementsButton({required this.booking});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return InkWell(
+      onTap: () => showModalBottomSheet<void>(
+        context: context,
+        useSafeArea: true,
+        backgroundColor: AppColors.background,
+        builder: (sheetContext) => FutureBuilder(
+          future: context.read<AppProvider>().tripAnnouncements(
+            booking.offerId,
+          ),
+          builder: (context, snapshot) {
+            final announcements = snapshot.data ?? const [];
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(t.bookingTripUpdates, style: AppTheme.serif(21)),
+                  const SizedBox(height: 14),
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (announcements.isEmpty)
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          t.bookingTripNoUpdates,
+                          style: AppTheme.sans(13, color: AppColors.muted),
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: announcements.length,
+                        itemBuilder: (_, index) {
+                          final announcement = announcements[index];
+                          return Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(13),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    announcement.title,
+                                    style: AppTheme.sans(
+                                      13,
+                                      weight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    announcement.body,
+                                    style: AppTheme.sans(
+                                      12,
+                                      color: AppColors.inkLight,
+                                    ).copyWith(height: 1.45),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+        decoration: BoxDecoration(
+          color: AppColors.gold.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.gold.withValues(alpha: 0.22)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.campaign_outlined, color: AppColors.gold),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                t.bookingTripUpdates,
+                style: AppTheme.sans(12.5, weight: FontWeight.w700),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.gold),
           ],
         ),
       ),
@@ -828,6 +1070,66 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     setState(_reload);
   }
 
+  Future<void> _uploadAdditional(BookingTraveller traveller) async {
+    final t = AppLocalizations.of(context);
+    const kinds = [
+      'national_id',
+      'residency_card',
+      'vaccination',
+      'agreement',
+      'payment_receipt',
+      'other',
+    ];
+    final kind = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.background,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+          children: [
+            Text(t.bookingAdditionalDocument, style: AppTheme.serif(20)),
+            const SizedBox(height: 10),
+            for (final value in kinds)
+              ListTile(
+                leading: const Icon(Icons.description_outlined),
+                title: Text(_documentKindLabel(value, t)),
+                onTap: () => Navigator.pop(sheetContext, value),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (kind == null || !mounted) return;
+    final source = await _chooseSource();
+    if (source == null || !mounted) return;
+    final file = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 82,
+      maxWidth: 1800,
+    );
+    if (file == null || !mounted) return;
+    final key = '${traveller.id}-additional';
+    setState(() => _saving.add(key));
+    final error = await context.read<AppProvider>().uploadTravellerDocument(
+      travellerId: traveller.id,
+      bookingId: traveller.bookingId,
+      companyId: widget.booking.companyId,
+      kind: kind,
+      bytes: await file.readAsBytes(),
+      fileName: file.name,
+    );
+    if (!mounted) return;
+    setState(() => _saving.remove(key));
+    if (error != null) {
+      _showMessage(error);
+      return;
+    }
+    _showMessage(t.bookingAdditionalDocumentUploaded);
+    setState(_reload);
+  }
+
   // Snackbars render behind this modal sheet, so feedback that must be seen
   // while it is open goes through a dialog instead.
   void _showMessage(String message) {
@@ -974,6 +1276,20 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
                                       : Text(t.accountSaveChanges),
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      _saving.contains(
+                                        '${traveller.id}-additional',
+                                      )
+                                      ? null
+                                      : () => _uploadAdditional(traveller),
+                                  icon: const Icon(Icons.upload_file_outlined),
+                                  label: Text(t.bookingAdditionalDocument),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -989,6 +1305,15 @@ class _PassportDocumentsSheetState extends State<_PassportDocumentsSheet> {
     );
   }
 }
+
+String _documentKindLabel(String kind, AppLocalizations t) => switch (kind) {
+  'national_id' => t.bookingDocumentNationalId,
+  'residency_card' => t.bookingDocumentResidency,
+  'vaccination' => t.bookingDocumentVaccination,
+  'agreement' => t.bookingDocumentAgreement,
+  'payment_receipt' => t.bookingDocumentPaymentReceipt,
+  _ => t.bookingDocumentOther,
+};
 
 class _BookingSecurityNotice extends StatelessWidget {
   const _BookingSecurityNotice({required this.text});

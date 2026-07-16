@@ -227,7 +227,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offerDetailFreeCancellation =>
-      'Free cancellation up to 30 days before departure';
+      'See this trip\'s cancellation policy';
 
   @override
   String get offerDetailDepartureDate => 'Departure date';
@@ -608,7 +608,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bookingsCancelBody(String title) {
-    return '\"$title\" will be cancelled. This is free up to 30 days before departure.';
+    return '\"$title\" will be cancelled. Review the trip policy and estimated refund below before continuing.';
   }
 
   @override
@@ -993,7 +993,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpFaq2A =>
-      'Yes — cancellation is free up to 30 days before departure. Open My Bookings and tap \"Cancel booking\" on the trip.';
+      'Open My Bookings and tap \"Cancel booking\". The app shows the trip\'s snapshotted policy and estimated refund before you confirm.';
 
   @override
   String get helpFaq3Q => 'Are the agencies verified?';
@@ -1007,7 +1007,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpFaq4A =>
-      'Each offer lists its inclusions — visa processing, transport, hotel, meals and guided ziyarah. Check the \"What\'s Included\" section of the offer.';
+      'Each offer has its own declared inclusions. Check the \"What\'s Included\" section; anything not listed there should not be assumed.';
 
   @override
   String get helpFaq5Q => 'How do agencies join the platform?';
@@ -1587,7 +1587,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addEditOfferPricing => 'Pricing';
 
   @override
-  String get addEditOfferPriceUsd => 'Price (USD) *';
+  String get addEditOfferPriceUsd => 'Base price (IQD) *';
 
   @override
   String get addEditOfferOriginalPrice => 'Original price';
@@ -2594,6 +2594,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offerFormAcceptedPayments => 'Accepted payment methods';
 
   @override
+  String get offerFormRequired => 'Required';
+
+  @override
+  String get offerFormInvalidValue => 'Enter a valid value.';
+
+  @override
+  String get offerFormSelectOne => 'Select at least one option.';
+
+  @override
+  String get offerFormReturnDateAfterDeparture =>
+      'Return date must be after departure.';
+
+  @override
+  String get offerFormFixHighlighted =>
+      'Complete the highlighted required fields.';
+
+  @override
   String get offerSoldOut => 'Sold out';
 
   @override
@@ -2937,4 +2954,433 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get identitySelfieExampleCaption =>
       'Look directly at the camera, use good lighting, and do not wear a hat or sunglasses.';
+
+  @override
+  String get bookingRoomCount => 'Rooms';
+
+  @override
+  String get bookingNotes => 'Notes';
+
+  @override
+  String get bookingAmountDueNow => 'Amount due now';
+
+  @override
+  String get bookingCancelReason => 'Reason for cancellation';
+
+  @override
+  String get bookingCancelReasonHint =>
+      'Tell the agency why you need to cancel';
+
+  @override
+  String get bookingCancellationPolicy => 'Cancellation policy';
+
+  @override
+  String get bookingEstimatedRefund => 'Estimated refund';
+
+  @override
+  String bookingExpiresAt(String time) {
+    return 'Complete this request before $time';
+  }
+
+  @override
+  String get agencyBookingDetails => 'Booking details';
+
+  @override
+  String get agencyRequestInformation => 'Request information';
+
+  @override
+  String get agencyRequestInformationHint =>
+      'Explain exactly what the pilgrim needs to provide';
+
+  @override
+  String get agencyTravellerDocuments => 'Traveller documents';
+
+  @override
+  String get agencyDeclineReason => 'Reason for declining';
+
+  @override
+  String get offerFormBothHotelsRequired =>
+      'Both hotels need their own name and description.';
+
+  @override
+  String offerFormHotelNightsTotal(int nights) {
+    return 'Hotel nights must total $nights.';
+  }
+
+  @override
+  String get offerFormPaymentRequired => 'Choose at least one payment method.';
+
+  @override
+  String get offerFormRoomPriceRequired =>
+      'Every selected room needs a valid price.';
+
+  @override
+  String get offerFormDepositTooHigh =>
+      'The deposit cannot be higher than the lowest per-person room price.';
+
+  @override
+  String get workflowPauseTrip => 'Pause trip';
+
+  @override
+  String get workflowPausedSnack =>
+      'Trip paused and removed from the marketplace.';
+
+  @override
+  String get offerUnavailable => 'Unavailable';
+
+  @override
+  String get agencyTripOverview => 'Overview';
+
+  @override
+  String get agencyTripBookings => 'Bookings';
+
+  @override
+  String get agencyTripTravellers => 'Travellers';
+
+  @override
+  String get agencyTripDocumentsVisa => 'Documents & visa';
+
+  @override
+  String get agencyTripOperations => 'Operations';
+
+  @override
+  String get agencyTripUpdates => 'Updates';
+
+  @override
+  String get agencyTripDuplicate => 'Duplicate trip';
+
+  @override
+  String get agencyTripDuplicateBody =>
+      'Create a new draft with this trip\'s hotels, prices, itinerary and policies? Dates and capacity can be adjusted before submission.';
+
+  @override
+  String get agencyTripDuplicated => 'Trip duplicated as a draft.';
+
+  @override
+  String get agencyTripDuplicateFailed => 'The trip could not be duplicated.';
+
+  @override
+  String get agencyTripExportFailed =>
+      'The passenger file could not be created.';
+
+  @override
+  String get agencyTripConfirmedValue => 'Confirmed booking value';
+
+  @override
+  String get agencyTripCollected => 'Customer payments collected';
+
+  @override
+  String get agencyTripDocumentsMissing => 'Documents needing attention';
+
+  @override
+  String get agencyTripVisaPending => 'Visas not approved';
+
+  @override
+  String get agencyTripPassengerExports => 'Passenger manifests';
+
+  @override
+  String get agencyTripExportExcel => 'Export Excel';
+
+  @override
+  String get agencyTripExportPdf => 'Export PDF';
+
+  @override
+  String get agencyTripSearchTravellers => 'Search name or passport number';
+
+  @override
+  String get agencyTripNoTravellers => 'No travellers in this trip yet';
+
+  @override
+  String get agencyDocumentReview => 'Review document';
+
+  @override
+  String get agencyDocumentUploads => 'Uploaded traveller documents';
+
+  @override
+  String get agencyVisaStatus => 'Visa status';
+
+  @override
+  String get agencyVisaReference => 'Visa application reference';
+
+  @override
+  String get agencyTripTransportSeat => 'Flight or bus seat';
+
+  @override
+  String get agencyTripRooming => 'Rooming';
+
+  @override
+  String get agencyTripAddRoom => 'Add room';
+
+  @override
+  String get agencyTripNoRooms => 'No rooms have been prepared yet.';
+
+  @override
+  String get agencyTripCity => 'City';
+
+  @override
+  String get agencyTripMakkah => 'Makkah';
+
+  @override
+  String get agencyTripMadinah => 'Madinah';
+
+  @override
+  String get agencyTripRoomLabel => 'Room number or label';
+
+  @override
+  String get agencyTripRoomPolicy => 'Room group';
+
+  @override
+  String get agencyTripRoomFamily => 'Family';
+
+  @override
+  String get agencyTripRoomMale => 'Men';
+
+  @override
+  String get agencyTripRoomFemale => 'Women';
+
+  @override
+  String get agencyTripRoomCreated => 'Room added.';
+
+  @override
+  String get agencyTripRoomDeleted => 'Room removed.';
+
+  @override
+  String get agencyTripTransport => 'Transportation';
+
+  @override
+  String get agencyTripAddTransport => 'Add transport';
+
+  @override
+  String get agencyTripNoTransport =>
+      'No flight or bus details have been added yet.';
+
+  @override
+  String get agencyTripTransportProvider => 'Airline or bus company';
+
+  @override
+  String get agencyTripTransportReference => 'Flight, bus or vehicle number';
+
+  @override
+  String get agencyTripDeparturePlace => 'Departure place';
+
+  @override
+  String get agencyTripMeetingPoint => 'Meeting point';
+
+  @override
+  String get agencyTripGuide => 'Assigned guide';
+
+  @override
+  String get agencyTripTransportCreated => 'Transportation added.';
+
+  @override
+  String get agencyTripTransportDeleted => 'Transportation removed.';
+
+  @override
+  String get agencyTripNewAnnouncement => 'New announcement';
+
+  @override
+  String get agencyTripAnnouncementTitle => 'Announcement title';
+
+  @override
+  String get agencyTripAnnouncementMessage => 'Message';
+
+  @override
+  String get agencyTripAudience => 'Recipients';
+
+  @override
+  String get agencyTripAudienceUnpaid => 'Travellers with unpaid balances';
+
+  @override
+  String get agencyTripSendAnnouncement => 'Send announcement';
+
+  @override
+  String get agencyTripAnnouncementSent => 'Announcement sent.';
+
+  @override
+  String get agencyTripNoAnnouncements => 'No announcements have been sent yet';
+
+  @override
+  String get agencyWalletTitle => 'Wallet & payouts';
+
+  @override
+  String get agencyWalletSubtitle =>
+      'Online earnings and cash commission in one balance';
+
+  @override
+  String get agencyWalletTawafOwesYou => 'Tawaf owes your company';
+
+  @override
+  String get agencyWalletYouOweTawaf => 'Your company owes Tawaf';
+
+  @override
+  String get agencyWalletSettled => 'Your balance is settled';
+
+  @override
+  String get agencyWalletBalanceExplanation =>
+      'Online payments add your net earnings. Cash bookings subtract Tawaf\'s commission. Payouts and refunds are recorded automatically.';
+
+  @override
+  String get agencyWalletAvailablePayout => 'Available payout';
+
+  @override
+  String get agencyWalletPendingPayout => 'Pending payout';
+
+  @override
+  String get agencyWalletActivity => 'Wallet activity';
+
+  @override
+  String get agencyWalletNoActivity => 'No wallet activity yet';
+
+  @override
+  String get agencyWalletNoActivityBody =>
+      'Successful customer payments will appear here.';
+
+  @override
+  String get agencyWalletPayouts => 'Payout history';
+
+  @override
+  String get agencyWalletPaid => 'Paid';
+
+  @override
+  String get agencyWalletFailed => 'Failed';
+
+  @override
+  String get agencyWalletPending => 'Pending';
+
+  @override
+  String get agencyWalletOnlinePayment => 'Online booking earnings';
+
+  @override
+  String get agencyWalletCashCommission => 'Commission on cash booking';
+
+  @override
+  String get agencyWalletRefund => 'Refund reversal';
+
+  @override
+  String get agencyWalletPayout => 'Company payout';
+
+  @override
+  String get agencyWalletAdjustment => 'Balance adjustment';
+
+  @override
+  String get agencyOverviewUnpaidBookings => 'Bookings with unpaid balances';
+
+  @override
+  String get agencyManagementTitle => 'Team, reports & reviews';
+
+  @override
+  String get agencyManagementMenuSubtitle =>
+      'Performance, customer feedback and staff access';
+
+  @override
+  String get agencyManagementReports => 'Reports';
+
+  @override
+  String get agencyManagementStaff => 'Staff';
+
+  @override
+  String get agencyManagementBookingValue => 'Active booking value';
+
+  @override
+  String get agencyManagementOccupancy => 'Seat occupancy';
+
+  @override
+  String get agencyManagementCancellationRate => 'Cancellation rate';
+
+  @override
+  String get agencyManagementTripPerformance => 'Trip performance';
+
+  @override
+  String get agencyManagementNoReportData => 'No trip data is available yet';
+
+  @override
+  String get agencyManagementNoReviews => 'No customer reviews yet';
+
+  @override
+  String get agencyManagementReplyReview => 'Reply to review';
+
+  @override
+  String get agencyManagementReplyReviewHint =>
+      'Write a helpful public response';
+
+  @override
+  String get agencyManagementReplySent => 'Your public reply was posted.';
+
+  @override
+  String get agencyManagementAddStaff => 'Add staff member';
+
+  @override
+  String get agencyManagementProfileId => 'User profile ID';
+
+  @override
+  String get agencyManagementProfileIdHelp =>
+      'Enter the Tawaf profile UUID for this employee';
+
+  @override
+  String get agencyManagementRole => 'Role';
+
+  @override
+  String get agencyManagementStaffAdded => 'Staff access added.';
+
+  @override
+  String get agencyManagementStaffRemoved => 'Staff access removed.';
+
+  @override
+  String get agencyManagementNoStaff => 'No staff members added yet';
+
+  @override
+  String get agencyManagementNoStaffBody =>
+      'Add employees and give each role only the access it needs.';
+
+  @override
+  String agencyManagementTripCounts(int bookings, int travellers) {
+    return 'Bookings: $bookings · Travellers: $travellers';
+  }
+
+  @override
+  String get agencyTripAssignRoom => 'Assign room (remaining beds)';
+
+  @override
+  String get bookingTripUpdates => 'Trip updates & announcements';
+
+  @override
+  String get bookingTripNoUpdates =>
+      'The company has not posted any updates yet.';
+
+  @override
+  String get bookingAdditionalDocument => 'Upload another document';
+
+  @override
+  String get bookingAdditionalDocumentUploaded =>
+      'Document uploaded for company review.';
+
+  @override
+  String get bookingDocumentNationalId => 'National ID';
+
+  @override
+  String get bookingDocumentResidency => 'Residency card';
+
+  @override
+  String get bookingDocumentVaccination => 'Vaccination certificate';
+
+  @override
+  String get bookingDocumentAgreement => 'Signed agreement';
+
+  @override
+  String get bookingDocumentPaymentReceipt => 'Payment receipt';
+
+  @override
+  String get bookingDocumentOther => 'Other document';
+
+  @override
+  String get bookingPassportName => 'Name exactly as written in passport';
+
+  @override
+  String get bookingPassportNameHint => 'Latin passport spelling';
+
+  @override
+  String get bookingLocalName => 'Local-language name (optional)';
+
+  @override
+  String get bookingLocalNameHint => 'Kurdish or Arabic name';
 }

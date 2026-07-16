@@ -13,6 +13,7 @@ import '../models/support_message_model.dart';
 import '../models/review_model.dart';
 import '../models/inquiry_model.dart';
 import '../models/agency_document_model.dart';
+import '../models/agency_operations_model.dart';
 import '../services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/biometric_service.dart';
@@ -147,6 +148,7 @@ class AppProvider extends ChangeNotifier {
   // ── remote data ──────────────────────────────────────────────────────────
   List<Company> _companies = [];
   List<Offer> _offers = [];
+  List<Offer> _agencyOffers = [];
   bool _loading = true;
   bool _loadFailed = false;
 
@@ -226,6 +228,7 @@ class AppProvider extends ChangeNotifier {
       if (_user != null) {
         if (_user!.isAgency) {
           _myCompany = await _service.ensureAgencyCompany(_user!.id);
+          await loadAgencyOffers();
           await loadAgencyBookings();
         }
         await refreshBookings();
@@ -364,6 +367,7 @@ class AppProvider extends ChangeNotifier {
     preferredPayMethod = 'cash';
     _reviewedBookingIds.clear();
     _agencyBookings = [];
+    _agencyOffers = [];
     _commissions = [];
     _notifications
       ..clear()
@@ -734,9 +738,26 @@ class AppProvider extends ChangeNotifier {
       return hit(o.title) ||
           hit(o.titleAr) ||
           hit(o.titleEn) ||
+          hit(o.overview) ||
+          hit(o.overviewAr) ||
+          hit(o.overviewEn) ||
           hit(o.city) ||
           hit(o.hotel) ||
+          o.hotels.any(
+            (hotel) =>
+                hit(hotel.name) ||
+                hit(hotel.nameAr) ||
+                hit(hotel.nameEn) ||
+                hit(hotel.description) ||
+                hit(hotel.descriptionAr) ||
+                hit(hotel.descriptionEn),
+          ) ||
           hit(o.badge) ||
+          hit(o.carrier) ||
+          hit(o.departureAirport) ||
+          hit(o.packageTier) ||
+          hit(o.groupType) ||
+          hit(o.seasonTag) ||
           hit(company?.name) ||
           hit(company?.nameAr) ||
           hit(company?.nameEn);
@@ -862,6 +883,9 @@ class AppProvider extends ChangeNotifier {
                 'name_en': hotel.nameEn,
                 'star_rating': hotel.starRating,
                 'photo_urls': hotel.photoUrls,
+                'description': hotel.description,
+                'description_ar': hotel.descriptionAr,
+                'description_en': hotel.descriptionEn,
                 'nights': hotel.nights,
                 'distance_from_haram_m': hotel.distanceFromHaramM,
               },
@@ -902,6 +926,7 @@ class AppProvider extends ChangeNotifier {
           'name': offer.hotelMakkah,
           'star_rating': offer.acc,
           'photo_urls': const <String>[],
+          'description': offer.hotelMakkahDescription,
           'nights': makkahNights,
           'distance_from_haram_m': distance,
         },
@@ -911,6 +936,7 @@ class AppProvider extends ChangeNotifier {
           'name': offer.hotelMadinah,
           'star_rating': offer.acc,
           'photo_urls': const <String>[],
+          'description': offer.hotelMadinahDescription,
           'nights': offer.nights - makkahNights,
           'distance_from_haram_m': distance,
         },
@@ -945,7 +971,7 @@ class AppProvider extends ChangeNotifier {
         imageFailed = true;
       }
     }
-    _offers = [withImage, ..._offers];
+    _agencyOffers = [withImage, ..._agencyOffers];
     notifyListeners();
     return (true, imageFailed);
   }
@@ -961,22 +987,18 @@ class AppProvider extends ChangeNotifier {
       updated.customItinerary ?? const [],
     );
     if (err != null) return (false, false);
-    var withImage = updated;
     var imageFailed = false;
     if (imageBytes != null) {
       _offerImages[updated.id] = imageBytes;
       final url = await _service.uploadPackageImage(updated.id, imageBytes);
-      if (url != null) {
-        withImage = updated.copyWith(imageUrl: url);
-      } else {
+      if (url == null) {
         imageFailed = true;
       }
     }
-    final i = _offers.indexWhere((o) => o.id == updated.id);
-    if (i >= 0) {
-      _offers = List.from(_offers);
-      _offers[i] = withImage;
-    }
+    // Any edit to published commercial content is unpublished for review by
+    // the database, so never leave the stale public version in this session.
+    _offers = _offers.where((offer) => offer.id != updated.id).toList();
+    await loadAgencyOffers();
     notifyListeners();
     return (true, imageFailed);
   }
@@ -985,6 +1007,7 @@ class AppProvider extends ChangeNotifier {
     final err = await _service.deletePackage(offerId);
     if (err != null) return false;
     _offers = _offers.where((o) => o.id != offerId).toList();
+    _agencyOffers = _agencyOffers.where((o) => o.id != offerId).toList();
     notifyListeners();
     return true;
   }
@@ -995,9 +1018,22 @@ class AppProvider extends ChangeNotifier {
       await loadData();
       if (_user?.isAgency == true) {
         _myCompany = await _service.fetchMyCompany(_user!.id);
+        await loadAgencyOffers();
       }
     }
     return err;
+  }
+
+  Future<String?> pauseOffer(String offerId) async {
+    final error = await _service.pausePackage(
+      offerId,
+      reason: 'Paused by company',
+    );
+    if (error == null) {
+      _offers = _offers.where((offer) => offer.id != offerId).toList();
+      await loadAgencyOffers();
+    }
+    return error;
   }
 
   Future<String?> reviewOffer(
@@ -1013,14 +1049,18 @@ class AppProvider extends ChangeNotifier {
   List<Offer> getFilteredOffers([OfferFilters? override]) {
     var list = List<Offer>.from(_offers);
     final f = override ?? _filters;
-    if (f.transport != 'all')
+    if (f.transport != 'all') {
       list = list.where((o) => o.transport == f.transport).toList();
-    if (f.acc != 'all')
+    }
+    if (f.acc != 'all') {
       list = list.where((o) => o.acc == int.parse(f.acc)).toList();
-    if (f.dur == 'short')
+    }
+    if (f.dur == 'short') {
       list = list.where((o) => o.days >= 7 && o.days <= 9).toList();
-    if (f.dur == 'mid')
+    }
+    if (f.dur == 'mid') {
       list = list.where((o) => o.days >= 10 && o.days <= 14).toList();
+    }
     if (f.dur == 'long') list = list.where((o) => o.days >= 15).toList();
     if (f.rating > 0) list = list.where((o) => o.rating >= f.rating).toList();
     list = list.where((o) => o.price <= f.priceMax).toList();
@@ -1035,8 +1075,28 @@ class AppProvider extends ChangeNotifier {
     return list;
   }
 
-  List<Offer> getCompanyOffers(String companyId) =>
-      _offers.where((o) => o.companyId == companyId).toList();
+  List<Offer> getCompanyOffers(String companyId) {
+    if (_myCompany?.id == companyId) return List.unmodifiable(_agencyOffers);
+    return _offers.where((offer) => offer.companyId == companyId).toList();
+  }
+
+  Future<void> loadAgencyOffers() async {
+    final company = _myCompany;
+    if (company == null) return;
+    try {
+      final companyList = <Company>[
+        ..._companies.where((item) => item.id != company.id),
+        company,
+      ];
+      _agencyOffers = await _service.fetchCompanyPackages(
+        company.id,
+        companyList,
+      );
+    } catch (error) {
+      debugPrint('Failed to load agency packages: $error');
+    }
+    notifyListeners();
+  }
 
   // ── companies ────────────────────────────────────────────────────────────
   Company? companyById(String id) {
@@ -1156,15 +1216,9 @@ class AppProvider extends ChangeNotifier {
     int? roomOccupancy,
     String? mealPreference,
     List<PilgrimInfo>? pilgrims,
+    String? requestKey,
   }) async {
     if (_user == null) return 'auth';
-    // Room preference + per-pilgrim details travel in the booking note,
-    // one line each, so the agency sees them with the request.
-    final noteLines = <String>[
-      if ((roomLabel ?? '').isNotEmpty) 'room:$roomLabel',
-      if (pilgrims != null)
-        for (var i = 0; i < pilgrims.length; i++) pilgrims[i].toNoteLine(i + 1),
-    ];
     final err = await _service.createBooking(
       packageId: offer.id,
       clientId: _user!.id,
@@ -1172,11 +1226,12 @@ class AppProvider extends ChangeNotifier {
       payMethod: payMethod,
       departureDate: departureDate,
       contactPhone: _user!.phone,
-      note: noteLines.isEmpty ? null : noteLines.join('\n'),
+      note: null,
       roomLabel: roomLabel,
       roomOccupancy: roomOccupancy,
       mealPreference: mealPreference,
       pilgrims: pilgrims,
+      requestKey: requestKey,
     );
     if (err != null) return err;
     await refreshBookings();
@@ -1190,8 +1245,18 @@ class AppProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<String?> cancelBooking(String bookingId) async {
-    final err = await _service.cancelBooking(bookingId);
+  Future<BookingQuote> bookingQuote(
+    Offer offer, {
+    required int travelers,
+    required int roomOccupancy,
+  }) => _service.fetchBookingQuote(
+    packageId: offer.id,
+    travellers: travelers,
+    roomOccupancy: roomOccupancy,
+  );
+
+  Future<String?> cancelBooking(String bookingId, String reason) async {
+    final err = await _service.cancelBooking(bookingId, reason);
     if (err != null) return err;
     final i = _bookings.indexWhere((b) => b.id == bookingId);
     if (i >= 0) {
@@ -1326,9 +1391,14 @@ class AppProvider extends ChangeNotifier {
   Future<String?> respondToBooking(
     String bookingId, {
     required bool confirm,
+    String? reason,
   }) async {
     final action = confirm ? 'accept' : 'reject';
-    final err = await _service.setBookingStatus(bookingId, action);
+    final err = await _service.setBookingStatus(
+      bookingId,
+      action,
+      reason: reason,
+    );
     if (err != null) return err;
     final i = _agencyBookings.indexWhere((b) => b.id == bookingId);
     if (i >= 0) {
@@ -1361,6 +1431,19 @@ class AppProvider extends ChangeNotifier {
   Future<String?> markBookingReady(String bookingId) =>
       _transitionAgencyBooking(bookingId, 'ready', 'ready');
 
+  Future<String?> requestBookingInformation(
+    String bookingId,
+    String reason,
+  ) async {
+    final err = await _service.setBookingStatus(
+      bookingId,
+      'request_information',
+      reason: reason,
+    );
+    if (err == null) await loadAgencyBookings();
+    return err;
+  }
+
   Future<String?> confirmCashPayment(String bookingId) async {
     final err = await _service.confirmCashReceived(bookingId);
     if (err == null) await loadAgencyBookings();
@@ -1368,7 +1451,12 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>?> initiateFibPayment(Booking booking) =>
-      _service.initiateFibPayment(booking.id, booking.total.round());
+      _service.initiateFibPayment(
+        booking.id,
+        (booking.amountDueNow - booking.amountPaid)
+            .clamp(0, booking.total)
+            .round(),
+      );
 
   Future<String?> startBookingTrip(String bookingId) =>
       _transitionAgencyBooking(bookingId, 'start', 'in_progress');
@@ -1391,6 +1479,168 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
     return null;
   }
+
+  // ── agency wallet and trip operations ──────────────────────────────────
+  AgencyWallet _agencyWallet = const AgencyWallet();
+  AgencyWallet get agencyWallet => _agencyWallet;
+
+  Future<void> loadAgencyWallet() async {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return;
+    _agencyWallet = await _service.fetchAgencyWallet(companyId);
+    notifyListeners();
+  }
+
+  Future<List<BookingTraveller>> tripTravellers(String packageId) =>
+      _service.fetchTripTravellers(packageId);
+
+  Future<List<TravellerDocument>> travellerDocuments(String bookingId) =>
+      _service.fetchTravellerDocuments(bookingId);
+
+  Future<String?> travellerDocumentUrl(String storagePath) =>
+      _service.travellerDocumentUrl(storagePath);
+
+  Future<String?> uploadTravellerDocument({
+    required String travellerId,
+    required String bookingId,
+    required String companyId,
+    required String kind,
+    required Uint8List bytes,
+    required String fileName,
+  }) => _service.uploadTravellerDocument(
+    travellerId: travellerId,
+    bookingId: bookingId,
+    companyId: companyId,
+    kind: kind,
+    bytes: bytes,
+    fileName: fileName,
+  );
+
+  Future<String?> updateTravellerOperations({
+    required String travellerId,
+    String? documentStatus,
+    String? documentReason,
+    String? visaStatus,
+    String? visaReference,
+    String? visaReason,
+    String? transportSeat,
+  }) => _service.updateTravellerOperations(
+    travellerId: travellerId,
+    documentStatus: documentStatus,
+    documentReason: documentReason,
+    visaStatus: visaStatus,
+    visaReference: visaReference,
+    visaReason: visaReason,
+    transportSeat: transportSeat,
+  );
+
+  Future<String?> reviewTravellerDocument({
+    required String documentId,
+    required String status,
+    String? reason,
+    DateTime? expiresOn,
+  }) => _service.reviewTravellerDocument(
+    documentId: documentId,
+    status: status,
+    reason: reason,
+    expiresOn: expiresOn,
+  );
+
+  Future<List<TripAnnouncement>> tripAnnouncements(String packageId) =>
+      _service.fetchTripAnnouncements(packageId);
+
+  Future<String?> createTripAnnouncement({
+    required String packageId,
+    required String title,
+    required String body,
+    required String audience,
+  }) {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return Future.value('Company not found');
+    return _service.createTripAnnouncement(
+      packageId: packageId,
+      companyId: companyId,
+      title: title,
+      body: body,
+      audience: audience,
+    );
+  }
+
+  Future<List<TripRoom>> tripRooms(String packageId) =>
+      _service.fetchTripRooms(packageId);
+
+  Future<String?> createTripRoom({
+    required String packageId,
+    required String city,
+    required String label,
+    required int capacity,
+    required String genderPolicy,
+  }) {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return Future.value('Company not found');
+    return _service.createTripRoom(
+      packageId: packageId,
+      companyId: companyId,
+      city: city,
+      label: label,
+      capacity: capacity,
+      genderPolicy: genderPolicy,
+    );
+  }
+
+  Future<String?> deleteTripRoom(String roomId) =>
+      _service.deleteTripRoom(roomId);
+
+  Future<String?> assignTravellerRoom({
+    required String roomId,
+    required String travellerId,
+  }) => _service.assignTravellerRoom(roomId: roomId, travellerId: travellerId);
+
+  Future<List<TripTransportSegment>> tripTransport(String packageId) =>
+      _service.fetchTripTransport(packageId);
+
+  Future<String?> createTripTransport({
+    required String packageId,
+    required Map<String, dynamic> fields,
+  }) {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return Future.value('Company not found');
+    return _service.createTripTransport(
+      packageId: packageId,
+      companyId: companyId,
+      fields: fields,
+    );
+  }
+
+  Future<String?> deleteTripTransport(String segmentId) =>
+      _service.deleteTripTransport(segmentId);
+
+  Future<List<AgencyStaffMember>> agencyStaff() async {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return [];
+    return _service.fetchAgencyStaff(companyId);
+  }
+
+  Future<String?> addAgencyStaff({
+    required String userId,
+    required String role,
+    required List<String> permissions,
+  }) {
+    final companyId = _myCompany?.id;
+    if (companyId == null) return Future.value('Company not found');
+    return _service.addAgencyStaff(
+      companyId: companyId,
+      userId: userId,
+      role: role,
+      permissions: permissions,
+    );
+  }
+
+  Future<String?> removeAgencyStaff(String membershipId) =>
+      _service.removeAgencyStaff(membershipId);
+
+  Future<(bool ok, bool imageFailed)> duplicateOffer(Offer offer) =>
+      addOffer(offer.asDuplicateDraft());
 
   // ── commissions (what an agency owes the platform) ───────────────────────
   List<Commission> _commissions = [];

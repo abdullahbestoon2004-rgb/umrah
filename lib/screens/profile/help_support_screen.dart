@@ -127,7 +127,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
                               color: open
-                                  ? AppColors.primary.withOpacity(0.35)
+                                  ? AppColors.primary.withValues(alpha: 0.35)
                                   : AppColors.border,
                               width: 1.5,
                             ),
@@ -294,7 +294,7 @@ class _ContactTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(11),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),

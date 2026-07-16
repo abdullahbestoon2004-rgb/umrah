@@ -17,9 +17,14 @@ import 'agency_bookings_tab.dart';
 /// Agency landing tab: next departure hero, KPI strip, alerts that deep-link
 /// into the other tabs, and the latest booking requests.
 class AgencyOverviewTab extends StatelessWidget {
-  /// Switches the shell to another destination (2 = Bookings, 3 = Money).
+  /// Switches the shell to another destination (2 = Bookings).
   final ValueChanged<int> onGoToTab;
-  const AgencyOverviewTab({super.key, required this.onGoToTab});
+  final VoidCallback onOpenMoney;
+  const AgencyOverviewTab({
+    super.key,
+    required this.onGoToTab,
+    required this.onOpenMoney,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +37,31 @@ class AgencyOverviewTab extends StatelessWidget {
     final bookings = provider.agencyBookings;
     final pending = provider.pendingBookingCount;
     final confirmed = bookings.where((b) => b.status == 'Confirmed').length;
-    final revenue = bookings
-        .where((b) => b.status == 'Confirmed' || b.status == 'Completed')
+    final bookingValue = bookings
+        .where(
+          (booking) => ![
+            'cancelled',
+            'rejected',
+            'expired',
+          ].contains(booking.operationalStage),
+        )
         .fold(0.0, (s, b) => s + b.total);
-    final owed = provider.commissionsOwed;
+    final received = bookings.fold(
+      0.0,
+      (sum, booking) => sum + booking.amountPaid,
+    );
+    final unpaid = bookings
+        .where(
+          (booking) =>
+              booking.amountPaid < booking.total &&
+              ![
+                'cancelled',
+                'rejected',
+                'expired',
+              ].contains(booking.operationalStage),
+        )
+        .length;
+    final wallet = provider.agencyWallet;
     final next = _nextDeparture(bookings);
     final recent = _recent(bookings);
 
@@ -52,6 +78,7 @@ class AgencyOverviewTab extends StatelessWidget {
         final p = context.read<AppProvider>();
         await p.loadAgencyBookings();
         await p.loadCommissions();
+        await p.loadAgencyWallet();
       },
       slivers: [
         if (!company.isVerified)
@@ -87,7 +114,7 @@ class AgencyOverviewTab extends StatelessWidget {
                       .submitCompanyForReview();
                   messenger.showSnackBar(
                     appSnack(
-                      err == null ? t.workflowSubmitted : err,
+                      err ?? t.workflowSubmitted,
                       isError: err != null,
                     ),
                   );
@@ -130,24 +157,26 @@ class AgencyOverviewTab extends StatelessWidget {
                   onTap: () => onGoToTab(2),
                 ),
                 KpiCard(
-                  value: compactIqd(revenue),
-                  label: t.agencyKpiRevenue,
+                  value: compactIqd(bookingValue),
+                  label: t.agencyTripConfirmedValue,
                   icon: Icons.payments_rounded,
                   color: const Color(0xFF397C74),
-                  onTap: () => onGoToTab(3),
+                  onTap: onOpenMoney,
                 ),
                 KpiCard(
-                  value: compactIqd(owed),
-                  label: t.adminStatOwed,
+                  value: compactIqd(received),
+                  label: t.agencyTripCollected,
                   icon: Icons.receipt_long_rounded,
                   color: const Color(0xFF8B5F38),
-                  onTap: () => onGoToTab(3),
+                  onTap: onOpenMoney,
                 ),
               ],
             ),
           ),
         ),
-        if (pending > 0 || owed > 0) ...[
+        if (pending > 0 ||
+            unpaid > 0 ||
+            wallet.amountOwedToPlatformIqd > 0) ...[
           SliverToBoxAdapter(
             child: SectionHeader(title: t.adminNeedsAttention),
           ),
@@ -162,15 +191,21 @@ class AgencyOverviewTab extends StatelessWidget {
                     color: AppColors.gold,
                     onTap: () => onGoToTab(2),
                   ),
-                if (owed > 0)
+                if (unpaid > 0)
                   AttentionCard(
-                    icon: Icons.receipt_long_rounded,
-                    label: t.adminCommissionsOwedLabel,
-                    count: provider.commissions
-                        .where((c) => c.status == 'owed')
-                        .length,
+                    icon: Icons.money_off_csred_outlined,
+                    label: t.agencyOverviewUnpaidBookings,
+                    count: unpaid,
                     color: const Color(0xFF8B5F38),
-                    onTap: () => onGoToTab(3),
+                    onTap: () => onGoToTab(2),
+                  ),
+                if (wallet.amountOwedToPlatformIqd > 0)
+                  AttentionCard(
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: t.agencyWalletYouOweTawaf,
+                    count: 1,
+                    color: AppColors.errorRed,
+                    onTap: onOpenMoney,
                   ),
               ],
             ),
@@ -261,7 +296,7 @@ class _NextDepartureCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: booking.gradColors.first.withOpacity(0.25),
+              color: booking.gradColors.first.withValues(alpha: 0.25),
               blurRadius: 14,
               offset: const Offset(0, 7),
             ),
@@ -287,7 +322,7 @@ class _NextDepartureCard extends StatelessWidget {
                           4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
+                          color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -342,7 +377,7 @@ class _NextDepartureCard extends StatelessWidget {
                         '${dep.year}/${dep.month}/${dep.day} · ${t.bookingsPaxCount(booking.travelers)}',
                         style: AppTheme.sans(
                           12,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                         ),
                       ),
                     ],
@@ -375,7 +410,7 @@ class _VerificationBanner extends StatelessWidget {
     decoration: BoxDecoration(
       color: const Color(0xFFFFF8E8),
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: AppColors.gold.withOpacity(0.4), width: 1.5),
+      border: Border.all(color: AppColors.gold.withValues(alpha: 0.4), width: 1.5),
     ),
     child: Row(
       children: [

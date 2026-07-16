@@ -14,6 +14,7 @@ import 'package:umrah_app/models/support_message_model.dart';
 import 'package:umrah_app/models/review_model.dart';
 import 'package:umrah_app/models/inquiry_model.dart';
 import 'package:umrah_app/models/agency_document_model.dart';
+import 'package:umrah_app/models/agency_operations_model.dart';
 import 'package:umrah_app/models/user_profile.dart';
 import 'package:umrah_app/providers/app_provider.dart';
 import 'package:umrah_app/services/supabase_service.dart';
@@ -22,6 +23,7 @@ import 'package:umrah_app/screens/admin/admin_screen.dart';
 import 'package:umrah_app/screens/profile/notifications_screen.dart';
 import 'package:umrah_app/screens/profile/payment_methods_screen.dart';
 import 'package:umrah_app/screens/profile/privacy_security_screen.dart';
+import 'package:umrah_app/screens/agency/add_edit_offer_screen.dart';
 import 'package:umrah_app/l10n/generated/app_localizations.dart';
 
 class FakeService implements DataService {
@@ -48,7 +50,7 @@ class FakeService implements DataService {
     ),
   ];
   final offers = <Offer>[
-    const Offer(
+    Offer(
       id: 'o1',
       companyId: 'c1',
       title: 'عومرەی زێڕین',
@@ -60,6 +62,16 @@ class FakeService implements DataService {
       original: 3100000,
       rating: 4.8,
       hotel: 'Swissôtel',
+      meals: 'Full board',
+      departureDate: DateTime(2030, 12, 20),
+      returnDate: DateTime(2031, 1, 1),
+      capacity: 40,
+      pricing: const [
+        OfferPrice(occupancyType: 'double', priceIqd: 2750000),
+        OfferPrice(occupancyType: 'triple', priceIqd: 2600000),
+        OfferPrice(occupancyType: 'quad', priceIqd: 2450000),
+      ],
+      acceptedPaymentMethods: const ['cash', 'fib'],
       badge: 'Best value',
       gradColors: [Colors.teal, Colors.black],
     ),
@@ -180,6 +192,12 @@ class FakeService implements DataService {
 
   @override
   Future<List<Offer>> fetchOffers(List<Company> _) async => offers;
+
+  @override
+  Future<List<Offer>> fetchCompanyPackages(
+    String companyId,
+    List<Company> _,
+  ) async => offers.where((offer) => offer.companyId == companyId).toList();
 
   @override
   Future<List<Offer>> fetchAdminPackages(List<Company> _) async => offers;
@@ -315,6 +333,10 @@ class FakeService implements DataService {
   Future<String?> submitPackage(String packageId) async => null;
 
   @override
+  Future<String?> pausePackage(String packageId, {String? reason}) async =>
+      null;
+
+  @override
   Future<String?> reviewPackage(
     String packageId,
     String decision, {
@@ -324,6 +346,29 @@ class FakeService implements DataService {
   @override
   Future<List<Booking>> fetchMyBookings(String clientId) async =>
       List.from(bookings);
+
+  @override
+  Future<BookingQuote> fetchBookingQuote({
+    required String packageId,
+    required int travellers,
+    required int roomOccupancy,
+  }) async {
+    final offer = offers.firstWhere((item) => item.id == packageId);
+    final unitPrice = offer.priceForOccupancy(roomOccupancy);
+    return BookingQuote(
+      offerId: packageId,
+      version: 1,
+      travellers: travellers,
+      roomOccupancy: roomOccupancy,
+      roomCount: (travellers / roomOccupancy).ceil(),
+      unitPriceIqd: unitPrice,
+      totalIqd: unitPrice * travellers,
+      amountDueNowIqd: unitPrice * travellers,
+      departureDate: offer.departureDate,
+      meal: offer.meals,
+      acceptedPaymentMethods: offer.acceptedPaymentMethods,
+    );
+  }
 
   @override
   Future<String?> createBooking({
@@ -338,6 +383,7 @@ class FakeService implements DataService {
     int? roomOccupancy,
     String? mealPreference,
     List<PilgrimInfo>? pilgrims,
+    String? requestKey,
   }) async {
     final offer = offers.firstWhere((o) => o.id == packageId);
     bookings.insert(
@@ -372,13 +418,12 @@ class FakeService implements DataService {
   Future<String?> saveTravellerPassport({
     required String travellerId,
     required String bookingId,
-    required String passportNo,
     required Uint8List passportBytes,
     required Uint8List selfieBytes,
   }) async => null;
 
   @override
-  Future<String?> cancelBooking(String id) async {
+  Future<String?> cancelBooking(String id, String reason) async {
     final i = bookings.indexWhere((b) => b.id == id);
     if (i < 0) return 'not found';
     bookings[i] = bookings[i].copyWith(status: 'Cancelled');
@@ -398,7 +443,11 @@ class FakeService implements DataService {
   Future<List<Booking>> fetchAllBookings() async => List.from(bookings);
 
   @override
-  Future<String?> setBookingStatus(String bookingId, String status) async {
+  Future<String?> setBookingStatus(
+    String bookingId,
+    String status, {
+    String? reason,
+  }) async {
     final i = bookings.indexWhere((b) => b.id == bookingId);
     if (i < 0) return 'not found';
     final stage = switch (status) {
@@ -452,6 +501,118 @@ class FakeService implements DataService {
     'payment_id': 'pay-test',
     'fib': {'readableCode': 'FIB-TEST'},
   };
+
+  // ── wallet and trip operations ─────────────────────────────────────────
+  @override
+  Future<AgencyWallet> fetchAgencyWallet(String companyId) async =>
+      const AgencyWallet();
+
+  @override
+  Future<List<BookingTraveller>> fetchTripTravellers(String packageId) async =>
+      const [];
+
+  @override
+  Future<List<TravellerDocument>> fetchTravellerDocuments(
+    String bookingId,
+  ) async => const [];
+
+  @override
+  Future<String?> travellerDocumentUrl(String storagePath) async => null;
+
+  @override
+  Future<String?> uploadTravellerDocument({
+    required String travellerId,
+    required String bookingId,
+    required String companyId,
+    required String kind,
+    required Uint8List bytes,
+    required String fileName,
+  }) async => null;
+
+  @override
+  Future<String?> updateTravellerOperations({
+    required String travellerId,
+    String? documentStatus,
+    String? documentReason,
+    String? visaStatus,
+    String? visaReference,
+    String? visaReason,
+    String? transportSeat,
+  }) async => null;
+
+  @override
+  Future<String?> reviewTravellerDocument({
+    required String documentId,
+    required String status,
+    String? reason,
+    DateTime? expiresOn,
+  }) async => null;
+
+  @override
+  Future<List<TripAnnouncement>> fetchTripAnnouncements(
+    String packageId,
+  ) async => const [];
+
+  @override
+  Future<String?> createTripAnnouncement({
+    required String packageId,
+    required String companyId,
+    required String title,
+    required String body,
+    required String audience,
+  }) async => null;
+
+  @override
+  Future<List<TripRoom>> fetchTripRooms(String packageId) async => const [];
+
+  @override
+  Future<String?> createTripRoom({
+    required String packageId,
+    required String companyId,
+    required String city,
+    required String label,
+    required int capacity,
+    required String genderPolicy,
+  }) async => null;
+
+  @override
+  Future<String?> deleteTripRoom(String roomId) async => null;
+
+  @override
+  Future<String?> assignTravellerRoom({
+    required String roomId,
+    required String travellerId,
+  }) async => null;
+
+  @override
+  Future<List<TripTransportSegment>> fetchTripTransport(
+    String packageId,
+  ) async => const [];
+
+  @override
+  Future<String?> createTripTransport({
+    required String packageId,
+    required String companyId,
+    required Map<String, dynamic> fields,
+  }) async => null;
+
+  @override
+  Future<String?> deleteTripTransport(String segmentId) async => null;
+
+  @override
+  Future<List<AgencyStaffMember>> fetchAgencyStaff(String companyId) async =>
+      const [];
+
+  @override
+  Future<String?> addAgencyStaff({
+    required String companyId,
+    required String userId,
+    required String role,
+    required List<String> permissions,
+  }) async => null;
+
+  @override
+  Future<String?> removeAgencyStaff(String membershipId) async => null;
 
   // ── commissions ──────────────────────────────────────────────────────────
   final commissions = <Commission>[];
@@ -800,6 +961,34 @@ void main() {
       expect(offer.titleFor('ar'), 'عومرەی زێڕین'); // no Arabic → Kurdish base
     });
 
+    test('occupancy quote uses the selected room price', () async {
+      final p = await makeProvider();
+      final quote = await p.bookingQuote(
+        p.allOffers.first,
+        travelers: 2,
+        roomOccupancy: 3,
+      );
+      expect(quote.unitPriceIqd, 2600000);
+      expect(quote.totalIqd, 5200000);
+      expect(quote.roomCount, 1);
+    });
+
+    test('each structured hotel keeps its own description', () {
+      final hotel = OfferHotel.fromRow({
+        'city': 'makkah',
+        'nights': 5,
+        'distance_from_haram_m': 250,
+        'hotels': {
+          'name': 'Makkah Hotel',
+          'description': 'Next to the Haram with family rooms.',
+          'star_rating': 5,
+          'photo_urls': <String>[],
+        },
+      });
+      expect(hotel.description, 'Next to the Haram with family rooms.');
+      expect(hotel.city, 'makkah');
+    });
+
     test('booking requires sign-in, then persists', () async {
       final p = await makeProvider();
       final offer = p.allOffers.first;
@@ -809,14 +998,14 @@ void main() {
         offer,
         2,
         payMethod: 'fib',
-        departureDate: DateTime(2026, 12, 20),
+        departureDate: offer.departureDate,
         roomLabel: '2-person room',
         roomOccupancy: 2,
       );
       expect(err, isNull);
       expect(p.bookings.length, 1);
       expect(p.bookings.first.payMethod, 'fib');
-      expect(p.bookings.first.departureDate, DateTime(2026, 12, 20));
+      expect(p.bookings.first.departureDate, offer.departureDate);
       expect(p.bookings.first.roomOccupancy, 2);
       expect(p.bookings.first.roomLabel, '2-person room');
       expect(p.bookings.first.total, 5500000);
@@ -831,7 +1020,7 @@ void main() {
       final p = await makeProvider();
       await p.signIn('client@test.com', 'pass');
       await p.confirmBooking(p.allOffers.first, 1);
-      final err = await p.cancelBooking(p.bookings.first.id);
+      final err = await p.cancelBooking(p.bookings.first.id, 'Plans changed');
       expect(err, isNull);
       expect(p.bookings.first.status, 'Cancelled');
     });
@@ -1152,6 +1341,35 @@ void main() {
   });
 
   group('Screens render', () {
+    testWidgets('offer wizard blocks Next and marks missing required fields', (
+      tester,
+    ) async {
+      final p = await makeProvider();
+      await p.signIn('agency@test.com', 'pass');
+      await tester.pumpWidget(
+        wrap(const AddEditOfferScreen(companyId: 'c1'), p),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Next'));
+      await tester.pump();
+
+      expect(
+        find.text('Complete the highlighted required fields.'),
+        findsOneWidget,
+      );
+      expect(find.text('Required'), findsNWidgets(2));
+      expect(find.text('Transport & stay'), findsNothing);
+
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(0), 'Umrah package');
+      await tester.enterText(fields.at(3), 'A complete Umrah package.');
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Transport & stay'), findsOneWidget);
+    });
+
     testWidgets('NotificationsScreen marks everything seen on open', (
       tester,
     ) async {

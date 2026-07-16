@@ -221,7 +221,7 @@ class _ActivityRow extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
+          color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(11),
         ),
         child: Icon(
@@ -260,9 +260,9 @@ class _AllCaughtUp extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
-      color: AppColors.primary.withOpacity(0.09),
+      color: AppColors.primary.withValues(alpha: 0.09),
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: AppColors.primary.withOpacity(0.24)),
+      border: Border.all(color: AppColors.primary.withValues(alpha: 0.24)),
     ),
     child: Row(
       children: [

@@ -49,7 +49,7 @@ class DetailTabScaffold extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (titleTrailing != null) titleTrailing!,
+                    ?titleTrailing,
                   ],
                 ),
               ),

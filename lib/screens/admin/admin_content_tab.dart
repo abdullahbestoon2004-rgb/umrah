@@ -48,7 +48,7 @@ class AdminContentTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -358,16 +358,14 @@ class AdminContentTab extends StatelessWidget {
     }
     if (!context.mounted) return;
     final messenger = ScaffoldMessenger.of(context);
+    final decisionSaved = AppLocalizations.of(context).workflowDecisionSaved;
     final err = await context.read<AppProvider>().reviewOffer(
       id,
       decision,
       reason: reason,
     );
     messenger.showSnackBar(
-      appSnack(
-        err == null ? AppLocalizations.of(context).workflowDecisionSaved : err,
-        isError: err != null,
-      ),
+      appSnack(err ?? decisionSaved, isError: err != null),
     );
   }
 }
@@ -400,11 +398,12 @@ class AdRow extends StatelessWidget {
                   ? Image.network(
                       ad.imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) =>
-                          Container(color: AppColors.primary.withOpacity(0.15)),
+                      errorBuilder: (_, _, _) => Container(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                      ),
                     )
                   : Container(
-                      color: AppColors.primary.withOpacity(0.12),
+                      color: AppColors.primary.withValues(alpha: 0.12),
                       child: const Icon(
                         Icons.campaign_rounded,
                         color: AppColors.primary,
@@ -485,7 +484,7 @@ class AdRow extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: AppColors.errorRed.withOpacity(0.1),
+                color: AppColors.errorRed.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
@@ -584,7 +583,7 @@ class _AddAdSheetState extends State<AddAdSheet> {
                 width: 42,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.25),
+                  color: AppColors.primary.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),

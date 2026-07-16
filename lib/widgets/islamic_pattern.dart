@@ -52,7 +52,7 @@ class _GirihPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final stroke = Paint()
-      ..color = color.withOpacity(opacity)
+      ..color = color.withValues(alpha: opacity)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke
       ..strokeJoin = StrokeJoin.miter;
