@@ -1,53 +1,74 @@
-# Umrah Marketplace
+# Tawaf Umrah Marketplace
 
-A trilingual Flutter + Supabase marketplace for Umrah packages. Clients,
-agencies, and administrators ship in one mobile app with role-gated navigation
-and database-enforced permissions.
+A trilingual Flutter marketplace backed by a self-hosted PHP 8 + MySQL API.
+Clients can browse and book; agencies manage offers and trip operations; the
+web administrator controls users, approvals, bookings, finance, support,
+moderation, advertising, and audit history.
 
-## Role shells
+## Project folders
 
-- `client`: existing Home, Companies, Offers, Bookings, Profile shell. The
-  prayer-time panel remains the first content section on Home.
-- `agency`: Overview, My Offers, Bookings, Messages, More. Pending, rejected,
-  and suspended agencies are held behind a status screen.
-- `admin`: Overview, Agencies, Offers, Bookings, More.
+- `lib/` — Flutter app using `https://707222.xyz/tawafbackend/api`.
+- `tawafbackend/` — upload this complete folder as `/tawafbackend`.
+- `tawaf/` — upload this complete folder as `/tawaf`.
+- `tawafbackend/sql/production.sql` — empty production business database with
+  only the starter administrator and required reference settings.
+- `tawafbackend/sql/development.sql` — optional fake data imported after the
+  production schema.
+- `supabase/` — legacy migration history only; it is no longer used by the app.
 
-## Database rollout
+## Server deployment
 
-Existing installations are upgraded additively. Apply SQL in this order:
+1. In phpMyAdmin, select the `xyz_tawaf` database and import
+   `tawafbackend/sql/production.sql`.
+2. For a development database only, import
+   `tawafbackend/sql/development.sql` immediately afterwards.
+3. Upload `tawafbackend` to the document root so its public URL is
+   `https://707222.xyz/tawafbackend`.
+4. Upload `tawaf` beside it so its public URL is
+   `https://707222.xyz/tawaf`.
+5. Ensure PHP has PDO MySQL, cURL, OpenSSL, Fileinfo, JSON, and mbstring, and
+   that `tawafbackend/uploads` is writable by PHP.
+6. Open `https://707222.xyz/tawafbackend/api/health`; both service and database
+   should report `ok`.
+7. Sign in at `https://707222.xyz/tawaf` and immediately change the starter
+   administrator password in Settings.
 
-1. `supabase/schema.sql`
-2. Existing `supabase/patches*.sql` files, ending with
-   `supabase/patches_workflow.sql`
-3. `supabase/patches_marketplace_update.sql`
-4. All files in `supabase/migrations/` in timestamp order
+The checked-in backend configuration uses the supplied localhost database
+credentials. Environment variables documented in `tawafbackend/README.md`
+override those values and are preferred when the host supports them.
 
-The marketplace patch adds rich occupancy pricing, reusable hotels,
-inclusions, media, agency public-profile fields, approval history, documents,
-reports, badges, inquiries, carousel requests, protected commercial settings,
-triggers, Realtime publication entries, grants, and RLS policies.
+## Administrator login
 
-The company trip-operations migration adds permissioned staff access, a
-trip-centric operations hub, separate traveller document and visa states,
-private document review, rooming, transport manifests, targeted announcements,
-and explicit Data API privileges for new Supabase projects. The Flutter company
-shell also includes the hybrid settlement wallet, reports, reviews, staff
-management, and passenger Excel/PDF exports.
+- URL: `https://707222.xyz/tawaf`
+- Email: `admin@707222.xyz`
+- First password: `ChangeMe!707222`
 
-Run `supabase/tests_workflow.sql`, `supabase/tests_payments.sql`, and
-`supabase/tests_marketplace_update.sql`, then
-`supabase/tests_trip_integrity.sql` and
-`supabase/tests_company_trip_operations.sql`, then
-`supabase/tests_security_hardening.sql` against a development project after
-applying the patches and migrations. The test scripts roll back their fixtures.
+The account is marked as requiring a password change. The production SQL is
+idempotent and will not overwrite a password that has already been changed.
+
+Development-only accounts all use `Demo!2026`:
+
+- `agency@tawaf.test`
+- `client@tawaf.test`
+- `guide@tawaf.test`
 
 ## Flutter checks
 
 ```bash
 flutter gen-l10n
-flutter analyze --no-fatal-infos --no-fatal-warnings
+flutter analyze
 flutter test
 ```
 
-All user-facing additions belong in `app_ku.arb`, `app_ar.arb`, and
-`app_en.arb`; generated localization files are committed.
+Override the API URL for staging or local development with:
+
+```bash
+flutter run --dart-define=TAWAF_API_URL=https://example.com/tawafbackend/api/index.php
+```
+
+## Payment configuration
+
+FIB credentials stay on the PHP server and are never included in the Flutter
+app. Set `FIB_BASE_URL`, `FIB_CLIENT_ID`, and `FIB_CLIENT_SECRET` in the hosting
+environment before enabling FIB. See `PAYMENTS.md` for the payment and ledger
+model.

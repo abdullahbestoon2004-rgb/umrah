@@ -5,24 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
-import 'services/supabase_service.dart';
+import 'services/api_service.dart';
 import 'screens/main_screen.dart';
 import 'screens/lock/lock_screen.dart';
 import 'l10n/generated/app_localizations.dart';
-import 'supabase_config.dart';
 
-/// Best-effort crash visibility: writes to the error_logs table (see
-/// supabase/patches.sql #8) so uncaught errors are visible somewhere other
-/// than a connected debugger. Never throws — a failing log must not crash
-/// the crash handler.
+/// Best-effort crash visibility through the PHP backend. Never throws — a
+/// failing log must not crash the crash handler.
 void _logCrash(Object error, StackTrace? stack, {String? context}) {
   try {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    SupabaseService().logError(
-      userId: userId,
+    PhpApiService().logError(
       message: error.toString(),
       stack: stack?.toString(),
       context: context,
@@ -61,11 +55,6 @@ class _KuCupertinoLocalizationsDelegate
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-
-    await Supabase.initialize(
-      url: SupabaseConfig.url,
-      publishableKey: SupabaseConfig.publishableKey,
-    );
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);

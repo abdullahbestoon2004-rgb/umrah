@@ -116,6 +116,11 @@
   "homeViewAll": "بینینی هەموو",
   "homeRatingOffersCount": "{rating} · {count, plural, =1{{count} پێشنیار} other{{count} پێشنیار}}",
   "homeCuratedPackages": "گەشتە هەڵبژێردراوەکان",
+  "homeNoTripsTitle": "گەشتە نوێکان بەم زووانە دێن",
+  "homeNoTripsBody": "کۆمپانیا پشتڕاستکراوەکان پاکێجەکانی عومرەی داهاتوو ئامادە دەکەن.",
+  "homeNewVerified": "نوێ و پشتڕاستکراو",
+  "homeNoActivePackages": "هێشتا هیچ پاکێجێکی چالاک نییە",
+  "homeNewOffer": "نوێ",
   "homeDaysCount": "{days, plural, =1{{days} ڕۆژ} other{{days} ڕۆژ}}",
   "homeFromPrefix": "لە ",
 

@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
         body: Center(child: TawafLoadingSpinner(size: 112)),
       );
     }
-    if (provider.loadFailed || provider.allOffers.isEmpty) {
+    if (provider.loadFailed) {
       return Scaffold(
         backgroundColor: AppColors.background,
         body: Center(
@@ -82,30 +82,16 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    // Home is curated from the admin dashboard (Promotions screen): only
-    // starred trips and agencies appear here. Until the admin stars anything,
-    // fall back to the best-rated so the page never launches empty.
-    final ranked = List<Offer>.from(provider.allOffers)
-      ..sort((a, b) {
-        if (a.isFeatured != b.isFeatured) return a.isFeatured ? -1 : 1;
-        return b.rating.compareTo(a.rating);
-      });
+    // Featured/promoted records lead their sections, but normal eligible
+    // records still fill the remaining positions. This keeps the home page
+    // useful when the administrator has selected only one promotion.
+    final ranked = provider.homeOffers;
     final ads = provider.homeAds;
-    final hero = ranked.first;
+    final hero = ranked.isEmpty ? null : ranked.first;
     // Without ads the hero card already fills the top slot — don't repeat it.
-    final visibleRanked = ads.isEmpty ? ranked.skip(1).toList() : ranked;
-    final featured = visibleRanked.where((o) => o.isFeatured).toList();
-    final homeOffers = featured.isNotEmpty
-        ? featured
-        : visibleRanked.take(4).toList();
-
-    final promoted = provider.companies.where((c) => c.isPromoted).toList()
-      ..sort((a, b) => b.rating.compareTo(a.rating));
-    final homeCompanies = promoted.isNotEmpty
-        ? promoted
-        : (List<Company>.from(
-            provider.companies,
-          )..sort((a, b) => b.rating.compareTo(a.rating))).take(4).toList();
+    final visibleRanked = ads.isEmpty && hero != null ? ranked.skip(1) : ranked;
+    final homeOffers = visibleRanked.take(6).toList();
+    final homeCompanies = provider.homeCompanies;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -113,28 +99,39 @@ class HomeScreen extends StatelessWidget {
         child: Stack(
           children: [
             const IslamicPattern(opacity: 0.04, isEightFold: true),
-            CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                const SliverToBoxAdapter(child: _PrayerTimesWidget()),
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                // Paid agency ads rotate in a carousel; without any, the
-                // best-rated offer takes the spot.
-                SliverToBoxAdapter(
-                  child: ads.isNotEmpty
-                      ? _AdsCarousel(ads: ads)
-                      : _HeroCard(offer: hero),
-                ),
-                SliverToBoxAdapter(child: _QuickCategories()),
-                SliverToBoxAdapter(
-                  child: _AgenciesSection(companies: homeCompanies),
-                ),
-                if (homeOffers.isNotEmpty)
+            RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: provider.loadData,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  const SliverToBoxAdapter(child: _PrayerTimesWidget()),
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  // Paid agency ads rotate in a carousel; without any, the
+                  // strongest eligible offer takes the spot.
                   SliverToBoxAdapter(
-                    child: _CuratedSection(offers: homeOffers),
+                    child: ads.isNotEmpty
+                        ? _AdsCarousel(ads: ads)
+                        : hero != null
+                        ? _HeroCard(offer: hero)
+                        : const _EmptyOffersHero(),
                   ),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
+                  SliverToBoxAdapter(child: _QuickCategories()),
+                  if (homeCompanies.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: _AgenciesSection(
+                        companies: homeCompanies,
+                        offers: ranked,
+                      ),
+                    ),
+                  if (homeOffers.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: _CuratedSection(offers: homeOffers),
+                    ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                ],
+              ),
             ),
           ],
         ),
@@ -548,9 +545,71 @@ class _HeroCard extends StatelessWidget {
   }
 }
 
+class _EmptyOffersHero extends StatelessWidget {
+  const _EmptyOffersHero();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      child: Container(
+        height: 240,
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: Stack(
+          children: [
+            const Positioned.fill(
+              child: IslamicPattern(opacity: 0.08, cell: 46),
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 290),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.calendar_month_rounded,
+                      color: AppColors.gold,
+                      size: 30,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      t.homeNoTripsTitle,
+                      style: AppTheme.serif(21, color: Colors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      t.homeNoTripsBody,
+                      style: AppTheme.sans(
+                        12,
+                        color: Colors.white.withValues(alpha: 0.78),
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _AgenciesSection extends StatelessWidget {
   final List<Company> companies;
-  const _AgenciesSection({required this.companies});
+  final List<Offer> offers;
+  const _AgenciesSection({required this.companies, required this.offers});
 
   @override
   Widget build(BuildContext context) {
@@ -585,7 +644,15 @@ class _AgenciesSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 22),
             itemCount: companies.length,
             separatorBuilder: (_, _) => const SizedBox(width: 14),
-            itemBuilder: (context, i) => _AgencyCard(company: companies[i]),
+            itemBuilder: (context, i) {
+              final company = companies[i];
+              return _AgencyCard(
+                company: company,
+                offers: offers
+                    .where((offer) => offer.companyId == company.id)
+                    .toList(),
+              );
+            },
           ),
         ),
       ],
@@ -595,12 +662,12 @@ class _AgenciesSection extends StatelessWidget {
 
 class _AgencyCard extends StatelessWidget {
   final Company company;
-  const _AgencyCard({required this.company});
+  final List<Offer> offers;
+  const _AgencyCard({required this.company, required this.offers});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final offers = context.watch<AppProvider>().getCompanyOffers(company.id);
     final offerCount = offers.length;
     final fromPrice = offers.isEmpty
         ? 0.0
@@ -653,9 +720,9 @@ class _AgencyCard extends StatelessWidget {
                           Container(color: company.tint),
                           const IslamicPattern(opacity: 0.10, cell: 40),
                         ],
-                        Positioned(
+                        PositionedDirectional(
                           top: 10,
-                          right: 10,
+                          end: 10,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -665,25 +732,45 @@ class _AgencyCard extends StatelessWidget {
                               color: Colors.white.withValues(alpha: 0.95),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: AppColors.gold,
-                                  size: 13,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  '${company.rating}',
-                                  style: AppTheme.sans(
-                                    11.5,
-                                    weight: FontWeight.w800,
-                                    color: AppColors.ink,
+                            child: company.reviews > 0
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.star_rounded,
+                                        color: AppColors.gold,
+                                        size: 13,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        company.rating.toStringAsFixed(1),
+                                        style: AppTheme.sans(
+                                          11.5,
+                                          weight: FontWeight.w800,
+                                          color: AppColors.ink,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.verified_rounded,
+                                        color: AppColors.primary,
+                                        size: 13,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        t.homeNewVerified,
+                                        style: AppTheme.sans(
+                                          10,
+                                          weight: FontWeight.w800,
+                                          color: AppColors.ink,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ],
@@ -745,7 +832,9 @@ class _AgencyCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          t.companiesPackageCount(offerCount),
+                          offerCount > 0
+                              ? t.companiesPackageCount(offerCount)
+                              : t.homeNoActivePackages,
                           style: AppTheme.sans(
                             11,
                             weight: FontWeight.w600,
@@ -803,7 +892,23 @@ class _CuratedSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
-          child: Text(t.homeCuratedPackages, style: AppTheme.serif(21)),
+          child: Row(
+            children: [
+              Text(t.homeCuratedPackages, style: AppTheme.serif(21)),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.read<AppProvider>().setTab(2),
+                child: Text(
+                  t.homeViewAll,
+                  style: AppTheme.sans(
+                    13,
+                    weight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         ListView.separated(
           shrinkWrap: true,
@@ -875,7 +980,7 @@ class _CuratedOfferCard extends StatelessWidget {
                     ).copyWith(letterSpacing: 0.8),
                   ),
                 ),
-                if (offer.rating >= 4.8)
+                if (offer.reviews >= 3 && offer.rating >= 4.8)
                   Positioned(
                     top: 6,
                     left: 6,
@@ -938,7 +1043,17 @@ class _CuratedOfferCard extends StatelessWidget {
                   const SizedBox(height: 9),
                   Row(
                     children: [
-                      StarRating(rating: offer.rating),
+                      if (offer.reviews > 0)
+                        StarRating(rating: offer.rating, reviews: offer.reviews)
+                      else
+                        Text(
+                          t.homeNewOffer,
+                          style: AppTheme.sans(
+                            11,
+                            weight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       const Spacer(),
                       Text.rich(
                         TextSpan(

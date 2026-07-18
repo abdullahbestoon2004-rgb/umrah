@@ -407,6 +407,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCuratedPackages => 'Curated Packages';
 
   @override
+  String get homeNoTripsTitle => 'New trips are coming soon';
+
+  @override
+  String get homeNoTripsBody =>
+      'Verified agencies are preparing their next Umrah packages.';
+
+  @override
+  String get homeNewVerified => 'New & verified';
+
+  @override
+  String get homeNoActivePackages => 'No active packages yet';
+
+  @override
+  String get homeNewOffer => 'New';
+
+  @override
   String homeDaysCount(int days) {
     String _temp0 = intl.Intl.pluralLogic(
       days,

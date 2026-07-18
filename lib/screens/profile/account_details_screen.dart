@@ -67,7 +67,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   /// Professional email change flow:
   /// 1. Ask for current password (re-authentication)
   /// 2. Validate new email format
-  /// 3. Send confirmation to new email via Supabase
+  /// 3. Update the verified account email through the PHP API
   Future<void> _changeEmail() async {
     final t = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
@@ -287,7 +287,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
 
     if (newEmail == null || newEmail.isEmpty) return;
 
-    // Step 3: Send email change request via Supabase
+    // Step 3: Update the account email through the PHP API
     setState(() => _saving = true);
     final err = await provider.updateEmail(newEmail);
     if (!mounted) return;

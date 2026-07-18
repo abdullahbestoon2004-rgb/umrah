@@ -762,6 +762,36 @@ abstract class AppLocalizations {
   /// **'Curated Packages'**
   String get homeCuratedPackages;
 
+  /// No description provided for @homeNoTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New trips are coming soon'**
+  String get homeNoTripsTitle;
+
+  /// No description provided for @homeNoTripsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified agencies are preparing their next Umrah packages.'**
+  String get homeNoTripsBody;
+
+  /// No description provided for @homeNewVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'New & verified'**
+  String get homeNewVerified;
+
+  /// No description provided for @homeNoActivePackages.
+  ///
+  /// In en, this message translates to:
+  /// **'No active packages yet'**
+  String get homeNoActivePackages;
+
+  /// No description provided for @homeNewOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get homeNewOffer;
+
   /// No description provided for @homeDaysCount.
   ///
   /// In en, this message translates to:

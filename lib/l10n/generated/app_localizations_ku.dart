@@ -409,6 +409,22 @@ class AppLocalizationsKu extends AppLocalizations {
   String get homeCuratedPackages => 'گەشتە هەڵبژێردراوەکان';
 
   @override
+  String get homeNoTripsTitle => 'گەشتە نوێکان بەم زووانە دێن';
+
+  @override
+  String get homeNoTripsBody =>
+      'کۆمپانیا پشتڕاستکراوەکان پاکێجەکانی عومرەی داهاتوو ئامادە دەکەن.';
+
+  @override
+  String get homeNewVerified => 'نوێ و پشتڕاستکراو';
+
+  @override
+  String get homeNoActivePackages => 'هێشتا هیچ پاکێجێکی چالاک نییە';
+
+  @override
+  String get homeNewOffer => 'نوێ';
+
+  @override
   String homeDaysCount(int days) {
     String _temp0 = intl.Intl.pluralLogic(
       days,

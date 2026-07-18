@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -14,8 +15,7 @@ import '../models/review_model.dart';
 import '../models/inquiry_model.dart';
 import '../models/agency_document_model.dart';
 import '../models/agency_operations_model.dart';
-import '../services/supabase_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/api_service.dart';
 import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
 
@@ -76,15 +76,15 @@ class OfferFilters {
 
 class AppProvider extends ChangeNotifier {
   AppProvider({DataService? service, bool autoLoad = true})
-    : _service = service ?? SupabaseService() {
+    : _service = service ?? PhpApiService() {
     AppTheme.isArabicScript = _locale.languageCode != 'en';
     if (autoLoad) init();
   }
 
   final DataService _service;
   SharedPreferences? _prefs;
-  final List<RealtimeChannel> _realtimeChannels = [];
-  bool _realtimeRefreshScheduled = false;
+  Timer? _syncTimer;
+  bool _syncRefreshRunning = false;
 
   bool _needsPasswordReset = false;
   bool get needsPasswordReset => _needsPasswordReset;
@@ -97,14 +97,6 @@ class AppProvider extends ChangeNotifier {
     await _loadPrefs();
     await loadData();
     await restoreAuth();
-    try {
-      Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-        if (data.event == AuthChangeEvent.passwordRecovery) {
-          _needsPasswordReset = true;
-          notifyListeners();
-        }
-      });
-    } catch (_) {}
   }
 
   // ── persisted settings ───────────────────────────────────────────────────
@@ -156,6 +148,114 @@ class AppProvider extends ChangeNotifier {
   bool get loadFailed => _loadFailed;
   List<Company> get companies => List.unmodifiable(_companies);
   List<Offer> get allOffers => List.unmodifiable(_offers);
+
+  /// Public trips that are safe and useful to surface on the home page.
+  ///
+  /// The API already applies these rules for normal clients. Keeping the same
+  /// guard here prevents drafts from appearing in an administrator preview and
+  /// makes the UI resilient to stale or malformed catalogue responses.
+  List<Offer> get homeOffers {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final companiesById = {
+      for (final company in _companies) company.id: company,
+    };
+    final eligible = _offers.where((offer) {
+      final company = companiesById[offer.companyId];
+      if (company == null ||
+          !company.isVerified ||
+          company.status != 'active' ||
+          company.verificationStatus != 'approved') {
+        return false;
+      }
+      if (offer.lifecycleStatus != 'published' ||
+          offer.price <= 0 ||
+          offer.title.trim().isEmpty ||
+          offer.capacityState == 'sold_out') {
+        return false;
+      }
+      final departure = offer.departureDate;
+      if (departure == null) return false;
+      final departureDay = DateTime(
+        departure.year,
+        departure.month,
+        departure.day,
+      );
+      if (departureDay.isBefore(today)) return false;
+      return true;
+    }).toList();
+
+    eligible.sort((a, b) {
+      if (a.isFeatured != b.isFeatured) return a.isFeatured ? -1 : 1;
+      final aHasReviews = a.reviews > 0;
+      final bHasReviews = b.reviews > 0;
+      if (aHasReviews != bHasReviews) return aHasReviews ? -1 : 1;
+      final ratingOrder = b.rating.compareTo(a.rating);
+      if (ratingOrder != 0) return ratingOrder;
+      final reviewOrder = b.reviews.compareTo(a.reviews);
+      if (reviewOrder != 0) return reviewOrder;
+      final aDeparture = a.departureDate;
+      final bDeparture = b.departureDate;
+      if (aDeparture != null && bDeparture != null) {
+        final departureOrder = aDeparture.compareTo(bDeparture);
+        if (departureOrder != 0) return departureOrder;
+      } else if (aDeparture != null) {
+        return -1;
+      } else if (bDeparture != null) {
+        return 1;
+      }
+      return a.id.compareTo(b.id);
+    });
+    return List.unmodifiable(eligible);
+  }
+
+  /// Verified agencies ordered for the horizontally scrollable home section.
+  ///
+  /// Agencies with a live package come first, then administrator-promoted
+  /// agencies, established ratings, and finally newly verified agencies. All
+  /// eligible agencies remain in the list so newly added records do not
+  /// disappear merely because four older agencies already exist.
+  List<Company> get homeCompanies {
+    final activeOfferCompanyIds = homeOffers
+        .map((offer) => offer.companyId)
+        .toSet();
+    final eligible = _companies
+        .where(
+          (company) =>
+              company.isVerified &&
+              company.status == 'active' &&
+              company.verificationStatus == 'approved',
+        )
+        .toList();
+
+    eligible.sort((a, b) {
+      final aHasOffers = activeOfferCompanyIds.contains(a.id);
+      final bHasOffers = activeOfferCompanyIds.contains(b.id);
+      if (aHasOffers != bHasOffers) return aHasOffers ? -1 : 1;
+      if (a.isPromoted != b.isPromoted) return a.isPromoted ? -1 : 1;
+      final aHasReviews = a.reviews > 0;
+      final bHasReviews = b.reviews > 0;
+      if (aHasReviews != bHasReviews) return aHasReviews ? -1 : 1;
+      final ratingOrder = b.rating.compareTo(a.rating);
+      if (ratingOrder != 0) return ratingOrder;
+      final reviewOrder = b.reviews.compareTo(a.reviews);
+      if (reviewOrder != 0) return reviewOrder;
+      final servedOrder = b.pilgrimsServed.compareTo(a.pilgrimsServed);
+      if (servedOrder != 0) return servedOrder;
+      final aCreated = a.createdAt;
+      final bCreated = b.createdAt;
+      if (aCreated != null && bCreated != null) {
+        final createdOrder = bCreated.compareTo(aCreated);
+        if (createdOrder != 0) return createdOrder;
+      } else if (aCreated != null) {
+        return -1;
+      } else if (bCreated != null) {
+        return 1;
+      }
+      return a.id.compareTo(b.id);
+    });
+    return List.unmodifiable(eligible);
+  }
 
   Future<void> loadData() async {
     _loading = true;
@@ -226,7 +326,9 @@ class AppProvider extends ChangeNotifier {
     try {
       _user = await _service.restoreSession();
       if (_user != null) {
-        if (_user!.isAgency) {
+        if (_user!.isAdmin) {
+          await loadAdminData();
+        } else if (_user!.isAgency) {
           _myCompany = await _service.ensureAgencyCompany(_user!.id);
           await loadAgencyOffers();
           await loadAgencyBookings();
@@ -234,7 +336,7 @@ class AppProvider extends ChangeNotifier {
         await refreshBookings();
         await _syncAccountData();
         await _loadRemoteNotifications();
-        _startRealtime();
+        _startSyncPolling();
       }
     } catch (_) {}
     notifyListeners();
@@ -356,7 +458,7 @@ class AppProvider extends ChangeNotifier {
   /// uses this device — cards, saves, and account prefs all follow the
   /// account, not the device.
   Future<void> _clearLocalAccountState() async {
-    await _stopRealtime();
+    _stopSyncPolling();
     _user = null;
     _myCompany = null;
     _bookings = [];
@@ -382,92 +484,23 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _startRealtime() {
+  void _startSyncPolling() {
     final current = _user;
-    if (current == null || _realtimeChannels.isNotEmpty) return;
-    try {
-      final client = Supabase.instance.client;
-      final notifications =
-          client
-              .channel('notifications:${current.id}')
-              .onPostgresChanges(
-                event: PostgresChangeEvent.all,
-                schema: 'public',
-                table: 'notifications',
-                filter: PostgresChangeFilter(
-                  type: PostgresChangeFilterType.eq,
-                  column: 'user_id',
-                  value: current.id,
-                ),
-                callback: (_) => _scheduleRealtimeRefresh('notifications'),
-              )
-            ..subscribe();
-      _realtimeChannels.add(notifications);
-
-      if (current.isAgency && _myCompany != null) {
-        final companyId = _myCompany!.id;
-        for (final table in const ['bookings', 'inquiries']) {
-          final channel =
-              client
-                  .channel('$table:$companyId')
-                  .onPostgresChanges(
-                    event: PostgresChangeEvent.all,
-                    schema: 'public',
-                    table: table,
-                    filter: PostgresChangeFilter(
-                      type: PostgresChangeFilterType.eq,
-                      column: table == 'bookings' ? 'company_id' : 'agency_id',
-                      value: companyId,
-                    ),
-                    callback: (_) => _scheduleRealtimeRefresh(table),
-                  )
-                ..subscribe();
-          _realtimeChannels.add(channel);
-        }
-        final messages =
-            client
-                .channel('inquiry_messages:$companyId')
-                .onPostgresChanges(
-                  event: PostgresChangeEvent.all,
-                  schema: 'public',
-                  table: 'inquiry_messages',
-                  callback: (_) => _scheduleRealtimeRefresh('inquiries'),
-                )
-              ..subscribe();
-        _realtimeChannels.add(messages);
-      } else if (current.isAdmin) {
-        for (final table in const [
-          'companies',
-          'packages',
-          'bookings',
-          'agency_reports',
-          'carousel_requests',
-        ]) {
-          final channel =
-              client
-                  .channel('admin:$table')
-                  .onPostgresChanges(
-                    event: PostgresChangeEvent.all,
-                    schema: 'public',
-                    table: table,
-                    callback: (_) => _scheduleRealtimeRefresh('admin'),
-                  )
-                ..subscribe();
-          _realtimeChannels.add(channel);
-        }
-      }
-    } catch (_) {
-      // Realtime is an enhancement; pull-to-refresh remains available.
+    // Test fakes and other injected services do not represent a live server
+    // and must not leave background timers running in widget tests.
+    if (current == null || _syncTimer != null || _service is! PhpApiService) {
+      return;
     }
+    _syncTimer = Timer.periodic(const Duration(seconds: 45), (_) {
+      _refreshFromServer();
+    });
   }
 
-  void _scheduleRealtimeRefresh(String scope) {
-    if (_realtimeRefreshScheduled) return;
-    _realtimeRefreshScheduled = true;
-    Future<void>.delayed(const Duration(milliseconds: 250), () async {
-      _realtimeRefreshScheduled = false;
-      if (_user == null) return;
-      if (scope == 'notifications') await _loadRemoteNotifications();
+  Future<void> _refreshFromServer() async {
+    if (_syncRefreshRunning || _user == null) return;
+    _syncRefreshRunning = true;
+    try {
+      await _loadRemoteNotifications();
       if (_user!.isAdmin) {
         await loadAdminData();
       } else if (_user!.isAgency) {
@@ -476,22 +509,19 @@ class AppProvider extends ChangeNotifier {
       } else {
         await refreshBookings();
       }
-    });
+    } finally {
+      _syncRefreshRunning = false;
+    }
   }
 
-  Future<void> _stopRealtime() async {
-    try {
-      final client = Supabase.instance.client;
-      for (final channel in _realtimeChannels) {
-        await client.removeChannel(channel);
-      }
-    } catch (_) {}
-    _realtimeChannels.clear();
+  void _stopSyncPolling() {
+    _syncTimer?.cancel();
+    _syncTimer = null;
   }
 
   @override
   void dispose() {
-    _stopRealtime();
+    _stopSyncPolling();
     super.dispose();
   }
 
@@ -515,8 +545,7 @@ class AppProvider extends ChangeNotifier {
   Future<String?> updateEmail(String newEmail) async {
     if (_user == null) return null;
     final err = await _service.updateEmail(newEmail);
-    // Supabase will send a confirmation email. We don't update local state
-    // until the user confirms and the session is refreshed.
+    // The PHP API updates the verified account email immediately.
     return err;
   }
 
@@ -1732,7 +1761,7 @@ class AppProvider extends ChangeNotifier {
   // Local, synthetic entries (welcome message, instant feedback on the
   // pilgrim's own request/cancel) sit alongside real rows fetched from the
   // backend — the latter cover actions an agency/admin took in a completely
-  // different session (see supabase/patches.sql's notifications table).
+  // different session.
   final List<AppNotification> _notifications = [
     AppNotification(
       id: 'n1',

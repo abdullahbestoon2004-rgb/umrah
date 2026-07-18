@@ -17,7 +17,7 @@ import 'package:umrah_app/models/agency_document_model.dart';
 import 'package:umrah_app/models/agency_operations_model.dart';
 import 'package:umrah_app/models/user_profile.dart';
 import 'package:umrah_app/providers/app_provider.dart';
-import 'package:umrah_app/services/supabase_service.dart';
+import 'package:umrah_app/services/api_service.dart';
 import 'package:umrah_app/screens/profile/help_support_screen.dart';
 import 'package:umrah_app/screens/admin/admin_screen.dart';
 import 'package:umrah_app/screens/profile/notifications_screen.dart';
@@ -947,6 +947,129 @@ void main() {
       expect(p.companies.length, 2);
       expect(p.allOffers.length, 2);
     });
+
+    test(
+      'home catalogue fills featured and promoted slots with eligible records',
+      () async {
+        final service = FakeService();
+        service.companies
+          ..clear()
+          ..addAll([
+            Company(
+              id: 'c1',
+              ownerId: 'a1',
+              name: 'Established Agency',
+              rating: 4.9,
+              reviews: 20,
+              isVerified: true,
+              status: 'active',
+              verificationStatus: 'approved',
+            ),
+            Company(
+              id: 'c2',
+              ownerId: 'a2',
+              name: 'Promoted Agency',
+              isVerified: true,
+              isPromoted: true,
+              status: 'active',
+              verificationStatus: 'approved',
+            ),
+            Company(
+              id: 'c3',
+              ownerId: 'a3',
+              name: 'New Verified Agency',
+              isVerified: true,
+              isPromoted: true,
+              status: 'active',
+              verificationStatus: 'approved',
+            ),
+            Company(
+              id: 'c4',
+              ownerId: 'a4',
+              name: 'Pending Agency',
+              status: 'pending',
+              verificationStatus: 'pending',
+            ),
+          ]);
+        service.offers
+          ..clear()
+          ..addAll([
+            Offer(
+              id: 'regular',
+              companyId: 'c1',
+              title: 'Regular published trip',
+              transport: 'plane',
+              acc: 5,
+              days: 10,
+              price: 2000000,
+              rating: 4.9,
+              reviews: 20,
+              lifecycleStatus: 'published',
+              departureDate: DateTime(2035, 1, 10),
+              gradColors: const [Colors.green, Colors.black],
+            ),
+            Offer(
+              id: 'featured',
+              companyId: 'c2',
+              title: 'Featured published trip',
+              transport: 'bus',
+              acc: 4,
+              days: 8,
+              price: 1500000,
+              isFeatured: true,
+              lifecycleStatus: 'published',
+              departureDate: DateTime(2035, 2, 10),
+              gradColors: const [Colors.blue, Colors.black],
+            ),
+            Offer(
+              id: 'sold-out',
+              companyId: 'c1',
+              title: 'Sold out trip',
+              transport: 'plane',
+              acc: 5,
+              days: 9,
+              price: 1800000,
+              lifecycleStatus: 'published',
+              capacity: 1,
+              seatsReserved: 1,
+              departureDate: DateTime(2035, 3, 10),
+              gradColors: const [Colors.teal, Colors.black],
+            ),
+            const Offer(
+              id: 'draft',
+              companyId: 'c1',
+              title: 'Draft trip',
+              transport: 'plane',
+              acc: 5,
+              days: 9,
+              price: 1800000,
+              gradColors: [Colors.teal, Colors.black],
+            ),
+            Offer(
+              id: 'pending-company-trip',
+              companyId: 'c4',
+              title: 'Pending company trip',
+              transport: 'plane',
+              acc: 5,
+              days: 9,
+              price: 1800000,
+              lifecycleStatus: 'published',
+              departureDate: DateTime(2035, 4, 10),
+              gradColors: const [Colors.teal, Colors.black],
+            ),
+          ]);
+
+        final p = AppProvider(service: service, autoLoad: false);
+        await p.init();
+
+        expect(p.homeOffers.map((offer) => offer.id), ['featured', 'regular']);
+        expect(p.homeCompanies.map((company) => company.id), [
+          'c2',
+          'c1',
+          'c3',
+        ]);
+      },
+    );
 
     test('IQD formatting', () {
       expect(fmtIqd(2750000), '2,750,000 IQD');

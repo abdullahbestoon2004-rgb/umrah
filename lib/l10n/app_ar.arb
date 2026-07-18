@@ -116,6 +116,11 @@
   "homeViewAll": "عرض الكل",
   "homeRatingOffersCount": "{rating} · {count, plural, =1{{count} عرض} other{{count} عرض}}",
   "homeCuratedPackages": "باقات مختارة",
+  "homeNoTripsTitle": "رحلات جديدة قريباً",
+  "homeNoTripsBody": "تعمل الشركات الموثقة على تجهيز باقات العمرة القادمة.",
+  "homeNewVerified": "جديدة وموثقة",
+  "homeNoActivePackages": "لا توجد باقات نشطة بعد",
+  "homeNewOffer": "جديد",
   "homeDaysCount": "{days, plural, =1{{days} يوم} other{{days} أيام}}",
   "homeFromPrefix": "ابتداءً من ",
 

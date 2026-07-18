@@ -155,6 +155,11 @@
     "placeholders": {"rating": {"type": "double"}, "count": {"type": "int"}}
   },
   "homeCuratedPackages": "Curated Packages",
+  "homeNoTripsTitle": "New trips are coming soon",
+  "homeNoTripsBody": "Verified agencies are preparing their next Umrah packages.",
+  "homeNewVerified": "New & verified",
+  "homeNoActivePackages": "No active packages yet",
+  "homeNewOffer": "New",
   "homeDaysCount": "{days, plural, =1{{days} day} other{{days} days}}",
   "@homeDaysCount": {"placeholders": {"days": {"type": "int"}}},
   "homeFromPrefix": "from ",

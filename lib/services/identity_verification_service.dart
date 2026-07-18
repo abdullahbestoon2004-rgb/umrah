@@ -1,15 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'api_client.dart';
 
-/// Uploads identity documents to a private bucket and stores their stable
-/// object paths on the signed-in user's profile.
+/// Uploads identity documents to private storage through the PHP API.
 class IdentityVerificationService {
-  IdentityVerificationService([this._client]);
+  IdentityVerificationService([ApiClient? client])
+    : _client = client ?? ApiClient.shared;
 
-  final SupabaseClient? _client;
-
-  SupabaseClient get _c => _client ?? Supabase.instance.client;
+  final ApiClient _client;
 
   Future<String?> submit({
     required Uint8List passportBytes,
@@ -19,42 +17,18 @@ class IdentityVerificationService {
     required String selfieExtension,
     required String selfieContentType,
   }) async {
-    final user = _c.auth.currentUser;
-    if (user == null) return 'You must be signed in to verify your identity.';
-
-    final passportPath =
-        '${user.id}/passport.${_safeExtension(passportExtension)}';
-    final selfiePath = '${user.id}/selfie.${_safeExtension(selfieExtension)}';
-
     try {
-      final bucket = _c.storage.from('identity_verifications');
-      await bucket.uploadBinary(
-        passportPath,
-        passportBytes,
-        fileOptions: FileOptions(
-          upsert: true,
-          contentType: passportContentType,
-        ),
+      await _client.multipart(
+        'identity/submit',
+        fields: const {},
+        files: {'passport': passportBytes, 'selfie': selfieBytes},
+        fileNames: {
+          'passport': 'passport.${_safeExtension(passportExtension)}',
+          'selfie': 'selfie.${_safeExtension(selfieExtension)}',
+        },
       );
-      await bucket.uploadBinary(
-        selfiePath,
-        selfieBytes,
-        fileOptions: FileOptions(upsert: true, contentType: selfieContentType),
-      );
-
-      // These are private Storage object paths, not public URLs. They remain
-      // stable and can be exchanged for short-lived signed URLs by trusted UI.
-      await _c
-          .from('profiles')
-          .update({
-            'passport_photo_url': passportPath,
-            'selfie_photo_url': selfiePath,
-          })
-          .eq('id', user.id);
       return null;
-    } on StorageException catch (error) {
-      return error.message;
-    } on PostgrestException catch (error) {
+    } on ApiException catch (error) {
       return error.message;
     } catch (error) {
       return error.toString();

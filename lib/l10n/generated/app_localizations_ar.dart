@@ -407,6 +407,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeCuratedPackages => 'باقات مختارة';
 
   @override
+  String get homeNoTripsTitle => 'رحلات جديدة قريباً';
+
+  @override
+  String get homeNoTripsBody =>
+      'تعمل الشركات الموثقة على تجهيز باقات العمرة القادمة.';
+
+  @override
+  String get homeNewVerified => 'جديدة وموثقة';
+
+  @override
+  String get homeNoActivePackages => 'لا توجد باقات نشطة بعد';
+
+  @override
+  String get homeNewOffer => 'جديد';
+
+  @override
   String homeDaysCount(int days) {
     String _temp0 = intl.Intl.pluralLogic(
       days,
