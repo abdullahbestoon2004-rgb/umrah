@@ -10,6 +10,8 @@ import '../../widgets/star_rating.dart';
 import '../companies/company_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/islamic_pattern.dart';
+import '../../widgets/active_booking_card.dart';
+import '../bookings/bookings_screen.dart';
 import 'booking_flow_screen.dart';
 
 class OfferDetailScreen extends StatelessWidget {
@@ -1366,6 +1368,9 @@ class _StickyBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final provider = context.watch<AppProvider>();
+    final copy = BookingProgressCopy.of(context);
+    final activeBooking = provider.activeBooking;
     final unavailable =
         offer.capacityState == 'sold_out' ||
         offer.lifecycleStatus != 'published' ||
@@ -1390,65 +1395,113 @@ class _StickyBar extends StatelessWidget {
         20,
         MediaQuery.of(context).padding.bottom + 14,
       ),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                t.offerDetailFromPerPerson,
-                style: AppTheme.sans(11, color: AppColors.muted),
-              ),
-              Text(
-                offer.priceFmt,
-                style: AppTheme.serif(25, color: AppColors.primary),
-              ),
-            ],
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: GestureDetector(
-              onTap: unavailable
-                  ? null
-                  : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            BookingFlowScreen(offer: offer, company: company),
-                      ),
+      child: activeBooking != null
+          ? Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    copy.text('activeBookingMessage'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.sans(
+                      11.5,
+                      color: AppColors.inkLight,
+                    ).copyWith(height: 1.35),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          BookingDetailsScreen(booking: activeBooking),
                     ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: unavailable ? AppColors.mutedLight : AppColors.primary,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.5),
-                      blurRadius: 30,
-                      offset: const Offset(0, 14),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    minimumSize: const Size(0, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
+                  child: Text(
+                    copy.text('viewCurrentBooking'),
+                    style: AppTheme.sans(
+                      11.5,
+                      weight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      t.offerDetailFromPerPerson,
+                      style: AppTheme.sans(11, color: AppColors.muted),
+                    ),
+                    Text(
+                      offer.priceFmt,
+                      style: AppTheme.serif(25, color: AppColors.primary),
                     ),
                   ],
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  unavailable
-                      ? (offer.capacityState == 'sold_out'
-                            ? t.offerSoldOut
-                            : t.offerUnavailable)
-                      : t.offerDetailBookThisTrip,
-                  style: AppTheme.sans(
-                    15,
-                    weight: FontWeight.w800,
-                    color: const Color(0xFFF6F2E9),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: unavailable
+                        ? null
+                        : () => ActiveBookingGuard.continueOrExplain(
+                            context,
+                            onAllowed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BookingFlowScreen(
+                                  offer: offer,
+                                  company: company,
+                                ),
+                              ),
+                            ),
+                          ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: unavailable
+                            ? AppColors.mutedLight
+                            : AppColors.primary,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.5),
+                            blurRadius: 30,
+                            offset: const Offset(0, 14),
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        unavailable
+                            ? (offer.capacityState == 'sold_out'
+                                  ? t.offerSoldOut
+                                  : t.offerUnavailable)
+                            : t.offerDetailBookThisTrip,
+                        style: AppTheme.sans(
+                          15,
+                          weight: FontWeight.w800,
+                          color: const Color(0xFFF6F2E9),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

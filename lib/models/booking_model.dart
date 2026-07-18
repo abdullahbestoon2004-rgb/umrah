@@ -178,6 +178,10 @@ class Booking {
   final String? companyNameEn;
   final List<Color> gradColors;
   final DateTime? departureDate; // null = to be scheduled
+  final DateTime? returnDate;
+  final bool companyVerified;
+  final List<String> documentStatuses;
+  final List<String> visaStatuses;
   final int travelers;
   final String status; // 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed'
   final String operationalStage;
@@ -215,6 +219,10 @@ class Booking {
     this.companyNameEn,
     required this.gradColors,
     this.departureDate,
+    this.returnDate,
+    this.companyVerified = false,
+    this.documentStatuses = const [],
+    this.visaStatuses = const [],
     required this.travelers,
     required this.status,
     String? operationalStage,
@@ -271,6 +279,10 @@ class Booking {
     companyNameEn: companyNameEn,
     gradColors: gradColors,
     departureDate: departureDate,
+    returnDate: returnDate,
+    companyVerified: companyVerified,
+    documentStatuses: documentStatuses,
+    visaStatuses: visaStatuses,
     travelers: travelers,
     status: status ?? this.status,
     operationalStage: operationalStage ?? this.operationalStage,
@@ -300,8 +312,15 @@ class Booking {
   /// Maps a DB row (with joined packages/companies) into the UI model.
   /// The departure date is encoded in the row's `note` as `dep:YYYY-MM-DD`.
   factory Booking.fromRow(Map<String, dynamic> r) {
-    final pkg = (r['packages'] ?? const {}) as Map<String, dynamic>;
-    final comp = (r['companies'] ?? const {}) as Map<String, dynamic>;
+    final pkg = r['packages'] is Map
+        ? Map<String, dynamic>.from(r['packages'] as Map)
+        : const <String, dynamic>{};
+    final comp = r['companies'] is Map
+        ? Map<String, dynamic>.from(r['companies'] as Map)
+        : const <String, dynamic>{};
+    final travellerRows = r['booking_travellers'] is List
+        ? (r['booking_travellers'] as List)
+        : const [];
     final quote = r['quote_snapshot'] is Map
         ? Map<String, dynamic>.from(r['quote_snapshot'] as Map)
         : const <String, dynamic>{};
@@ -326,6 +345,22 @@ class Booking {
       companyNameEn: (quote['company_name_en'] ?? comp['name_en']) as String?,
       gradColors: [tint, dark],
       departureDate: dep,
+      returnDate: (r['return_date'] ?? pkg['return_date']) == null
+          ? null
+          : DateTime.tryParse(
+              (r['return_date'] ?? pkg['return_date']).toString(),
+            ),
+      companyVerified:
+          (comp['is_verified'] ?? r['company_verified'] ?? false) == true ||
+          (comp['is_verified'] ?? r['company_verified']) == 1,
+      documentStatuses: travellerRows
+          .map((row) => (row as Map)['document_status']?.toString())
+          .whereType<String>()
+          .toList(),
+      visaStatuses: travellerRows
+          .map((row) => (row as Map)['visa_status']?.toString())
+          .whereType<String>()
+          .toList(),
       travelers: (r['travellers'] ?? 1) as int,
       status: dbStatus[0].toUpperCase() + dbStatus.substring(1),
       operationalStage: (r['operational_stage'] ?? dbStatus) as String,

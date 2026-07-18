@@ -1,5 +1,6 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'api_service.dart' as api;
 import '../models/company_model.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
@@ -260,8 +261,15 @@ abstract class DataService {
   });
 }
 
-class SupabaseService implements DataService {
+class SupabaseService implements api.DataService {
   SupabaseClient get _c => Supabase.instance.client;
+
+  // The client-facing flows are implemented below. The legacy operations
+  // interface also contains agency-manifest methods that are not yet backed by
+  // the older Supabase schema; keep them explicit runtime misses rather than
+  // silently routing those writes to the PHP backend.
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 
   static const _companyRichSelect =
       '*, agency_badges(assigned_at, badges(key,name_ku,name_ar,name_en,icon,type))';
@@ -364,10 +372,7 @@ class SupabaseService implements DataService {
     try {
       await _c
           .from('profiles')
-          .update({
-            'full_name': ?fullName,
-            'phone': ?phone,
-          })
+          .update({'full_name': ?fullName, 'phone': ?phone})
           .eq('id', userId);
       return null;
     } on PostgrestException catch (e) {
@@ -452,10 +457,17 @@ class SupabaseService implements DataService {
           .eq('is_active', true)
           .order('rating', ascending: false);
     }
-    return rows
-        .map((r) => Company.fromRow(r))
-        .where((c) => c.isVerified)
-        .toList();
+    final companies = <Company>[];
+    for (final row in rows) {
+      try {
+        final company = Company.fromRow(Map<String, dynamic>.from(row as Map));
+        if (company.isVerified) companies.add(company);
+      } catch (error, stackTrace) {
+        debugPrint('Skipping malformed Supabase company: $error');
+        debugPrintStack(stackTrace: stackTrace);
+      }
+    }
+    return companies;
   }
 
   @override
@@ -475,9 +487,17 @@ class SupabaseService implements DataService {
           .order('created_at', ascending: false);
     }
     final byId = {for (final c in companies) c.id: c};
-    return rows
-        .map((r) => Offer.fromRow(r, company: byId[r['company_id']]))
-        .toList();
+    final offers = <Offer>[];
+    for (final row in rows) {
+      try {
+        final data = Map<String, dynamic>.from(row as Map);
+        offers.add(Offer.fromRow(data, company: byId[data['company_id']]));
+      } catch (error, stackTrace) {
+        debugPrint('Skipping malformed Supabase package: $error');
+        debugPrintStack(stackTrace: stackTrace);
+      }
+    }
+    return offers;
   }
 
   @override
@@ -960,7 +980,9 @@ class SupabaseService implements DataService {
   // ── bookings ─────────────────────────────────────────────────────────────
 
   static const _bookingSelect =
-      '*, packages(title,title_ar,title_en), companies(name,name_ar,name_en,tint)';
+      '*, packages(title,title_ar,title_en,return_date), '
+      'companies(name,name_ar,name_en,tint,is_verified), '
+      'booking_travellers(document_status,visa_status)';
 
   @override
   Future<List<Booking>> fetchMyBookings(String clientId) async {
@@ -1151,21 +1173,21 @@ class SupabaseService implements DataService {
   }
 
   @override
-  Future<AccountPrefs> fetchAccountPrefs(String clientId) async {
+  Future<api.AccountPrefs> fetchAccountPrefs(String clientId) async {
     try {
       final row = await _c
           .from('profiles')
           .select('marketing_emails, share_activity, preferred_pay_method')
           .eq('id', clientId)
           .maybeSingle();
-      if (row == null) return const AccountPrefs();
-      return AccountPrefs(
+      if (row == null) return const api.AccountPrefs();
+      return api.AccountPrefs(
         marketingEmails: (row['marketing_emails'] ?? true) as bool,
         shareActivity: (row['share_activity'] ?? false) as bool,
         preferredPayMethod: (row['preferred_pay_method'] ?? 'cash') as String,
       );
     } catch (_) {
-      return const AccountPrefs();
+      return const api.AccountPrefs();
     }
   }
 
@@ -1236,10 +1258,7 @@ class SupabaseService implements DataService {
     try {
       await _c
           .from('home_ads')
-          .update({
-            'title': ?title,
-            'is_active': ?isActive,
-          })
+          .update({'title': ?title, 'is_active': ?isActive})
           .eq('id', id);
       return null;
     } catch (e) {

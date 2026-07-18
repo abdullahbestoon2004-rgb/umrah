@@ -20,6 +20,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/interactive_scale.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/tawaf_loading_spinner.dart';
+import '../../widgets/active_booking_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -92,6 +93,7 @@ class HomeScreen extends StatelessWidget {
     final visibleRanked = ads.isEmpty && hero != null ? ranked.skip(1) : ranked;
     final homeOffers = visibleRanked.take(6).toList();
     final homeCompanies = provider.homeCompanies;
+    final activeBooking = provider.activeBooking;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -108,6 +110,22 @@ class HomeScreen extends StatelessWidget {
                   const SliverToBoxAdapter(child: SizedBox(height: 12)),
                   const SliverToBoxAdapter(child: _PrayerTimesWidget()),
                   const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  if (provider.isSignedIn &&
+                      activeBooking == null &&
+                      provider.bookingsLoading)
+                    const SliverToBoxAdapter(child: ActiveBookingSkeleton())
+                  else if (provider.isSignedIn &&
+                      activeBooking == null &&
+                      provider.bookingsLoadFailed)
+                    const SliverToBoxAdapter(child: ActiveBookingLoadError())
+                  else if (activeBooking != null)
+                    SliverToBoxAdapter(
+                      child: ActiveBookingCard(
+                        booking: activeBooking,
+                        offer: provider.offerById(activeBooking.offerId),
+                        company: provider.companyById(activeBooking.companyId),
+                      ),
+                    ),
                   // Paid agency ads rotate in a carousel; without any, the
                   // strongest eligible offer takes the spot.
                   SliverToBoxAdapter(

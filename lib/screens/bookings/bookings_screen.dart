@@ -13,6 +13,73 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/islamic_pattern.dart';
 import '../../widgets/app_snackbar.dart';
 
+void openBookingDocuments(BuildContext context, Booking booking) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: AppColors.background,
+    shape: const RoundedRectangleBorder(),
+    builder: (_) => _PassportDocumentsSheet(booking: booking),
+  );
+}
+
+Future<void> startBookingPayment(BuildContext context, Booking booking) async {
+  final t = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final data = await context.read<AppProvider>().initiateFibPayment(booking);
+  if (!context.mounted) return;
+  if (data == null) {
+    messenger.showSnackBar(
+      appSnack(t.workflowPaymentStartFailed, isError: true),
+    );
+    return;
+  }
+  final fib = data['fib'] is Map
+      ? Map<String, dynamic>.from(data['fib'] as Map)
+      : <String, dynamic>{};
+  final code =
+      (fib['readableCode'] ?? fib['paymentId'] ?? data['payment_id'] ?? '')
+          .toString();
+  final link = (fib['personalAppLink'] ?? '').toString();
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(t.workflowFibPaymentTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(t.workflowFibPaymentBody),
+          const SizedBox(height: 12),
+          SelectableText(
+            code,
+            style: AppTheme.serif(20, color: AppColors.primary),
+          ),
+          if (link.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            SelectableText(
+              link,
+              style: AppTheme.sans(11, color: AppColors.muted),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Clipboard.setData(
+              ClipboardData(text: link.isNotEmpty ? link : code),
+            );
+            Navigator.pop(dialogContext);
+          },
+          child: Text(t.workflowCopyPayment),
+        ),
+      ],
+    ),
+  );
+}
+
 class BookingsScreen extends StatelessWidget {
   const BookingsScreen({super.key});
 
@@ -70,6 +137,34 @@ class BookingsScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class BookingDetailsScreen extends StatelessWidget {
+  const BookingDetailsScreen({super.key, required this.booking});
+
+  final Booking booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        title: Text(t.bookingsTitle, style: AppTheme.serif(20)),
+      ),
+      body: Stack(
+        children: [
+          const IslamicPattern(opacity: 0.04, isEightFold: true),
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(22, 10, 22, 28),
+            child: _BookingCard(booking: booking),
+          ),
+        ],
       ),
     );
   }
@@ -319,59 +414,7 @@ class _BookingCard extends StatelessWidget {
   }
 
   Future<void> _startFibPayment(BuildContext context) async {
-    final t = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final data = await context.read<AppProvider>().initiateFibPayment(booking);
-    if (!context.mounted) return;
-    if (data == null) {
-      messenger.showSnackBar(
-        appSnack(t.workflowPaymentStartFailed, isError: true),
-      );
-      return;
-    }
-    final fib = data['fib'] is Map
-        ? Map<String, dynamic>.from(data['fib'] as Map)
-        : <String, dynamic>{};
-    final code =
-        (fib['readableCode'] ?? fib['paymentId'] ?? data['payment_id'] ?? '')
-            .toString();
-    final link = (fib['personalAppLink'] ?? '').toString();
-    await showDialog<void>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(t.workflowFibPaymentTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(t.workflowFibPaymentBody),
-            const SizedBox(height: 12),
-            SelectableText(
-              code,
-              style: AppTheme.serif(20, color: AppColors.primary),
-            ),
-            if (link.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              SelectableText(
-                link,
-                style: AppTheme.sans(11, color: AppColors.muted),
-              ),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Clipboard.setData(
-                ClipboardData(text: link.isNotEmpty ? link : code),
-              );
-              Navigator.pop(dialogCtx);
-            },
-            child: Text(t.workflowCopyPayment),
-          ),
-        ],
-      ),
-    );
+    await startBookingPayment(context, booking);
   }
 
   @override
@@ -725,14 +768,7 @@ class _PassportDocumentsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return GestureDetector(
-      onTap: () => showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        backgroundColor: AppColors.background,
-        shape: const RoundedRectangleBorder(),
-        builder: (_) => _PassportDocumentsSheet(booking: booking),
-      ),
+      onTap: () => openBookingDocuments(context, booking),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
         decoration: BoxDecoration(
@@ -1556,21 +1592,25 @@ class _EmptyState extends StatelessWidget {
             style: AppTheme.sans(13, color: AppColors.muted),
           ),
           const SizedBox(height: 18),
-          GestureDetector(
-            onTap: () => context.read<AppProvider>().setTab(2),
-            child: Container(
+          FilledButton(
+            onPressed: () async {
+              final provider = context.read<AppProvider>();
+              await provider.loadData();
+              if (context.mounted) provider.setTab(2);
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                t.bookingsBrowseOffers,
-                style: AppTheme.sans(
-                  13,
-                  weight: FontWeight.w700,
-                  color: const Color(0xFFF6F2E9),
-                ),
+            ),
+            child: Text(
+              t.bookingsBrowseOffers,
+              style: AppTheme.sans(
+                13,
+                weight: FontWeight.w700,
+                color: const Color(0xFFF6F2E9),
               ),
             ),
           ),

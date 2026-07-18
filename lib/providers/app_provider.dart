@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/offer_model.dart';
 import '../models/booking_model.dart';
+import '../models/client_booking_progress.dart';
 import '../models/company_model.dart';
 import '../models/notification_model.dart';
 import '../models/home_ad_model.dart';
@@ -16,6 +17,7 @@ import '../models/inquiry_model.dart';
 import '../models/agency_document_model.dart';
 import '../models/agency_operations_model.dart';
 import '../services/api_service.dart';
+import '../services/supabase_service.dart' hide DataService;
 import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
 
@@ -76,7 +78,7 @@ class OfferFilters {
 
 class AppProvider extends ChangeNotifier {
   AppProvider({DataService? service, bool autoLoad = true})
-    : _service = service ?? PhpApiService() {
+    : _service = service ?? SupabaseService() {
     AppTheme.isArabicScript = _locale.languageCode != 'en';
     if (autoLoad) init();
   }
@@ -143,9 +145,11 @@ class AppProvider extends ChangeNotifier {
   List<Offer> _agencyOffers = [];
   bool _loading = true;
   bool _loadFailed = false;
+  String? _loadError;
 
   bool get isLoading => _loading;
   bool get loadFailed => _loadFailed;
+  String? get loadError => _loadError;
   List<Company> get companies => List.unmodifiable(_companies);
   List<Offer> get allOffers => List.unmodifiable(_offers);
 
@@ -260,18 +264,32 @@ class AppProvider extends ChangeNotifier {
   Future<void> loadData() async {
     _loading = true;
     _loadFailed = false;
+    _loadError = null;
     notifyListeners();
     try {
       _companies = await _service.fetchCompanies();
-      _offers = isAdminUser
-          ? await _service.fetchAdminPackages(_companies)
-          : await _service.fetchOffers(_companies);
-      _homeAds = await _service.fetchHomeAds();
+      try {
+        _offers = isAdminUser
+            ? await _service.fetchAdminPackages(_companies)
+            : await _service.fetchOffers(_companies);
+      } catch (error, stackTrace) {
+        debugPrint('Failed to load offers: $error');
+        debugPrintStack(stackTrace: stackTrace);
+        _offers = [];
+      }
+      try {
+        _homeAds = await _service.fetchHomeAds();
+      } catch (error, stackTrace) {
+        debugPrint('Failed to load home ads: $error');
+        debugPrintStack(stackTrace: stackTrace);
+        _homeAds = [];
+      }
       _loadFailed = false;
     } catch (error, stackTrace) {
       debugPrint('Failed to load app data: $error');
       debugPrintStack(stackTrace: stackTrace);
       _loadFailed = true;
+      _loadError = error.toString();
     }
     _loading = false;
     notifyListeners();
@@ -1227,12 +1245,29 @@ class AppProvider extends ChangeNotifier {
   // ── bookings (pilgrim side) ───────────────────────────────────────────────
   List<Booking> _bookings = [];
   List<Booking> get bookings => List.unmodifiable(_bookings);
+  bool _bookingsLoading = false;
+  bool get bookingsLoading => _bookingsLoading;
+  bool _bookingsLoadFailed = false;
+  bool get bookingsLoadFailed => _bookingsLoadFailed;
+  Booking? get activeBooking {
+    for (final booking in _bookings) {
+      if (isActiveBooking(booking)) return booking;
+    }
+    return null;
+  }
 
   Future<void> refreshBookings() async {
     if (_user == null) return;
+    _bookingsLoading = true;
+    _bookingsLoadFailed = false;
+    notifyListeners();
     try {
       _bookings = await _service.fetchMyBookings(_user!.id);
-    } catch (_) {}
+    } catch (_) {
+      _bookingsLoadFailed = true;
+    } finally {
+      _bookingsLoading = false;
+    }
     notifyListeners();
   }
 
@@ -1248,6 +1283,12 @@ class AppProvider extends ChangeNotifier {
     String? requestKey,
   }) async {
     if (_user == null) return 'auth';
+    if (_bookingsLoadFailed) {
+      return 'We could not confirm whether you have an active booking. Try again.';
+    }
+    if (activeBooking != null) {
+      return 'You already have an active Umrah booking. You must complete or cancel your current booking before booking another trip.';
+    }
     final err = await _service.createBooking(
       packageId: offer.id,
       clientId: _user!.id,

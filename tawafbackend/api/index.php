@@ -694,6 +694,22 @@ switch ($route) {
         $pdo = db();
         $pdo->beginTransaction();
         try {
+            // Serialize all booking attempts for this client, including requests
+            // with different idempotency keys or for different packages.
+            query_one('SELECT id FROM users WHERE id = ? FOR UPDATE', [$user['id']]);
+            $activeBooking = query_one(
+                "SELECT id FROM bookings
+                 WHERE client_id = ?
+                   AND operational_stage IN ('requested','needs_information','awaiting_payment','confirmed','ready','in_progress')
+                   AND refund_status NOT IN ('completed')
+                 LIMIT 1 FOR UPDATE",
+                [$user['id']]
+            );
+            if ($activeBooking !== null) {
+                throw new DomainException(
+                    'You already have an active Umrah booking. You must complete or cancel your current booking before booking another trip.'
+                );
+            }
             $package = query_one("SELECT p.*, c.owner_id, c.name AS company_name, c.name_ar AS company_name_ar, c.name_en AS company_name_en, c.commission_rate AS company_commission_rate, c.is_verified, c.is_active, c.status AS company_status FROM packages p JOIN companies c ON c.id = p.company_id WHERE p.id = ? FOR UPDATE", [$packageId]);
             if ($package === null || !$package['is_published'] || $package['lifecycle_status'] !== 'published' || !$package['is_verified'] || !$package['is_active'] || $package['company_status'] !== 'active') {
                 throw new DomainException('This offer is not available.');
@@ -818,15 +834,42 @@ switch ($route) {
         $user = current_user();
         $input = json_input();
         $id = required_string($input, 'booking_id', 36);
-        $booking = query_one('SELECT * FROM bookings WHERE id = ?', [$id]);
-        if ($booking === null || ($booking['client_id'] !== $user['id'] && $user['role'] !== 'admin')) api_error('Booking not found.', 404);
-        if (in_array($booking['operational_stage'], ['completed', 'cancelled', 'rejected', 'expired'], true)) api_error('This booking can no longer be cancelled.', 422);
+        $reason = required_string($input, 'reason', 1000);
         $pdo = db();
         $pdo->beginTransaction();
-        execute_sql('UPDATE bookings SET status = \'cancelled\', operational_stage = \'cancelled\', status_reason = ?, cancelled_at = UTC_TIMESTAMP(), cancelled_by = ? WHERE id = ?', [required_string($input, 'reason', 1000), $user['id'], $id]);
-        execute_sql('UPDATE packages SET seats_reserved = GREATEST(0, seats_reserved - ?) WHERE id = ?', [$booking['travellers'], $booking['package_id']]);
-        $pdo->commit();
-        audit_log('booking', $id, 'cancelled', null, null, $input['reason']);
+        try {
+            $booking = query_one('SELECT * FROM bookings WHERE id = ? FOR UPDATE', [$id]);
+            if ($booking === null || ($booking['client_id'] !== $user['id'] && $user['role'] !== 'admin')) {
+                throw new DomainException('Booking not found.');
+            }
+            if (in_array($booking['operational_stage'], ['completed', 'cancelled', 'rejected', 'expired'], true)) {
+                throw new DomainException('This booking can no longer be cancelled.');
+            }
+            $paid = (int) $booking['amount_paid_iqd'];
+            $withheld = !empty($booking['non_refundable_deposit_snapshot'])
+                ? min($paid, (int) $booking['deposit_iqd_snapshot'] * (int) $booking['travellers'])
+                : 0;
+            $refundDue = max(0, $paid - $withheld);
+            $refundStatus = $refundDue > 0 ? 'pending' : 'none';
+            execute_sql(
+                'UPDATE bookings SET status = \'cancelled\', operational_stage = \'cancelled\',
+                 status_reason = ?, cancelled_at = UTC_TIMESTAMP(), cancelled_by = ?,
+                 refund_due_iqd = ?, refund_status = ? WHERE id = ?',
+                [$reason, $user['id'], $refundDue, $refundStatus, $id]
+            );
+            execute_sql(
+                'UPDATE packages SET seats_reserved = GREATEST(0, seats_reserved - ?) WHERE id = ?',
+                [$booking['travellers'], $booking['package_id']]
+            );
+            $pdo->commit();
+        } catch (DomainException $error) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            api_error($error->getMessage(), 422);
+        } catch (Throwable $error) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            throw $error;
+        }
+        audit_log('booking', $id, 'cancelled', null, null, $reason);
         api_ok();
 
     case 'bookings/status':

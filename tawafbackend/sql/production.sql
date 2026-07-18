@@ -383,6 +383,14 @@ CREATE TABLE IF NOT EXISTS bookings (
   refund_due_iqd BIGINT UNSIGNED NOT NULL DEFAULT 0,
   refund_status ENUM('none','pending','completed','failed') NOT NULL DEFAULT 'none',
   request_key VARCHAR(120) NULL,
+  active_booking_guard TINYINT GENERATED ALWAYS AS (
+    IF(
+      operational_stage IN ('requested','needs_information','awaiting_payment','confirmed','ready','in_progress')
+      AND refund_status <> 'completed',
+      1,
+      NULL
+    )
+  ) STORED,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT bookings_package_fk FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE RESTRICT,
@@ -392,7 +400,8 @@ CREATE TABLE IF NOT EXISTS bookings (
   UNIQUE KEY bookings_request_unique (client_id, request_key),
   INDEX bookings_client_idx (client_id, created_at),
   INDEX bookings_company_idx (company_id, operational_stage),
-  INDEX bookings_package_idx (package_id, operational_stage)
+  INDEX bookings_package_idx (package_id, operational_stage),
+  UNIQUE KEY bookings_one_active_per_client (client_id, active_booking_guard)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS booking_travellers (

@@ -459,10 +459,14 @@ function hydrate_packages(array $packages): array
 
 function hydrate_booking(array $booking): array
 {
-    $package = query_one('SELECT title, title_ar, title_en FROM packages WHERE id = ?', [$booking['package_id']]);
-    $company = query_one('SELECT name, name_ar, name_en, tint FROM companies WHERE id = ?', [$booking['company_id']]);
+    $package = query_one('SELECT title, title_ar, title_en, return_date FROM packages WHERE id = ?', [$booking['package_id']]);
+    $company = query_one('SELECT name, name_ar, name_en, tint, is_verified FROM companies WHERE id = ?', [$booking['company_id']]);
     $booking['packages'] = normalize_row($package ?? []);
     $booking['companies'] = normalize_row($company ?? []);
+    $booking['booking_travellers'] = normalize_rows(query_all(
+        'SELECT document_status, visa_status FROM booking_travellers WHERE booking_id = ?',
+        [$booking['id']]
+    ));
     return normalize_row($booking);
 }
 

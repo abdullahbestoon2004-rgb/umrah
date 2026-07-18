@@ -46,6 +46,12 @@ begin
   ) then raise exception 'active booking expiry index is missing'; end if;
 
   if not exists (
+    select 1 from pg_indexes
+    where schemaname = 'public'
+      and indexname = 'bookings_one_active_per_client_uidx'
+  ) then raise exception 'one-active-booking unique index is missing'; end if;
+
+  if not exists (
     select 1 from pg_trigger
     where tgname = 'before_protect_published_offer_edits' and not tgisinternal
   ) then raise exception 'published offer edit guard is missing'; end if;
