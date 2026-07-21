@@ -1851,6 +1851,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get offlineBannerTitle => 'You\'re offline';
+
+  @override
+  String get offlineBannerBody => 'Showing the last loaded information.';
+
+  @override
   String get agencyRegisterTitle => 'Register agency';
 
   @override

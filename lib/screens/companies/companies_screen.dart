@@ -65,7 +65,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
     final t = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final lang = Localizations.localeOf(context).languageCode;
-    final companies = provider.companies
+    final companies = provider.directoryCompanies
         .where((company) => _matches(company, lang, provider))
         .toList();
 

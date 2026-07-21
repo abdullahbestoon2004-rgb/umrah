@@ -711,6 +711,26 @@ class _CompanyOfferCard extends StatelessWidget {
                       InfoChip(label: t.offersDaysCount(offer.days)),
                       InfoChip(label: offer.transportLabelFor(t)),
                       InfoChip(label: '${offer.acc}★'),
+                      InfoChip(
+                        label: switch (offer.capacityState) {
+                          'sold_out' => t.offerCapacitySoldOut,
+                          'few_left' => t.offerCapacityFewLeft(
+                            offer.remainingSeats ?? 0,
+                          ),
+                          _ => offer.remainingSeats == null
+                              ? t.offerCapacityAvailable
+                              : t.offerCapacityRemaining(offer.remainingSeats!),
+                        },
+                        icon: Icon(
+                          offer.capacityState == 'sold_out'
+                              ? Icons.event_busy_outlined
+                              : Icons.airline_seat_recline_normal_rounded,
+                          color: offer.capacityState == 'available'
+                              ? AppColors.primary
+                              : AppColors.errorRed,
+                          size: 13,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),

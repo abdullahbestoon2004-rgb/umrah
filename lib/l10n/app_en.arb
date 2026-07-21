@@ -624,6 +624,8 @@
   "loadErrorTitle": "Couldn't load data",
   "loadErrorBody": "Check your internet connection and try again.",
   "retry": "Retry",
+  "offlineBannerTitle": "You're offline",
+  "offlineBannerBody": "Showing the last loaded information.",
   "agencyRegisterTitle": "Register agency",
   "agencyRegisterSubtitle": "Create an account to publish your Umrah packages.",
   "agencyRegisterBtn": "Register agency",

@@ -553,6 +553,8 @@
   "loadErrorTitle": "نەتوانرا داتاکان بار بکرێن",
   "loadErrorBody": "پەیوەندی ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.",
   "retry": "دووبارە هەوڵ بدەرەوە",
+  "offlineBannerTitle": "پەیوەندیت نییە",
+  "offlineBannerBody": "دوایین زانیاری باركراو پیشان دەدرێت.",
   "agencyRegisterTitle": "تۆمارکردنی کۆمپانیا",
   "agencyRegisterSubtitle": "هەژمارێک دروست بکە بۆ بڵاوکردنەوەی گەشتەکانی عومرەت.",
   "agencyRegisterBtn": "تۆمارکردنی کۆمپانیا",

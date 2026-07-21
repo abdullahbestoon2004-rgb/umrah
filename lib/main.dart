@@ -8,10 +8,12 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme/app_theme.dart';
 import 'providers/app_provider.dart';
+import 'services/connectivity_service.dart';
 import 'services/supabase_service.dart';
 import 'supabase_config.dart';
 import 'screens/main_screen.dart';
 import 'screens/lock/lock_screen.dart';
+import 'widgets/offline_banner.dart';
 import 'l10n/generated/app_localizations.dart';
 
 /// Best-effort crash visibility through the PHP backend. Never throws — a
@@ -89,7 +91,9 @@ class TawafApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => (createProvider ?? AppProvider.new)(),
+      create: (_) =>
+          createProvider?.call() ??
+          AppProvider(connectivity: PlatformConnectivityService()),
       child: Consumer<AppProvider>(
         builder: (context, provider, _) {
           final isRtl = provider.locale.languageCode != 'en';
@@ -109,7 +113,19 @@ class TawafApp extends StatelessWidget {
             ],
             builder: (context, child) => Directionality(
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-              child: child!,
+              // Overlaid above every route so the offline state stays visible
+              // no matter how deep the user has navigated.
+              child: Stack(
+                children: [
+                  child!,
+                  const Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: OfflineBanner(),
+                  ),
+                ],
+              ),
             ),
             // Keep the Navigator's root route stable. AppProvider notifies while
             // it restores preferences/auth, and changing MaterialApp.home during

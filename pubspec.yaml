@@ -23,6 +23,7 @@ dependencies:
   pdf: ^3.11.3
   share_plus: ^11.1.0
   supabase_flutter: 2.16.0
+  connectivity_plus: ^7.3.0
 
 dev_dependencies:
   flutter_test:

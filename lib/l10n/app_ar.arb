@@ -553,6 +553,8 @@
   "loadErrorTitle": "تعذر تحميل البيانات",
   "loadErrorBody": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "retry": "إعادة المحاولة",
+  "offlineBannerTitle": "أنت غير متصل",
+  "offlineBannerBody": "يتم عرض آخر المعلومات المحمّلة.",
   "agencyRegisterTitle": "تسجيل وكالة",
   "agencyRegisterSubtitle": "أنشئ حسابًا لنشر باقات العمرة الخاصة بك.",
   "agencyRegisterBtn": "تسجيل الوكالة",

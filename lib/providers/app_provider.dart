@@ -17,6 +17,8 @@ import '../models/inquiry_model.dart';
 import '../models/agency_document_model.dart';
 import '../models/agency_operations_model.dart';
 import '../services/api_service.dart';
+import '../services/connectivity_service.dart';
+import '../services/push_service.dart';
 import '../services/supabase_service.dart' hide DataService;
 import '../services/biometric_service.dart';
 import '../theme/app_theme.dart';
@@ -77,16 +79,33 @@ class OfferFilters {
 }
 
 class AppProvider extends ChangeNotifier {
-  AppProvider({DataService? service, bool autoLoad = true})
-    : _service = service ?? SupabaseService() {
+  AppProvider({
+    DataService? service,
+    ConnectivityService? connectivity,
+    PushService push = const NoopPushService(),
+    bool autoLoad = true,
+  }) : _service = service ?? SupabaseService(),
+       _connectivity = connectivity,
+       _push = push {
     AppTheme.isArabicScript = _locale.languageCode != 'en';
     if (autoLoad) init();
   }
 
   final DataService _service;
+  final ConnectivityService? _connectivity;
+  final PushService _push;
+  StreamSubscription<bool>? _connectivitySub;
+  StreamSubscription<String>? _pushTokenSub;
+  StreamSubscription<Map<String, String>>? _pushMessageSub;
+  String? _deviceToken;
   SharedPreferences? _prefs;
   Timer? _syncTimer;
   bool _syncRefreshRunning = false;
+
+  bool _isOffline = false;
+
+  /// Whether the device currently has no usable network connection.
+  bool get isOffline => _isOffline;
 
   bool _needsPasswordReset = false;
   bool get needsPasswordReset => _needsPasswordReset;
@@ -97,8 +116,28 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> init() async {
     await _loadPrefs();
+    await _startConnectivityWatch();
     await loadData();
     await restoreAuth();
+  }
+
+  /// Tracks connectivity so the app can explain an offline failure rather than
+  /// showing a generic error, and can recover on its own once service returns.
+  Future<void> _startConnectivityWatch() async {
+    final connectivity = _connectivity;
+    if (connectivity == null) return;
+    try {
+      _isOffline = !await connectivity.isOnline();
+      _connectivitySub = connectivity.onStatusChange.listen((online) {
+        final wasOffline = _isOffline;
+        _isOffline = !online;
+        notifyListeners();
+        // Coming back online: pick up anything that failed while we were out.
+        if (wasOffline && online && _loadFailed) loadData();
+      });
+    } catch (_) {
+      _isOffline = false; // never block the app on a connectivity failure
+    }
   }
 
   // ── persisted settings ───────────────────────────────────────────────────
@@ -232,33 +271,66 @@ class AppProvider extends ChangeNotifier {
         )
         .toList();
 
-    eligible.sort((a, b) {
-      final aHasOffers = activeOfferCompanyIds.contains(a.id);
-      final bHasOffers = activeOfferCompanyIds.contains(b.id);
-      if (aHasOffers != bHasOffers) return aHasOffers ? -1 : 1;
-      if (a.isPromoted != b.isPromoted) return a.isPromoted ? -1 : 1;
-      final aHasReviews = a.reviews > 0;
-      final bHasReviews = b.reviews > 0;
-      if (aHasReviews != bHasReviews) return aHasReviews ? -1 : 1;
-      final ratingOrder = b.rating.compareTo(a.rating);
-      if (ratingOrder != 0) return ratingOrder;
-      final reviewOrder = b.reviews.compareTo(a.reviews);
-      if (reviewOrder != 0) return reviewOrder;
-      final servedOrder = b.pilgrimsServed.compareTo(a.pilgrimsServed);
-      if (servedOrder != 0) return servedOrder;
-      final aCreated = a.createdAt;
-      final bCreated = b.createdAt;
-      if (aCreated != null && bCreated != null) {
-        final createdOrder = bCreated.compareTo(aCreated);
-        if (createdOrder != 0) return createdOrder;
-      } else if (aCreated != null) {
-        return -1;
-      } else if (bCreated != null) {
-        return 1;
-      }
-      return a.id.compareTo(b.id);
-    });
+    eligible.sort((a, b) => _compareCompanies(a, b, activeOfferCompanyIds));
     return List.unmodifiable(eligible);
+  }
+
+  /// Whether an agency is fit to be surfaced to clients at all.
+  bool _isCompanyEligible(Company company) =>
+      company.isVerified &&
+      company.status == 'active' &&
+      company.verificationStatus == 'approved';
+
+  /// Shared agency ranking: agencies with a live trip first, then promoted
+  /// placements, then established reputation, then newest.
+  int _compareCompanies(
+    Company a,
+    Company b,
+    Set<String> activeOfferCompanyIds,
+  ) {
+    final aHasOffers = activeOfferCompanyIds.contains(a.id);
+    final bHasOffers = activeOfferCompanyIds.contains(b.id);
+    if (aHasOffers != bHasOffers) return aHasOffers ? -1 : 1;
+    if (a.isPromoted != b.isPromoted) return a.isPromoted ? -1 : 1;
+    final aHasReviews = a.reviews > 0;
+    final bHasReviews = b.reviews > 0;
+    if (aHasReviews != bHasReviews) return aHasReviews ? -1 : 1;
+    final ratingOrder = b.rating.compareTo(a.rating);
+    if (ratingOrder != 0) return ratingOrder;
+    final reviewOrder = b.reviews.compareTo(a.reviews);
+    if (reviewOrder != 0) return reviewOrder;
+    final servedOrder = b.pilgrimsServed.compareTo(a.pilgrimsServed);
+    if (servedOrder != 0) return servedOrder;
+    final aCreated = a.createdAt;
+    final bCreated = b.createdAt;
+    if (aCreated != null && bCreated != null) {
+      final createdOrder = bCreated.compareTo(aCreated);
+      if (createdOrder != 0) return createdOrder;
+    } else if (aCreated != null) {
+      return -1;
+    } else if (bCreated != null) {
+      return 1;
+    }
+    return a.id.compareTo(b.id);
+  }
+
+  /// Every agency, ranked for the browsable directory.
+  ///
+  /// Unlike [homeCompanies], nothing is hidden here — this is the full browse
+  /// surface — but unverified or inactive agencies sink below eligible ones
+  /// rather than appearing in whatever order the backend happened to return.
+  List<Company> get directoryCompanies {
+    final activeOfferCompanyIds = homeOffers
+        .map((offer) => offer.companyId)
+        .toSet();
+    final sorted = [..._companies];
+    sorted.sort((a, b) {
+      final aEligible = _isCompanyEligible(a);
+      final bEligible = _isCompanyEligible(b);
+      if (aEligible != bEligible) return aEligible ? -1 : 1;
+      return _compareCompanies(a, b, activeOfferCompanyIds);
+    });
+    return List.unmodifiable(sorted);
   }
 
   Future<void> loadData() async {
@@ -355,9 +427,55 @@ class AppProvider extends ChangeNotifier {
         await _syncAccountData();
         await _loadRemoteNotifications();
         _startSyncPolling();
+        await _registerForPush();
       }
     } catch (_) {}
     notifyListeners();
+  }
+
+  /// Binds this handset to the signed-in account so the backend can reach the
+  /// user when an agency acts in a different session.
+  Future<void> _registerForPush() async {
+    try {
+      final token = await _push.requestToken();
+      if (token == null) return; // permission refused, or push not configured
+      _deviceToken = token;
+      await _service.registerDeviceToken(token, PushService.platformName);
+
+      _pushTokenSub ??= _push.onTokenRefresh.listen((refreshed) async {
+        _deviceToken = refreshed;
+        if (_user == null) return;
+        await _service.registerDeviceToken(
+          refreshed,
+          PushService.platformName,
+        );
+      });
+
+      // A push that arrives while the app is open should update the list the
+      // user is looking at rather than only showing a system banner.
+      _pushMessageSub ??= _push.onForegroundMessage.listen((_) async {
+        await _loadRemoteNotifications();
+        await refreshBookings();
+      });
+    } catch (_) {
+      // Push is an enhancement — never let it break sign-in.
+    }
+  }
+
+  /// Stops delivery to this handset. Without this the next person to sign in
+  /// on a shared phone would keep receiving the previous user's pushes.
+  Future<void> _unregisterFromPush() async {
+    final token = _deviceToken;
+    _deviceToken = null;
+    await _pushTokenSub?.cancel();
+    _pushTokenSub = null;
+    await _pushMessageSub?.cancel();
+    _pushMessageSub = null;
+    if (token == null) return;
+    try {
+      await _service.unregisterDeviceToken(token);
+      await _push.deleteToken();
+    } catch (_) {}
   }
 
   /// Pulls everything that belongs to this account down from the backend —
@@ -477,6 +595,7 @@ class AppProvider extends ChangeNotifier {
   /// account, not the device.
   Future<void> _clearLocalAccountState() async {
     _stopSyncPolling();
+    await _unregisterFromPush();
     _user = null;
     _myCompany = null;
     _bookings = [];
@@ -540,6 +659,9 @@ class AppProvider extends ChangeNotifier {
   @override
   void dispose() {
     _stopSyncPolling();
+    _connectivitySub?.cancel();
+    _pushTokenSub?.cancel();
+    _pushMessageSub?.cancel();
     super.dispose();
   }
 

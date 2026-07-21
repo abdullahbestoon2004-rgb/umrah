@@ -48,281 +48,304 @@ class _FilterSheetState extends State<FilterSheet> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // handle
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 14, bottom: 6),
-                width: 42,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(3),
-                ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Kept outside the scroll view so drags on it reach the sheet's
+          // drag-to-dismiss instead of being consumed by scrolling.
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 14, bottom: 6),
+              width: 42,
+              height: 5,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 6, 22, 4),
-              child: Row(
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(t.filterSheetTitle, style: AppTheme.serif(24)),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: _reset,
-                    child: Text(
-                      t.filterSheetReset,
-                      style: AppTheme.sans(
-                        13,
-                        weight: FontWeight.w700,
-                        color: AppColors.primary,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 6, 22, 4),
+                    child: Row(
+                      children: [
+                        Text(t.filterSheetTitle, style: AppTheme.serif(24)),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: _reset,
+                          child: Text(
+                            t.filterSheetReset,
+                            style: AppTheme.sans(
+                              13,
+                              weight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // price
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 14, 22, 0),
+                    child: Row(
+                      children: [
+                        Text(
+                          t.filterSheetMaxPricePerPerson,
+                          style: AppTheme.sans(14, weight: FontWeight.w700),
+                        ),
+                        const Spacer(),
+                        Text(
+                          fmtIqd(_local.priceMax),
+                          style: AppTheme.serif(17, color: AppColors.primary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: AppColors.primary,
+                        thumbColor: AppColors.primary,
+                        inactiveTrackColor: AppColors.primary.withValues(
+                          alpha: 0.15,
+                        ),
+                      ),
+                      child: Slider(
+                        min: 500000,
+                        max: OfferFilters.priceCeiling,
+                        divisions: 45,
+                        value: _local.priceMax,
+                        onChanged: (v) => setState(
+                          () => _local = _local.copyWith(priceMax: v),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '500,000',
+                          style: AppTheme.sans(11, color: AppColors.mutedLight),
+                        ),
+                        Text(
+                          '5,000,000+',
+                          style: AppTheme.sans(11, color: AppColors.mutedLight),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _Section(label: t.filterSheetTransportation),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _Opt(
+                            label: t.filterSheetAll,
+                            active: _local.transport == 'all',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(transport: 'all'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: t.filterSheetByAir,
+                            icon: Icons.flight_rounded,
+                            active: _local.transport == 'plane',
+                            onTap: () => setState(
+                              () =>
+                                  _local = _local.copyWith(transport: 'plane'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: t.filterSheetByCoach,
+                            icon: Icons.directions_bus_rounded,
+                            active: _local.transport == 'bus',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(transport: 'bus'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _Section(label: t.filterSheetAccommodation),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _Opt(
+                            label: t.filterSheetAny,
+                            active: _local.acc == 'all',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(acc: 'all'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: '5★',
+                            active: _local.acc == '5',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(acc: '5'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: '4★',
+                            active: _local.acc == '4',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(acc: '4'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: '3★',
+                            active: _local.acc == '3',
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(acc: '3'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _Section(label: t.filterSheetTripDuration),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                    child: Wrap(
+                      spacing: 9,
+                      children: [
+                        _Opt(
+                          label: t.filterSheetAny,
+                          active: _local.dur == 'all',
+                          onTap: () => setState(
+                            () => _local = _local.copyWith(dur: 'all'),
+                          ),
+                        ),
+                        _Opt(
+                          label: t.filterSheetDuration7to9,
+                          active: _local.dur == 'short',
+                          onTap: () => setState(
+                            () => _local = _local.copyWith(dur: 'short'),
+                          ),
+                        ),
+                        _Opt(
+                          label: t.filterSheetDuration10to14,
+                          active: _local.dur == 'mid',
+                          onTap: () => setState(
+                            () => _local = _local.copyWith(dur: 'mid'),
+                          ),
+                        ),
+                        _Opt(
+                          label: t.filterSheetDuration15Plus,
+                          active: _local.dur == 'long',
+                          onTap: () => setState(
+                            () => _local = _local.copyWith(dur: 'long'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _Section(label: t.filterSheetAgencyRating),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _Opt(
+                            label: t.filterSheetAny,
+                            active: _local.rating == 0,
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(rating: 0),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: '★ 4.5+',
+                            active: _local.rating == 4.5,
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(rating: 4.5),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: _Opt(
+                            label: '★ 4.8+',
+                            active: _local.rating == 4.8,
+                            onTap: () => setState(
+                              () => _local = _local.copyWith(rating: 4.8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 24, 22, 30),
+                    child: GestureDetector(
+                      onTap: _apply,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 30,
+                              offset: const Offset(0, 14),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          t.filterSheetShowPackages(_countMatching()),
+                          style: AppTheme.sans(
+                            15,
+                            weight: FontWeight.w800,
+                            color: const Color(0xFFF6F2E9),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            // price
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 14, 22, 0),
-              child: Row(
-                children: [
-                  Text(
-                    t.filterSheetMaxPricePerPerson,
-                    style: AppTheme.sans(14, weight: FontWeight.w700),
-                  ),
-                  const Spacer(),
-                  Text(
-                    fmtIqd(_local.priceMax),
-                    style: AppTheme.serif(17, color: AppColors.primary),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
-              child: SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: AppColors.primary,
-                  thumbColor: AppColors.primary,
-                  inactiveTrackColor: AppColors.primary.withValues(alpha: 0.15),
-                ),
-                child: Slider(
-                  min: 500000,
-                  max: OfferFilters.priceCeiling,
-                  divisions: 45,
-                  value: _local.priceMax,
-                  onChanged: (v) =>
-                      setState(() => _local = _local.copyWith(priceMax: v)),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '500,000',
-                    style: AppTheme.sans(11, color: AppColors.mutedLight),
-                  ),
-                  Text(
-                    '5,000,000+',
-                    style: AppTheme.sans(11, color: AppColors.mutedLight),
-                  ),
-                ],
-              ),
-            ),
-
-            _Section(label: t.filterSheetTransportation),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _Opt(
-                      label: t.filterSheetAll,
-                      active: _local.transport == 'all',
-                      onTap: () => setState(
-                        () => _local = _local.copyWith(transport: 'all'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: t.filterSheetByAir,
-                      icon: Icons.flight_rounded,
-                      active: _local.transport == 'plane',
-                      onTap: () => setState(
-                        () => _local = _local.copyWith(transport: 'plane'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: t.filterSheetByCoach,
-                      icon: Icons.directions_bus_rounded,
-                      active: _local.transport == 'bus',
-                      onTap: () => setState(
-                        () => _local = _local.copyWith(transport: 'bus'),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            _Section(label: t.filterSheetAccommodation),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _Opt(
-                      label: t.filterSheetAny,
-                      active: _local.acc == 'all',
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(acc: 'all')),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: '5★',
-                      active: _local.acc == '5',
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(acc: '5')),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: '4★',
-                      active: _local.acc == '4',
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(acc: '4')),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: '3★',
-                      active: _local.acc == '3',
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(acc: '3')),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            _Section(label: t.filterSheetTripDuration),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-              child: Wrap(
-                spacing: 9,
-                children: [
-                  _Opt(
-                    label: t.filterSheetAny,
-                    active: _local.dur == 'all',
-                    onTap: () =>
-                        setState(() => _local = _local.copyWith(dur: 'all')),
-                  ),
-                  _Opt(
-                    label: t.filterSheetDuration7to9,
-                    active: _local.dur == 'short',
-                    onTap: () =>
-                        setState(() => _local = _local.copyWith(dur: 'short')),
-                  ),
-                  _Opt(
-                    label: t.filterSheetDuration10to14,
-                    active: _local.dur == 'mid',
-                    onTap: () =>
-                        setState(() => _local = _local.copyWith(dur: 'mid')),
-                  ),
-                  _Opt(
-                    label: t.filterSheetDuration15Plus,
-                    active: _local.dur == 'long',
-                    onTap: () =>
-                        setState(() => _local = _local.copyWith(dur: 'long')),
-                  ),
-                ],
-              ),
-            ),
-
-            _Section(label: t.filterSheetAgencyRating),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _Opt(
-                      label: t.filterSheetAny,
-                      active: _local.rating == 0,
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(rating: 0)),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: '★ 4.5+',
-                      active: _local.rating == 4.5,
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(rating: 4.5)),
-                    ),
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: _Opt(
-                      label: '★ 4.8+',
-                      active: _local.rating == 4.8,
-                      onTap: () =>
-                          setState(() => _local = _local.copyWith(rating: 4.8)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 24, 22, 30),
-              child: GestureDetector(
-                onTap: _apply,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.4),
-                        blurRadius: 30,
-                        offset: const Offset(0, 14),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    t.filterSheetShowPackages(_countMatching()),
-                    style: AppTheme.sans(
-                      15,
-                      weight: FontWeight.w800,
-                      color: const Color(0xFFF6F2E9),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1815,6 +1815,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
+  String get offlineBannerTitle => 'أنت غير متصل';
+
+  @override
+  String get offlineBannerBody => 'يتم عرض آخر المعلومات المحمّلة.';
+
+  @override
   String get agencyRegisterTitle => 'تسجيل وكالة';
 
   @override

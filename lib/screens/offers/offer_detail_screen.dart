@@ -74,10 +74,6 @@ class OfferDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                       ],
-                      if (offer.pricing.isNotEmpty) ...[
-                        _OccupancyPricingSection(offer: offer),
-                        const SizedBox(height: 24),
-                      ],
                       _AccommodationSection(offer: offer),
                       const SizedBox(height: 24),
                       _TransportSection(offer: offer),
@@ -420,70 +416,6 @@ class _DetailPill extends StatelessWidget {
   );
 }
 
-class _OccupancyPricingSection extends StatelessWidget {
-  final Offer offer;
-  const _OccupancyPricingSection({required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(t.offerFormOccupancyPricing, style: AppTheme.serif(20)),
-        const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              width: 1.5,
-            ),
-          ),
-          child: Column(
-            children: [
-              for (var i = 0; i < offer.pricing.length; i++)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 13,
-                  ),
-                  decoration: BoxDecoration(
-                    border: i == offer.pricing.length - 1
-                        ? null
-                        : const Border(
-                            bottom: BorderSide(color: Color(0x140F5C4D)),
-                          ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.bed_outlined,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        t.bookingRoomOccupancy(offer.pricing[i].occupancy),
-                        style: AppTheme.sans(13.5, weight: FontWeight.w700),
-                      ),
-                      const Spacer(),
-                      Text(
-                        fmtIqd(offer.pricing[i].priceIqd),
-                        style: AppTheme.serif(16, color: AppColors.primary),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _RatingRow extends StatelessWidget {
   final Offer offer;
   final Company company;
@@ -666,88 +598,6 @@ class _AccommodationSection extends StatelessWidget {
                   ],
                 ),
               ],
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            t.offerDetailRoom,
-                            style: AppTheme.sans(
-                              10.5,
-                              color: AppColors.muted,
-                              weight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Wrap(
-                            spacing: 5,
-                            runSpacing: 5,
-                            children: [
-                              for (final occupancy
-                                  in offer.availableRoomOccupancies)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 7,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFEAF1EC),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: Text(
-                                    t.bookingRoomOccupancy(occupancy),
-                                    style: AppTheme.sans(
-                                      10.5,
-                                      weight: FontWeight.w700,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            t.offerDetailMeals,
-                            style: AppTheme.sans(
-                              10.5,
-                              color: AppColors.muted,
-                              weight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            offer.mealsLabelFor(t),
-                            style: AppTheme.sans(13, weight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -1099,7 +949,7 @@ class _IncludesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final lang = Localizations.localeOf(context).languageCode;
-    final structured = offer.inclusions;
+    final structured = offer.inclusions.where((i) => i.included).toList();
     final items = structured.isEmpty
         ? offer
               .buildIncludes(t)
@@ -1142,13 +992,9 @@ class _IncludesSection extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      e.value.included
-                          ? Icons.check_circle_outline_rounded
-                          : Icons.cancel_outlined,
-                      color: e.value.included
-                          ? AppColors.primary
-                          : AppColors.errorRed,
+                    const Icon(
+                      Icons.check_circle_outline_rounded,
+                      color: AppColors.primary,
                       size: 20,
                     ),
                     const SizedBox(width: 11),

@@ -1801,4 +1801,23 @@ class SupabaseService implements api.DataService {
       // logging must never throw — worst case we just lose this one report
     }
   }
+
+  @override
+  Future<void> registerDeviceToken(String token, String platform) async {
+    try {
+      await _c.rpc(
+        'register_device_token',
+        params: {'p_token': token, 'p_platform': platform},
+      );
+    } catch (_) {
+      // A handset that fails to register still works; it just misses pushes.
+    }
+  }
+
+  @override
+  Future<void> unregisterDeviceToken(String token) async {
+    try {
+      await _c.rpc('unregister_device_token', params: {'p_token': token});
+    } catch (_) {}
+  }
 }

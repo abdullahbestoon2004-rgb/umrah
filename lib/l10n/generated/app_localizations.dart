@@ -3234,6 +3234,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// No description provided for @offlineBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get offlineBannerTitle;
+
+  /// No description provided for @offlineBannerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the last loaded information.'**
+  String get offlineBannerBody;
+
   /// No description provided for @agencyRegisterTitle.
   ///
   /// In en, this message translates to:

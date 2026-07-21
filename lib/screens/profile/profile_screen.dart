@@ -19,7 +19,6 @@ import 'privacy_security_screen.dart';
 import 'help_support_screen.dart';
 import 'account_details_screen.dart';
 import 'legal_screen.dart';
-import 'identity_verification_screen.dart';
 import '../auth/auth_screen.dart';
 import '../../widgets/app_snackbar.dart';
 
@@ -48,7 +47,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                 ],
-                _SectionLabel(t.profileSectionAccount),
+                // Saved trips, bookings, and notifications are reachable from
+                // the header stat row above — no second copy here.
+                _SectionLabel(t.profileSectionPreferences),
                 const SizedBox(height: 10),
                 if (provider.isSignedIn) ...[
                   _MenuCard(
@@ -62,52 +63,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _MenuCard(
-                    icon: Icons.verified_user_outlined,
-                    label: t.identityVerification,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const IdentityVerificationScreen(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                 ],
-                _MenuCard(
-                  icon: Icons.favorite_border_rounded,
-                  label: t.profileSavedTrips,
-                  badge: provider.saved.isEmpty
-                      ? null
-                      : '${provider.saved.length}',
-                  onTap: () => _openSaved(context, provider),
-                ),
-                const SizedBox(height: 10),
-                _MenuCard(
-                  icon: Icons.calendar_month_rounded,
-                  label: t.profileMyBookings,
-                  badge: provider.bookings.isEmpty
-                      ? null
-                      : '${provider.bookings.length}',
-                  onTap: () => provider.setTab(3),
-                ),
-                const SizedBox(height: 10),
-                _MenuCard(
-                  icon: Icons.notifications_outlined,
-                  label: t.profileNotifications,
-                  badge: provider.unreadNotifications == 0
-                      ? null
-                      : '${provider.unreadNotifications}',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const NotificationsScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 22),
-                _SectionLabel(t.profileSectionPreferences),
-                const SizedBox(height: 10),
                 _MenuCard(
                   icon: Icons.credit_card_rounded,
                   label: t.profilePaymentMethods,
@@ -238,13 +194,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _openSaved(BuildContext context, AppProvider provider) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const _SavedScreen()),
     );
   }
 
@@ -880,7 +829,6 @@ class _MenuCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String? subtitle;
-  final String? badge;
   final String? trailingLabel;
   final Color? tint;
   final VoidCallback onTap;
@@ -888,7 +836,6 @@ class _MenuCard extends StatelessWidget {
     required this.icon,
     required this.label,
     this.subtitle,
-    this.badge,
     this.trailingLabel,
     this.tint,
     required this.onTap,
@@ -957,24 +904,6 @@ class _MenuCard extends StatelessWidget {
                   12.5,
                   weight: FontWeight.w600,
                   color: AppColors.muted,
-                ),
-              ),
-              const SizedBox(width: 6),
-            ],
-            if (badge != null) ...[
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  badge!,
-                  style: AppTheme.sans(
-                    11,
-                    weight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
                 ),
               ),
               const SizedBox(width: 6),

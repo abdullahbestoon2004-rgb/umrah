@@ -1839,6 +1839,12 @@ class AppLocalizationsKu extends AppLocalizations {
   String get retry => 'دووبارە هەوڵ بدەرەوە';
 
   @override
+  String get offlineBannerTitle => 'پەیوەندیت نییە';
+
+  @override
+  String get offlineBannerBody => 'دوایین زانیاری باركراو پیشان دەدرێت.';
+
+  @override
   String get agencyRegisterTitle => 'تۆمارکردنی کۆمپانیا';
 
   @override

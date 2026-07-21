@@ -293,6 +293,14 @@ abstract class DataService {
     required String code,
     required String newPassword,
   });
+
+  // ── push notification device tokens ──────────────────────────────────────
+  /// Binds this handset's push token to the signed-in user.
+  Future<void> registerDeviceToken(String token, String platform);
+
+  /// Stops delivery to this handset (called on sign-out).
+  Future<void> unregisterDeviceToken(String token);
+
   Future<void> logError({
     String? userId,
     required String message,
@@ -1363,6 +1371,23 @@ class PhpApiService implements DataService {
         'errors/log',
         body: {'message': message, 'stack': stack, 'context': context},
       );
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> registerDeviceToken(String token, String platform) async {
+    try {
+      await _api.post(
+        'devices/register',
+        body: {'token': token, 'platform': platform},
+      );
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> unregisterDeviceToken(String token) async {
+    try {
+      await _api.post('devices/unregister', body: {'token': token});
     } catch (_) {}
   }
 }

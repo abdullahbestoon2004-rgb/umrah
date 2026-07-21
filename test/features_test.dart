@@ -736,6 +736,19 @@ class FakeService implements DataService {
     String? context,
   }) async {}
 
+  // ── push device tokens ───────────────────────────────────────────────────
+  final registeredDeviceTokens = <String, String>{};
+
+  @override
+  Future<void> registerDeviceToken(String token, String platform) async {
+    registeredDeviceTokens[token] = platform;
+  }
+
+  @override
+  Future<void> unregisterDeviceToken(String token) async {
+    registeredDeviceTokens.remove(token);
+  }
+
   // ── notifications ────────────────────────────────────────────────────────
   final remoteNotifications = <AppNotification>[];
 
